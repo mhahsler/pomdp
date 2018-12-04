@@ -1,0 +1,7 @@
+export("pomdp" , "belief" , "belief.proportions" , "alpha" , "pg" , "total.expected.reward" , "initial.node" , "solver.output" , "model")
+
+importFrom("graphics", "plot")
+import("igraph")
+
+S3method("plot", "POMDP")
+S3method("print", "POMDP")

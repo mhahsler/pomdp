@@ -1,0 +1,17 @@
+Package: pomdp
+Title: Solve & Visualize POMDP
+Version: 0.0.0.9000
+Authors@R: c(person("Hossein", "Kamalzadeh", email = "hkamalzadeh@smu.edu",
+                  role = c("aut", "cre")),
+             person("Michael", "Hahsler" , email = "mhahsler@smu.edu" ,
+                  role = "aut"))
+Description: The pomdp package enables the user to simply define all components
+    of a POMDP model such as states, transitions, and rewards in various ways
+    and then transforms all the inputs into a suitable and POMDP-friendly 
+    structure. The package then utilizes the 'pomdp-solver' to solve the user-defined
+    problem using finite grid method and provides outputs such as optimal policy
+    and solution. The package also visualizes the solutions.
+Depends: R (>= 3.1.0)
+License: GPL (>=3)
+LazyData: true
+Imports: igraph
