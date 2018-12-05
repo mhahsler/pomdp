@@ -1,5 +1,6 @@
 PKG_CPPFLAGS = -I../..
-  
+CPPFLAGS =
+
 LIB = ./libmdp.a
 
 OBJ = imm-reward.o parse_err.o parser.o sparse-matrix.o mdp.o parse_hash.o  scanner.o 
@@ -7,12 +8,10 @@ OBJ = imm-reward.o parse_err.o parser.o sparse-matrix.o mdp.o parse_hash.o  scan
 lib: $(LIB)
 
 %.o: %.c
-	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c -o $@ $<
+	$(CC) $(CPPFLAGS) -c -o $@ $<
 
 $(LIB): $(OBJ)
-	$(AR) -rucs $(LIB) $(OBJ)
-
-mostlyclean: clean
+	$(AR) -rcs $(LIB) $(OBJ)
 
 clean:
 	@-rm -rf .libs _libs $(LIB)
