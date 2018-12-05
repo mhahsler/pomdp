@@ -186,7 +186,9 @@ pomdp <- function(discount = 0,
   cat(code,file = pomdp_file)
   
   ### running the POMDP code
-  shell_command <- sprintf("pomdp-solve -pomdp %s -method grid -fg_points %d -fg_save true",pomdp_file , grid_size)
+  exec <- system.file("pomdp-solve", package="pomdp")
+  shell_command <- sprintf("%s -pomdp %s -method grid -fg_points %d -fg_save true",
+    exec, pomdp_file, grid_size)
   solver_output <- system(shell_command, intern=TRUE,ignore.stdout = FALSE,ignore.stderr = FALSE,wait = TRUE)
   
   ## the verbose mode: printing all the outputs from pomdp solver
