@@ -58,6 +58,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 
 /**********************************************************************/
 /******************   Memory Allocation Stuff  ************************/
@@ -99,11 +100,11 @@
 /* When using strings as temporary space for holding messages to be
    printed, define the string to be of this length. Shouldn't need it
    larger than this, but if so, feel free to increase this. */
-#define MAX_MSG_LENGTH               80
+#define MAX_MSG_LENGTH               2048
 
 /* For places where we statically allocate filename character arrays,
    use this for the length. */
-#define MAX_FILENAME_LENGTH          100
+#define MAX_FILENAME_LENGTH          1146
 
 /*******************************************************************/
 /**************              MACROS                 ****************/
@@ -154,7 +155,7 @@
    with a message. */
 #define Abort(MSG) { \
   fprintf(gStdErrFile, "\n** PROGRAM ABORTED **\n\t" ); \
-  fprintf(gStdErrFile, MSG ); \
+  fprintf(gStdErrFile, "%s", MSG ); \
   fprintf(gStdErrFile, "\n" ); \
   exit( -1 ); }
 
@@ -162,7 +163,7 @@
    with a message. */
 #define Warning(MSG) { \
   fprintf(gStdErrFile, "\n** Warning **\n\t" ); \
-  fprintf(gStdErrFile, MSG ); \
+  fprintf(gStdErrFile, "%s", MSG ); \
   fprintf(gStdErrFile, "\n" ); }
 
 /*******************************************************************/

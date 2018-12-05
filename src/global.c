@@ -135,12 +135,14 @@ removeFile( char *filename )
 
 }  /* removeFile */
 /**********************************************************************/
-void 
-strupr ( char *string )
-{
+
   /* 
 	Converts a string to upper case
   */
+
+/*
+strupr ( char *string )
+{
   while ( *string )
     {
 	 *string = toupper ( *string );

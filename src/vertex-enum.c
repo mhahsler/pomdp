@@ -58,6 +58,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #include "mdp/mdp.h"
 
@@ -1500,7 +1501,132 @@ specialVertexCheck( LP lp, double *vertex )
    return( 0 );
 
 }  /* specialVertexCheck  */
+
 /**********************************************************************/
+void 
+showObjectiveRow( LP lp ) 
+{
+   int i;
+   double obj;
+
+   if( LP_getdj( lp, tableaux_col, 0, lp->cols-1 )) {
+      fprintf( gStdErrFile, "CPLEX calling problem: getdj().\n");
+      exit( -1 );
+   }
+
+   fprintf( gStdErrFile, " obj|   1.00");
+   for( i = 0; i < lp->cols; i++ )
+      fprintf( gStdErrFile, "    %.2lf", -1.0*tableaux_col[i] );
+
+   if( LP_getpi( lp, tableaux_row, 0, lp->rows-1 )) {
+      fprintf( gStdErrFile, "CPLEX calling problem: getpi().\n");
+      exit( -1 );
+   }
+
+   for( i = 0; i < lp->rows; i++ )
+      fprintf( gStdErrFile, "   %.2f", tableaux_row[i] );
+
+   if( LP_getobjval( lp, &obj )) {
+      fprintf( gStdErrFile, "CPLEX calling problem: getobjval().\n");
+      exit( -1 );
+   }
+
+   fprintf( gStdErrFile, "   %.2lf |  z\n", obj);
+}  /* showObjectiveRow */
+/**********************************************************************/
+int 
+showTableauRow( LP lp, int row ) 
+{
+   int col;
+   double coef;
+
+   fprintf( gStdErrFile, " %3d|", row );
+   
+   fprintf( gStdErrFile, "   0.00");
+   
+   if( LP_binvarow( lp, row, tableaux_col )) {
+      fprintf(  gStdErrFile, "CPLEX calling problem: binvarow().\n");
+      exit( -1 );
+   }
+
+   for( col = 1; col <= lp->cols; col++ ) {
+      fprintf(  gStdErrFile, "  %6.2lf", tableaux_col[col-1]  );
+   }  /* for col */
+   
+   if( LP_binvrow( lp, row, tableaux_row )) {
+      fprintf(  gStdErrFile, "CPLEX calling problem: binvrow().\n");
+      exit( -1 );
+   }
+
+   for( col = 1; col <= lp->rows; col++ ) {
+      fprintf(  gStdErrFile, "  %6.2lf", tableaux_row[col-1]  );
+   }  /* for col */
+   
+   return( 1 );
+}  /* showTableauRow */
+
+      
+/**********************************************************************/
+int 
+showTableaux(LP lp ) 
+{
+   int i, row, col;
+   double coef;
+
+   fprintf(  gStdErrFile, "Row |     z ");
+   for( i = 0; i < (lp->cols-1); i++ )
+      fprintf(  gStdErrFile, "     x%d", i );
+   fprintf( gStdErrFile, "      y" );
+   for( i = 0; i < lp->rows; i++ )
+      fprintf(  gStdErrFile, "      s%d", i );
+   fprintf( gStdErrFile, "    b  |   b.v.\n");
+
+   fprintf(  gStdErrFile, "============");
+   for( i = 0; i < lp->cols; i++ )
+      fprintf(  gStdErrFile, "========%i", i );
+   for( i = 0; i < lp->rows; i++ )
+      fprintf(  gStdErrFile, "========%i", i );
+   fprintf( gStdErrFile, "=============\n");
+
+   showObjectiveRow( lp );
+
+   getTableauxRHS( lp, tableaux_rhs );
+
+   /* get list of basic variables */
+   if( LP_getgrad( lp, 0, tableaux_bv, dummy_double )) {
+      fprintf(  gStdErrFile, "CPLEX calling problem: getgrad().\n");
+      exit( -1 );
+   }
+   
+   for( row = 0; row < lp->rows; row++ ) {
+
+      showTableauRow( lp, row );
+      fprintf( gStdErrFile, "    %.2lf",tableaux_rhs[row] );
+      fprintf(  gStdErrFile, " |"  );
+
+      if( tableaux_bv[row] >= 0 ) {
+         if( tableaux_bv[row] == gNumVariables )
+            fprintf(  gStdErrFile, "  y" );
+         else
+            fprintf( gStdErrFile, "  x%d", tableaux_bv[row] );
+      }
+      else
+         fprintf( gStdErrFile, "  s%d", (tableaux_bv[row] + 1 ) * -1 );    
+ 
+      fprintf(  gStdErrFile, "\n");
+      
+   }  /* for row */;
+  
+   fprintf(  gStdErrFile, "\n");
+
+   return( 1 );
+}  /* showTableaux */
+/**********************************************************************/
+
+
+   
+   
+ /**********************************************************************/
 int 
 getVertex( double *b ) 
 {
@@ -1567,7 +1693,8 @@ getVertex( double *b )
          if( gVerbose[V_VERTEX_ENUM] ) {
             fprintf( gStdErrFile,
                      "Getting new tableaux to search:\n");
-            showTableaux( lp->lp );
+            //FIXME: ‘showTableaux’ from incompatible pointer type
+            // showTableaux( lp->lp );
          }
 
          /* We need a special case for when the added variable y = 0.
@@ -1801,7 +1928,8 @@ startVertexEnum( AlphaList item, AlphaList list )
 
       if( gVerbose[V_VERTEX_ENUM] ) {
          fprintf( gStdErrFile, "Initial optimal tableaux:\n");
-         showTableaux( lp->lp );
+         // FIXME: pointer type
+         //showTableaux( lp->lp );
       }
 
       updateRecordList( lp );  /* This gets the first record into the
@@ -1880,124 +2008,3 @@ showVertex( double *b )
 
    return( 1 );
 }  /* showVertex */
-/**********************************************************************/
-void 
-showObjectiveRow( LP lp ) 
-{
-   int i;
-   double obj;
-
-   if( LP_getdj( lp, tableaux_col, 0, lp->cols-1 )) {
-      fprintf( gStdErrFile, "CPLEX calling problem: getdj().\n");
-      exit( -1 );
-   }
-
-   fprintf( gStdErrFile, " obj|   1.00");
-   for( i = 0; i < lp->cols; i++ )
-      fprintf( gStdErrFile, "    %.2lf", -1.0*tableaux_col[i] );
-
-   if( LP_getpi( lp, tableaux_row, 0, lp->rows-1 )) {
-      fprintf( gStdErrFile, "CPLEX calling problem: getpi().\n");
-      exit( -1 );
-   }
-
-   for( i = 0; i < lp->rows; i++ )
-      fprintf( gStdErrFile, "   %.2l f", tableaux_row[i] );
-
-   if( LP_getobjval( lp, &obj )) {
-      fprintf( gStdErrFile, "CPLEX calling problem: getobjval().\n");
-      exit( -1 );
-   }
-
-   fprintf( gStdErrFile, "   %.2lf |  z\n", obj);
-}  /* showObjectiveRow */
-/**********************************************************************/
-int 
-showTableauRow( LP lp, int row ) 
-{
-   int col;
-   double coef;
-
-   fprintf( gStdErrFile, " %3d|", row );
-   
-   fprintf( gStdErrFile, "   0.00");
-   
-   if( LP_binvarow( lp, row, tableaux_col )) {
-      fprintf(  gStdErrFile, "CPLEX calling problem: binvarow().\n");
-      exit( -1 );
-   }
-
-   for( col = 1; col <= lp->cols; col++ ) {
-      fprintf(  gStdErrFile, "  %6.2lf", tableaux_col[col-1]  );
-   }  /* for col */
-   
-   if( LP_binvrow( lp, row, tableaux_row )) {
-      fprintf(  gStdErrFile, "CPLEX calling problem: binvrow().\n");
-      exit( -1 );
-   }
-
-   for( col = 1; col <= lp->rows; col++ ) {
-      fprintf(  gStdErrFile, "  %6.2lf", tableaux_row[col-1]  );
-   }  /* for col */
-   
-   return( 1 );
-}  /* showTableauRow */
-/**********************************************************************/
-int 
-showTableaux(LP lp ) 
-{
-   int i, row, col;
-   double coef;
-
-   fprintf(  gStdErrFile, "Row |     z ");
-   for( i = 0; i < (lp->cols-1); i++ )
-      fprintf(  gStdErrFile, "     x%d", i );
-   fprintf( gStdErrFile, "      y" );
-   for( i = 0; i < lp->rows; i++ )
-      fprintf(  gStdErrFile, "      s%d", i );
-   fprintf( gStdErrFile, "    b  |   b.v.\n");
-
-   fprintf(  gStdErrFile, "============");
-   for( i = 0; i < lp->cols; i++ )
-      fprintf(  gStdErrFile, "========", i );
-   for( i = 0; i < lp->rows; i++ )
-      fprintf(  gStdErrFile, "========", i );
-   fprintf( gStdErrFile, "=============\n");
-
-   showObjectiveRow( lp );
-
-   getTableauxRHS( lp, tableaux_rhs );
-
-   /* get list of basic variables */
-   if( LP_getgrad( lp, 0, tableaux_bv, dummy_double )) {
-      fprintf(  gStdErrFile, "CPLEX calling problem: getgrad().\n");
-      exit( -1 );
-   }
-   
-   for( row = 0; row < lp->rows; row++ ) {
-
-      showTableauRow( lp, row );
-      fprintf( gStdErrFile, "    %.2lf",tableaux_rhs[row] );
-      fprintf(  gStdErrFile, " |"  );
-
-      if( tableaux_bv[row] >= 0 ) {
-         if( tableaux_bv[row] == gNumVariables )
-            fprintf(  gStdErrFile, "  y" );
-         else
-            fprintf( gStdErrFile, "  x%d", tableaux_bv[row] );
-      }
-      else
-         fprintf( gStdErrFile, "  s%d", (tableaux_bv[row] + 1 ) * -1 );    
- 
-      fprintf(  gStdErrFile, "\n");
-      
-   }  /* for row */;
-  
-   fprintf(  gStdErrFile, "\n");
-
-   return( 1 );
-}  /* showTableaux */
-/**********************************************************************/
-
-
-

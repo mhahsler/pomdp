@@ -147,7 +147,8 @@ typedef struct enode
 
 extern int ERR_dump();
 extern void ERR_enter();
-extern void ERR_inititalize();
+extern void ERR_initialize();
+extern void ERR_cleanUp();
 
 #endif
 /*************************************************************************/

@@ -410,7 +410,7 @@ void
 initFiniteGrid( PomdpSolveParams param )
 {
   int i;
-  char belief_filename[MAX_MSG_LENGTH];
+  char belief_filename[MAX_FILENAME_LENGTH];
 
   Assert( param != NULL, "Param object is NULL." );
 

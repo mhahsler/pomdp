@@ -52,6 +52,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #include "mdp/mdp.h"
 
@@ -480,7 +481,7 @@ showPomdpSolveParams( PomdpSolveParams params )
   fprintf( params->report_file, 
 		 " \\\\****************//\n" );
   fprintf( params->report_file, 
-		 "      PID=%d\n", getpid() );
+		 "      PID=%d\n", getPid() );
 
   cfg = POMDP_SOLVE_OPTS_toConfigFile( params->opts );
 

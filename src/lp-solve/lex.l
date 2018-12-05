@@ -2,6 +2,7 @@
 #include "lp.h"
 #include "lpkit.h"
 #include "lpglob.h"
+#include <string.h>
 
 /* These are defined in the parser lp.y. */
 extern char Last_var[];

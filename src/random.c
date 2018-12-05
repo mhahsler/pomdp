@@ -71,7 +71,7 @@ int seeded = 0;
 
 /**********************************************************************/
 static int 
-create(maxnum)
+create(int maxnum)
 {
   return nrand48(random_seed48)%Max(1,maxnum);
 }  /* create */

@@ -82,8 +82,8 @@
 #define DEF_INFINITE  1e24 /* limit for dynamic range */
 #define DEF_EPSB      5.01e-7 /* for rounding RHS values to 0 determine	
 				 infeasibility basis */
-#define DEF_EPSEL     1e-8 /* for rounding other values (vectors) to 0 */
-#define DEF_EPSD      1e-6 /* for rounding reduced costs to zero */
+#define DEF_EPSD      5.01e-7 
+#define DEF_EPSEL      5.01e-7 
 #define DEF_EPSILON   1e-3 /* to determine if a float value is integer */
  
 #define PREJ          1e-3  /* pivot reject (try others first) */
@@ -100,21 +100,21 @@
 
 #define CALLOC(ptr, nr)\
   if(!(ptr = calloc((size_t)(nr), sizeof(*ptr))) && nr) {\
-    fprintf(stderr, "calloc of %d bytes failed on line %d of file %s\n",\
+    fprintf(stderr, "calloc of %lu bytes failed on line %d of file %s\n",\
             nr * sizeof(*ptr), __LINE__, __FILE__);\
     exit(EXIT_FAILURE);\
   }
 
 #define MALLOC(ptr, nr)\
   if(!(ptr = malloc((size_t)((nr) * sizeof(*ptr)))) && nr) {\
-    fprintf(stderr, "malloc of %d bytes failed on line %d of file %s\n",\
+    fprintf(stderr, "malloc of %lu bytes failed on line %d of file %s\n",\
             nr * sizeof(*ptr), __LINE__, __FILE__);\
     exit(EXIT_FAILURE);\
   }
 
 #define REALLOC(ptr, nr)\
   if(!(ptr = realloc(ptr, (size_t)((nr) * sizeof(*ptr)))) && nr) {\
-    fprintf(stderr, "realloc of %d bytes failed on line %d of file %s\n",\
+    fprintf(stderr, "realloc of %lu bytes failed on line %d of file %s\n",\
             nr * sizeof(*ptr), __LINE__, __FILE__);\
     exit(EXIT_FAILURE);\
   }

@@ -50,6 +50,7 @@
 #define COMMON_H
 
 #include "params.h"
+#include "region.h"
 
 /**********************************************************************/
 /********************       CONSTANTS       ***************************/
@@ -151,5 +152,7 @@ extern int initListSimpleQ( AlphaList list,
      
 extern int shouldTerminateEarly( AlphaList list, 
 						   PomdpSolveParams param );
+extern void relinkObsSources( AlphaList list );
+
 
 #endif

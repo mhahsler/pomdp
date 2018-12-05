@@ -167,7 +167,8 @@ initPomdpSolve( PomdpSolveParams param )
      initTwoPass( );
      break;
    case POMDP_SOLVE_OPTS_Method_linsup:
-     initLinSupport( );
+     // initLinSupport( );
+     Abort("linsup not implemented!")
      break;
    case POMDP_SOLVE_OPTS_Method_incprune:
      initIncPrune( );
@@ -232,7 +233,8 @@ cleanUpPomdpSolve( PomdpSolveParams param )
     break;
     
   case POMDP_SOLVE_OPTS_Method_linsup:
-    cleanUpLinSupport( );
+    Abort("linsup not implemented!");
+    //cleanUpLinSupport( );
     break;
     
   case POMDP_SOLVE_OPTS_Method_incprune:

@@ -66,6 +66,7 @@
 #include "alpha.h"
 #include "params.h"
 #include "common.h"
+#include "neighbor.h"
 #include "lp-interface.h"
 #include "parsimonious.h"
 #include "two-pass.h"

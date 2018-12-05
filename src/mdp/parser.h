@@ -100,5 +100,5 @@ typedef union YYSTYPE {
 
 extern YYSTYPE yylval;
 
-
+extern int readMDPFile( FILE *file );
 

@@ -77,5 +77,9 @@ extern void displayProjections( FILE *file, AlphaList **projection );
 
 /* Displays all projections to stdout.  */
 extern void showProjections( AlphaList **projection );
-        
+
+extern void clearAllProjections( AlphaList **projection );
+
+extern void setAllProjections( AlphaList **projection, AlphaList prev_alpha_list ); 
+
 #endif

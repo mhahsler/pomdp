@@ -251,5 +251,10 @@ extern void epochStartStats( SolutionStats stat );
 extern void epochEndStats( SolutionStats stat, 
                            int solution_size,
                            double cur_error );
-  
+
+extern void destroySolutionStats( SolutionStats stat );
+
+extern void reportStats( SolutionStats stat );
+
+
 #endif
