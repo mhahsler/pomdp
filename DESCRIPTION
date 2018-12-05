@@ -13,5 +13,7 @@ Description: The pomdp package enables the user to simply define all components
     and solution. The package also visualizes the solutions.
 Depends: R (>= 3.1.0)
 License: GPL (>=3)
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
 LazyData: true
 Imports: igraph
