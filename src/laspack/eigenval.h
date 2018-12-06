@@ -16,10 +16,10 @@
 #ifndef EIGENVAL_H
 #define EIGENVAL_H
 
-#include "laspack/vector.h"
-#include "laspack/qmatrix.h"
-#include "laspack/precond.h"
-#include "laspack/copyrght.h"
+#include "vector.h"
+#include "qmatrix.h"
+#include "precond.h"
+#include "copyrght.h"
 
 /* estimation of extremal eigenvalues */
 

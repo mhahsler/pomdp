@@ -16,8 +16,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "laspack/errhandl.h"
-#include "laspack/copyrght.h"
+#include "errhandl.h"
+#include "copyrght.h"
 
 /* LASPack error status, procedure and objects where an error has ariced */
 static LASErrIdType LASErrId = LASOK;

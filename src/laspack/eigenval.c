@@ -16,12 +16,12 @@
 #include <stddef.h>
 #include <math.h>
 
-#include "laspack/eigenval.h"
-#include "laspack/elcmp.h"
-#include "laspack/errhandl.h"
-#include "laspack/operats.h"
-#include "laspack/rtc.h"
-#include "laspack/copyrght.h"
+#include "eigenval.h"
+#include "elcmp.h"
+#include "errhandl.h"
+#include "operats.h"
+#include "rtc.h"
+#include "copyrght.h"
 
 typedef struct {
     double MinEigenval;

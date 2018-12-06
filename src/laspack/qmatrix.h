@@ -18,10 +18,10 @@
 
 #include <stdlib.h>
 
-#include "laspack/lastypes.h"
-#include "laspack/elcmp.h"
-#include "laspack/vector.h"
-#include "laspack/copyrght.h"
+#include "lastypes.h"
+#include "elcmp.h"
+#include "vector.h"
+#include "copyrght.h"
 
 typedef struct QMatrixType {
     char *Name;

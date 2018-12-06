@@ -17,9 +17,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "laspack/vector.h"
-#include "laspack/errhandl.h"
-#include "laspack/copyrght.h"
+#include "vector.h"
+#include "errhandl.h"
+#include "copyrght.h"
 
 void V_Constr(Vector *V, char *Name, size_t Dim, InstanceType Instance,
               Boolean OwnData)

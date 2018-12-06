@@ -18,9 +18,9 @@
 #include <math.h>
 #include <string.h>
 
-#include "laspack/matrix.h"
-#include "laspack/errhandl.h"
-#include "laspack/copyrght.h"
+#include "matrix.h"
+#include "errhandl.h"
+#include "copyrght.h"
 
 static ElType ZeroEl = { 0, 0.0 };
 

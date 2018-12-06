@@ -17,11 +17,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "laspack/mlsolv.h"
-#include "laspack/errhandl.h"
-#include "laspack/operats.h"
-#include "laspack/rtc.h"
-#include "laspack/copyrght.h"
+#include "mlsolv.h"
+#include "errhandl.h"
+#include "operats.h"
+#include "rtc.h"
+#include "copyrght.h"
 
 Vector *MGStep(int NoLevels, QMatrix *A, Vector *x, Vector *b,
             Matrix *R, Matrix *P, int Level, int Gamma,

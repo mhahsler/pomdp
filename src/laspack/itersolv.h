@@ -16,11 +16,11 @@
 #ifndef ITERSOLV_H
 #define ITERSOLV_H
 
-#include "laspack/vector.h"
-#include "laspack/qmatrix.h"
-#include "laspack/precond.h"
-#include "laspack/eigenval.h"
-#include "laspack/copyrght.h"
+#include "vector.h"
+#include "qmatrix.h"
+#include "precond.h"
+#include "eigenval.h"
+#include "copyrght.h"
 
 typedef Vector *(*IterProcType)(QMatrix *, Vector *, Vector *, int,
 				PrecondProcType, double);

@@ -16,10 +16,10 @@
 #ifndef PRECOND_H
 #define PRECOND_H
 
-#include "laspack/lastypes.h"
-#include "laspack/vector.h"
-#include "laspack/qmatrix.h"
-#include "laspack/copyrght.h"
+#include "lastypes.h"
+#include "vector.h"
+#include "qmatrix.h"
+#include "copyrght.h"
 
 typedef Vector *(*PrecondProcType)(QMatrix *, Vector *, Vector *, double);
 

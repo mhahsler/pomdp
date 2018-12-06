@@ -15,11 +15,11 @@
 
 #include <stddef.h>
 
-#include "laspack/rtc.h"
-#include "laspack/errhandl.h"
-#include "laspack/elcmp.h"
-#include "laspack/operats.h"
-#include "laspack/copyrght.h"
+#include "rtc.h"
+#include "errhandl.h"
+#include "elcmp.h"
+#include "operats.h"
+#include "copyrght.h"
 
 /* accuracy for Residual Termination Control */
 static double RTCEps = 1e-8;

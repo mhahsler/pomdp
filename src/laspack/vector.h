@@ -18,9 +18,9 @@
 
 #include <stdlib.h>
 
-#include "laspack/lastypes.h"
-#include "laspack/elcmp.h"
-#include "laspack/copyrght.h"
+#include "lastypes.h"
+#include "elcmp.h"
+#include "copyrght.h"
 
 typedef struct {
     char *Name;

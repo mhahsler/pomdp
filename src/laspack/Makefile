@@ -1,4 +1,4 @@
-INCLUDES = -I..
+INCLUDES = 
 #FLAGS = -Wall -Wunused-variable
 FLAGS =
   

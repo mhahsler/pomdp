@@ -16,9 +16,9 @@
 #ifndef FACTOR_H
 #define FACTOR_H
 
-#include "laspack/vector.h"
-#include "laspack/qmatrix.h"
-#include "laspack/copyrght.h"
+#include "vector.h"
+#include "qmatrix.h"
+#include "copyrght.h"
 
 QMatrix *ILUFactor(QMatrix *Q);
 

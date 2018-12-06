@@ -15,13 +15,13 @@
 
 #include <math.h>
 
-#include "laspack/precond.h"
-#include "laspack/errhandl.h"
-#include "laspack/qmatrix.h"
-#include "laspack/operats.h"
-#include "laspack/factor.h"
-#include "laspack/itersolv.h"
-#include "laspack/copyrght.h"
+#include "precond.h"
+#include "errhandl.h"
+#include "qmatrix.h"
+#include "operats.h"
+#include "factor.h"
+#include "itersolv.h"
+#include "copyrght.h"
 
 Vector *JacobiPrecond(QMatrix *A, Vector *y, Vector *c, double Omega)
 /* Jacobi preconditioner */

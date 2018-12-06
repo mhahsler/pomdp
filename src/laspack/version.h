@@ -16,7 +16,7 @@
 #ifndef LASPACK_VERSION_H
 #define LASPACK_VERSION_H
 
-#include "laspack/copyrght.h"
+#include "copyrght.h"
 
 #define LASPACK_VERSION "1.12.2"
 

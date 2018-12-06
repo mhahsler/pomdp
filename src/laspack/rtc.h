@@ -16,10 +16,10 @@
 #ifndef RTC_H
 #define RTC_H
 
-#include "laspack/lastypes.h"
-#include "laspack/vector.h"
-#include "laspack/itersolv.h"
-#include "laspack/copyrght.h"
+#include "lastypes.h"
+#include "vector.h"
+#include "itersolv.h"
+#include "copyrght.h"
 
 /* identifiers for iteration methods */
 

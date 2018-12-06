@@ -16,11 +16,11 @@
 #ifndef MLSOLV_H
 #define MLSOLV_H
 
-#include "laspack/vector.h"
-#include "laspack/matrix.h"
-#include "laspack/qmatrix.h"
-#include "laspack/itersolv.h"
-#include "laspack/copyrght.h"
+#include "vector.h"
+#include "matrix.h"
+#include "qmatrix.h"
+#include "itersolv.h"
+#include "copyrght.h"
 
 Vector *MGStep(int NoLevels, QMatrix *A, Vector *x, Vector *b,
 	    Matrix *R, Matrix *P, int Level, int Gamma,

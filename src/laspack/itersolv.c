@@ -16,12 +16,12 @@
 #include <stddef.h>
 #include <math.h>
 
-#include "laspack/itersolv.h"
-#include "laspack/elcmp.h"
-#include "laspack/errhandl.h"
-#include "laspack/operats.h"
-#include "laspack/rtc.h"
-#include "laspack/copyrght.h"
+#include "itersolv.h"
+#include "elcmp.h"
+#include "errhandl.h"
+#include "operats.h"
+#include "rtc.h"
+#include "copyrght.h"
 
 /* number of GMRES steps bevore restart */
 static int GMRESSteps = 10;

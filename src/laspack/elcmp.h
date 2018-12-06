@@ -19,7 +19,7 @@
 #include <float.h>
 #include <math.h>
 
-#include "laspack/copyrght.h"
+#include "copyrght.h"
 
 typedef double Real;
 

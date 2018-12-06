@@ -15,10 +15,10 @@
 
 #include <string.h>
 
-#include "laspack/factor.h"
-#include "laspack/errhandl.h"
-#include "laspack/qmatrix.h"
-#include "laspack/copyrght.h"
+#include "factor.h"
+#include "errhandl.h"
+#include "qmatrix.h"
+#include "copyrght.h"
 
 #define PEN_FACT 1e-4
 

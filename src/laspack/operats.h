@@ -18,11 +18,11 @@
 
 #include <stdlib.h>
 
-#include "laspack/lastypes.h"
-#include "laspack/vector.h"
-#include "laspack/matrix.h"
-#include "laspack/qmatrix.h"
-#include "laspack/copyrght.h"
+#include "lastypes.h"
+#include "vector.h"
+#include "matrix.h"
+#include "qmatrix.h"
+#include "copyrght.h"
 
 Vector *Asgn_VV(Vector *V1, Vector *V2);
 Vector *AddAsgn_VV(Vector *V1, Vector *V2);

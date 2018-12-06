@@ -17,9 +17,9 @@
 #include <math.h>
 #include <string.h>
 
-#include "laspack/operats.h"
-#include "laspack/errhandl.h"
-#include "laspack/copyrght.h"
+#include "operats.h"
+#include "errhandl.h"
+#include "copyrght.h"
 
 /* the following macro allows to optimize vector operations
    for different computer architecture */

@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 
-#include "laspack/copyrght.h"
+#include "copyrght.h"
 
 typedef enum {
     LASOK,

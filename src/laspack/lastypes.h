@@ -16,7 +16,7 @@
 #ifndef LASTYPES_H
 #define LASTYPES_H
 
-#include "laspack/copyrght.h"
+#include "copyrght.h"
 
 #ifndef BOOLEAN
 #define BOOLEAN
