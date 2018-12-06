@@ -1,19 +1,18 @@
 Package: pomdp
-Title: Solve & Visualize POMDP
+Title: Solver for Partially Observable Markov Decision Processes (POMDP)
 Version: 0.0.0.9000
 Authors@R: c(person("Hossein", "Kamalzadeh", email = "hkamalzadeh@smu.edu",
-                  role = c("aut", "cre")),
-             person("Michael", "Hahsler" , email = "mhahsler@smu.edu" ,
-                  role = "aut"))
-Description: The pomdp package enables the user to simply define all components
-    of a POMDP model such as states, transitions, and rewards in various ways
-    and then transforms all the inputs into a suitable and POMDP-friendly 
-    structure. The package then utilizes the 'pomdp-solver' to solve the user-defined
-    problem using finite grid method and provides outputs such as optimal policy
-    and solution. The package also visualizes the solutions.
+                  role = c("aut", "cph","cre")),
+             person("Michael", "Hahsler", email = "mhahsler@lyle.smu.edu",
+                  role = c("aut", "cph")),
+             person(c("Anthony", "R."), "Cassandra",
+                  role = c("ctb", "cph"))
+		  )
+Description: Provides an interface to pomdp-solve, a solver for Partially Observable Markov Decision Processes (POMDP). The package enables the user to simply define all components of a POMDP model and solve the problem using the finite grid method. The package also contains functions to analyze and visualize the solutions (e.g., the optimal policy).
 Depends: R (>= 3.1.0)
 License: GPL (>=3)
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 LazyData: true
 Imports: igraph
+Copyright: pomdp-solve is Copyright (C) Anthony R. Cassandra; LASPack is Copyright (C) Tomas Skalicky; lp-solve is Copyright (C) Michel Berkelaar, Kjell Eikland, Peter Notebaert; all other code is Copyright (C) Hossein Kamalzadeh and Michael Hahsler.
