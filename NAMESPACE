@@ -4,7 +4,15 @@ importFrom("utils", "read.table")
 importFrom("graphics", "plot")
 import("igraph")
 
-export("pomdp" , "belief" , "belief.proportions" , "alpha" , "pg" , "total.expected.reward" , "initial.node" , "solver.output" , "model")
+export("pomdp", 
+  "belief", 
+  "belief.proportions", 
+  "alpha", 
+  "pg", 
+  "total.expected.reward", 
+  "initial.node", 
+  "solver.output", 
+  "model")
 
 S3method("plot", "POMDP")
 S3method("print", "POMDP")

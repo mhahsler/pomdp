@@ -52,7 +52,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <mdp/mdp.h>
+#include "mdp/mdp.h"
 
 #include "global.h"
 #include "value-function.h"

@@ -30,14 +30,14 @@
 #include <assert.h>
 
 /* The LAPACK modules */
-#include <laspack/errhandl.h>
-#include <laspack/itersolv.h>
-#include <laspack/lastypes.h>
-#include <laspack/operats.h>
-#include <laspack/precond.h>
-#include <laspack/qmatrix.h>
-#include <laspack/rtc.h>
-#include <laspack/vector.h>
+#include "laspack/errhandl.h"
+#include "laspack/itersolv.h"
+#include "laspack/lastypes.h"
+#include "laspack/operats.h"
+#include "laspack/precond.h"
+#include "laspack/qmatrix.h"
+#include "laspack/rtc.h"
+#include "laspack/vector.h"
 
 #include "global.h"
 #include "laspack-util.h"

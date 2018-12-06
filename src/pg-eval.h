@@ -28,8 +28,8 @@
 #ifndef PG_EVAL_H
 #define PG_EVAL_H
 
-#include <laspack/qmatrix.h>
-#include <laspack/vector.h>
+#include "laspack/qmatrix.h"
+#include "laspack/vector.h"
 #include "pg.h"
 
 /* When checking for zero entries in sparse equation solving of policy

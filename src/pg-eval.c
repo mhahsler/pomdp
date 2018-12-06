@@ -35,18 +35,18 @@
 #include <assert.h>
 
 /* My own libraries */
-#include <mdp/mdp.h>
-#include <mdp/sparse-matrix.h>
+#include "mdp/mdp.h"
+#include "mdp/sparse-matrix.h"
 
 /* The LAPACK modules */
-#include <laspack/errhandl.h>
-#include <laspack/itersolv.h>
-#include <laspack/lastypes.h>
-#include <laspack/operats.h>
-#include <laspack/precond.h>
-#include <laspack/qmatrix.h>
-#include <laspack/rtc.h>
-#include <laspack/vector.h>
+#include "laspack/errhandl.h"
+#include "laspack/itersolv.h"
+#include "laspack/lastypes.h"
+#include "laspack/operats.h"
+#include "laspack/precond.h"
+#include "laspack/qmatrix.h"
+#include "laspack/rtc.h"
+#include "laspack/vector.h"
 
 #include "global.h"
 #include "laspack-util.h"

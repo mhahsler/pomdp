@@ -58,8 +58,13 @@
 #include <time.h>
 #include <unistd.h>
 
+#define DISABLE_TIME_LIMIT
+
+#ifndef DISABLE_TIME_LIMIT
 /* This has: 'struct tms', times() */
 #include <sys/times.h>
+#endif
+
 
 #include "timing.h"
 
@@ -69,6 +74,13 @@ getSecsDetail( double *user_time, double *system_time )
 {
   /* Get total CPU time in seconds breaking it down by user
      and system time. */
+#ifdef DISABLE_TIME_LIMIT
+  *user_time = -1.0;
+  *system_time = -1.0;
+  return;
+
+#else  
+  
   struct tms time;
 
   times( &time );
@@ -76,6 +88,8 @@ getSecsDetail( double *user_time, double *system_time )
   *user_time = (double) time.tms_utime / (double) sysconf(_SC_CLK_TCK);
   *system_time = (double) time.tms_stime / (double) sysconf(_SC_CLK_TCK);
 
+#endif
+  
 }  /* getSecsDetail */
 /**********************************************************************/
 double 

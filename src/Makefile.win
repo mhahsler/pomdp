@@ -1,0 +1,82 @@
+## Simple Makefile for Windows
+##
+## https://github.com/eddelbuettel/rinside/blob/master/inst/examples/standard/Makefile.win
+##
+## Note that the libRInside library encodes the value of R_HOME found
+## at compilation. So if you use the CRAN package of RInside, its value
+## may not correspond to where you have R installed.  One quick fix is 
+## export the appropriate value of R_HOME, eg ony my work machine
+##           set R_HOME=C:\opt\R-current
+## The other is to re-install RInside from source on your machine.
+## Either one should allow you to actually run the binaries created
+## with this Makefile
+
+
+## This version is fairly directly derived from the Unix versions
+## You may have to set R_HOME manually if this does not work
+## It requires Rtools in the path -- as does all R package building
+R_HOME := 		$(shell R RHOME | sed -e "s|\\\\|\/|g")
+
+## 
+## You may have to set this to one of the two values below to enforce a  particular
+## architecture in case the autodetection in the next line does not work correctly
+R_ARCH :=		--arch $(shell echo 'cat(.Platform$$r_arch)' | R --vanilla --slave)
+##R_ARCH :=		--arch i386
+##R_ARCH :=		--arch x64
+
+## You may need to set R_LIBS_USER if Rcpp or RInside are installed where R does not see them by default
+#R_LIBS_USER :=		"C:/myRstuff/library"
+
+## include headers and libraries for R
+RCPPFLAGS := 		$(shell $(R_HOME)/bin/R $(R_ARCH) CMD config --cppflags)
+RLDFLAGS := 		$(shell $(R_HOME)/bin/R $(R_ARCH) CMD config --ldflags)
+RBLAS := 		$(shell $(R_HOME)/bin/R $(R_ARCH) CMD config BLAS_LIBS)
+RLAPACK := 		$(shell $(R_HOME)/bin/R $(R_ARCH) CMD config LAPACK_LIBS)
+
+## compiler etc settings used in default make rules
+CXX := 			$(shell $(R_HOME)/bin/R $(R_ARCH) CMD config CXX)
+CPPFLAGS := 		-Wall $(shell $(R_HOME)/bin/R $(R_ARCH) CMD config CPPFLAGS)
+CXXFLAGS := 		$(RCPPFLAGS) $(RCPPINCL) $(RINSIDEINCL) $(shell $(R_HOME)/bin/R $(R_ARCH) CMD config CXXFLAGS)
+LDFLAGS	= 		-s
+LDLIBS := 		$(RLDFLAGS) $(RBLAS) $(RLAPACK) $(RINSIDELIBS) $(RCPPLIBS)
+CC := $(shell $(R_HOME)/bin/R $(R_ARCH) CMD config CXX)
+
+INCLUDE = -L./mdp -L./lp-solve -L./laspack
+MY_LIBS = -lm -lmdp -llp-solve -llaspack
+#CFLAGS =
+#CFLAGS  = -Wall -Wunused-variable
+#CFLAGS  = -Wall -Wpedantic -Wunused-variable
+
+OBJ = alpha.o belief.o cmd-line.o common.o cross-sum.o enumeration.o finite-grid.o global.o inc-prune.o linear-support.o lp-interface.o neighbor.o pomdp-solve-options.o params.o parsimonious.o pg.o pomdp.o pomdp-solve.o projection.o random.o region.o signal-handler.o stats.o timing.o two-pass.o vertex-enum.o witness.o xalloc.o zlz_speedup.o sim.o mcgs.o associative-array.o command-line.o config-file.o program-options.o main.o
+
+SUBDIRS = mdp lp-solve laspack
+
+default: pomdp-solve install
+
+all: default
+
+install:
+	mkdir -p ../inst/
+	cp pomdp-solve.exe ../inst/
+
+mdp/libmdp.a:
+	(cd mdp && CXX="$(CXX)" CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS)" AR="$(AR)" RANLIB="$(RANLIB)" $(MAKE))
+
+lp-solve/liblp-solve.a:
+	(cd lp-solve && CXX="$(CXX)" CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS)" AR="$(AR)" RANLIB="$(RANLIB)" $(MAKE))
+  
+laspack/liblaspack.a:
+	(cd laspack && CXX="$(CXX)" CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS)" AR="$(AR)" RANLIB="$(RANLIB)" $(MAKE))
+
+pomdp-solve: $(OBJ) mdp/libmdp.a lp-solve/liblp-solve.a laspack/liblaspack.a 
+	$(CC) $(CFLAGS) $(INCLUDE) $(OBJ) -o pomdp-solve $(MY_LIBS)
+	
+clean:
+	rm -f ../inst/pomdp-solve.exe
+	rm -f *.o
+	rm -f pomdp-solve
+	for dir in $(SUBDIRS); do \
+	  $(MAKE) -C $$dir clean; \
+	done
+
+

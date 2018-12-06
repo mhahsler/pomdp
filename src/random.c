@@ -1,4 +1,4 @@
-
+  
 /*
  *<SOURCE_HEADER>
  *
@@ -73,7 +73,9 @@ int seeded = 0;
 static int 
 create(int maxnum)
 {
-  return nrand48(random_seed48)%Max(1,maxnum);
+  // MINGW has no nrand48
+  //return nrand48(random_seed48)%Max(1,maxnum);
+  return rand()%Max(1,maxnum);
 }  /* create */
 /**********************************************************************/
 static void 
@@ -87,7 +89,9 @@ init_randomizer()
   gettimeofday(tp, tzp);
   random_seed48[0] = (tp->tv_usec) & 0177777;
   random_seed48[1] = getpid();
-  random_seed48[2] = getppid();
+  // no getppid in MINGW
+  //random_seed48[2] = getppid();
+  random_seed48[2] = getpid();
   for (i=0;i<87;++i)            /* exercise out any startup transients */
     create(10);
 
@@ -113,7 +117,12 @@ fran()
   if( !seeded )
     init_randomizer();
 
-  return erand48(random_seed48);
+  double range = (1 - 0); 
+  double div = RAND_MAX / range;
+  return 0 + (rand() / div);
+  
+  // MINGW does not have erand48
+  //return erand48(random_seed48);
 }  /* fran */
 /**********************************************************************/
 void 

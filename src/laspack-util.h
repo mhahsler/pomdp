@@ -26,8 +26,8 @@
 #define LASPACK_UTIL_H
 
 /* The LAPACK modules */
-#include <laspack/qmatrix.h>
-#include <laspack/vector.h>
+#include "laspack/qmatrix.h"
+#include "laspack/vector.h"
 
 /* Arguments for the LASPACK iterative solver. */
 #define ITER_SOLVE_ACCURACY                1e-5
