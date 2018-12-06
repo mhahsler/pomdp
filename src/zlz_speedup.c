@@ -359,7 +359,7 @@ ZLZ_ViSpeedup( AlphaList U_n, double delta,
     the current Bellman residual of the new value function and the
     previous value funciton as computed by the bellmanError() routine.
   */
-  AlphaList V_n;
+  //AlphaList V_n;
 
   /* Note that this should be checked prior to calling this routine by
      the meetStoppingCriteria() routine, but we put the check in here

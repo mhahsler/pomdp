@@ -865,7 +865,7 @@ POMDP_SOLVE_OPTS_create( int argc, char** argv )
 {
   PomdpSolveProgOptions options;
   ProgramOptions opts;
-  ConfigFile cfg;
+  //ConfigFile cfg;
 
   opts = PO_create( argc, argv );
 

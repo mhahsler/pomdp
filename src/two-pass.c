@@ -363,7 +363,7 @@ searchRegionTwoPass( AlphaList cur_vector,
 
    /* Initialize this to false, that way if the dominance checking
       is not selected, we execute the witness LPs. */
-   int dominated = FALSE;
+   //int dominated = FALSE;
 
    /* We will search over all observations and previous vectors, which
       amounts to a search over neighbors. Just for reference a

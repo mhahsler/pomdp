@@ -203,8 +203,8 @@ ERR_dump()
 {
 	char		*currChar;	/* used for outputting string */
 	Err_node	*currErr;	/* used for traversing node list */
-	int		tempInt;
-	char		*tempChar;
+	//int		tempInt;
+	//char		*tempChar;
 	int numErrors = 0;
 	int numWarnings = 0;
 

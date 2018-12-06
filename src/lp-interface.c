@@ -893,7 +893,7 @@ LP_writeLP( LP lp, char *filename )
   /*
     Writes the current LP to a file.
   */
-  char msg[MAX_MSG_LENGTH];
+  //char msg[MAX_MSG_LENGTH];
 
 #ifdef HAVE_LIBCPLEX
    lpwrite( lp->lp, filename );
@@ -1037,7 +1037,8 @@ LP_solveLP( LP lp, SolutionStats stat )
     LP_UNBOUNDED
   */
   char msg[MAX_MSG_LENGTH];
-  int i, status;
+  //int i, status;
+  int status;
   int return_status;
 
    /* If we want to accumulate statistical information about the LPs,

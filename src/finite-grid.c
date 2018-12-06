@@ -278,8 +278,9 @@ genInitialDerivedBeliefStates( PomdpSolveParams param )
   /* Belief states are derived by starting with file-specifed initial
 	belief sttae and searching from there (breadth first).
   */
-  int action, obs, state, num_found;
-  double prob;
+  //int action, obs, state, num_found;
+  int state;
+  //double prob;
   BeliefList belief_list = NULL;
 
   /* If file has no initial belief state, then assume the uniform
@@ -409,7 +410,7 @@ FG_getInitialvalueFunction( PomdpSolveParams param )
 void 
 initFiniteGrid( PomdpSolveParams param )
 {
-  int i;
+  //int i;
   char belief_filename[MAX_FILENAME_LENGTH];
 
   Assert( param != NULL, "Param object is NULL." );

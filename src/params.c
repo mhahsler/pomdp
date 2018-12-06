@@ -89,7 +89,7 @@ newPomdpSolveParams(  )
     solving a POMDP.  Also sets the fields to the default values.
   */
   PomdpSolveParams params;
-  int i;
+  //int i;
 
   params = (PomdpSolveParams) XMALLOC( sizeof( *params ));
 
@@ -314,7 +314,7 @@ doPostOptionParseActions( PomdpSolveParams params ) {
   } /* if default prefix is being used */
 
   
-    /* Start at the end of the param_filename string
+    /* Start at the end of the param_filename string */
 
   /****************/
   /* Make sure nothing dips below some maximum precision setting. */
@@ -385,6 +385,8 @@ tempOptsToParamConversion( PomdpSolveParams params ) {
     case POMDP_SOLVE_OPTS_Inc_Prune_normal: params->ip_type = NormalIp; break;
     case POMDP_SOLVE_OPTS_Inc_Prune_restricted_region: params->ip_type = RestrictedRegionIp; break;
     case POMDP_SOLVE_OPTS_Inc_Prune_generalized: params->ip_type = GeneralizedIp; break;
+  default:
+  break;
     }
 
   switch( opts->proj_purge )
@@ -393,6 +395,8 @@ tempOptsToParamConversion( PomdpSolveParams params ) {
     case POMDP_SOLVE_OPTS_Proj_Purge_domonly: params->proj_purge = purge_dom; break;
     case POMDP_SOLVE_OPTS_Proj_Purge_normal_prune: params->proj_purge = purge_prune; break;
     case POMDP_SOLVE_OPTS_Proj_Purge_epsilon_prune: params->proj_purge = purge_epsilon_prune; break;
+    default:
+  break;
     }
   
   switch( opts->q_purge_option )
@@ -401,6 +405,8 @@ tempOptsToParamConversion( PomdpSolveParams params ) {
     case POMDP_SOLVE_OPTS_Q_Purge_domonly: params->q_purge_option = purge_dom; break;
     case POMDP_SOLVE_OPTS_Q_Purge_normal_prune: params->q_purge_option = purge_prune; break;
     case POMDP_SOLVE_OPTS_Q_Purge_epsilon_prune: params->q_purge_option = purge_epsilon_prune; break;
+    default:
+  break;
     }
   
   switch( opts->enum_purge_option )
@@ -409,6 +415,8 @@ tempOptsToParamConversion( PomdpSolveParams params ) {
     case POMDP_SOLVE_OPTS_Enum_Purge_domonly: params->enum_purge_option = purge_dom; break;
     case POMDP_SOLVE_OPTS_Enum_Purge_normal_prune: params->enum_purge_option = purge_prune; break;
     case POMDP_SOLVE_OPTS_Enum_Purge_epsilon_prune: params->enum_purge_option = purge_epsilon_prune; break;
+    default:
+  break;
     }
 
   switch( opts->fg_purge_option )
@@ -417,6 +425,8 @@ tempOptsToParamConversion( PomdpSolveParams params ) {
     case POMDP_SOLVE_OPTS_Fg_Purge_domonly: params->fg_purge_option = purge_dom; break;
     case POMDP_SOLVE_OPTS_Fg_Purge_normal_prune: params->fg_purge_option = purge_prune; break;
     case POMDP_SOLVE_OPTS_Fg_Purge_epsilon_prune: params->fg_purge_option = purge_epsilon_prune; break;
+    default:
+  break;
     }
 
   switch( opts->vi_variation )
@@ -425,6 +435,8 @@ tempOptsToParamConversion( PomdpSolveParams params ) {
     case POMDP_SOLVE_OPTS_Vi_Variation_zlz: params->vi_variation = ZlzSpeedup; break;
     case POMDP_SOLVE_OPTS_Vi_Variation_adjustable_epsilon: params->vi_variation = AdjustableEpsilonVi; break;
     case POMDP_SOLVE_OPTS_Vi_Variation_fixed_soln_size: params->vi_variation = FixedSolnSizeVi; break;
+    default:
+  break;
     }
 
 
@@ -494,5 +506,7 @@ showPomdpSolveParams( PomdpSolveParams params )
 		 "- - - - - - - - - - - - - - - - - - - -\n" );
 
   CF_delete( cfg );
+
+  return params;
 
 } /* showPomdpSolveParams */

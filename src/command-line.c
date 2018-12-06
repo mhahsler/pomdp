@@ -345,7 +345,7 @@ CL_hasFlag( CommandLine cmd_line, char* flag)
 extern char*
 CL_getArgOption( CommandLine cmd_line, char* arg )
 {
-  int i;
+  //int i;
   char *value;
 
   if (( cmd_line == NULL )
@@ -377,8 +377,8 @@ CL_getNumArgProper( CommandLine cmd_line )
 extern char*
 CL_getArgProper( CommandLine cmd_line, int arg_num )
 {
-  int i;
-  char *value;
+  //int i;
+  //char *value;
 
   if (( cmd_line == NULL )
 	 || ( arg_num < 0 )

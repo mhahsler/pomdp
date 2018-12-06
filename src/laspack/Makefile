@@ -1,5 +1,6 @@
-PKG_CPPFLAGS = -I../..
-CPPFLAGS = -I..
+INCLUDES = -I..
+#FLAGS = -Wall -Wunused-variable
+FLAGS =
   
 LIB = ./liblaspack.a
 
@@ -9,7 +10,7 @@ OBJ = eigenval.o matrix.o qmatrix.o errhandl.o mlsolv.o rtc.o factor.o operats.o
 lib: $(LIB)
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) -c -o $@ $<
+	$(CC) $(INCLUDES) $(FLAGS) -c -o $@ $<
 
 $(LIB): $(OBJ)
 	$(AR) -rcs $(LIB) $(OBJ)

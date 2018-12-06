@@ -2830,7 +2830,7 @@ enterMatrix( double value ) {
       break;
 
    case mc_obs_row:
-      if( gProblemType == POMDP_problem_type )
+      if( gProblemType == POMDP_problem_type ) {
 	/* We ignore this if it is an MDP */
 
 	if( curCol < gNumObservations ) {
@@ -2840,10 +2840,9 @@ enterMatrix( double value ) {
 	      addEntryToIMatrix( IR[a], j, curCol, value );
 	  
 	  curCol++;
-	}
-	else
+	}else
 	  gTooManyEntries = 1;
-
+	}
       break;
 
    case mc_obs_all:
@@ -2852,7 +2851,7 @@ enterMatrix( double value ) {
          curCol = 0;
       }
 
-      if( gProblemType == POMDP_problem_type )
+      if( gProblemType == POMDP_problem_type ) {
 	/* We ignore this if it is an MDP */
 
 	if( curRow < gNumStates ) {
@@ -2863,7 +2862,7 @@ enterMatrix( double value ) {
 	}
 	else
 	  gTooManyEntries = 1;
-
+}
       break;
 
 /* This is a special case for POMDPs, since we need a special 
@@ -3029,7 +3028,7 @@ setMatrixContext( Matrix_Context context,
 
    switch( curMatrixContext ) {
 
-   mc_start_belief:
+   case mc_start_belief:
      
      break;
 
@@ -3278,7 +3277,8 @@ verifyPreamble() {
 /******************************************************************************/
 void 
 checkProbs() {
-   int a,i,j,obs;
+   //int a,i,j,obs;
+   int a,i,j;
    double sum;
    char str[40];
 

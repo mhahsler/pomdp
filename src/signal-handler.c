@@ -153,13 +153,13 @@ reportSIGVTALRM( PomdpSolveParams param  )
   */
    double stop_time_user, stop_time_system;
    double time = -1.0;
-   int a;
+   //int a;
 
    /* Declared in enum.c */
-   extern int gNumVectorsEnum;
+   //extern int gNumVectorsEnum;
 
    /* Declared in linear-support.c */
-   extern int gNumVertices;
+   //extern int gNumVertices;
 
   if ( param->stat != NULL ) {
 
@@ -179,14 +179,15 @@ reportSIGVTALRM( PomdpSolveParams param  )
 
 } /* reportSIGVTALRM */
 /**********************************************************************/
-static void 
-signalHandlerSIGSEGV( int sig ) 
-{
   /* 
      If we get the SIGSEGV, then one possibility is that we have
      exceeded the preset memory limit of the program.  In this case,
      we give minimal timing information.
   */
+/*
+   static void 
+signalHandlerSIGSEGV( int sig ) 
+{
   
   Assert( gInterruptParamContext != NULL,
           "SIGSEGV received, but no parameter context was set." );
@@ -195,7 +196,7 @@ signalHandlerSIGSEGV( int sig )
   
   exit ( 0 );
 
-}  /* signalHandlerSIGSEGV */
+} */  /* signalHandlerSIGSEGV */
 /**********************************************************************/
 static void 
 signalHandlerSIGVTALRM( int sig ) 
@@ -263,7 +264,8 @@ setMemoryLimit( int mem_size_limit )
      catch this signal, but we are carefull not to assume that every
      SIGSEGV is due to resource limitations. 
   */
-  struct rlimit rlp;
+  //struct rlimit rlp;
+  struct rlimit;
 
   /* Zero or negative values turns memory limits off. */
   if ( mem_size_limit <= 0 )

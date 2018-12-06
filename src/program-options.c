@@ -606,7 +606,7 @@ PO_getIntegerOption( ProgramOptions opts, char* opt_name,
     out of range, this returns 0.  On success, this routine also marks
     the flag as seen (if the 'seen' structure has been allocated.)
    */
-  int i;
+  //int i;
   int str_result;
   char found_str[MAX_OPT_STRING_LEN];
 
@@ -649,7 +649,7 @@ PO_getDoubleOption( ProgramOptions opts, char* opt_name,
     out of range, this returns 0.  On success, this routine also marks
     the flag as seen (if the 'seen' structure has been allocated.)
    */
-  int i;
+  //int i;
   int str_result;
   char found_str[MAX_OPT_STRING_LEN];
 

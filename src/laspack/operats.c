@@ -844,12 +844,13 @@ Vector *Mul_QV(QMatrix *Q, Vector *V)
                                     if (!MultiplLVIsZero && !MultiplLVIsOne)
    	                                Sum = MultiplLV * Sum;
                                 }
-                                if (!MultiplDVIsZero)
+                                if (!MultiplDVIsZero) {
                                     if (MultiplDVIsOne)
 			                Sum += (*QDiagEl[RoC]).Val * VCmp[RoC];
                                     else
 			                Sum += MultiplDV * (*QDiagEl[RoC]).Val * VCmp[RoC];
-			        VResCmp[RoC] += Sum;
+				}
+				VResCmp[RoC] += Sum;
                                 if ((!MultiplUVIsZero && Q->ElOrder == Clmws)
                                     || (!MultiplLVIsZero && Q->ElOrder == Rowws)) {
   	                            Cmp = VCmp[RoC];

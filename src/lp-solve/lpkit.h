@@ -99,7 +99,7 @@
 #define STD_ROW_NAME_PREFIX "r_"
 
 #define CALLOC(ptr, nr)\
-  if(!(ptr = calloc((size_t)(nr), sizeof(*ptr))) && nr) {\
+  if(!(ptr = calloc((size_t)(nr), sizeof(*ptr))) && nr>0) {\
     fprintf(stderr, "calloc of %lu bytes failed on line %d of file %s\n",\
             nr * sizeof(*ptr), __LINE__, __FILE__);\
     exit(EXIT_FAILURE);\

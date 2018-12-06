@@ -1,5 +1,6 @@
-PKG_CPPFLAGS = -I../..
-CPPFLAGS =
+FLAGS  =
+#FLAGS  = -Wall -Wunused-variable
+#FLAGS  = -Wall -Wpedantic -Wunused-variable
 
 LIB = ./libmdp.a
 
@@ -8,7 +9,7 @@ OBJ = imm-reward.o parse_err.o parser.o sparse-matrix.o mdp.o parse_hash.o  scan
 lib: $(LIB)
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) -c -o $@ $<
+	$(CC) $(FLAGS) -c -o $@ $<
 
 $(LIB): $(OBJ)
 	$(AR) -rcs $(LIB) $(OBJ)

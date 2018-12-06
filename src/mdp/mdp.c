@@ -113,7 +113,8 @@ transformBeliefState( double *pi,
 		      int a,
 		      int obs ) {
    double denom;
-   int i, j, z, cur_state, next_state;
+   //int i, j, z, cur_state, next_state;
+   int i, j, cur_state, next_state;
 
    if( gProblemType != POMDP_problem_type )
       return 0;
@@ -274,7 +275,8 @@ verifyIntermediateMDP() {
    are creating the POMDP through a program.  In this case there
    will be no parsing and thus no logging of errors.
 */
-   int a,i,j,obs;
+   //int a,i,j,obs;
+   int a,i,j;
    double sum;
    
    for( a = 0; a < gNumActions; a++ )

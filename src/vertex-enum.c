@@ -266,6 +266,7 @@ initVertexEnum( int num_orig_variables )
   /* Set the global variable that we will use. */
   gVertexEnumLp = lp;
 
+  return 0;
 }  /* initVertexEnum */
 /**********************************************************************/
 int 
@@ -288,6 +289,7 @@ cleanUpVertexEnum( )
 
   gVertexEnumLp = NULL;
 
+  return 0;
 }  /* cleanUpVertexEnum */
 /**********************************************************************/
 
@@ -729,7 +731,7 @@ cplexCallback( CPXLPptr lpinfo, int wherefrom )
 int 
 checkLPStatus( LP lp ) 
 {
-   int status;
+   int status = 0;
    int result;
 
    result = LP_getSolution( lp );
@@ -756,7 +758,7 @@ setTableaux( LP lp, int *slack_basis, int y_basis )
    routine..  Note that this routine assume that all the original 
    variables will always be in the basis.
 */
-   int status;
+   //int status;
 
    if( !gVertexInit || ( slack_basis == NULL ))
       return( 0 );
@@ -779,7 +781,8 @@ setTableaux( LP lp, int *slack_basis, int y_basis )
       */
    LP_loadbase( lp, gColBasis, slack_basis );
 
-   status = LP_optimizeLP( lp );
+   //status = LP_optimizeLP( lp );
+   LP_optimizeLP( lp );
 
    return( checkLPStatus( lp ));
 }  /* setTableaux */
@@ -798,6 +801,7 @@ getTableauxColumn( LP lp, int col, double *coefs )
       exit( -1 );
    }
 
+   return 0;
 }  /* getTableauxColumn */
 /**********************************************************************/
 int 
@@ -1169,6 +1173,7 @@ updateRecordList( LP lp )
    if( gVerbose[V_VERTEX_ENUM] && !result )
       fprintf( gStdErrFile, "Duplicate record, not adding to list.\n");
 
+   return 0;
 } /* updateRecordList */
 /**********************************************************************/
 int 
@@ -1308,8 +1313,9 @@ doPivotCheck( LP lp, int col, double *b )
    int entering_var_index;  /* always a slack and a simple function of
                                the 'col' parameter, but useful to
                                have around */
-   double min_ratio;
-   int uy_pivot_row = -1;   /* Want to keep track of where the UY pivot is,
+   //double min_ratio;
+   //int uy_pivot_row = -1;   
+   /* Want to keep track of where the UY pivot is,
                                if any, since we will process it last.
                                */
    int num_rows;
@@ -1538,7 +1544,7 @@ int
 showTableauRow( LP lp, int row ) 
 {
    int col;
-   double coef;
+   //double coef;
 
    fprintf( gStdErrFile, " %3d|", row );
    
@@ -1570,8 +1576,9 @@ showTableauRow( LP lp, int row )
 int 
 showTableaux(LP lp ) 
 {
-   int i, row, col;
-   double coef;
+   //int i, row, col;
+   int i, row;
+   //double coef;
 
    fprintf(  gStdErrFile, "Row |     z ");
    for( i = 0; i < (lp->cols-1); i++ )
@@ -1757,6 +1764,7 @@ setUpIndices( LP lp, int num_constraints )
    for( col = 0; col < (lp->cols-1); col++ )
       lp->matind[col*(num_constraints + 1) + num_constraints] = col + num_constraints;
 
+   return 0;
 }  /* setUpIndices */
 /**********************************************************************/
 int 
@@ -1780,6 +1788,7 @@ setUpSimplexConstraints( LP lp, int num_constraints )
    lp->matval[ (num_constraints + 1) 
              * (lp->cols - 1) + 1] = sqrt( gNumStates );
 
+   return 0;
 }  /* setUpSimplexConstraints */
 /**********************************************************************/
 int 
@@ -1874,6 +1883,7 @@ setUpRelaxedRegion( LP lp, AlphaList item, AlphaList list )
 
    }  /* for col and k */
 
+   return 0;
 }  /* setUpRelaxedRegion */
 /**********************************************************************/
 int 
@@ -1947,6 +1957,7 @@ startVertexEnum( AlphaList item, AlphaList list )
 
    gVertexInit = 1;
 
+   return 0;
 }  /* startVertexEnum */
 /**********************************************************************/
 void 

@@ -123,7 +123,7 @@ countNonZeroesDiff( double *alpha, AlphaList list, double epsilon )
   */
   int i;
   int count = 0;
-  double diff;
+  //double diff;
 
   Assert( list != NULL && alpha != NULL, 
           "Bad (NULL) parameter(s)." );

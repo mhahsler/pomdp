@@ -94,8 +94,8 @@ MCGS_improve( AlphaList **projections, PomdpSolveParams param ) {
   int trajectory_count = 0;
   AlphaList old_vector_list;
   AlphaList new_vector_list;
-  double gen_time, prune_time;
-  double tot_gen_time = 0.0, tot_prune_time = 0.0;
+  //double gen_time, prune_time;
+  //double tot_gen_time = 0.0, tot_prune_time = 0.0;
   int m, num_new_points = 0;
 
   /* FIXME: Need to rethink how this works before making it
