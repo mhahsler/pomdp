@@ -1,15 +1,17 @@
-#solve a POMDP
-pomdp <- function(discount = 0,
-                  states,
-                  actions,
-                  observations,
-                  start = "uniform",
-                  transition_prob,
-                  observation_prob,
-                  reward,
-                  values = "reward",
-                  grid_size,
-                  verbose = FALSE) {
+
+## Create a model
+POMDP <- function(
+  discount = 0,
+  states,
+  actions,
+  observations,
+  start = "uniform",
+  transition_prob,
+  observation_prob,
+  reward,
+  values = "reward") {
+  
+  ### FIXME: Check the values!
   
   # discount shuold be a number in [0,1]
   # states should be a vector of strings
@@ -26,15 +28,36 @@ pomdp <- function(discount = 0,
   # grid_size is an integer
   
   ### model
-  model <- list(discount = discount, 
-		states = states, 
-		actions = actions, 
-		observations = observations, 
-		start = start, 
-		transition_prob = transition_prob,
-		observation_prob = observation_prob, 
-		reward = reward
-		)
+  structure(list(
+    discount = discount, 
+    states = states, 
+    actions = actions, 
+    observations = observations, 
+    start = start, 
+    transition_prob = transition_prob,
+    observation_prob = observation_prob, 
+    reward = reward,
+    values = values
+  ), class = "POMDP_model")
+}
+
+#solve a POMDP model
+solve_POMDP <- function(
+  model,
+  grid_size,
+  verbose = FALSE) {
+ 
+  if(!is(model, "POMDP_model")) stop("model needs to be a POMDP model use POMDP()!")
+  
+    discount    <- model$discount 
+    states      <- model$states 
+    actions     <- model$actions 
+    observations <- model$observations 
+    start       <- model$start 
+    transition_prob <- model$transition_prob
+    observation_prob <- model$observation_prob 
+    reward      <- model$reward
+    values      <- model$values
   
   ### POMDP file
   code <- character()
@@ -339,19 +362,18 @@ pomdp <- function(discount = 0,
     belief_proportions[i,] <- belief_proportions[i,]/c
   }
  
-  solution <- list(belief = belief, 
+  solution <- structure(list(belief = belief, 
 		   belief_proportions = belief_proportions,
 		   alpha = alpha,
 		   pg = pg,
 		   total_expected_reward = total_expected_reward,
 		   initial_node = initial_node
-		   )
+		   ), class = "POMDP_solution")
   
   structure(list(model = model,
 		 solution = solution,
 		 solver_output = solver_output
-		 ),
-            class = "POMDP")
+		 ), class = "POMDP")
 }
 
 print.POMDP <- function(x, ...) {

@@ -24,11 +24,9 @@ reward <- data.frame("action" = c("listen" , "open-left" , "open-left" ,
                      "observation" = c("*" , "*" , "*" , "*" , "*") ,
                      "reward" = c(-1 , -100 , 10 , 10 , -100))
 
-result <- pomdp(discount, states, actions, observations, start, transition_prob, 
-                observation_prob, reward, values = "reward", grid_size, verbose = FALSE)
-                
-
-TigerProblem <- model(result)
+TigerProblem <- POMDP(discount, states, actions, observations, 
+  start, transition_prob, 
+  observation_prob, reward, values = "reward")
 
 TigerProblem
 

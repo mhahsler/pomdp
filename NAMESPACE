@@ -2,15 +2,12 @@ importFrom("grDevices", "rainbow")
 importFrom("graphics", "legend")
 importFrom("utils", "read.table")
 importFrom("graphics", "plot")
+importFrom("methods", "is")
 import("igraph")
 
-export("pomdp", 
-  "belief", 
-  "belief.proportions", 
-  "alpha", 
-  "pg", 
-  "total.expected.reward", 
-  "initial.node", 
+export(
+  "POMDP", 
+  "solve_POMDP", 
   "solver.output", 
   "model",
   "solution")
