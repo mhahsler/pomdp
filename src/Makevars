@@ -14,6 +14,8 @@ all: default
 
 install:
 	mkdir -p ../inst/
+	rm -f ../inst/pomdp-solve
+	rm -f ../inst/pomdp-solve.exe
 	cp pomdp-solve ../inst/
 
 mdp/libmdp.a:
@@ -30,8 +32,10 @@ pomdp-solve: $(OBJ) mdp/libmdp.a lp-solve/liblp-solve.a laspack/liblaspack.a
 	
 clean:
 	rm -f ../inst/pomdp-solve
+	rm -f ../inst/pomdp-solve.exe
 	rm -f *.o
 	rm -f pomdp-solve
+	rm -f pomdp-solve.exe
 	for dir in $(SUBDIRS); do \
 	  $(MAKE) -C $$dir clean; \
 	done

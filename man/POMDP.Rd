@@ -62,6 +62,7 @@ a string indicating if rewards are specified as a "reward" or a "cost". The defa
 The function returns a list with the model specification.
 }
 \details{
+POMDP problems can be solved using \link{\code{solve_POMDP}}.
 Details about the available specifications can be found in [1].
 }
 \references{
