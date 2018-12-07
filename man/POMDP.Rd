@@ -62,12 +62,15 @@ a string indicating if rewards are specified as a "reward" or a "cost". The defa
 The function returns a list with the model specification.
 }
 \details{
-POMDP problems can be solved using \link{\code{solve_POMDP}}.
+POMDP problems can be solved using \code{\link{solve_POMDP}}.
 Details about the available specifications can be found in [1].
 }
 \references{
 [1] For further details on how the POMDP solver utilized in this R package works check the following website:
 \url{http://www.pomdp.org} 
+}
+\seealso{
+\code{\link{solve_POMDP}}
 }
 \author{
 Hossein Kamalzadeh, Michael Hahsler
