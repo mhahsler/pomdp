@@ -1,30 +1,5 @@
-\name{belief.proportions}
-\alias{belief.proportions}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-Rerurn belief proportions of a POMDP policy graph
-}
-\description{
-The function simply returns the proportions (probabilities) of being in each actual state for each node of a policy graph
-}
-\usage{
-belief.proportions(x)
-}
-%- maybe also 'usage' for other objects documented here.
-\arguments{
-  \item{x}{
-object of class POMDP
-}
-}
+library(pomdp)
 
-\value{
-returns a dataframe that includes the probabilities of being in each actual state for each node of the policy graph (rows)
-}
-
-\seealso{
-\code{\link{pomdp}}
-}
-\examples{
 # you need to use pomdp function to generate an object of class POMDP first.
 # here for an example we use the Tiger example code to generate such an object.
 discount <- 0.75
@@ -48,11 +23,13 @@ reward <- data.frame("action" = c("listen" , "open-left" , "open-left" ,
                      "end-state" = c("*" , "*" , "*" , "*" , "*") ,
                      "observation" = c("*" , "*" , "*" , "*" , "*") ,
                      "reward" = c(-1 , -100 , 10 , 10 , -100))
+
 result <- pomdp(discount, states, actions, observations, start, transition_prob, 
                 observation_prob, reward, values = "reward", grid_size, verbose = FALSE)
                 
-# then using the belief.proportions() function we print all the belief proportions of the given 
-# POMDP object
 
-belief.proportions(result)
-}
+TigerProblem <- model(result)
+
+TigerProblem
+
+save(TigerProblem, file = "data/TigerProblem.rda")

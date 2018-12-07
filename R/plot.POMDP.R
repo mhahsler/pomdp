@@ -1,8 +1,8 @@
 plot.POMDP <- function(x, y = NULL, states=NULL , plot = TRUE, ...) {
   
   ## producing the optimal policy graph
-  pg <- x$pg
-  belief_proportions <- x$belief_proportions
+  pg <- x$solution$pg
+  belief_proportions <- x$solution$belief_proportions
   
   # adjacency matrix
   adjm <-  matrix(data=0, nrow=nrow(pg) , ncol=nrow(pg))
@@ -66,9 +66,9 @@ plot.POMDP <- function(x, y = NULL, states=NULL , plot = TRUE, ...) {
     legend('topleft' ,legend = x$model$observations , title="Observations" , lty = c(1:3))
     
     if(!is.null(states)) {
-      legend("topright" , legend = x$model$states[states] , title = "Proportions" , col = c(1:3), pch = 15)
+      legend("topright" , legend = x$model$states[states] , title = "Belief" , col = c(1:3), pch = 15)
     } else {
-      legend("topright" , legend = x$model$states , title = "Proportions" , col= rainbow(number_of_states) , pch = 15)
+      legend("topright" , legend = x$model$states , title = "Belief" , col= rainbow(number_of_states) , pch = 15)
     }
   }
   

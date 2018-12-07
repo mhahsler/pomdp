@@ -1,3 +1,3 @@
 belief <- function(x) {
-  x$belief
+  x$solution$belief
 }

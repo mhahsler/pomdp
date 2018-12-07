@@ -1,3 +1,3 @@
 total.expected.reward <- function(x) {
-  x$total_expected_reward
+  x$solution$total_expected_reward
 }

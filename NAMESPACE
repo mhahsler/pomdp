@@ -12,7 +12,8 @@ export("pomdp",
   "total.expected.reward", 
   "initial.node", 
   "solver.output", 
-  "model")
+  "model",
+  "solution")
 
 S3method("plot", "POMDP")
 S3method("print", "POMDP")

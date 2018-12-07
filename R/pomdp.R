@@ -1,5 +1,4 @@
-library(igraph)
-
+#solve a POMDP
 pomdp <- function(discount = 0,
                   states,
                   actions,
@@ -27,10 +26,15 @@ pomdp <- function(discount = 0,
   # grid_size is an integer
   
   ### model
-  model <- list(discount = discount, states = states, actions = actions, 
-    observations = observations, start = start, transition_prob = transition_prob,
-    observation_prob = observation_prob, reward = reward)
-  
+  model <- list(discount = discount, 
+		states = states, 
+		actions = actions, 
+		observations = observations, 
+		start = start, 
+		transition_prob = transition_prob,
+		observation_prob = observation_prob, 
+		reward = reward
+		)
   
   ### POMDP file
   code <- character()
@@ -204,9 +208,12 @@ pomdp <- function(discount = 0,
   cat(code, file = pomdp_file)
   
   ### running the POMDP code
-  exec <- system.file("pomdp-solve", package="pomdp")
+  exec <- system.file(c("pomdp-solve", "pomdp-solve.exe"), package="pomdp")
+  if(exec == "") stop("pomdp-solve executable not found. Reinstall package pomdp.")
+  
   shell_command <- sprintf("%s -pomdp %s -method grid -fg_points %d -fg_save true",
     exec, pomdp_file, grid_size)
+  
   solver_output <- system(shell_command, intern=TRUE,
     ignore.stdout = FALSE, ignore.stderr = FALSE, wait = TRUE)
   
@@ -331,16 +338,19 @@ pomdp <- function(discount = 0,
     }
     belief_proportions[i,] <- belief_proportions[i,]/c
   }
+ 
+  solution <- list(belief = belief, 
+		   belief_proportions = belief_proportions,
+		   alpha = alpha,
+		   pg = pg,
+		   total_expected_reward = total_expected_reward,
+		   initial_node = initial_node
+		   )
   
-  
-  structure(list(belief = belief, 
-                 belief_proportions = belief_proportions, 
-                 alpha = alpha, 
-                 pg = pg,
-                 total_expected_reward = total_expected_reward,
-                 initial_node = initial_node,
-                 solver_output = solver_output,
-                 model = model),
+  structure(list(model = model,
+		 solution = solution,
+		 solver_output = solver_output
+		 ),
             class = "POMDP")
 }
 

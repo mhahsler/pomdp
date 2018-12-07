@@ -1,3 +1,3 @@
 initial.node <- function(x) {
-  x$initial_node
+  x$solution$initial_node
 }

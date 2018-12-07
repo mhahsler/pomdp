@@ -1212,16 +1212,20 @@ UTIL_relinkPolicyGraph( char *alpha_filename,
   }
 
   if ( sizeAlphaList( alpha_list ) != pg->num_nodes ) {
+    //fprintf(gStdErrFile, 
+//		  "** Error: The pg1 and alpha1 files are not compatible.\n",
+//		  pg_filename);
     fprintf(gStdErrFile, 
-		  "** Error: The pg1 and alpha1 files are not compatible.\n",
-		  pg_filename);
+		  "** Error: The pg1 and alpha1 files are not compatible.\n");
     return;
   }
 
   if ( gNumObservations != pg->num_obs ) {
+//    fprintf(gStdErrFile, 
+//		  "** Error: The pg1 file is not compatible with POMDP file.\n",
+//		  pg_filename);
     fprintf(gStdErrFile, 
-		  "** Error: The pg1 file is not compatible with POMDP file.\n",
-		  pg_filename);
+		  "** Error: The pg1 file is not compatible with POMDP file.\n");
     return;
   }
 

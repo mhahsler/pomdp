@@ -117,7 +117,7 @@ ConfigFile
 POMDP_FG_OPTS_toConfigFile( PomdpFgProgOptions options )
 {
   ConfigFile cfg;
-  char str[256];
+  char str[1024];
 
   cfg = CF_new();
 

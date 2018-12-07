@@ -186,7 +186,7 @@ FGP_doPostParseActions( FiniteGridParams params ) {
 	 /* Null terminate at the period */
 	 tmp_str[idx] = '\0';
 
-	 sprintf( opts->prefix_str, "%s-%d", tmp_str, getPid() );
+	 sprintf( opts->prefix_str, "%.512s-%d", tmp_str, getPid() );
 	 
     } /* if we can override the default */
 

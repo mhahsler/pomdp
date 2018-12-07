@@ -1,3 +1,3 @@
 alpha <- function(x) {
-  x$alpha
+  x$solution$alpha
 }

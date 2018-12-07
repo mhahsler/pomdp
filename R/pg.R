@@ -1,3 +1,3 @@
 pg <- function(x) {
-  x$pg
+  x$solution$pg
 }

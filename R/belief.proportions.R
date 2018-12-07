@@ -1,3 +1,3 @@
 belief.proportions <- function(x) {
-  x$belief_proportions
+  x$solution$belief_proportions
 }
