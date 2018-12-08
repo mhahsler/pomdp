@@ -29,7 +29,7 @@ laspack/liblaspack.a:
 
 pomdp-solve: $(OBJ) mdp/libmdp.a lp-solve/liblp-solve.a laspack/liblaspack.a 
 	$(CC) $(CFLAGS) $(INCLUDE) $(OBJ) -o pomdp-solve $(MY_LIBS)
-	
+
 clean:
 	rm -f ../inst/pomdp-solve
 	rm -f ../inst/pomdp-solve.exe
