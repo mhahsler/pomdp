@@ -142,7 +142,7 @@ IL_sizeOf( IndexList list )
   if ( list == NULL )
     {
 	 Warning( "Cannot get size of NULL list." );
-	 return;
+	 return 0;
     }
 
   return list->size;

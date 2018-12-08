@@ -422,7 +422,7 @@ void
 PGE_main( char *pg_filename ) {
   LinkedPG lpg;
   PG pg;
-  int best_node;
+  int best_node = 0;
 
   PgEvalContext pgec;
 

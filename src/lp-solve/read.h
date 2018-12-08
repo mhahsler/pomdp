@@ -16,4 +16,6 @@ void var_store(char *var, int row, REAL value);
    4/15/2003 by arc */
 void check_decl(int within_int_decl);
 
+void yyerror(char *string);
+
 #endif

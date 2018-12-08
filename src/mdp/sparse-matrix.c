@@ -157,6 +157,8 @@ addEntryToRow( I_Matrix_Row_Node row,
   }  /* if should be inserted in front of list */
 
   cur_node = row;
+  trail_node = cur_node;
+  
   while( cur_node != NULL ) {
     
     /* Case if we should simply replace (or accumulate) 

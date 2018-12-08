@@ -98,24 +98,25 @@
 #define MAXSTRL (NAMELEN-1)
 #define STD_ROW_NAME_PREFIX "r_"
 
+// FIXME %lu is %d on Windows
 #define CALLOC(ptr, nr)\
   if(!(ptr = calloc((size_t)(nr), sizeof(*ptr))) && nr>0) {\
-    fprintf(stderr, "calloc of %lu bytes failed on line %d of file %s\n",\
-            nr * sizeof(*ptr), __LINE__, __FILE__);\
+    fprintf(stderr, "calloc of %d bytes failed on line %d of file %s\n",\
+            (int) (nr * sizeof(*ptr)), __LINE__, __FILE__);\
     exit(EXIT_FAILURE);\
   }
 
 #define MALLOC(ptr, nr)\
   if(!(ptr = malloc((size_t)((nr) * sizeof(*ptr)))) && nr) {\
-    fprintf(stderr, "malloc of %lu bytes failed on line %d of file %s\n",\
-            nr * sizeof(*ptr), __LINE__, __FILE__);\
+    fprintf(stderr, "malloc of %d bytes failed on line %d of file %s\n",\
+            (int) (nr * sizeof(*ptr)), __LINE__, __FILE__);\
     exit(EXIT_FAILURE);\
   }
 
 #define REALLOC(ptr, nr)\
   if(!(ptr = realloc(ptr, (size_t)((nr) * sizeof(*ptr)))) && nr) {\
-    fprintf(stderr, "realloc of %lu bytes failed on line %d of file %s\n",\
-            nr * sizeof(*ptr), __LINE__, __FILE__);\
+    fprintf(stderr, "realloc of %d bytes failed on line %d of file %s\n",\
+            (int) (nr * sizeof(*ptr)), __LINE__, __FILE__);\
     exit(EXIT_FAILURE);\
   }
 

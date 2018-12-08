@@ -77,7 +77,7 @@ getBeliefObservation( int action, double *b  )
     "Littman Method".  
   */
   double rand, prob_sum, sum;
-  int obs, state, j, desperate_obs;
+  int obs, state, j, desperate_obs = 0;
    
   Assert( ( action >= 0) && (b != NULL) && (action < gNumActions ),
           "Bad parameters." );

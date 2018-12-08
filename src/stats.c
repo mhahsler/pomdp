@@ -774,7 +774,7 @@ reportContextDetails( SolutionStats stat )
      style. 
   */
   ContextType context;
-  double end_time;
+  double end_time = 0.0;
   double time;
   double tot_time = 0.0;
 

@@ -20,6 +20,8 @@
 #include "lpglob.h"
 #include "read.h"
 
+extern int yylex (void);
+
 /* globals */
 char Last_var[NAMELEN];
 char Constraint_name[NAMELEN];
@@ -1310,4 +1312,4 @@ yyreturn:
 }
 #line 203 "lp.y"
 
-#include "lex.c"
+#include "lex.yy.c"

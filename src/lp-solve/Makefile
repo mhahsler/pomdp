@@ -1,5 +1,5 @@
 LIB = ./liblp-solve.a
-OBJ = debug.o hash.o lex.o lp.o lpkit.o presolve.o read.o solve.o
+OBJ = debug.o hash.o lp.o lpkit.o presolve.o read.o solve.o lex.yy.o
 
 default: $(LIB)
 
