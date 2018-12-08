@@ -41,23 +41,18 @@ POMDP <- function(
   ), class = "POMDP_model")
 }
 
-#solve a POMDP model
-solve_POMDP <- function(
-  model,
-  grid_size,
-  verbose = FALSE) {
- 
+write_POMDP <- function(model, file) {
   if(!is(model, "POMDP_model")) stop("model needs to be a POMDP model use POMDP()!")
   
-    discount    <- model$discount 
-    states      <- model$states 
-    actions     <- model$actions 
-    observations <- model$observations 
-    start       <- model$start 
-    transition_prob <- model$transition_prob
-    observation_prob <- model$observation_prob 
-    reward      <- model$reward
-    values      <- model$values
+  discount    <- model$discount 
+  states      <- model$states 
+  actions     <- model$actions 
+  observations <- model$observations 
+  start       <- model$start 
+  transition_prob <- model$transition_prob
+  observation_prob <- model$observation_prob 
+  reward      <- model$reward
+  values      <- model$values
   
   ### POMDP file
   code <- character()
@@ -227,15 +222,26 @@ solve_POMDP <- function(
   
   
   ### saving the POMDP file
-  pomdp_file <- tempfile(pattern = "model", fileext = ".POMDP")
-  cat(code, file = pomdp_file)
+  cat(code, file = file)
+}
+
+#solve a POMDP model
+solve_POMDP <- function(
+  model,
+  grid_size,
+  verbose = FALSE) {
   
+  ### write model to file
+  file_prefix <- tempfile(pattern = "model")
+  pomdp_filename <- paste0(file_prefix, ".POMDP") 
+  write_POMDP(model, pomdp_filename)
+    
   ### running the POMDP code
   exec <- system.file(c("pomdp-solve", "pomdp-solve.exe"), package="pomdp")
-  if(exec == "") stop("pomdp-solve executable not found. Reinstall package pomdp.")
+  if(exec[1] == "") stop("pomdp-solve executable not found. Reinstall package pomdp.")
   
   shell_command <- sprintf("%s -pomdp %s -method grid -fg_points %d -fg_save true",
-    exec, pomdp_file, grid_size)
+    exec[1], pomdp_filename, grid_size)
   
   solver_output <- system(shell_command, intern=TRUE,
     ignore.stdout = FALSE, ignore.stderr = FALSE, wait = TRUE)
@@ -245,12 +251,11 @@ solve_POMDP <- function(
   
   ### importing the outputs and results
   file_id <- as.numeric(substr(solver_output[5], 11, 15))
-  result_files <- gsub(".POMDP", "", pomdp_file)
   
   ## Creating result files' names and extensions
-  pg_filename <- sprintf("%s-%d.pg", result_files, file_id)
-  belief_filename <- sprintf("%s-%d.belief", result_files, file_id)
-  alpha_filename <- sprintf("%s-%d.alpha", result_files, file_id)
+  pg_filename <- sprintf("%s-%d.pg", file_prefix, file_id)
+  belief_filename <- sprintf("%s-%d.belief", file_prefix, file_id)
+  alpha_filename <- sprintf("%s-%d.alpha", file_prefix, file_id)
   
   ## importing pg file
   pg <- read.table(pg_filename, header = FALSE, sep = " ", quote = "\"", 
@@ -270,6 +275,14 @@ solve_POMDP <- function(
   belief <- as.data.frame(belief_matrix)
   
   ## importing alpha file
+  number_of_states <- length(model$states)
+  number_of_observations <- length(model$observations)
+  number_of_actions <- length(model$actions)
+  observations <- model$observations
+  actions <- model$actions
+  states <- model$states
+  start <- model$start
+  
   alpha <- read.table(alpha_filename, header = FALSE, sep = "\n")
   alpha <- as.matrix(alpha)
   toDel <- seq(1,dim(alpha)[1],2)
@@ -361,24 +374,34 @@ solve_POMDP <- function(
     }
     belief_proportions[i,] <- belief_proportions[i,]/c
   }
- 
+  
   solution <- structure(list(belief = belief, 
-		   belief_proportions = belief_proportions,
-		   alpha = alpha,
-		   pg = pg,
-		   total_expected_reward = total_expected_reward,
-		   initial_node = initial_node
-		   ), class = "POMDP_solution")
+    belief_proportions = belief_proportions,
+    alpha = alpha,
+    pg = pg,
+    total_expected_reward = total_expected_reward,
+    initial_node = initial_node
+  ), class = "POMDP_solution")
   
   structure(list(model = model,
-		 solution = solution,
-		 solver_output = solver_output
-		 ), class = "POMDP")
+    solution = solution,
+    solver_output = solver_output
+  ), class = "POMDP")
 }
 
 print.POMDP <- function(x, ...) {
-  cat("POMDP Object with attributes including belief, belief proportions, alpha, pg, total expected reward, initial node, solver output and the model")
+  cat("Solved POMDP model with", nrow(x$solution$belief_proportions), 
+    "belief states and a total expected", x$model$values, 
+    "of", x$solution$total_expected_reward)
 }
 
+print.POMDP_model <- function(x, ...) {
+ cat("POMDP model stored as a list\n\n")
+ print(unclass(x))
+}
 
+print.POMDP_solution <- function(x, ...) {
+ cat("POMDP solution stored as a list\n\n")
+ print(unclass(x))
+}
 

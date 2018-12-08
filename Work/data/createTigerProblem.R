@@ -3,12 +3,10 @@ library(pomdp)
 # you need to use pomdp function to generate an object of class POMDP first.
 # here for an example we use the Tiger example code to generate such an object.
 discount <- 0.75
-values <- "reward"
 states <- c("tiger-left" , "tiger-right")
 actions <- c("listen" , "open-left" , "open-right")
 observations <- c("tiger-left" , "tiger-right")
 start <- "uniform"
-grid_size <- 10
 transition_prob <- list("listen" = "identity" , 
                         "open-left" = "uniform" , 
                         "open-right" = "uniform")
