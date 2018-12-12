@@ -6,11 +6,13 @@ This function utilizes the 'pomdp-solve' program (written by in C) to solve prob
 Given there is an optimal solution, the function provides the optimal solution including the optimal policy. 
 }
 \usage{
-solve_POMDP(model, grid_size, verbose = FALSE)
+solve_POMDP(model, method = "grid", horizon = NULL, grid_size = 100, verbose = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{model}{ a POMDP problem created with \code{\link{POMDP}}.}
+  \item{method}{ string; one of the following solution methods: "grid", "enum", "twopass", "witness", or "incprune". Details can be found in [1].}
+  \item{horizon}{ an integer with the number of iterations for finite horizon problems. If set to \code{NULL}, the algorithm runs iterations till it converges to the infinite horizon solution.}
   \item{grid_size}{an integer that specifies the size of the initial grid of the finite grid method.
 }
   \item{verbose}{

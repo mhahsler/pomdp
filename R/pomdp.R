@@ -228,6 +228,8 @@ write_POMDP <- function(model, file) {
 #solve a POMDP model
 solve_POMDP <- function(
   model,
+  horizon = NULL,
+  method = "grid",
   grid_size,
   verbose = FALSE) {
 
@@ -235,6 +237,10 @@ solve_POMDP <- function(
   #verbose <- TRUE
   ###
     
+  methods <- c("grid", "enum", "twopass", "witness", "incprune")
+  ### Not implemented:  "linsup", "mcgs"
+  method <- match.arg(method, methods)
+  
   ### write model to file
   file_prefix <- tempfile(pattern = "model")
   pomdp_filename <- paste0(file_prefix, ".POMDP") 
@@ -249,7 +255,8 @@ solve_POMDP <- function(
   
   solver_output <- system2(exec[1], 
     args = c(paste("-pomdp", pomdp_filename),
-      "-method grid", 
+      paste("-method", method),
+      (if(!is.null(horizon)) paste("-horizon", horizon) else ""),
       paste("-fg_points", grid_size), 
       "-fg_save true"),
     stdout = TRUE, stderr = TRUE, wait = TRUE
@@ -270,23 +277,6 @@ solve_POMDP <- function(
   belief_filename <- paste0(file_prefix, ".belief")
   alpha_filename <- paste0(file_prefix, ".alpha")
   
-  ## importing pg file
-  pg <- read.table(pg_filename, header = FALSE, sep = " ", quote = "\"", 
-    dec = ".", na.strings = NA, numerals = "no.loss")
-  pg <- as.matrix(pg)
-  pg <- pg[,c(-3,-dim(pg)[2])] #there 2 NA columns that need to be removed
-  pg <- pg+1 #index has to start from 1 not 0
-  pg_matrix <- pg
-  pg <- as.data.frame(pg)
-  if (dim(pg)[2]==1 ) {
-    pg <- t(pg)
-  }
-  
-  ## importing belief file
-  belief <- read.table(belief_filename) 
-  belief_matrix <- as.matrix(belief)
-  belief <- as.data.frame(belief_matrix)
-  
   ## importing alpha file
   number_of_states <- length(model$states)
   number_of_observations <- length(model$observations)
@@ -306,6 +296,25 @@ solve_POMDP <- function(
   alpha <- as.data.frame(alpha)
   
   
+  ## modifying the alpha file
+  # renaming the columns
+  for (i in 1:number_of_states) {
+    colnames(alpha)[i] <- paste("coeffecient", i)
+  }
+  
+  
+  ## importing pg file
+  pg <- read.table(pg_filename, header = FALSE, sep = " ", quote = "\"", 
+    dec = ".", na.strings = NA, numerals = "no.loss")
+  pg <- as.matrix(pg)
+  pg <- pg[,c(-3,-dim(pg)[2])] #there 2 NA columns that need to be removed
+  pg <- pg+1 #index has to start from 1 not 0
+  pg_matrix <- pg
+  pg <- as.data.frame(pg)
+  if (dim(pg)[2]==1 ) {
+    pg <- t(pg)
+  }
+  
   ## modifying the pg file
   # renamig the columns
   colnames(pg)[1] <- "belief"
@@ -318,18 +327,42 @@ solve_POMDP <- function(
     pg[pg[,2]==i,2] <- actions[i]
   }
   
-  ## modifying the alpha file
-  # renaming the columns
-  for (i in 1:number_of_states) {
-    colnames(alpha)[i] <- paste("coeffecient", i)
-  }
   
-  ## modifying the belief file
-  # renaming the columns
-  for (i in 1:number_of_states) {
-    colnames(belief)[i] <- states[i]
-  }
+  ## importing belief file
+  if(file.exists(belief_filename)) {
+    belief <- read.table(belief_filename) 
+    belief_matrix <- as.matrix(belief)
+    belief <- as.data.frame(belief_matrix)
+    
+    ## modifying the belief file
+    # renaming the columns
+    for (i in 1:number_of_states) {
+      colnames(belief)[i] <- states[i]
+    }
   
+    ## finding the respective proportions for each line (node)
+    for (i in 1:dim(belief_matrix)[1]) {
+      belief[i,number_of_states+1]<- which.max(alpha_matrix %*% belief_matrix[i,])
+    }
+    colnames(belief)[number_of_states+1] <- "line"
+    
+    belief_proportions <- alpha-alpha
+    colnames(belief_proportions) <- colnames(belief)[1:number_of_states]
+    
+    for (i in 1:dim(alpha_matrix)[1]) {
+      c <- 0
+      for (j in 1: dim(belief_matrix)[1]) {
+        if (belief[j,ncol(belief)]==i) {
+          c <-  c + 1
+          belief_proportions[i,] <- belief_proportions[i,]+belief_matrix[j,]
+        }
+      }
+      belief_proportions[i,] <- belief_proportions[i,]/c
+    }
+  } else {
+    belief <- NULL
+    belief_proportions <- NULL
+  }
   
   ### outputs and results
   
@@ -364,29 +397,10 @@ solve_POMDP <- function(
       start_belief[start] <- 0
     }
   }
+  
   ## calculating the total expected reward
   initial_node <- which.max(alpha_matrix %*% start_belief)
   total_expected_reward <- max(alpha_matrix %*% start_belief)
-  
-  ## finding the respective proportions for each line (node)
-  for (i in 1:dim(belief_matrix)[1]) {
-    belief[i,number_of_states+1]<- which.max(alpha_matrix %*% belief_matrix[i,])
-  }
-  colnames(belief)[number_of_states+1] <- "line"
-  
-  belief_proportions <- alpha-alpha
-  colnames(belief_proportions) <- colnames(belief)[1:number_of_states]
-  
-  for (i in 1:dim(alpha_matrix)[1]) {
-    c <- 0
-    for (j in 1: dim(belief_matrix)[1]) {
-      if (belief[j,ncol(belief)]==i) {
-        c <-  c + 1
-        belief_proportions[i,] <- belief_proportions[i,]+belief_matrix[j,]
-      }
-    }
-    belief_proportions[i,] <- belief_proportions[i,]/c
-  }
   
   solution <- structure(list(belief = belief, 
     belief_proportions = belief_proportions,
@@ -405,7 +419,7 @@ solve_POMDP <- function(
 print.POMDP <- function(x, ...) {
   cat("Solved POMDP model with", nrow(x$solution$belief_proportions), 
     "belief states and a total expected", x$model$values, 
-    "of", x$solution$total_expected_reward)
+    "of", x$solution$total_expected_reward, "\n")
 }
 
 print.POMDP_model <- function(x, ...) {

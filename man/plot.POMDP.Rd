@@ -26,7 +26,7 @@ a vector of numbers indicating which states to be represented in the graph
 a logical that indicates the plot should be printed or not
 }
   \item{\dots}{
-other ploting options
+other ploting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{igraph}.
 }
 }
 %\details{
