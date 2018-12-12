@@ -129,5 +129,6 @@ extern void APG_displayPolicyGraph( FILE *file, AlphaList list );
 extern void APG_writePolicyGraph( AlphaList list, char *filename );
 extern void APG_showPolicyGraph( AlphaList list );
 extern void LPG_destroyNode( LinkedPG pg );
+extern void LPG_destroy( LinkedPG pg ); 
 
 #endif

@@ -230,7 +230,11 @@ solve_POMDP <- function(
   model,
   grid_size,
   verbose = FALSE) {
-  
+
+  ### DEBUG
+  #verbose <- TRUE
+  ###
+    
   ### write model to file
   file_prefix <- tempfile(pattern = "model")
   pomdp_filename <- paste0(file_prefix, ".POMDP") 
@@ -240,22 +244,31 @@ solve_POMDP <- function(
   exec <- system.file(c("pomdp-solve", "pomdp-solve.exe"), package="pomdp")
   if(exec[1] == "") stop("pomdp-solve executable not found. Reinstall package pomdp.")
   
-  shell_command <- sprintf("%s -pomdp %s -method grid -fg_points %d -fg_save true",
-    exec[1], pomdp_filename, grid_size)
+  #shell_command <- sprintf("%s -pomdp %s -method grid -fg_points %d -fg_save true",
+  #  exec[1], pomdp_filename, grid_size)
   
-  solver_output <- system(shell_command, intern=TRUE,
-    ignore.stdout = FALSE, ignore.stderr = FALSE, wait = TRUE)
+  solver_output <- system2(exec[1], 
+    args = c(paste("-pomdp", pomdp_filename),
+      "-method grid", 
+      paste("-fg_points", grid_size), 
+      "-fg_save true"),
+    stdout = TRUE, stderr = TRUE, wait = TRUE
+  )
+    
+  #solver_output <- system(shell_command, intern=TRUE,
+  #  ignore.stdout = FALSE, ignore.stderr = FALSE, wait = TRUE)
   
   ## the verbose mode: printing all the outputs from pomdp solver
   if(verbose) cat(paste(solver_output, "\n"))
   
-  ### importing the outputs and results
-  file_id <- as.numeric(substr(solver_output[5], 11, 15))
+  ### importing the outputs and results (pomdp-solve adds the PID to the file prefix)
+  file_prefix <- gsub("^o = (.*)\\s*$", "\\1", solver_output[16]) 
   
   ## Creating result files' names and extensions
-  pg_filename <- sprintf("%s-%d.pg", file_prefix, file_id)
-  belief_filename <- sprintf("%s-%d.belief", file_prefix, file_id)
-  alpha_filename <- sprintf("%s-%d.alpha", file_prefix, file_id)
+  pomdp_filename <- paste0(file_prefix, ".POMDP") 
+  pg_filename <- paste0(file_prefix, ".pg")
+  belief_filename <- paste0(file_prefix, ".belief")
+  alpha_filename <- paste0(file_prefix, ".alpha")
   
   ## importing pg file
   pg <- read.table(pg_filename, header = FALSE, sep = " ", quote = "\"", 

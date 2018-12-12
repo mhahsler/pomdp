@@ -244,7 +244,7 @@ FGP_show( FiniteGridParams params )
   fprintf( params->report_file, 
 		 " \\\\****************//\n" );
   fprintf( params->report_file, 
-		 "      PID=%d\n", getpid() );
+		 "      PID=%d\n", getPid() );
 
   cfg = POMDP_FG_OPTS_toConfigFile( params->opts );
 

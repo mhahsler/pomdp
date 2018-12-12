@@ -593,13 +593,19 @@ epochEndStats( SolutionStats stat,
                    epoch_time_user,
                    epoch_time_system,
                    stat );
-
+  /*
   fprintf(stat->report_file, 
           "%d vectors in %.2lf secs. (%.2lf total) (err=%.2e)\n", 
           solution_size,
           epoch_time_user + epoch_time_system,
           stop_time_user - stat->start_time_user
           + stop_time_system - stat->start_time_system,
+          cur_error );
+  */
+
+  fprintf(stat->report_file, 
+          "%d vectors (err=%.2e)\n", 
+          solution_size,
           cur_error );
   
   if ( gVerbose[V_CONTEXT] )
@@ -832,6 +838,9 @@ reportStats( SolutionStats stat )
 
   /* First thing is to get the time to mark the end of the
      program;s execution. */
+  
+  
+  /*
   getSecsDetail( &stop_time_user, &stop_time_system );
 
   reportTimes(stat->report_file,
@@ -844,7 +853,7 @@ reportStats( SolutionStats stat )
               stop_time_user - stat->start_time_user
               + stop_time_system - stat->start_time_system, 
               "Total execution time =" );
-
+  */
 
   if ( gVerbose[V_LP] == TRUE ) 
     reportLpStats( stat );

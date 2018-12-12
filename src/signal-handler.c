@@ -204,6 +204,8 @@ signalHandlerSIGSEGV( int sig )
 
 } */  /* signalHandlerSIGSEGV */
 /**********************************************************************/
+
+#ifndef DISABLE_TIME_LIMIT
 static void 
 signalHandlerSIGVTALRM( int sig ) 
 {
@@ -219,6 +221,8 @@ signalHandlerSIGVTALRM( int sig )
   reportSIGVTALRM( gInterruptParamContext );
    
 }  /* signalHandlerSIGVTALRM */
+#endif
+
 /**********************************************************************/
 static void 
 signalHandlerSIGINT( int sig ) 
