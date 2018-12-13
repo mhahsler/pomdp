@@ -13,9 +13,9 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-In this document we will go through various features of the POMDP package, provide explanations on how the package functions, what functions the package provide the users with, how to implement the package and its functions on a real case, how to define arguments of the functions, and what each function's output have to say. We will also give a real case example and solve it and visualize the output using the package. We will also provide a very brief introduction on POMDPs to facilitate the understanding of how this package works.
+In this document we will go through various features of the POMDP package, provide explanations on how the package functions, what functions the package provides the users with, how to implement the package and its functions on a real case, how to define arguments of the functions, and what each function's output has to say. We will also give a real case example and solve it and visualize the output using the package. We will also provide a very brief introduction on POMDPs to facilitate the understanding of how this package works.
 
-This package utilizes the ['pomdp-solve'](http://pomdp.org/code/) program (written in C) to solve problems that are formulated as partially observable Markov decision processes, a.k.a. POMDPs [1]. The solver actually have the option to use various POMDP solution algorithms to solve problems but the pomdp function in this R package uses only the Finite Grid method [2] to do so. The function provides user with various ways of defining the pomdp components such as states, actions, transitions and rewards and then transforms all the inputs into pomdp-friendly structures and feeds them to 'pomdp-solver'. Given there is an optimal solution, the function provides the optimal solution including the optimal policy.
+This package utilizes the ['pomdp-solve'](http://pomdp.org/code/) program (written in C) to solve problems that are formulated as partially observable Markov decision processes, a.k.a. POMDPs [1]. The solver actually has the option to use various POMDP solution algorithms to solve problems but the pomdp function in this R package uses only the Finite Grid method [2] to do so. The function provides users with various ways of defining the pomdp components such as states, actions, transitions and rewards and then transforms all the inputs into pomdp-friendly structures and feeds them to 'pomdp-solver'. Given there is an optimal solution, the function provides the optimal solution including the optimal policy.
 
 # Introduction on POMDPs
 
@@ -37,18 +37,37 @@ A POMDP is a 7-tuple ( S , A , T , R , $\Omega$ , O , $\lambda$), where
 
 * $\lambda \in$: [ 0 , 1 ] is the discount factor.
 
-At each time period, the environment is in some state $s \in$ S. The agent takes an action $a \in$ A, which causes the environment to transition to state $s'$ with probability $T(s' \mid s,a)$. At the same time, the agent receives an observation $o \in \Omega$  which depends on the new state of the environment with probability $O(o \mid s',a)$. Finally, the agent receives a reward r equal to $R(s,a)$. Then the process repeats. The goal is for the agent to choose actions at each time step that maximize its expected future discounted reward.
+At each time period, the environment is in some state $s \in$ S. The agent takes an action $a \in$ A, which causes the environment to transition to state $s'$ with probability $T(s' \mid s,a)$. At the same time, the agent receives an observation $o \in \Omega$  which depends on the new state of the environment with probability $O(o \mid s',a)$. Finally, the agent receives a reward r equal to $R(s,a)$. Then the process repeats. The goal is for the agent to choose actions at each time step that maximizes its expected future discounted reward.
 
 In the next section we will see how this package implements all the components of a POMDP model in a single function and then in what form it provides the solution to the problem.
 
 # Package Functionality
-This package has two sets of functions. One is used to provide all the inputs (corresponding to the POMDP components defined above) and the other is used to provide different features of the solution to the defined problem. The first set contains only one function under the name `pomdp` and takes all the components of a POMDP, creates the model, solves it and then provides the solution in an object of class POMDP. The second set of functions, contains `alpha`, `belief`, `belief.proportion`, `initial.node`, `model`, `pg`, `plot`, `solver.output`, and `total.expected.reward`. Every one of these functions provides a single feature of the solution provided by the main `pomdp` function. We will here go through each function and their arguments one by one and provide of how we can define arguments in different ways.
+There are two groups of functions in this package, the first one handling the major proportion of the task of solving a POMDP problem and the second group is just auxiliary functions. The first group contains the following functions:
 
-First, we will go through all the arguments of `pomdp` function. The `pomdp` function has the following arguments, each corresponds to one of the POMDP components.
+* `POMDP`,
+* `solve_POMDP`, and
+* `solution`
 
-`pomdp(discount, states, actions, observations, start, transition_prob, observation_prob, reward, values = "reward", grid_size, verbose = FALSE)`
 
-Here are the description of each of these arguments:
+The `POMDP` function simply helps users formulate a POMDP problem and define its components in a way that the solver can easily read and solve. The `solve_POMDP` function solves a given POMDP problem using one of the methods specified by the user including "grid", "enum", "twopass", "witness", and "incprune".  The `solution` function then simply extracts the solution of the solved POMDP problem and returns it in a user-friendly format.
+
+The auxiliary functions help users visualize the outputs, track the solver process and write their models in a file. This group includes the following function:
+
+* `model`,
+* `plot.POMDP`,
+* `policy_graph`,
+* `solver_output`, and
+* `write_POMDP`
+
+The `model` function returns the model (POMDP problem) defined by the user from a solved POMDP. `plot.POMDP` as it is clearly saying, does the job of plotting the policy graph from a solution of POMDP. The function `policy_graph` creates an igraph policy graph that can further be used for visualizations. Users can track the solving process and iterations of the solver by `solver_output` function and see if the algorithm converges or not. Using `write_POMDP` function users can write their POMDP model in a file and later solve it using the solver.
+
+As we mentioned in the previous section, one of the most important steps in solving a POMDP problem is to formulate the problem itself using the components introduced in the previous section. Thus in this section we will go through all the arguments of the `POMDP` function to see how users can formulate a POMDP problem and define all of its components using this package. 
+
+The `POMDP` function has the following arguments, each corresponds to one of the POMDP components.
+
+`POMDP(discount, states, actions, observations, start, transition_prob, observation_prob, reward, values = "reward", grid_size, verbose = FALSE)`
+
+Here is the description of each of these arguments:
 
 * **`discount`:** This argument corresponds to the discount factor ($\lambda$) in POMDPs. It should be a numeric, a real number in $[0,1]$.
 
@@ -174,7 +193,7 @@ observations <- c("obs1" , "obs2")
                                                   0.4 , 0.6 ) , nrow = 3 , byrow = TRUE))
     ```
     
-    As we see above, both observation probability matrices are the same and it indicates that the observation probabilities are independent of the action taken. Thus we can use the dataframe format using asterisks to make it more concise. Asterisks here indicates that the probabilities are independent of the actions. "*" could be used anytime where there is independency.
+    As we see above, both observation probability matrices are the same and it indicates that the observation probabilities are independent of the action taken. Thus we can use the dataframe format using asterisks to make it more concise. Asterisks here indicates that the probabilities are independent of the actions. "*" could be used anytime where there is independence.
 
 * **`reward`:** This argument corresponds to R or the reward function of the POMDP model. The reward function in its most general form is *action-start state-end state-observation-dependent. Thus one way to provide these rewards to the function is to mention the reward with its dependents. Sometimes rewards are only dependent on actions, end state and observations thus we can use action dependent matrices to provide them. Given that the options are:
 
@@ -205,22 +224,29 @@ values <- "reward"
 <!-- ``` -->
 
 
-* **`verbose`:** This argument simply indicates whether or not the outputs of the 'pomdp-solve' program should be printed in the R console. It should be logical, if set to true, the function provides the output of the pomdp solver in R console. If set to False still the output of the solver will be available in the POMDP class object.
+* **`name`:** This argument can be used to name the POMDP problem defined by the user. This way the user can keep track of the POMDP problems he defines.
 ```{r}
 
 ```
 
-We talked about the first group of functions in the package but there is still another group of functions that as we mentioned earlier provide features of the solution provided by the main `pomdp` function. Since it would be easier and more understandable to explain about this functions given an example, we will go through them in the next section using a real world problem.
+Now that, using the `POMDP` function, we have a POMDP model ready to solve, we can use `solve_POMDP` function to solve it. Below is how this function should be used and its arguments.
+
+`solve_POMDP(model, horizon = NULL, method = "grid", parameter= NULL, verbose = FALSE)`
+
+The `model` argument here is the exactly what we created using the `POMDP` function. The `horizon` as it says specifies the number of epochs the problem goes through (for further information on this please check [2]). Users can specify with what method/algorithm the solver should solve the given POMDP problem using the argument `method` and from a set of available methods including "grid", "enum", "twopass", "witness", or "incprune". Further arguments (if you choose "grid" as the method, you need to define the grid size) can be passed to the solver using `parameter` arguments. And finally the `verbose` is a logical that indicates whether the solver output should be shown in the R console or not. The output of this function is an object of class POMDP solution.
+
+Now that we have the solution of our problem, we can simply use the `solution` function to extract all the elements of the solution such as the total expected reward, optimal policy, and so on. we will talk about this function more when we are giving the so-called Tiger example in the examples section of this paper. There we go through every component of a POMDP solution. We will also talk about the auxiliary functions of the package in the next section.
+
 
 # Examples
-In this section we will provide real world problems and examples which can be formulated and solved using POMDPs. We model very simple and famous examples in a POMDP context and solve them using the pomdp package. In the first example, we will also talk about the functions of the package that somehow deal with the solution provided by the `pomdp` function in an object of class POMDP.
+In this section we will provide real-world problems and examples which can be formulated and solved using POMDPs. We model very simple and famous examples in a POMDP context and solve them using the pomdp package. In the first example, we will also talk about the functions of the package that somehow deal with the solution provided in an object of class POMDP solution.
 
 ## The Tiger Example
-Consider this situation in which you are standing in front of two closed doors, behind one there is a tiger and behind the other one there is a treasure. If you open the door behind which the tiger is, you will get hurt and injured by the tiger (bodily damage, negative rewards) and if you open the door to the treasure you will be rewarded with the treasure (positive rewards). Instead of opening the doors, you also he option of listening to see what is behind the door. But listening is not free and it is not accurate either. You might hear the tiger behind the left door while it is actually behind the right one and vice versa (there is a certain chance to that). 
+Consider this situation in which you are standing in front of two closed doors, behind one there is a tiger and behind the other one there is a treasure. If you open the door behind which the tiger is, you will get hurt and injured by the tiger (bodily damage, negative rewards) and if you open the door to the treasure you will be rewarded with the treasure (positive rewards). Instead of opening the doors, you also have the option of listening to see what is behind the door. But listening is not free and it is not accurate either. You might hear the tiger behind the left door while it is actually behind the right one and vice versa (there is a certain chance to that). 
 
-In this situation the states of the system are, tiger behind the left door (tiger-left) and tiger behind the right door (tiger-right). The available actions that you can take are to open the left door (open-left), to open the right door (open-right) and to listen and check (listen). The rewards associated with these actions depending on what state you end in are +10 for opening the correct door (the door with treasure), -100 for opening the door behind which the tiger is and -1 for just listening. As a result of listening there are only two observations, either you hear the tiger on the right (tiger-right) or you hear it on the left (tiger-left). The problem will be reset as soon as you open one of the door, means you will again be standing in front of the closed doors and the tiger will be randomly put behind of one of the doors with equal probability.
+In this situation the states of the system are, tiger behind the left door (tiger-left) and tiger behind the right door (tiger-right). The available actions that you can take are to open the left door (open-left), to open the right door (open-right) and to listen and check (listen). The rewards associated with these actions depending on what state you end in are +10 for opening the correct door (the door with treasure), -100 for opening the door behind which the tiger is and -1 for just listening. As a result of listening there are only two observations, either you hear the tiger on the right (tiger-right) or you hear it on the left (tiger-left). The problem will be reset as soon as you open one of the doors, means you will again be standing in front of the closed doors and the tiger will be randomly put behind of one of the doors with equal probability.
 
-In order to solve this problem we also need to see how the system changes from one state to the other and what are the chances of observing a certain observation given the actual state of the system. We know that listening does not change the state of the system (means every time you listen, the tiger does not move). When we listen, given the tiger is behind the left door (we are in state tiger-left) there is a 0.85 chance that we hear the tiger behind the left door (we observe observation tiger-left) and 0.15 chance that we hear the tiger behind the right door (we observe observation tiger right). This is totally opposite given the tiger is behind the right door (we are in state tiger-right). And regardless of what state the system is in (where the tiger is) when we open the door (either left or right), the probability of observing either observations is 0.5. Also by choosing left or right actions, the system will transposition into either states with probability of 0.5 (i.e., resetting the problem) [3].
+In order to solve this problem we also need to see how the system changes from one state to the other and what are the chances of observing a certain observation given the actual state of the system. We know that listening does not change the state of the system (means every time you listen, the tiger does not move). When we listen, given the tiger is behind the left door (we are in state tiger-left) there is a 0.85 chance that we hear the tiger behind the left door (we observe observation tiger-left) and 0.15 chance that we hear the tiger behind the right door (we observe observation tiger right). This is totally opposite given the tiger is behind the right door (we are in state tiger-right). And regardless of what state the system is in (where the tiger is) when we open the door (either left or right), the probability of observing either observation is 0.5. Also by choosing left or right actions, the system will transposition into either state with probability of 0.5 (i.e., resetting the problem) [3].
 
 Now let's formulate the problem using the given information and solve it using the `POMDP` function.
 
@@ -247,7 +273,7 @@ reward <- data.frame("action" = c("listen" , "open-left" , "open-left" ,
                      "reward" = c(-1 , -100 , 10 , 10 , -100))
 
 TigerProblem <- POMDP(discount = 0.75, states, actions, observations, start, 
-  transition_prob, observation_prob, reward, values = "reward")
+  transition_prob, observation_prob, reward, values = "reward" , name = "TigerProblem")
 
 TigerProblem
 ```
@@ -259,9 +285,9 @@ result <- solve_POMDP(TigerProblem)
 result
 ```
 
-The output is an object of class POMDP with a couple of attributes that we are going to dig into and extract using the second set of functions we mentioned earlier. This set of functions include `alpha`, `belief`, `belief.proportion`, `initial.node`, `model`, `pg`, `plot`, `solver.output`, and `total.expected.reward`. Every one of these functions provides a single feature of the solution provided by the main `pomdp` function.
+The output is an object of class POMDP_solution with 3 major sets of attributes that we are going to dig into and extract using the functions `model`, `solution` and `solver_output` we mentioned earlier. These 3 functions will return `model` attribute, `solution` attribute and `solver_output` attribute of an object of class POMDP_solution.
 
-* **`result$model`:**	This feature is a list of all the inputs defined by the user but transformed into POMDP-friendly structure. This feature despite having no new information can come in handy since it has a all the user inputs in a clean pomdp-friendly format and easy to read and understand.
+* **`result$model`:**	This feature is a list of all the inputs defined by the user but transformed into a POMDP-friendly structure. This feature despite having no new information can come in handy since it has all the user inputs in a clean pomdp-friendly format and easy to read and understand.
 
     You can use `model()` function to easily access this feature in the form of a list of all the inputs. Here is the model of the tiger example.
 
@@ -295,7 +321,7 @@ We will further see how this dataframe correlates to the policy graph we visuali
 This number shows in what row number of the policy table or in which node of the policy graph you start.
 
 
-The output of the solver (http://pomdp.org/code/) can be accessed using `solver_output()`.
+The output of the solver [http://pomdp.org/code/](http://pomdp.org/code/) can be accessed using `solver_output()`.
 
 ```{r}
 solver_output(result)[c(1:5 , 60:70)]
@@ -304,13 +330,13 @@ solver_output(result)[c(1:5 , 60:70)]
 Above is only a part of the solver's output.
 
 ### Visualization
-In this section we will visualize the policy graph provided in by the `pomdp()` function through `pg()` function. The policy table provided by `pg()` function is easy to read and follow but has no information on the actual state the system might be in at each node. We can visualize this using the information provided by `belief.proportion()` easily by plotting an object of class POMDP. 
+In this section we will visualize the policy graph provided in the solution by the `solve_POMDP` function. The policy table provided by the `solution` function is easy to read and follow but has no information on the actual state the system might be in at each node. We can visualize this using the information provided by `belief.proportion` easily by plotting an object of class POMDP_solution. 
 
 ```{r}
 plot(result)
 ```
 
-The policy graph above demonstrates the way the decision maker should act given the observation and the current place he is. The policy can be read very easily. Using the `initial.node()` function we know the node number we stand at the beginning. At each decision epoch, based on what observation we make, we move using the arcs associated with each observation. and every time we arrive to a node, we take the decision associated with the node.
+The policy graph above demonstrates the way the decision maker should act given the observation and the current place he is. The policy can be read very easily. Using the `initial.node` we know the node number we stand at the beginning. At each decision epoch, based on what observation we make, we move using the arcs associated with each observation. and every time we arrive at a node, we take the decision associated with the node.
 
 ## Note
 'pomdp-solve' program uses the basic dynamic programming approach, solving one stage at a time working backwards in time. It does finite horizon problems with or without discounting. It will stop solving if the answer is within a tolerable range of the infinite horizon answer, and there are a couple of different stopping conditions (requires a discount factor less than 1.0). Alternatively you can solve a finite horizon problem for some fixed horizon length.
