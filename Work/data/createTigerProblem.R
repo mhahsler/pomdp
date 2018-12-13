@@ -24,8 +24,9 @@ reward <- data.frame("action" = c("listen" , "open-left" , "open-left" ,
 
 TigerProblem <- POMDP(discount, states, actions, observations, 
   start, transition_prob, 
-  observation_prob, reward, values = "reward")
+  observation_prob, reward, values = "reward", name = "Tiger Problem")
 
 TigerProblem
 
 save(TigerProblem, file = "data/TigerProblem.rda")
+

@@ -1,7 +1,7 @@
 \name{solution}
 \alias{solution}
 \title{
-Return the Solution of a POMDP
+Extract the Solution of a POMDP
 }
 \description{
 The function extracts the solution of a POMDP as a list.
@@ -17,7 +17,7 @@ object of class POMDP returned by \code{\link{solve_POMDP}}.
 }
 
 \value{
-returns a list with the solution of a POMDP. The returned object is of class POMDP_solution.
+returns an object is of class POMDP_solution, i.e., a lost of all solution elements.
 }
 
 \seealso{
@@ -25,7 +25,8 @@ returns a list with the solution of a POMDP. The returned object is of class POM
 }
 \examples{
 data("TigerProblem")
-result <- solve_POMDP(model = TigerProblem)
+tiger_solved <- solve_POMDP(model = TigerProblem)
+tiger_solved
 
-solution(result)
+solution(tiger_solved)
 }

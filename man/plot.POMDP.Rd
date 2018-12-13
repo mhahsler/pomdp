@@ -14,10 +14,9 @@ The function plots the POMDP policy graph provided in an object of class POMDP.
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-object of class POMDP returned by \code{\link{solve_POMDP}}.
+object of class POMDP.
 }
-  \item{y}{
-default is NULL
+  \item{y}{ ignored.
 }
   \item{\dots}{
 other plotting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{igraph}.
@@ -25,23 +24,21 @@ other plotting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{ig
 }
 %\details{
 %}
-\value{
-the function returns a POMDP policy graph with legends for states and observation arcs
-}
-
+%\value{
+%}
 \seealso{
 \code{\link{solve_POMDP}}
 }
 
 \examples{
 data("TigerProblem")
-sol <- solve_POMDP(model = TigerProblem)
-sol
+tiger_solved <- solve_POMDP(model = TigerProblem)
+tiger_solved
 
 ## policy graph
-policy_graph(sol)
+policy_graph(tiger_solved)
 
 ## visualization
-plot(sol)
+plot(tiger_solved)
 }
-
+\keyword{hplot}

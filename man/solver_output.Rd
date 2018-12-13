@@ -28,5 +28,11 @@ returns a character that contains the output of the 'pomdp-solve' including its 
 data("TigerProblem")
 sol <- solve_POMDP(model = TigerProblem)
 
+## solver output as a character vector
 solver_output(sol)
+
+## print solver output
+cat(solver_output(sol), sep = "\n")
+
 }
+\keyword{optimize}

@@ -24,7 +24,7 @@ the solution (\code{solution}), and the solver output (\code{solver_output}).
 The elements can be extracted with the functions  
 \code{\link{model}},
 \code{\link{solution}}, and
-\code{\link{solver.output}}. Th returned object is of class POMDP.
+\code{\link{solver_output}}. Th returned object is of class POMDP.
 }
 
 \references{
@@ -44,9 +44,17 @@ Hossein Kamalzadeh, Michael Hahsler
 \examples{
 data("TigerProblem")
 
-sol <- solve_POMDP(model = TigerProblem, parameter = list(fg_points = 2))
+tiger_solved <- solve_POMDP(model = TigerProblem, parameter = list(fg_points = 10))
+tiger_solved
 
-model(sol)
-solution(sol)
+## look at the model
+model(tiger_solved)
+
+## look at the solution
+solution(tiger_solved)
+
+## plot the policy graph
+plot(tiger_solved)
 }
+
 

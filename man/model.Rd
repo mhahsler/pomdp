@@ -2,10 +2,10 @@
 \alias{model}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Return user-defined model components of a POMDP
+Extract the User-defined Model Components from a Solved POMDP
 }
 \description{
-The function simply returns all the inputs provided by the user as the POMDP model components but in a POMDP-friendly structure
+The function returns all the POMDP model components of a solved POMDP.
 }
 \usage{
 model(x)
@@ -18,7 +18,7 @@ object of class POMDP returned by \code{\link{solve_POMDP}}.
 }
 
 \value{
-returns a list of all the inputs defined by the user but transformed into a POMDP-friendly structure
+an object of class "POMDP_model", i.e., a list of all model components.
 }
 
 \seealso{
@@ -26,7 +26,8 @@ returns a list of all the inputs defined by the user but transformed into a POMD
 }
 \examples{
 data("TigerProblem")
-sol <- solve_POMDP(model = TigerProblem)
+tiger_solved <- solve_POMDP(model = TigerProblem)
+tiger_solved
 
-model(sol)
+model(tiger_solved)
 }

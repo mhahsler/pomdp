@@ -8,7 +8,7 @@ Defines all the elements of a POMDP problem including discount rate, states, act
 }
 \usage{
 POMDP(discount, states, actions, observations, start, transition_prob, 
-      observation_prob, reward, values = "reward")
+      observation_prob, reward, values = "reward", name = NA)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -57,6 +57,8 @@ character, a vector of strings specifying the names of the observations.
   \item{values}{
 a string indicating if rewards are specified as a "reward" or a "cost". The default is reward.
 }
+  \item{name}{ a string to identify the POMDP problem.}
+
 }
 \value{
 The function returns a list with the model specification. The returned object is of class POMDP_model.
@@ -79,6 +81,7 @@ Hossein Kamalzadeh, Michael Hahsler
 ## The Tiger Problem
 
 TigerProblem <- POMDP(
+  name = "Tiger Problem",
   discount = 0.75,
   
   states = c("tiger-left" , "tiger-right"),
@@ -108,4 +111,3 @@ TigerProblem <- POMDP(
   
 TigerProblem
 }
-
