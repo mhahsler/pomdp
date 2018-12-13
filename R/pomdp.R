@@ -230,7 +230,7 @@ solve_POMDP <- function(
   model,
   horizon = NULL,
   method = "grid",
-  grid_size,
+  parameter = NULL,
   verbose = FALSE) {
 
   ### DEBUG
@@ -253,11 +253,18 @@ solve_POMDP <- function(
   #shell_command <- sprintf("%s -pomdp %s -method grid -fg_points %d -fg_save true",
   #  exec[1], pomdp_filename, grid_size)
   
+  parameter <- list(fg_size = 10, ll = "aa")
+  
+  if(!is.null(parameter)) {
+    paras <- sapply(names(parameter), FUN = function(n) paste0("-", n, " ", parameter[[n]]))
+  } else paras <- ""
+  
+  
   solver_output <- system2(exec[1], 
     args = c(paste("-pomdp", pomdp_filename),
       paste("-method", method),
       (if(!is.null(horizon)) paste("-horizon", horizon) else ""),
-      paste("-fg_points", grid_size), 
+      paras, 
       "-fg_save true"),
     stdout = TRUE, stderr = TRUE, wait = TRUE
   )
@@ -402,10 +409,13 @@ solve_POMDP <- function(
   initial_node <- which.max(alpha_matrix %*% start_belief)
   total_expected_reward <- max(alpha_matrix %*% start_belief)
   
-  solution <- structure(list(belief = belief, 
-    belief_proportions = belief_proportions,
+  solution <- structure(list(
+    method = method, 
+    parameter = parameter,
     alpha = alpha,
     pg = pg,
+    belief = belief, 
+    belief_proportions = belief_proportions,
     total_expected_reward = total_expected_reward,
     initial_node = initial_node
   ), class = "POMDP_solution")
@@ -417,9 +427,13 @@ solve_POMDP <- function(
 }
 
 print.POMDP <- function(x, ...) {
-  cat("Solved POMDP model with", nrow(x$solution$belief_proportions), 
-    "belief states and a total expected", x$model$values, 
-    "of", x$solution$total_expected_reward, "\n")
+  cat(
+    "Solved POMDP model\n", 
+    "\tmethod:", x$solution$method, "\n",
+    "\tbelief states:", nrow(x$solution$pg), "\n",
+    paste0("\ttotal expected ", x$model$values, ":"), 
+      x$solution$total_expected_reward,"\n\n" 
+  )
 }
 
 print.POMDP_model <- function(x, ...) {

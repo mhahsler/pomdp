@@ -9,7 +9,7 @@ Visualize the POMDP Policy Graph
 The function plots the POMDP policy graph provided in an object of classs POMDP.
 }
 \usage{
-\method{plot}{POMDP}(x, y = NULL, states = NULL, plot = TRUE, ...)
+\method{plot}{POMDP}(x, y = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,12 +18,6 @@ object of class POMDP.
 }
   \item{y}{
 default is NULL
-}
-  \item{states}{
-a vector of numbers indicating which states to be represented in the graph
-}
-  \item{plot}{
-a logical that indicates the plot should be printed or not
 }
   \item{\dots}{
 other ploting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{igraph}.
@@ -41,10 +35,11 @@ the function returns a POMDP policy graph with legends for states and observatio
 
 \examples{
 data("TigerProblem")
-sol <- solve_POMDP(model = TigerProblem, grid_size = 10)
+sol <- solve_POMDP(model = TigerProblem)
+sol
 
 ## policy graph
-solution(sol)$pg
+policy_graph(sol)
 
 ## visualization
 plot(sol)

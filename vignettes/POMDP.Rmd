@@ -199,10 +199,10 @@ values <- "cost"
 values <- "reward"
 ```
 
-* **`grid_size`:** As we mentioned earlier one of the fast methods to solve a POMDP problem is *Finite-Grid* method. Grid-based algorithms comprise one approximate solution technique. In this approach, the value function is computed for a set of points in the belief space, and interpolation is used to determine the optimal action to take for other belief states that are encountered which are not in the set of grid points. The `grid_size` argument here is actually the number of points in the grid which is also known as the grid size. It should be a numeric, an integer and you should know that the larger the grid, the longer it takes to solve the problem.
-```{r}
-grid_size <- 10 
-```
+<!-- * **`grid_size`:** As we mentioned earlier one of the fast methods to solve a POMDP problem is *Finite-Grid* method. Grid-based algorithms comprise one approximate solution technique. In this approach, the value function is computed for a set of points in the belief space, and interpolation is used to determine the optimal action to take for other belief states that are encountered which are not in the set of grid points. The `grid_size` argument here is actually the number of points in the grid which is also known as the grid size. It should be a numeric, an integer and you should know that the larger the grid, the longer it takes to solve the problem. -->
+<!-- ```{r} -->
+<!-- grid_size <- 10  -->
+<!-- ``` -->
 
 
 * **`verbose`:** This argument simply indicates whether or not the outputs of the 'pomdp-solve' program should be printed in the R console. It should be logical, if set to true, the function provides the output of the pomdp solver in R console. If set to False still the output of the solver will be available in the POMDP class object.
@@ -255,7 +255,7 @@ TigerProblem
 Next, we can solve the problem.
 
 ``` {r}
-result <- solve_POMDP(TigerProblem, grid_size = 10)
+result <- solve_POMDP(TigerProblem)
 result
 ```
 
@@ -295,10 +295,10 @@ We will further see how this dataframe correlates to the policy graph we visuali
 This number shows in what row number of the policy table or in which node of the policy graph you start.
 
 
-The output of the solver (http://pomdp.org/code/) can be accessed using `solver.output()`.
+The output of the solver (http://pomdp.org/code/) can be accessed using `solver_output()`.
 
 ```{r}
-solver.output(result)[c(1:5 , 60:70)]
+solver_output(result)[c(1:5 , 60:70)]
 ```
 
 Above is only a part of the solver's output.

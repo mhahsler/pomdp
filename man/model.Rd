@@ -26,7 +26,7 @@ returns a list of all the inputs defined by the user but transformed into POMDP-
 }
 \examples{
 data("TigerProblem")
-sol <- solve_POMDP(model = TigerProblem, grid_size = 10)
+sol <- solve_POMDP(model = TigerProblem)
 
 model(sol)
 }

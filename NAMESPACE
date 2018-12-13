@@ -8,9 +8,13 @@ import("igraph")
 export(
   "POMDP", 
   "solve_POMDP", 
-  "solver.output", 
+  "solver_output", 
   "model",
-  "solution")
+  "solution",
+  "policy_graph",
+  "write_POMDP")
 
 S3method("plot", "POMDP")
 S3method("print", "POMDP")
+S3method("print", "POMDP_model")
+S3method("print", "POMDP_solution")

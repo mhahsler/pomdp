@@ -25,7 +25,7 @@ returns a list with the solution of a POMDP.
 }
 \examples{
 data("TigerProblem")
-result <- solve_POMDP(model = TigerProblem, grid_size = 10, verbose = FALSE)
+result <- solve_POMDP(model = TigerProblem)
 
 solution(result)
 }
