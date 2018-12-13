@@ -13,12 +13,12 @@ model(x)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-object of class POMDP.
+object of class POMDP returned by \code{\link{solve_POMDP}}.
 }
 }
 
 \value{
-returns a list of all the inputs defined by the user but transformed into POMDP-friendly structure
+returns a list of all the inputs defined by the user but transformed into a POMDP-friendly structure
 }
 
 \seealso{

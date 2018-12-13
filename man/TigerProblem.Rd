@@ -22,7 +22,7 @@ You are standing in front of two closed doors, behind one there is a tiger, and 
 
 The tiger will be put behind one of the doors with equal probability.
 
-States of the system are tiger behind the left door (tiger-left) and a tiger behind the right door (tiger-right). 
+States of the system are tiger behind the left door (tiger-left) and tiger behind the right door (tiger-right). 
 
 Available actions are: open the left door (open-left), open the right door (open-right) or to listen (listen). 
 

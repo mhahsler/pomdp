@@ -13,12 +13,12 @@ solver_output(x)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-object of class POMDP
+object of class POMDP returned by \code{\link{solve_POMDP}}.
 }
 }
 
 \value{
-returns a character that contains the output of the 'pomdp-solve' including its iterations
+returns a character that contains the output of the 'pomdp-solve' including its iterations.
 }
 
 \seealso{

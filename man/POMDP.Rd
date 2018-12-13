@@ -36,7 +36,7 @@ character, a vector of strings specifying the names of the observations.
   \item{transition_prob}{Specifies the transition probabilities between states. Options are:
   \itemize{
   \item a dataframe with 4 columns, where the columns specify \emph{action}, \emph{start-state}, \emph{end-state} and the \emph{probability} respectively. The first 3 columns could be either character (the name of the action or state) or integers starting from 0 (the number associated with the action or state e.g., 0 as the first action or 2 as the third state), or
-  \item a named list of \emph{m} matrices where \emph{m} is the number of actions, each matrix is square of size \emph{n x n} where \emph{n} is the number of states. The name of each matrix need to be the action it applies to.
+  \item a named list of \emph{m} matrices where \emph{m} is the number of actions, each matrix is square of size \emph{n x n} where \emph{n} is the number of states. The name of each matrix needs to be the action it applies to.
   Instead of a matrix, also the strings "identity" or "uniform" can be specified.
 }
 }
@@ -59,7 +59,7 @@ a string indicating if rewards are specified as a "reward" or a "cost". The defa
 }
 }
 \value{
-The function returns a list with the model specification.
+The function returns a list with the model specification. The returned object is of class POMDP_model.
 }
 \details{
 POMDP problems can be solved using \code{\link{solve_POMDP}}.
