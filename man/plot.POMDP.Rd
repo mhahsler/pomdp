@@ -9,7 +9,8 @@ Visualize the POMDP Policy Graph
 The function plots the POMDP policy graph provided in an object of class POMDP.
 }
 \usage{
-\method{plot}{POMDP}(x, y = NULL, ...)
+\method{plot}{POMDP}(x, y = NULL, 
+  igraph_opt = list(vertex.size = 40, edge.arrow.size =.5), ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,6 +18,9 @@ The function plots the POMDP policy graph provided in an object of class POMDP.
 object of class POMDP.
 }
   \item{y}{ ignored.
+}
+  \item{igraph_opt}{ a list with plotting options for igraph (see
+  \code{\link[igraph]{igraph_options}} in \pkg{igraph}).
 }
   \item{\dots}{
 other plotting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{igraph}.
@@ -27,7 +31,9 @@ other plotting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{ig
 %\value{
 %}
 \seealso{
-\code{\link{solve_POMDP}}
+\code{\link{solve_POMDP}},
+\code{\link[igraph]{plot.igraph}},
+\code{\link[igraph]{igraph_options}}
 }
 
 \examples{

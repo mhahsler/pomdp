@@ -3,6 +3,8 @@ importFrom("graphics", "legend")
 importFrom("utils", "read.table")
 importFrom("graphics", "plot")
 importFrom("methods", "is")
+importFrom("stats", "ave")
+
 import("igraph")
 
 export(

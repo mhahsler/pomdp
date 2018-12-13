@@ -28,44 +28,27 @@ policy_graph <- function(x) {
   edge_type <- as.integer(E(policy_graph)$label)
   #E(policy_graph)$lty <- edge_type
 
-  #labels(V(policy_graph)) <- paste0(x$solution$pg$belief, ": ", x$solution$pg$action) 
-  V(policy_graph)$label <- paste0(x$solution$pg$belief, "\n", x$solution$pg$action) 
+  #labels(V(policy_graph)) <- paste0(x$solution$pg$belief, ": ", x$solution$pg$action)
+  ### Note: the space helps with moving the id away from the pie cut.
+  V(policy_graph)$label <- paste0(x$solution$pg$belief, "   \n", x$solution$pg$action) 
   
   policy_graph
 }
 
-plot.POMDP <- function(x, y = NULL, ...) {
+plot.POMDP <- function(x, y = NULL, 
+  igraph_opt = list(vertex.size = 40, edge.arrow.size =.5), ...) {
   
   policy_graph <- policy_graph(x)
+ 
+  old_options <- do.call(igraph_options, 
+    c(igraph_opt, list(edge.curved = curve_multiple_fixed(policy_graph, start = .5)))) 
+  on.exit(igraph_options(old_options))
   
-  my_curve_multiple <- function(graph, start = 0.5) 
-  {
-    el <-  as_edgelist(graph, names = FALSE)
-    o <- apply(el, 1, order)[1,]
-    el <- apply(el, 1, FUN = function(x) paste(sort(x), collapse = ":"))
-      cu <- ave(rep(NA, length(el)), el, FUN = function(x) {
-        if (length(x) == 1) {
-          return(0)
-        }
-        else {
-          return(seq(-start, start, length = length(x)))
-        }
-      }
-      )
-      
-      cu[o==2] <- cu[o==2] * -1
-      cu
-  }
-  
-  igraph_options(
-    vertex.size = 40, 
-    #vertex.label.color="black", 
-    #edge.color = "black", 
-    #edge.label.cex = 2 , 
-    edge.arrow.size =.3, 
-    edge.curved = my_curve_multiple(policy_graph, start = .5)
-    #edge.curved = .5
-  )
+  #igraph_options(
+  #  vertex.size = 40, 
+  #  edge.arrow.size =.3, 
+  #  edge.curved = curve_multiple_fixed(policy_graph, start = .5)
+  #)
   
   if(!is.null(x$solution$belief_proportions)) {
     # producing the pie values if we have belief proportions
@@ -98,9 +81,9 @@ plot.POMDP <- function(x, y = NULL, ...) {
       #layout = cbind(seq(-1,1, length.out = length(V(policy_graph))),0) , 
       vertex.shape = "pie", 
       vertex.pie = pie_values,
-      vertex.pie.color = list(cols), 
+      vertex.pie.color = list(cols),
       #vertex.label = 1:nrow(x$solution$pg), 
-      #vertex.label.color = "white", 
+      #vertex.label.color = "white",
       ...)
     #, edge.label=NA , margin = c(0,0,0,0),
     # rescale = FALSE)
@@ -115,7 +98,11 @@ plot.POMDP <- function(x, y = NULL, ...) {
 #    if(!is.null(states)) {
 #      legend("topright" , legend = x$model$states[states] , title = "Belief" , col = c(1:3), pch = 15)
  #   } else {
-      legend("topright", legend = x$model$states, title = "Belief", col= cols, pch = 15)
+      legend("topright", legend = x$model$states, title = "Belief Proportions", 
+        #horiz = TRUE,
+        #bty = "n",
+        col= cols, pch = 15
+        )
   #  }
   }
 }
