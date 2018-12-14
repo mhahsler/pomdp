@@ -4,7 +4,7 @@
 Extract the Solution of a POMDP
 }
 \description{
-The function extracts the solution of a POMDP as a list.
+The function extracts the solution of a POMDP as an object of class POMDP_solution which is a list containing, e.g., the policy graph (pg) and the hyper-plane coefficients (alpha).
 }
 \usage{
 solution(x)
@@ -17,7 +17,7 @@ object of class POMDP returned by \code{\link{solve_POMDP}}.
 }
 
 \value{
-returns an object is of class POMDP_solution, i.e., a lost of all solution elements.
+returns an object is of class POMDP_solution, i.e., a list of all solution elements.
 }
 
 \seealso{

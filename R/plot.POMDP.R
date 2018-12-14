@@ -26,11 +26,8 @@ policy_graph <- function(x) {
   policy_graph <- graph.edgelist(as.matrix(list_of_arcs[,1:2]))
   edge.attributes(policy_graph) <- list(label = list_of_arcs$label)
   edge_type <- as.integer(E(policy_graph)$label)
-  #E(policy_graph)$lty <- edge_type
 
-  #labels(V(policy_graph)) <- paste0(x$solution$pg$belief, ": ", x$solution$pg$action)
   ### Note: the space helps with moving the id away from the pie cut.
- 
   init <- rep(":   ", nrow(x$solution$pg))
   init[x$solution$initial_belief_state] <- ": initial"
    
@@ -50,15 +47,6 @@ plot.POMDP <- function(x, y = NULL, vertex.size = 40, edge.arrow.size =.5,
     belief_proportions <- x$solution$belief_proportions
     if(!is.null(belief_proportions)) {
       number_of_states <- length(x$model$states)
-      #  if (!is.null(states)) {
-      #    belief_proportions <- belief_proportions[,states]
-      #    for (i in nrow(belief_proportions)) {
-      #      s <- sum(belief_proportions[i,])
-      #      for (j in ncol(belief_proportions)) {
-      #        belief_proportions[i,j] <- belief_proportions[i,j] / s
-      #      }
-      #    }
-      #  }
       
       pie_values <- list()
       for (i in 1:nrow(x$solution$pg)) {
@@ -73,18 +61,13 @@ plot.POMDP <- function(x, y = NULL, vertex.size = 40, edge.arrow.size =.5,
     else cols <- rainbow(number_of_states)
     
     plot.igraph(policy_graph, 
-      #layout = cbind(seq(-1,1, length.out = length(V(policy_graph))),0) , 
       vertex.shape = "pie", 
       vertex.pie = pie_values,
       vertex.pie.color = list(cols),
-      #vertex.label = 1:nrow(x$solution$pg), 
-      #vertex.label.color = "white",
       edge.curved = curve_multiple_fixed(policy_graph),
       vertex.size = vertex.size, edge.arrow.size = edge.arrow.size,
       vertex.frame.color = vertex.frame.color,
       ...)
-    #, edge.label=NA , margin = c(0,0,0,0),
-    # rescale = FALSE)
   }else{  
     plot.igraph(policy_graph, 
       edge.curved = curve_multiple_fixed(policy_graph),
@@ -93,18 +76,11 @@ plot.POMDP <- function(x, y = NULL, vertex.size = 40, edge.arrow.size =.5,
       ...)
   }
   
-  #legend('topleft' ,legend = x$model$observations , title="Observations" , lty = c(1:3))
-  
-  
   if(!is.null(x$solution$belief_proportions)) {
-#    if(!is.null(states)) {
-#      legend("topright" , legend = x$model$states[states] , title = "Belief" , col = c(1:3), pch = 15)
- #   } else {
-      legend("topright", legend = x$model$states, title = "Belief Proportions", 
-        #horiz = TRUE,
-        #bty = "n",
-        col= cols, pch = 15
-        )
-  #  }
+    legend("topright", legend = x$model$states, title = "Belief Proportions", 
+      #horiz = TRUE,
+      #bty = "n",
+      col= cols, pch = 15
+    )
   }
 }

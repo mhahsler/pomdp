@@ -4,7 +4,7 @@
 Write a POMDP Model to a File in POMDP Format
 }
 \description{
-Writes a POMDP file suitable for pomdp-solve.
+Writes a POMDP file suitable for the pomdp-solve program. This function is used internally.
 }
 \usage{
 write_POMDP(model, file)
@@ -13,7 +13,7 @@ write_POMDP(model, file)
 \arguments{
   \item{model}{ an object of class POMDP_model.
 }
-  \item{file}{ a filename.
+  \item{file}{ a file name.
 }
 }
 %\details{

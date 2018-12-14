@@ -874,7 +874,7 @@ POMDP_SOLVE_OPTS_create( int argc, char** argv )
       POMDP_SOLVE_OPTS_showUsage( stdout,
           opts->cmd_line->exec_name );
       PO_delete( opts );
-      exit( 1 );
+      exit( 0 );
     }
 
   if ( ! PO_isValid( opts ))

@@ -2,10 +2,10 @@
 \alias{policy_graph}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Create an igraph Policy Graph
+Extract the Policy Graph (as an igraph Object)
 }
 \description{
-Convert the policy graph in a POMDP solution object into a igraph policy graph.
+Convert the policy graph in a POMDP solution object into an igraph object.
 }
 \usage{
 policy_graph(x)

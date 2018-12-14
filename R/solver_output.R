@@ -1,3 +1,4 @@
 solver_output <- function(x) {
-  x$solver_output
+  cat(x$solver_output, sep = "\n")
+  invisible(x$solver_output)
 }

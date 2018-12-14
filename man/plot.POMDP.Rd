@@ -3,7 +3,7 @@
 \alias{plot}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Visualize the POMDP Policy Graph
+Visualize a POMDP Policy Graph
 }
 \description{
 The function plots the POMDP policy graph in an object of class POMDP.
@@ -20,7 +20,7 @@ object of class POMDP.
   \item{y}{ ignored.
 }
   \item{vertex.size, edge.arrow.size, vertex.frame.color, \dots}{
-other plotting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{igraph}
+plotting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{igraph}
 (see \code{\link[igraph]{plot.common}} for available options).
 }
 }

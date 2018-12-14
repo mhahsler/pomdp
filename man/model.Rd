@@ -5,7 +5,7 @@
 Extract the User-defined Model Components from a Solved POMDP
 }
 \description{
-The function returns all the POMDP model components of a solved POMDP.
+The function returns the POMDP model components of a solved POMDP.
 }
 \usage{
 model(x)
@@ -18,7 +18,7 @@ object of class POMDP returned by \code{\link{solve_POMDP}}.
 }
 
 \value{
-an object of class "POMDP_model", i.e., a list of all model components.
+An object of class "POMDP_model", i.e., a list of all model components.
 }
 
 \seealso{
