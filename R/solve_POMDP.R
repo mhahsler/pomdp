@@ -1,3 +1,21 @@
+find_pomdpsolve <- function() {
+  exec <- system.file(c("pomdp-solve", "pomdp-solve.exe"), package="pomdp")[1]
+  if(exec == "") stop("pomdp-solve executable not found. Reinstall package pomdp.")
+  exec
+}
+  
+solve_POMDP_parameter <- function() {
+  solver_output <- system2(find_pomdpsolve(), 
+    args = c("-h"),
+    stdout = TRUE, stderr = TRUE, wait = TRUE
+  )
+    
+  cat(solver_output, sep = "\n")
+  cat("\nUse the parameter options in solve_POMDP without the leading '-' in the form:",
+    "\tparameter = list(fg_points = 100)",
+    "Note: Not all parameter options are available (e.g., resource limitations, -pomdp, -horizon).", sep = "\n")
+}
+
 
 #solve a POMDP model
 solve_POMDP <- function(
@@ -21,14 +39,12 @@ solve_POMDP <- function(
   write_POMDP(model, pomdp_filename)
     
   ### running the POMDP code
-  exec <- system.file(c("pomdp-solve", "pomdp-solve.exe"), package="pomdp")
-  if(exec[1] == "") stop("pomdp-solve executable not found. Reinstall package pomdp.")
   
   if(!is.null(parameter)) {
     paras <- sapply(names(parameter), FUN = function(n) paste0("-", n, " ", parameter[[n]]))
   } else paras <- ""
   
-  solver_output <- system2(exec[1], 
+  solver_output <- system2(find_pomdpsolve(), 
     args = c(paste("-pomdp", pomdp_filename),
       paste("-method", method),
       (if(!is.null(horizon)) paste("-horizon", horizon) else ""),

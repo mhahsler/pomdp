@@ -1,5 +1,6 @@
 \name{solve_POMDP}
 \alias{solve_POMDP}
+\alias{solve_POMDP_parameter}
 \title{Solve a POMDP Problem}
 \description{
 This function utilizes the 'pomdp-solve' program (written in C) to solve problems that are formulated as partially observable Markov decision processes (POMDPs) [1]. The user can specify what method or algorithm should be used by the solver to solve the given problem [2].
@@ -7,6 +8,7 @@ Given there is an optimal solution, the function provides the optimal solution i
 }
 \usage{
 solve_POMDP(model, horizon = NULL, method = "grid", parameter= NULL, verbose = FALSE)
+solve_POMDP_parameter()
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,6 +19,9 @@ solve_POMDP(model, horizon = NULL, method = "grid", parameter= NULL, verbose = F
   \item{verbose}{
 logical, if set to true, the function provides the output of the pomdp solver in R console.
 }
+}
+\details{
+\code{solve_POMDP_parameter()} displays available solver parameter options.
 }
 \value{
 The solver returns a list with the model specifications (\code{model}),
@@ -55,6 +60,9 @@ solution(tiger_solved)
 
 ## plot the policy graph
 plot(tiger_solved)
+
+## display solver options
+solve_POMDP_parameter()
 }
 
 
