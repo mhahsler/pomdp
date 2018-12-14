@@ -22,7 +22,7 @@ object of class POMDP.
   \item{igraph_opt}{ a list with plotting options for igraph (see
   \code{\link[igraph]{igraph_options}} in \pkg{igraph}).
 }
-  \item{vertex.size, edge.arrow.size, \dots}{
+  \item{vertex.size, edge.arrow.size, vertex.frame.color, \dots}{
 other plotting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{igraph}
 (see \code{\link[igraph]{plot.common}} for available options).
 }
