@@ -35,21 +35,10 @@ policy_graph <- function(x) {
   policy_graph
 }
 
-plot.POMDP <- function(x, y = NULL, 
-  igraph_opt = list(vertex.size = 40, edge.arrow.size =.5), ...) {
+plot.POMDP <- function(x, y = NULL, vertex.size = 40, edge.arrow.size =.5, ...) {
   
   policy_graph <- policy_graph(x)
- 
-  old_options <- do.call(igraph_options, 
-    c(igraph_opt, list(edge.curved = curve_multiple_fixed(policy_graph, start = .5)))) 
-  on.exit(igraph_options(old_options))
-  
-  #igraph_options(
-  #  vertex.size = 40, 
-  #  edge.arrow.size =.3, 
-  #  edge.curved = curve_multiple_fixed(policy_graph, start = .5)
-  #)
-  
+
   if(!is.null(x$solution$belief_proportions)) {
     # producing the pie values if we have belief proportions
     belief_proportions <- x$solution$belief_proportions
@@ -84,11 +73,14 @@ plot.POMDP <- function(x, y = NULL,
       vertex.pie.color = list(cols),
       #vertex.label = 1:nrow(x$solution$pg), 
       #vertex.label.color = "white",
+      vertex.size = vertex.size, edge.arrow.size = edge.arrow.size,
       ...)
     #, edge.label=NA , margin = c(0,0,0,0),
     # rescale = FALSE)
   }else{  
-    plot.igraph(policy_graph, ...)
+    plot.igraph(policy_graph, 
+      vertex.size = vertex.size, edge.arrow.size = edge.arrow.size,
+      ...)
   }
   
   #legend('topleft' ,legend = x$model$observations , title="Observations" , lty = c(1:3))
