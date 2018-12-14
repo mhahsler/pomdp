@@ -36,6 +36,7 @@ pomdp-solve: $(OBJ) mdp/libmdp.a lp-solve/liblp-solve.a laspack/liblaspack.a
 clean:
 	rm -f ../inst/pomdp-solve.exe
 	rm -f ../inst/pomdp-solve
+	rm -f libpomdp.dll
 	rm -f *.o
 	rm -f pomdp-solve.exe
 	rm -f pomdp-solve
