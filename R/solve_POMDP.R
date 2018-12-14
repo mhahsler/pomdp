@@ -166,7 +166,7 @@ solve_POMDP <- function(
   }
   
   ## calculating the total expected reward
-  initial_node <- which.max(alpha_matrix %*% start_belief)
+  initial_belief_state <- which.max(alpha_matrix %*% start_belief)
   total_expected_reward <- max(alpha_matrix %*% start_belief)
   
   solution <- structure(list(
@@ -177,7 +177,7 @@ solve_POMDP <- function(
     belief = belief, 
     belief_proportions = belief_proportions,
     total_expected_reward = total_expected_reward,
-    initial_node = initial_node
+    initial_belief_state = initial_belief_state
   ), class = "POMDP_solution")
   
   structure(list(model = model,

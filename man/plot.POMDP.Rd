@@ -9,7 +9,8 @@ Visualize the POMDP Policy Graph
 The function plots the POMDP policy graph in an object of class POMDP.
 It uses \code{plot} in \pkg{igraph} with appropriate plotting options to show information like the belief proportions (if available).}
 \usage{
-\method{plot}{POMDP}(x, y = NULL, vertex.size = 40, edge.arrow.size =.5, ...)
+\method{plot}{POMDP}(x, y = NULL, vertex.size = 40, edge.arrow.size =.5, 
+  vertex.frame.color = "grey"...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

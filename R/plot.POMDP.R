@@ -30,12 +30,18 @@ policy_graph <- function(x) {
 
   #labels(V(policy_graph)) <- paste0(x$solution$pg$belief, ": ", x$solution$pg$action)
   ### Note: the space helps with moving the id away from the pie cut.
-  V(policy_graph)$label <- paste0(x$solution$pg$belief, "   \n", x$solution$pg$action) 
+ 
+  init <- rep(":   ", nrow(x$solution$pg))
+  init[x$solution$initial_belief_state] <- ": initial"
+   
+  V(policy_graph)$label <- paste0(x$solution$pg$belief, init, 
+    "\n", x$solution$pg$action) 
   
   policy_graph
 }
 
-plot.POMDP <- function(x, y = NULL, vertex.size = 40, edge.arrow.size =.5, ...) {
+plot.POMDP <- function(x, y = NULL, vertex.size = 40, edge.arrow.size =.5, 
+  vertex.frame.color = "grey", ...) {
   
   policy_graph <- policy_graph(x)
 
@@ -73,13 +79,17 @@ plot.POMDP <- function(x, y = NULL, vertex.size = 40, edge.arrow.size =.5, ...) 
       vertex.pie.color = list(cols),
       #vertex.label = 1:nrow(x$solution$pg), 
       #vertex.label.color = "white",
+      edge.curved = curve_multiple_fixed(policy_graph),
       vertex.size = vertex.size, edge.arrow.size = edge.arrow.size,
+      vertex.frame.color = vertex.frame.color,
       ...)
     #, edge.label=NA , margin = c(0,0,0,0),
     # rescale = FALSE)
   }else{  
     plot.igraph(policy_graph, 
+      edge.curved = curve_multiple_fixed(policy_graph),
       vertex.size = vertex.size, edge.arrow.size = edge.arrow.size,
+      vertex.frame.color = vertex.frame.color,
       ...)
   }
   
