@@ -101,7 +101,7 @@ solve_POMDP <- function(
   }
   
   # renamig the columns
-  colnames(pg)[1] <- "belief"
+  colnames(pg)[1] <- "belief_state"
   colnames(pg)[2] <- "action"
   for (i in 1:number_of_observations) {
     colnames(pg)[i+2] <- observations[i]
@@ -127,7 +127,7 @@ solve_POMDP <- function(
     for (i in 1:dim(belief_matrix)[1]) {
       belief[i,number_of_states+1]<- which.max(alpha_matrix %*% belief_matrix[i,])
     }
-    colnames(belief)[number_of_states+1] <- "line"
+    colnames(belief)[number_of_states+1] <- "belief_state"
     
     belief_proportions <- alpha-alpha
     colnames(belief_proportions) <- colnames(belief)[1:number_of_states]

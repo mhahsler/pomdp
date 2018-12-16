@@ -12,6 +12,7 @@ export(
   "solve_POMDP_parameter",
   "solver_output", 
   "model",
+  "transitions",
   "solution",
   "policy_graph",
   "write_POMDP")
