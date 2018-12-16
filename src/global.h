@@ -132,24 +132,14 @@
 #endif
 
 /* This checks to see if the expression is false, and if so prints out
-   the message given and exits the program. Note that this uses the
-   __PRETTY_FUNCTION__ variable which I believe is a GNU-specific
-   thing.  */
-#ifndef NON_GNU
-#define Assert(EXPR,MSG) if(!(EXPR)) { \
-  fprintf(gStdErrFile, "\n** ABORT ** File: %s function: %s, Line: %d\n\t", \
-          __FILE__, __PRETTY_FUNCTION__, __LINE__ ); \
-  fprintf(gStdErrFile, MSG ); \
-  fprintf(gStdErrFile, "\n" ); \
-  exit( -1 ); }
-#else
+   the message given and exits the program. 
+*/   
 #define Assert(EXPR,MSG) if(!(EXPR)) { \
   fprintf(gStdErrFile, "\n** ABORT ** File: %s function: %s, Line: %d\n\t", \
           __FILE__, "<Unknown>", __LINE__ ); \
   fprintf(gStdErrFile, MSG ); \
   fprintf(gStdErrFile, "\n" ); \
   exit( -1 ); }
-#endif
 
 /* This is like ASSERT, except there is no expression and it aborts
    with a message. */
