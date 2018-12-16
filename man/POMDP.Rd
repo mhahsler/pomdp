@@ -45,14 +45,14 @@ character, a vector of strings specifying the names of the observations.
   \itemize{
   \item a data frame with 4 columns, where the columns specify \emph{action}, \emph{end-state}, \emph{observation} and the \emph{probability}, respectively. The first 3 columns could be either character (the name of the action, state, or observation), integer
   indices, or they can be \code{"*"} to indicate that the observation probability applies to all actions or states.
-  \item a named list of \eqn{m} matrices, where \eqn{m} is the number of actions. Each matrix is of size \eqn{x \times o}{n x o}, where \eqn{n} is the number of states and \eqn{o} is the number of observations. The name of each matrix is the action it applies to.
+  \item a named list of \eqn{m} matrices, where \eqn{m} is the number of actions. Each matrix is of size \eqn{n \times o}{n x o}, where \eqn{n} is the number of states and \eqn{o} is the number of observations. The name of each matrix is the action it applies to.
   Instead of a matrix, also the strings \code{"identity"} or \code{"uniform"} can be specified.
 }
 }
   \item{reward}{Specifies the rewards. Options are:
   \itemize{
   \item a data frame with 5 columns, where the columns specify \emph{action}, \emph{start-state}, \emph{end-state}, \emph{observation} and the \emph{reward}, respectively. The first 4 columns could be either character (names of the action, states, or observation), integer indices, or they can be \code{"*"} to indicate that the reward applies to all transitions.
-  \item a matrix of size \eqn{n \times o}{n x o} where \eqn{n} is the number of states and \eqn{o} is the number of observations.
+  \item a named list of \eqn{m} lists, where \eqn{m} is the number of actions (names should be the actions). Each list contains \eqn{n} named matrices where each matrix is of size \eqn{n \times o}{n x o}, in which \eqn{n} is the number of states and \eqn{o} is the number of observations.
 }
 }
   \item{values}{

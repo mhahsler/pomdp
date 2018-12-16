@@ -151,7 +151,7 @@ The probabilities depend on the `end-state` $s'$, the `start-state` $s$ and the
                 0.7, 0.3, 0)
           )
       ```
-    * A named list of $m$ matrices where each matrix represents on of the $m$ actions. Each matrix is square of size $n \times n$ where $n$ is the number of states.
+    * A named list of $m$ matrices where each matrix represents one of the $m$ actions. Each matrix is square of size $n \times n$ where $n$ is the number of states.
     Matrices can also be defined as `"identity"` or `"uniform"`.
       ```{r, eval = FALSE}
       transition_prob = list(
@@ -175,7 +175,8 @@ The probabilities depend on the `end-state` $s'$, the `start-state` $s$ and the
 * **`observation_prob`:** Specifies the conditional observation probabilities
 $O(o \mid s',a)$. The probabilities depend on the `action`, the `end-state`, and the
 `observation`. The set of conditional observation probabilities can be specified in several ways: 
-    * a data frame with 4 columns, where the columns specify `action`, `end-state`, `observation` and the probability, respectively. The first 3 columns could be either the name or the index of the action, state, or observation. The special character '"*"'
+    * A data frame with 4 columns, where the columns specify `action`, `end-state`, `observation` and the `probability`, respectively. The first 3 columns could be either the name or the index of the action, state, or observation. The special character 
+    '"*"'
     can be used to indicate that the probability applies for all
     actions, states or observations.
       ```{r, eval = FALSE}
@@ -224,9 +225,14 @@ The reward function can be specified several ways:
         "observation" = c("*", "*", "*", "*", "*", "*") ,
         "reward" = c(10000, 2000, 50, 150, 2500, 100))
       ```
-    * A matrix of size $n \times o$ where $n$ is the number of states and $o$ is the number of observations.
+    * A named list of $m$ lists, where $m$ is the number of actions (names should be the actions). Each list contains $n$ named matrices where each matrix is of size $n \times o$, in which $n$ is the number of states and $o$ is the number of observations.
       ```{r, eval = FALSE}
-    
+    reward <- list("action1" = list("state1" = matrix(c(1,2,3,4,5,6) , nrow = 3 , byrow = TRUE), 
+                                    "state2" = matrix(c(3,4,5,2,3,7) , nrow = 3 , byrow = TRUE), 
+                                    "state3" = matrix(c(6,4,8,2,9,4) , nrow = 3 , byrow = TRUE)), 
+                   "action2" = list("state1" = matrix(c(3,2,4,7,4,8) , nrow = 3 , byrow = TRUE), 
+                                    "state2" = matrix(c(0,9,8,2,5,4) , nrow = 3 , byrow = TRUE), 
+                                    "state3" = matrix(c(4,3,4,4,5,6) , nrow = 3 , byrow = TRUE)))
       ```
 
 * **`values`:** This argument indicates whether the problem is minimization or a maximization. If the values are costs then the problem is a minimization and if they are rewards then it is a maximization. The default is reward.
@@ -314,7 +320,7 @@ TigerProblem <- POMDP(
     "start-state" = c("*", "tiger-left", "tiger-right", "tiger-left", "tiger-right"),
     "end-state" = c("*", "*", "*", "*", "*"),
     "observation" = c("*", "*", "*", "*", "*"),
-    "reward" = c(-1, -100, 10, 10, -100)),
+    "reward" = c(-1, -100, 10, 10, -100))
   )
   
 TigerProblem
