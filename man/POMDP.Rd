@@ -52,7 +52,7 @@ character, a vector of strings specifying the names of the observations.
   \item{reward}{Specifies the rewards. Options are:
   \itemize{
   \item a data frame with 5 columns, where the columns specify \emph{action}, \emph{start-state}, \emph{end-state}, \emph{observation} and the \emph{reward}, respectively. The first 4 columns could be either character (names of the action, states, or observation), integer indices, or they can be \code{"*"} to indicate that the reward applies to all transitions.
-  \item a named list of \eqn{m} lists, where \eqn{m} is the number of actions (names should be the actions). Each list contains \eqn{n} named matrices where each matrix is of size \eqn{n \times o}{n x o}, in which \eqn{n} is the number of states and \eqn{o} is the number of observations.
+  \item a named list of \eqn{m} lists, where \eqn{m} is the number of actions (names should be the actions). Each list contains \eqn{n} named matrices where each matrix is of size \eqn{n \times o}{n x o}, in which \eqn{n} is the number of states and \eqn{o} is the number of observations. Names of these matrices should be the name of states.
 }
 }
   \item{values}{
