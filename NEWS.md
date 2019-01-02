@@ -1,4 +1,4 @@
-# pomdp 0.9.0-1 (xx/xx/2019)
+# pomdp 0.9.1 (01/02/2019)
 
 ## Bugfix
 
@@ -7,6 +7,6 @@
 ## New Features
 * New method transitions to extract the transition matrix from a POMDP.
 
-# pomdp 0.9-0 (12/25/2018)
+# pomdp 0.9.0 (12/25/2018)
 
 Initial CRAN release.
