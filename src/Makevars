@@ -12,7 +12,7 @@ default: pomdp-solve install
 
 all: default
 
-install:
+install: pomdp-solve
 	mkdir -p ../inst/
 	rm -f ../inst/pomdp-solve
 	rm -f ../inst/pomdp-solve.exe
