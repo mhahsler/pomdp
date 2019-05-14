@@ -1,4 +1,4 @@
-# pomdp 0.9.1-1 (xx/xx/2019)
+# pomdp 0.9.1-1 (05/14/2019)
 
 ## Bugfix
 * fixed warning in mdp.c for gcc9
