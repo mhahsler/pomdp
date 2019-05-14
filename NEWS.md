@@ -1,7 +1,11 @@
+# pomdp 0.9.1-1 (xx/xx/2019)
+
+## Bugfix
+* fixed warning in mdp.c for gcc9
+
 # pomdp 0.9.1 (01/02/2019)
 
 ## Bugfix
-
 * Fixed Warning in fg-params.c
 
 ## New Features
