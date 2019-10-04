@@ -89,8 +89,7 @@ solve_POMDP <- function(
   }
   
   ## importing pg file
-  pg <- read.table(pg_filename, header = FALSE, sep = " ", quote = "\"", 
-    dec = ".", na.strings = NA, numerals = "no.loss")
+  pg <- read.table(pg_filename, header = FALSE, sep = " ", quote = "\"", colClasses = "numeric", na.strings = "-")
   pg <- as.matrix(pg)
   pg <- pg[,c(-3,-dim(pg)[2])] #there 2 NA columns that need to be removed
   pg <- pg+1 #index has to start from 1 not 0
