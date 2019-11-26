@@ -149,19 +149,17 @@ solve_POMDP <- function(
   ### outputs and results
   
   ## producing the starting belief vector
-  if (!is.character(start)) {
-    if (sum(start)==1) {
-      start_belief <- start
-    }
+  if (!is.character(start) && length(start) == number_of_states && sum(start) == 1) {
+    start_belief <- start
   }
   # if the starting beliefs are given by a uniform distribution over all states
-  if (sum(start== "uniform")==1) {
-    start_belief <- rep(1/number_of_states,number_of_states)
-  } else if (start[1]!="-") {  # if the starting beliefs include a specific subset of states
+  if (length(start) == 1 && start[1] == "uniform") {
+    start_belief <- rep(1/number_of_states, number_of_states)
+  } else if (start[1] != "-") {  # if the starting beliefs include a specific subset of states
     # if the starting beliefs are given by a uniform distribution over a subset of states (using their names)
-    if (!is.na(sum(match(start , states)))) {
-      start_belief <- rep(0,number_of_states)
-      start_belief[match(start,states)] <- 1/length(start)
+    if (!is.na(sum(match(start, states)))) {
+      start_belief <- rep(0, number_of_states)
+      start_belief[match(start, states)] <- 1/length(start)
     }
     # if the starting beliefs are given by a uniform distribution over a subset of states (using their numbers)
     if (!is.character(start)) { 

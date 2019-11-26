@@ -40,12 +40,12 @@ write_POMDP <- function(model, file) {
   
   ## if the starting beliefs are given by enumerating the probabilities for each state
   if (!is.character(start)) {
-    if (sum(start)==1) {
+    if (length(start) == length(states) && sum(start)==1) {
       code <- paste(c(code,"start:", start, "\n"), collapse = " ")
     }
   }
   ## if the starting beliefs are given by a uniform distribution over all states
-  if (start == "uniform") {
+  if (length(start) == 1 && start[1] == "uniform") {
     code <- paste(c(code,"start:", start, "\n"), collapse = " ")
   } else if (start[1] != "-") {  ## if the starting beliefs include a specific subset of states
     # if the starting beliefs are given by a uniform distribution over a subset of states (using their names)

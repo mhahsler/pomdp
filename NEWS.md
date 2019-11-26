@@ -1,3 +1,8 @@
+# pomdp 0.9.1-2 (xx/xx/2019)
+
+## Bugfix
+* fixed warning for start = "uniform".
+
 # pomdp 0.9.1-1 (05/14/2019)
 
 ## Bugfix
