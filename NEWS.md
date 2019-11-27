@@ -1,5 +1,9 @@
 # pomdp 0.9.1-2 (xx/xx/2019)
 
+## Changes
+* added helpers obs and rew
+* improved plot
+
 ## Bugfix
 * fixed warning for start = "uniform".
 

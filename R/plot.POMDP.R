@@ -16,7 +16,7 @@ policy_graph <- function(x) {
   number_of_observations <- length(x$model$observations)
   observations <- x$model$observations
   for (i in 1:number_of_observations) {
-    l[[i]] <- data.frame(from = pg$belief, to = pg[[observations[i]]], label = observations[i])
+    l[[i]] <- data.frame(from = pg$segment, to = pg[[observations[i]]], label = observations[i])
     list_of_arcs <- rbind(list_of_arcs,l[[i]])
   }
   # deleting the reset arc
@@ -31,14 +31,39 @@ policy_graph <- function(x) {
   init <- rep(":   ", nrow(x$solution$pg))
   init[x$solution$initial_belief_state] <- ": initial"
    
-  V(policy_graph)$label <- paste0(x$solution$pg$belief, init, 
+  V(policy_graph)$label <- paste0(x$solution$pg$segment, init, 
     "\n", x$solution$pg$action) 
   
   policy_graph
 }
 
-plot.POMDP <- function(x, y = NULL, vertex.size = 40, edge.arrow.size =.5, 
-  vertex.frame.color = "grey", ...) {
+
+
+### fix the broken curve_multiple for directed graphs (igraph_1.2.2)
+# curve_multiple_fixed <- function(graph, start = 0.5) 
+# {
+#   el <-  as_edgelist(graph, names = FALSE)
+#   o <- apply(el, 1, order)[1,]
+#   el <- apply(el, 1, FUN = function(x) paste(sort(x), collapse = ":"))
+#   cu <- ave(rep(NA, length(el)), el, FUN = function(x) {
+#     if (length(x) == 1) {
+#       return(0)
+#     }
+#     else {
+#       return(seq(-start, start, length = length(x)))
+#     }
+#   }
+#   )
+#   
+#   cu[o==2] <- cu[o==2] * -1
+#   cu
+# }
+
+
+
+
+plot.POMDP <- function(x, y = NULL, legend = TRUE, vertex.size = 40, edge.arrow.size =.5, 
+  cols = NULL, ...) {
   
   policy_graph <- policy_graph(x)
 
@@ -55,32 +80,34 @@ plot.POMDP <- function(x, y = NULL, vertex.size = 40, edge.arrow.size =.5,
     }
    
     ### Set1 from Colorbrewer
-    cols <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33",
-      "#A65628", "#F781BF", "#999999")
-    if(number_of_states < 10) cols <- cols[1:number_of_states]
-    else cols <- rainbow(number_of_states)
+    if(is.null(cols)) {
+      cols <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33",
+        "#A65628", "#F781BF", "#999999")
+      if(number_of_states < 10) cols <- cols[1:number_of_states]
+      else cols <- rainbow(number_of_states)
+    }else{
+      if(length(cols) != number_of_states) stop("Number of colors is not the number of states.")
+    }
     
     plot.igraph(policy_graph, 
       vertex.shape = "pie", 
       vertex.pie = pie_values,
       vertex.pie.color = list(cols),
-      edge.curved = curve_multiple_fixed(policy_graph),
+      #edge.curved = curve_multiple_fixed(policy_graph),
       vertex.size = vertex.size, edge.arrow.size = edge.arrow.size,
-      vertex.frame.color = vertex.frame.color,
       ...)
   }else{  
     plot.igraph(policy_graph, 
-      edge.curved = curve_multiple_fixed(policy_graph),
+      #edge.curved = curve_multiple_fixed(policy_graph),
       vertex.size = vertex.size, edge.arrow.size = edge.arrow.size,
-      vertex.frame.color = vertex.frame.color,
       ...)
   }
   
-  if(!is.null(x$solution$belief_proportions)) {
+  if(legend && !is.null(x$solution$belief_proportions)) {
     legend("topright", legend = x$model$states, title = "Belief Proportions", 
       #horiz = TRUE,
       #bty = "n",
-      col= cols, pch = 15
+      col = cols, pch = 15
     )
   }
 }

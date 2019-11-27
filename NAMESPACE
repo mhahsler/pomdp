@@ -15,7 +15,9 @@ export(
   "solution",
   "transitions",
   "policy_graph",
-  "write_POMDP")
+  "write_POMDP",
+  "obs",
+  "rew")
 
 S3method("plot", "POMDP")
 S3method("print", "POMDP")

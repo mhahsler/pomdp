@@ -117,7 +117,7 @@ write_POMDP <- function(model, file) {
     if (dim(observation_prob)[2] != 4) {
       stop("the given data frame for the observation probabilities needs to have 4 columns including 'action', 'end-state','observation','probability'")
     }
-    
+     
     ### pomdp-solve starts with index 0
     for(i in 1:3) if(is.numeric(observation_prob[[i]])) 
       observation_prob[[i]] <- as.integer(observation_prob[[i]]) - 1L 

@@ -1,31 +1,25 @@
 \name{plot}
 \alias{plot.POMDP}
 \alias{plot}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-Visualize a POMDP Policy Graph
-}
-\description{
-The function plots the POMDP policy graph in an object of class POMDP.
-It uses \code{plot} in \pkg{igraph} with appropriate plotting options to show information like the belief proportions (if available).}
+
+\title{Visualize a POMDP Policy Graph}
+
+\description{The function plots the POMDP policy graph in an object of class POMDP. It uses \code{plot} in \pkg{igraph} with appropriate plotting options.}
+
 \usage{
-\method{plot}{POMDP}(x, y = NULL, vertex.size = 40, edge.arrow.size =.5, 
-  vertex.frame.color = "grey", ...)
+\method{plot}{POMDP}(x, y = NULL, legend = TRUE, vertex.size = 40, edge.arrow.size =.5, cols = NULL,...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{
-object of class POMDP.
+  \item{x}{object of class POMDP.}
+  \item{y}{ignored.}
+ \item{legend}{logical; display a legend with state colors?}
+ \item{cols}{colors used for the states.}
+  \item{vertex.size, edge.arrow.size, \dots}{plotting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{igraph} (see \code{\link[igraph]{plot.common}} for available options).}
 }
-  \item{y}{ ignored.
+
+\details{
+The policy graph nodes represent segments in the value function. Each segment represents one or more believe states. The pie chart in each node (if available) represent the average of the belief states belonging to the node/segment.
 }
-  \item{vertex.size, edge.arrow.size, vertex.frame.color, \dots}{
-plotting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{igraph}
-(see \code{\link[igraph]{plot.common}} for available options).
-}
-}
-%\details{
-%}
 %\value{
 %}
 \seealso{
@@ -48,8 +42,9 @@ plot(tiger_solved)
 
 library(igraph)
 
-## use a different graph layout
-plot(tiger_solved, layout = layout_with_mds)
+## use a different graph layout (circle and manual)
+plot(tiger_solved, layout = layout.circle)
+plot(tiger_solved, layout = rbind(c(1,1), c(1,-1), c(0,0), c(-1,-1), c(-1,1)))
 
 ## hide edge labels
 plot(tiger_solved, edge.label = NA)

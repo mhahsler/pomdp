@@ -376,8 +376,9 @@ Since we only have two states, we can visualize the piecewise linear convex valu
 alpha <- solution(tiger_solved)$alpha
 alpha
 
-plot(NA, xlim = c(0, 1), ylim = c(0, 10), xlab = "Belief space", ylab = "Value function")
-for(i in 1:nrow(alpha)) abline(a = alpha[i,1], b= alpha[i,2], col = i)
+plot(NA, xlim = c(0, 1), ylim = c(0, 20), xlab = "Belief space (0 means left, 1 means right)", 
+  ylab = "Value function")
+for(i in 1:nrow(alpha)) abline(alpha[i,2], alpha[i,1]- alpha[i,2], col = i, xpd = FALSE)
 legend("topright", legend = 1:nrow(alpha), col = 1:nrow(alpha), lwd=1)
 ```
 
