@@ -42,7 +42,13 @@ by placing the tiger uniformly behind one of the doors.
 }
 \examples{
 data(TigerProblem)
-
 TigerProblem
+
+# solve the problem and look at the optimal policy graph (as a table and as a plot)
+sol <- solve_POMDP(TigerProblem)
+sol
+
+solution(sol)$pg
+plot(sol)
 }
 \keyword{datasets}

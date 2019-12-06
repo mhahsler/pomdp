@@ -169,9 +169,9 @@ solve_POMDP <- function(
 print.POMDP <- function(x, ...) {
   cat(
     "Solved POMDP model:", x$model$name, "\n", 
-    "\tmethod:", x$solution$method, "\n",
-    "\tbelief states:", nrow(x$solution$pg), "\n",
-    paste0("\ttotal expected ", x$model$values, ":"), 
+    "\tsolution method:", x$solution$method, "\n",
+    "\tpolicy graph nodes:", nrow(x$solution$pg), "\n",
+    paste0("\ttotal expected:", x$model$values, ":"), 
       x$solution$total_expected_reward,"\n\n" 
   )
 }
