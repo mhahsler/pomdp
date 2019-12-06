@@ -827,7 +827,10 @@ reportStats( SolutionStats stat )
   /*
     Reports the stats in the structure sent in.
   */
-  double stop_time_user, stop_time_system;
+  
+  /*
+    double stop_time_user, stop_time_system;
+  */
 
   /* In all phases of solution, keeping stats is optional.  Thus, when
      the stat struct is NULL, this just means we are not interested in

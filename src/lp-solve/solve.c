@@ -1010,6 +1010,9 @@ static int solvelp(lprec *lp)
   int    colnr, row_nr;
   short  *test; 
 
+  theta = (REAL) 0;
+  row_nr = 0;
+
   if(lp->do_presolve)
     lp_solve_presolve(lp);
 

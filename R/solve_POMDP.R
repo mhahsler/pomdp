@@ -94,7 +94,7 @@ solve_POMDP <- function(
   #}
   
   # renaming the columns and actions
-  colnames(pg) <- c("segment", "action", observations)
+  colnames(pg) <- c("node", "action", observations)
   pg[,2] <- actions[pg[,2]]
   
   ## importing belief file if it exists
@@ -103,10 +103,10 @@ solve_POMDP <- function(
     colnames(belief) <- states
   
     ## finding the respective proportions for each line (node)
-    belief <- cbind(belief, segment = apply(belief, MARGIN = 1, FUN = function(b) which.max(alpha %*% b)))
+    belief <- cbind(belief, node = apply(belief, MARGIN = 1, FUN = function(b) which.max(alpha %*% b)))
     
     belief_proportions <- t(sapply(1:nrow(pg), FUN = 
-        function(i) colMeans(belief[belief[,"segment"] == i, -ncol(belief), drop = FALSE])))
+        function(i) colMeans(belief[belief[,"node"] == i, -ncol(belief), drop = FALSE])))
     
   } else {
     belief <- NULL

@@ -211,8 +211,9 @@ CL_addFlag( CommandLine cmd_line, char* dashed_flag )
 
   if ( strlen( dashed_flag ) >= MAX_CMD_LINE_STRING_LEN )
     {
-	 sprintf( err_str, "Command line flag '%s' is too long. %s",
-			dashed_flag, "Change MAX_CMD_LINE_STRING_LEN?" );
+	 /* sprintf( err_str, "Command line flag '%s' is too long. %s",
+			dashed_flag, "Change MAX_CMD_LINE_STRING_LEN?" );*/
+	 sprintf( err_str, "Command line flag is too long.");
 	 CL_handleError( cmd_line, err_str );
 	 return 0;
     }
@@ -252,16 +253,18 @@ CL_addArgOption( CommandLine cmd_line,
 
   if ( strlen( dashed_opt ) >= MAX_CMD_LINE_STRING_LEN )
     {
-	 sprintf( err_str, "Command line flag '%s' is too long. %s",
-			dashed_opt, "Change MAX_CMD_LINE_STRING_LEN?" );
+	 /*sprintf( err_str, "Command line flag '%s' is too long. %s",
+			dashed_opt, "Change MAX_CMD_LINE_STRING_LEN?" ); */
+	 sprintf( err_str, "Command line flag is too long.");
 	 CL_handleError( cmd_line, err_str );
 	 return 0;
     }
 
   if ( strlen( value ) >= MAX_CMD_LINE_STRING_LEN )
     {
-	 sprintf( err_str, "Command line value '%s' is too long. %s",
-			value, "Change MAX_CMD_LINE_STRING_LEN?" );
+	 /*sprintf( err_str, "Command line value '%s' is too long. %s",
+			value, "Change MAX_CMD_LINE_STRING_LEN?" ); */
+	 sprintf( err_str, "Command line value is too long.");
 	 CL_handleError( cmd_line, err_str );
 	 return 0;
     }
@@ -309,8 +312,9 @@ CL_addArgProper( CommandLine cmd_line, char* value )
 
   if ( strlen( value ) >= MAX_CMD_LINE_STRING_LEN )
     {
-	 sprintf( err_str, "Command line argument '%s' is too long. %s",
-			value, "Change MAX_CMD_LINE_STRING_LEN?" );
+	 /*sprintf( err_str, "Command line argument '%s' is too long. %s",
+			value, "Change MAX_CMD_LINE_STRING_LEN?" );*/
+	 sprintf( err_str, "Command line argument is too long.");
 	 CL_handleError( cmd_line, err_str );
 	 return 0;
     }

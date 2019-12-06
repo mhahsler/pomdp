@@ -16,7 +16,7 @@ policy_graph <- function(x) {
   number_of_observations <- length(x$model$observations)
   observations <- x$model$observations
   for (i in 1:number_of_observations) {
-    l[[i]] <- data.frame(from = pg$segment, to = pg[[observations[i]]], label = observations[i])
+    l[[i]] <- data.frame(from = pg$node, to = pg[[observations[i]]], label = observations[i])
     list_of_arcs <- rbind(list_of_arcs,l[[i]])
   }
   # deleting the reset arc
@@ -31,7 +31,7 @@ policy_graph <- function(x) {
   init <- rep(":   ", nrow(x$solution$pg))
   init[x$solution$initial_belief_state] <- ": initial"
    
-  V(policy_graph)$label <- paste0(x$solution$pg$segment, init, 
+  V(policy_graph)$label <- paste0(x$solution$pg$node, init, 
     "\n", x$solution$pg$action) 
   
   policy_graph
