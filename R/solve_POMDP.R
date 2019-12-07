@@ -36,9 +36,14 @@ solve_POMDP <- function(
   ### write model to file
   file_prefix <- tempfile(pattern = "model")
   pomdp_filename <- paste0(file_prefix, ".POMDP") 
-  write_POMDP(model, pomdp_filename)
-    
-  ### running the POMDP code
+  
+  # is model a filename or a URL?
+  if(is.character(model)) {
+    model <- parses_POMDP_model_file(model)
+    writeLines(model$problem, con = pomdp_filename)
+  } else {
+    write_POMDP(model, pomdp_filename)
+  }
   
   if(!is.null(parameter)) {
     paras <- sapply(names(parameter), FUN = function(n) paste0("-", n, " ", parameter[[n]]))
@@ -70,19 +75,18 @@ solve_POMDP <- function(
   belief_filename <- paste0(file_prefix, ".belief")
   alpha_filename <- paste0(file_prefix, ".alpha")
   
-  ## importing alpha file
-  number_of_states <- length(model$states)
-  number_of_observations <- length(model$observations)
-  number_of_actions <- length(model$actions)
-  observations <- model$observations
-  actions <- model$actions
   states <- model$states
+  actions <- model$actions
+  observations <- model$observations
   start <- model$start
   
+  ## importing alpha file
   alpha <- readLines(alpha_filename)
   alpha <- alpha[seq(2, length(alpha), 3)]
   alpha <- do.call(rbind, lapply(alpha, function(a) as.numeric(strsplit(a, " ")[[1]])))
   colnames(alpha) <- paste0("coef_", 1:ncol(alpha))
+  
+  number_of_states <- ncol(alpha)
   
   ## importing pg file
   pg <- read.table(pg_filename, header = FALSE, sep = "", colClasses = "numeric", na.strings = "-")
@@ -180,3 +184,36 @@ print.POMDP_solution <- function(x, ...) {
  cat("POMDP solution\n\n")
  print(unclass(x))
 }
+
+
+parses_POMDP_model_file <- function(file) {
+    problem <- readLines(file)  
+    
+    get_vals <- function(var) {
+      ind <- grep(paste0(var,":"), problem)
+      if(length(ind) == 0) return("uniform")
+      
+      vals <- strsplit(problem[[ind]], "\\s+")[[1]][-1]
+      
+      # the data may be in the next line
+      if(length(vals) == 0) vals <- strsplit(problem[[ind+1]], "\\s+")[[1]]
+      
+      # numbers?
+      vals <- type.convert(vals, as.is = TRUE)
+      
+      # create labels if just the number is mentioned
+      if(length(vals) == 1 && is.numeric(vals)) 
+        vals <- paste0(substr(var, 1, 1), seq(vals)) 
+    vals
+    }
+    
+    list(
+      name = file,
+      states = get_vals("states"),
+      observations = get_vals("observations"),
+      actions = get_vals("actions"),
+      start = get_vals("start"),
+      problem = problem
+      )
+}    
+    

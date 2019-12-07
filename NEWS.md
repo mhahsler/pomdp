@@ -1,6 +1,7 @@
-# pomdp 0.9.1-2 (xx/xx/2019)
+# pomdp 0.9.2 (12/06/2019)
 
 ## Changes
+* solve_POMDP can now solve POMDP files.
 * added helper functions O, R and T.
 * improved plot.
 

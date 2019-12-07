@@ -7,18 +7,20 @@
 \description{The function plots the POMDP policy graph in an object of class POMDP. It uses \code{plot} in \pkg{igraph} with appropriate plotting options.}
 
 \usage{
-\method{plot}{POMDP}(x, y = NULL, legend = TRUE, vertex.size = 40, edge.arrow.size =.5, cols = NULL,...)
+\method{plot}{POMDP}(x, y = NULL, belief = TRUE, legend = TRUE, 
+  vertex.size = 40, edge.arrow.size =.5, cols = NULL,...)
 }
 \arguments{
   \item{x}{object of class POMDP.}
   \item{y}{ignored.}
- \item{legend}{logical; display a legend with state colors?}
- \item{cols}{colors used for the states.}
+  \item{belief}{logical; display belief proportions as a pie chart in each node.}
+  \item{legend}{logical; display a legend for colors used belief proportions?}
+  \item{cols}{colors used for the states.}
   \item{vertex.size, edge.arrow.size, \dots}{plotting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{igraph} (see \code{\link[igraph]{plot.common}} for available options).}
 }
 
 \details{
-The policy graph nodes represent segments in the value function. Each segment represents one or more believe states. The pie chart in each node (if available) represent the average of the belief states belonging to the node/segment.
+The policy graph nodes represent segments in the value function. Each segment represents one or more believe states. The pie chart in each node (if available) represent the average belief proportions of the belief states belonging to the node/segment.
 }
 %\value{
 %}
