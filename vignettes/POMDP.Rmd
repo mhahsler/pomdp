@@ -1,7 +1,7 @@
 ---
 title: "POMDP: Introduction to Partially Observable Markov Decision Processes"
 author: "Hossein Kamalzadeh, Michael Hahsler"
-date: "`r Sys.Date()`"
+date: "December 8, 2019"
 output: rmarkdown::pdf_document
 bibliography: bibliography.bib
 vignette: >
@@ -27,7 +27,8 @@ cannot directly observe the system state, but at each discrete point in time, th
 The POMDP framework is general enough to model a variety of real-world sequential decision-making problems. Applications include robot navigation problems, machine maintenance, and planning under uncertainty in general. The general framework of Markov decision processes with incomplete information was described by Karl Johan Åström in 1965 in the case of a discrete state space, and it was further studied in the operations research community where the acronym POMDP was coined. It was later adapted for problems in artificial intelligence and automated planning by Leslie P. Kaelbling and Michael L. Littman [@Littman].
 
 A discrete-time POMDP can formally be described as a 7-tuple 
-( $S$ , $A$ , $T$ , $R$ , $\Omega$ , $O$ , $\lambda$), where
+$$\mathcal{P} = (S, A, T, R, \Omega , O, \lambda),$$ 
+where
 
 * $S  = \{s_1, s_2, \dots, s_n\}$ is a set of states,
 
@@ -42,10 +43,12 @@ state transition $s \rightarrow s'$.
 
 * $O$  is a set of conditional observation probabilities $O(o \mid s',a)$, and
 
-* $\lambda \in [0, 1]$ is the discount factor.
+* $\gamma \in [0, 1]$ is the discount factor.
 
-At each time period, the environment is in some state $s \in S$. The agent chooses an action $a \in A$, which causes the environment to transition to state $s' \in S$ with probability $T(s' \mid s,a)$. At the same time, the agent receives an observation $o \in \Omega$  which depends on the new state of the environment with probability $O(o \mid s',a)$. Finally, the agent receives a reward $R(s,a)$. Then the process repeats. The goal is for the agent to choose actions at each time step that maximizes its expected future discounted reward $$E\left[\sum_{t=0}^{\infty} \gamma^t R(s_t, a_t)\right]$$.
+At each time period, the environment is in some state $s \in S$. The agent chooses an action $a \in A$, which causes the environment to transition to state $s' \in S$ with probability $T(s' \mid s,a)$. At the same time, the agent receives an observation $o \in \Omega$  which depends on the new state of the environment with probability $O(o \mid s',a)$. Finally, the agent receives a reward $R(s,a)$. Then the process repeats. The goal is for the agent to choose actions at each time step that maximizes its expected future discounted reward, i.e., she chooses the actions at each time $t$ that 
+$$\max E\left[\sum_{t=0}^{\infty} \gamma^t R(s_t, a_t)\right]$$.
 
+For a finite time horizon, only the expectation over the sum up to the time horizon is used.
 
 # Package Functionality
 
@@ -62,193 +65,163 @@ elements of a POMDP.
 str(args(POMDP))
 ```
 
-Next we describe the arguments in detail and give examples:
+where 
 
-* **`discount`:** Is the used discount factor $\lambda$, a real number in the range $[0,1]$.
+* `discount` is the  discount factor $\gamma$ in range $[0,1]$,
+
+* `states` defines the set of states $S$, 
+
+* `actions` defines the set of actions $A$,
+
+* `observations` defines the set of observations $\Omega$,
+
+* `start` is the initial probability distribution over the system states $S$,
+
+* `transition_prob` defines the conditional transition probabilities $T(s' \mid s,a)$,
+
+* `observation_prob`  specifies the conditional observation probabilities
+$O(o \mid s',a)$,
+
+* `reward` specifies the reward function $R$,
+
+* `values` indicates whether the problem is 
+a maximization (`values = "reward"`, the default) or a 
+minimization (`values = "cost"`), and
+
+* `name` used to give the POMDP problem a name.
+
+While specifying the discount rate and the set of states, observations and actions is straight-forward. Some 
+arguments can be specified in different ways.
+The initial belief state ```start``` can be specified as
+    
+* A vector of $n$ probabilities in $[0,1]$, that add up to 1, where $n$ is the number of states.
+
   ```{r, eval = FALSE}
-  discount = 0.9
+  start = c(0.5 , 0.3 , 0.2)
   ```
 
-* **`states`:** Defines the set of states $S$ using a vector of strings.
+* The string '"uniform"' for a uniform distribution over all states.
   ```{r, eval = FALSE}
-  states = c("state1" , "state2" , "state3")
+  start = "uniform"
+  ```
+  
+* A vector of integer indices specifying a subset as start states. The initial probability is uniform over these states. For example, only state 3 or state 1 and 3:
+  ```{r, eval = FALSE}
+  start = 3
+  start = c(1, 3)
+  ```
+  
+* A vector of strings specifying a subset as start states.
+  ```{r, eval = FALSE}
+  start <- "state3"
+  start <- c("state1" , "state3") 
   ```
 
-* **`actions`:** Defines the set of actions $A$ using a vector of strings.
-  ```{r, eval=FALSE}
-  actions = c("action1" , "action2")
+* A  vector of strings starting with `"-"` specifying which states to exclude
+from the uniform initial probability distribution.
+  ```{r, eval = FALSE}
+  start = c("-" , "state2")
   ```
 
-* **`observations`:** Defines the set of observations $\Omega$ using a vector of strings.
-  ```{r, eval=FALSE}
-  observations = c("obs1" , "obs2")
-  ```
-
-* **`start`:** The initial probability distribution over the system states $S$. 
-It can be specified in several ways. 
-    
-    * A vector of $n$ probabilities in $[0,1]$, that add up to 1, where $n$ is the number of states.
-    
-      ```{r, eval = FALSE}
-      start = c(0.5 , 0.3 , 0.2)
-      ```
-    
-    * The string '"uniform"' for a uniform distribution over all states.
-      ```{r, eval = FALSE}
-      start = "uniform"
-      ```
-      
-    * A vector of integer indices specifying a subset as start states. The initial probability is uniform over these states. For example, only state 3 or state 1 and 3:
-      ```{r, eval = FALSE}
-      start = 3
-      start = c(1, 3)
-      ```
-      
-    * A vector of strings specifying a subset as start states.
-      ```{r, eval = FALSE}
-      start <- "state3"
-      start <- c("state1" , "state3") 
-      ```
-    
-    * A  vector of strings starting with `"-"` specifying which states to exclude
-    from the uniform initial probability distribution.
-      ```{r, eval = FALSE}
-      start = c("-" , "state2")
-      ```
-
-* **`transition_prob`:** Defines the conditional transition probabilities $T(s' \mid s,a)$.
-The probabilities depend on the `end-state` $s'$, the `start-state` $s$ and the
+The transition probabilities, `transition_prob`, 
+depend on the `end.state` $s'$, the `start.state` $s$ and the
 `action` $a$. The set of conditional transition probabilities can be specified in several ways: 
-    * A data frame with 4 columns, where the columns specify `action`, `start-state`, `end-state` and the `probability`, respectively. The first 3 columns are either the names or the index of the action or states.
-      ```{r , eval = FALSE}
-      transition_prob = data.frame(
-        "action" = c(
-                "action1" , "action1" , "action1", 
-                "action1" , "action1" , "action1", 
-                "action1" , "action1" , "action1",
-                "action2" , "action2" , "action2", 
-                "action2" , "action2" , "action2", 
-                "action2" , "action2" , "action2"),
-        "start-state" = c( 
-                "state1" , "state1" , "state1", 
-                "state2" , "state2" , "state2", 
-                "state3" , "state3" , "state3", 
-                "state1" , "state1" , "state1", 
-                "state2" , "state2" , "state2", 
-                "state3" , "state3" , "state3"), 
-         "end-state" = c(
-                "state1" , "state2" , "state3", 
-                "state1" , "state2" , "state3", 
-                "state1" , "state2" , "state3", 
-                "state1" , "state2" , "state3", 
-                "state1" , "state2" , "state3", 
-                "state1" , "state2" , "state3"), 
-         "probability" = c(
-                0.1  0.4, 0.5, 
-                0,   0.7, 0.3, 
-                0.4, 0.4, 0.2,
-                0,   0.6, 0.4, 
-                0.1, 0.9, 0, 
-                0.7, 0.3, 0)
-          )
-      ```
-    * A named list of $m$ matrices where each matrix represents one of the $m$ actions. Each matrix is square of size $n \times n$ where $n$ is the number of states.
-    Matrices can also be defined as `"identity"` or `"uniform"`.
-      ```{r, eval = FALSE}
-      transition_prob = list(
-        "action1" = matrix(c( 
-            0.1, 0.4, 0.5,
-            0,   0.7, 0.3, 
-            0.4, 0.4, 0.2), nrow = 3 , byrow = TRUE) ,
-        "action2" = matrix(c(
-            0,   0.6, 0.4,
-            0.1, 0.9, 0,
-            0.7, 0.3, 0), nrow = 3 , byrow = TRUE))
     
-      transition_prob = list(
-         "action1" = matrix(c(
-            0.1, 0.4, 0.5,
-            0,   0.7, 0.3, 
-            0.4, 0.4, 0.2), nrow = 3 , byrow = TRUE) ,
-          "action2" = "uniform")
-      ```
+* A data frame with 4 columns, where the columns specify `action`, `start.state`, `end.state` and the `probability`, respectively. Actions and states are either identified by their names or their index number.
+An asterisk (`*`) can be used as a placeholder for all possible actions or states.
+To make creating the data frame easier the helper function `T_` is provides.
 
-* **`observation_prob`:** Specifies the conditional observation probabilities
-$O(o \mid s',a)$. The probabilities depend on the `action`, the `end-state`, and the
-`observation`. The set of conditional observation probabilities can be specified in several ways: 
-    * A data frame with 4 columns, where the columns specify `action`, `end-state`, `observation` and the `probability`, respectively. The first 3 columns could be either the name or the index of the action, state, or observation. The special character 
-    '"*"'
+  ```{r , eval = FALSE}
+  transition_prob = rbind(
+    T_("action1", "state1", "state2", 0.1),
+    T_("action2", "state1", "state3", 0.9),
+    T_("*"      , "state2", "*",      1)
+  )
+  ```
+* A named list of $m$ matrices where each matrix represents one of the $m$ actions. Each matrix is square of size $n \times n$ where $n$ is the number of states.
+ Matrices can also be defined as `"identity"` or `"uniform"`.
+  ```{r, eval = FALSE}
+  transition_prob = list(
+    "action1" = matrix(c( 
+        0.1, 0.4, 0.5,
+        0,   0.7, 0.3, 
+        0.4, 0.4, 0.2), nrow = 3 , byrow = TRUE) ,
+    "action2" = matrix(c(
+        0,   0.6, 0.4,
+        0.1, 0.9, 0,
+        0.7, 0.3, 0), nrow = 3 , byrow = TRUE))
+
+  transition_prob = list(
+     "action1" = matrix(c(
+        0.1, 0.4, 0.5,
+        0,   0.7, 0.3, 
+        0.4, 0.4, 0.2), nrow = 3 , byrow = TRUE) ,
+      "action2" = "uniform")
+  ```
+
+The observation probabilities, `observation_prob`, depend on the `action`, the `end.state`, and the
+`observation`. The set of conditional observation probabilities can be specified in several ways:
+
+* A data frame with 4 columns, where the columns specify `action`, `end.state`, `observation` and the `probability`, respectively. The first 3 columns could be either the name or the index of the action, state, or observation. The special character `*`
     can be used to indicate that the probability applies for all
-    actions, states or observations.
-      ```{r, eval = FALSE}
-      observation_prob = data.frame(
-        "action"      = c(     "*",      "*",      "*",      "*",      "*",      "*"), 
-        "end-state"   = c("state1", "state1", "state2", "state2", "state3", "state3"),
-        "observation" = c(  "obs1",   "obs2",   "obs1",   "obs2",   "obs1",   "obs2"),
-        "probability" = c(     0.1,      0.9,      0.3,      0.7,      0.4,      0.6))
-      ```
-    * A named list of $m$ matrices, one for each actions. Each matrix is of size $n \times o$ where $n$ is the number of states and $o$ is the number of observations.
+    actions, states or observations. The helper function `O_` is provided to specify the data frame.
+  ```{r, eval = FALSE}
+  observation_prob = rbind(
+    O_("*", "state1", "obs1", 0.1),
+    O_("*", "state1", "obs2", 0.9),
+    O_("*", "state2", "obs1", 0.3),
+    O_("*", "state2", "obs2", 0.7),
+    O_("*", "state3", "obs1", 0.5),
+    O_("*", "state3", "obs2", 0.6)
+  )
+  ```
+* A named list of $m$ matrices, one for each actions. Each matrix is of size $n \times o$ where $n$ is the number of states and $o$ is the number of observations.
     (each matrix should have a name in the list and the name should be one of the actions). Matrices can also be defined as `"identity"` or `"uniform"`.
-       ```{r, eval = FALSE}
-       observation_prob = list(
-         "action1" = matrix(c(0.1, 0.9,
-                              0.3, 0.7, 
-                              0.4, 0.6), nrow = 3, byrow = TRUE) ,
-         "action2" = matrix(c(0.1, 0.9,
-                              0.3, 0.7,
-                              0.4, 0.6), nrow = 3, byrow = TRUE))
-    
-    
-       observation_prob = list(
-        "action1" = "uniform",
-        "action2" = matrix(c(0.1, 0.9,
-                             0.3, 0.7,
-                             0.4, 0.6), nrow = 3, byrow = TRUE))
-       ```
+  ```{r, eval = FALSE}
+  observation_prob = list(
+    "action1" = matrix(c(0.1, 0.9,
+                         0.3, 0.7, 
+                         0.4, 0.6), nrow = 3, byrow = TRUE) ,
+    "action2" = matrix(c(0.1, 0.9,
+                         0.3, 0.7,
+                         0.4, 0.6), nrow = 3, byrow = TRUE))
+
+
+  observation_prob = list(
+   "action1" = "uniform",
+   "action2" = matrix(c(0.1, 0.9,
+                        0.3, 0.7,
+                        0.4, 0.6), nrow = 3, byrow = TRUE))
+  ```
     
 <!--   As we see above, both observation probability matrices are the same and it indicates that the observation probabilities are independent of the action taken. Thus we can use the dataframe format using asterisks to make it more concise. Asterisks here indicates that the probabilities are independent of the actions. "*" could be used anytime where there is independence.
 -->
 
-* **`reward`:** This argument corresponds to the reward function $R$.
-The reward function in its most general form depends on
-`action`, `start-state`, `end-state` and the `observation`. 
+The reward function, `reward`, depends on
+`action`, `start.state`, `end.state` and the `observation`. 
 The reward function can be specified several ways:
 
-    * A data frame with 5 columns, where the columns specify `action`, `start-state`, `end-state`, `observation` and the reward, respectively. The first 4 columns could be either the name or the index of the action, state, or observation.
-     The special character '"*"'
-    can be used to indicate that the same reward applies for all
-    actions, states or observations.
-      ```{r, eval = FALSE}
-      reward = data.frame(
-        "action" = c("action1", "action1", "action1", "action2", "action2", "action2"),
-        "start-state" = c("*", "*", "*", "*", "*", "*"),
-        "end-state" = c("state1", "state2", "state3", "state1", "state2", "state3"),
-        "observation" = c("*", "*", "*", "*", "*", "*") ,
-        "reward" = c(10000, 2000, 50, 150, 2500, 100))
-      ```
-    * A named list of $m$ lists, where $m$ is the number of actions (names should be the actions). Each list contains $n$ named matrices where each matrix is of size $n \times o$, in which $n$ is the number of states and $o$ is the number of observations. Names of these matrices should be the name of states.
-      ```{r, eval = FALSE}
-      reward = list(
-        "action1" = list(
-           "state1" = matrix(c(1, 2, 3, 4, 5, 6) , nrow = 3 , byrow = TRUE), 
-           "state2" = matrix(c(3, 4, 5, 2, 3, 7) , nrow = 3 , byrow = TRUE), 
-           "state3" = matrix(c(6, 4, 8, 2, 9, 4) , nrow = 3 , byrow = TRUE)), 
-        "action2" = list(
-           "state1" = matrix(c(3, 2, 4, 7, 4, 8) , nrow = 3 , byrow = TRUE), 
-           "state2" = matrix(c(0, 9, 8, 2, 5, 4) , nrow = 3 , byrow = TRUE), 
-           "state3" = matrix(c(4, 3, 4, 4, 5, 6) , nrow = 3 , byrow = TRUE)))
-       ```
-
-* **`values`:** This argument indicates whether the problem is minimization or a maximization. If the values are costs then the problem is a minimization and if they are rewards then it is a maximization. The default is reward.
-     ```{r, eval = FALSE}
-     values = "cost"
-     values = "reward"
-     ```
-
-* **`name`:** This argument can be used to name the POMDP problem defined by the user. This way the user can keep track of the POMDP problems he defines.
-     ```{r, eval = FALSE}
-     name = "Test Problem"
-     ```
+* A data frame with 5 columns, where the columns specify `action`, `start.state`, `end.state`, `observation` and the reward, respectively. The first 4 columns could be either the name or the index of the action, state, or observation. The special character `*` can be used to indicate that the same reward applies for all actions, states or observations. The helper function `R_` is provided to specify the data frame.
+  ```{r, eval = FALSE}
+  reward = rbind(
+    R_("action1", "*", "state1", "*", 10000),
+    R_("action1", "*", "state2", "*", 2000),
+    R_("action2", "*", "state1", "*", 50),
+    R_("action2", "*", "state2", "*", 100)
+  )
+  ```
+* A named list of $m$ lists, where $m$ is the number of actions (names should be the actions). Each list contains $n$ named matrices where each matrix is of size $n \times o$, in which $n$ is the number of states and $o$ is the number of observations. Names of these matrices should be the name of states.
+ ```{r, eval = FALSE}
+ reward = list(
+   "action1" = list(
+      "state1" = matrix(c(1, 2, 3, 4, 5, 6) , nrow = 3 , byrow = TRUE), 
+      "state2" = matrix(c(3, 4, 5, 2, 3, 7) , nrow = 3 , byrow = TRUE), 
+      "state3" = matrix(c(6, 4, 8, 2, 9, 4) , nrow = 3 , byrow = TRUE)), 
+   "action2" = list(
+      "state1" = matrix(c(3, 2, 4, 7, 4, 8) , nrow = 3 , byrow = TRUE), 
+      "state2" = matrix(c(0, 9, 8, 2, 5, 4) , nrow = 3 , byrow = TRUE), 
+      "state3" = matrix(c(4, 3, 4, 4, 5, 6) , nrow = 3 , byrow = TRUE)))
+  ```
 
 ## Solving a POMDP
 
@@ -258,7 +231,10 @@ POMDP problems are solved with the function `solve_POMDP` with the following arg
 str(args(solve_POMDP))
 ```
 
-The `model` argument is a POMDP problem created using the `POMDP` function. The `horizon`
+The `model` argument is a POMDP problem created using the `POMDP` function,
+but it can also be the name of a POMDP file using the format described on 
+[www.pomdp.org](http://www.pomdp.org/code/pomdp-file-spec.html).
+The `horizon`
 argument specifies the finite time horizon (i.e, the number of time steps) considered in solving the problem. If the horizon is unspecified (i.e., `NULL`), then 
 the algorithm continues running iterations till it converges to the infinite horizon solution [@Cassandra]. 
 The `method` argument specifies what algorithm the solver should use.
@@ -319,19 +295,23 @@ TigerProblem <- POMDP(
     "open-left" = "uniform",
     "open-right" = "uniform"),
     
-  reward = data.frame(
-    "action" = c("listen", "open-left", "open-left", "open-right", "open-right"),
-    "start-state" = c("*", "tiger-left", "tiger-right", "tiger-left", "tiger-right"),
-    "end-state" = c("*", "*", "*", "*", "*"),
-    "observation" = c("*", "*", "*", "*", "*"),
-    "reward" = c(-1, -100, 10, 10, -100))
+  reward = rbind(
+    R_("listen",     "*",           "*", "*", -1  ),
+    R_("open-left",  "tiger-left",  "*", "*", -100),
+    R_("open-left",  "tiger-right", "*", "*", 10  ),
+    R_("open-right", "tiger-left",  "*", "*", 10  ),
+    R_("open-right", "tiger-right", "*", "*", -100)
   )
-  
+)
+
 TigerProblem
 ```
 
+Note that we use for each component the way that lets us specify them in the easiest way (i.e., for observations and transitions a list and for rewards a data frame created with the `R_` function).
+
 ## Solving the Tiger Problem
-Now, we can solve the problem using the default algorithm (finite grid, a form of point-based value iteration).
+Now, we can solve the problem using the default algorithm. We use the finite grid method which 
+implements a form of point-based value iteration that can find approximate solutions also for difficult problems.
 
 
 ``` {r}
@@ -347,18 +327,19 @@ solution(tiger_solved)
 
 The solution contains the following elements:
 
-* **`belief`:** A data frame of all the belief states (rows) used while solving the problem. There is a column at the end that indicates which hyperplane (specified in **alpha** below) provides the best value for the given belief state. 
-
-* **`belief_proportions`:** A data frame with the probability distribution for each belief state. 
-
-* **`alpha`:** A data frame with the coefficients of the optimal hyperplanes. 
-
-* **`pg`:** A data frame containing the optimal policy graph. Rows are belief states.
-Column two indicates the optimal action for the belief stare. Columns three and after represent the transitions from belief state to belief state depending on observations.
-
 * **`total_expected_reward`:** The total expected reward of the optimal solution. 
 
-* **`initial_node	`:** The index of the initial belief state in the policy graph. 
+* **`initial_belief_state	`:** The index of the node in the policy graph that represents the initial belief state. 
+
+* **`belief_states`:** A data frame of all the belief states (rows) used while solving the problem. There is a column at the end that indicates which node in the policy graph is associated with the belief state. That is which segment in the value function (specified in **alpha** below) provides the best value for the given belief state. 
+
+* **`pg`:** A data frame containing the optimal policy graph. Rows are nodes in the graph are segements in the value function and each represents 
+one or more belief states.
+Column two indicates the optimal action for the node. Columns three and after represent the transitions to new nodes in the policy graph depending on the next observation.
+
+* **`alpha`:** A data frame with the coefficients of the optimal hyperplanes for the value function. 
+
+* **`belief_proportions`:** A data frame which summarized the belief states associated with a node in the policy graph by averaging the beliefs. 
 
 ### Visualization
 In this section, we will visualize the policy graph provided in the solution by the `solve_POMDP` function. 
@@ -367,8 +348,11 @@ In this section, we will visualize the policy graph provided in the solution by 
 plot(tiger_solved)
 ```
 
-The policy graph can be easily interpreted. Without prior information, the agent starts at the belief state marked with "initial." In this case the agent beliefs that there
-is a 50-50 chance that the tiger is behind ether door. The optimal action is displayed inside the state and in this case is to listen. The observations are labels on the arcs. Let us assume that the observation is "tiger-left", then the agent follows the appropriate arc and ends in a belief state that has a very high probability of the tiger being left. However, the optimal action is still to listen. If the agent again hears the tiger on the left then it ends up in a belief state that has `open-right` as the optimal action. There are arcs back to the initial state which reset the problem.
+The policy graph can be easily interpreted. Without prior information, the agent starts at the node marked with "initial." In this case the agent beliefs that there
+is a 50-50 chance that the tiger is behind ether door. The optimal action is displayed inside the state and in this case is to listen. The observations are labels on the arcs. Let us assume that the observation is "tiger-left", then the agent follows the appropriate arc and ends in a node representing a belief (one ore more belief states) that has a very high probability of the tiger being left. However, the optimal action is still to listen. If the agent again hears the tiger on the left then it ends up in a note that has
+a close to 100% belief that the tiger is to the ledt and 
+`open-right` is the optimal action. 
+The are arcs back from the nodes with the open actions to the initial state reset the problem.
 
 Since we only have two states, we can visualize the piecewise linear convex value function as a simple plot.
 
@@ -376,11 +360,16 @@ Since we only have two states, we can visualize the piecewise linear convex valu
 alpha <- solution(tiger_solved)$alpha
 alpha
 
-plot(NA, xlim = c(0, 1), ylim = c(0, 20), xlab = "Belief space (0 means left, 1 means right)", 
+plot(NA, xlim = c(0, 1), ylim = c(0, 20), xlab = "Belief space (for tiger is left)", 
   ylab = "Value function")
 for(i in 1:nrow(alpha)) abline(a = alpha[i,2], b = alpha[i,1]- alpha[i,2], col = i, xpd = FALSE)
-legend("topright", legend = 1:nrow(alpha), col = 1:nrow(alpha), lwd=1)
+legend("topright", legend = 
+    paste0(1:nrow(alpha),": ", solution(tiger_solved)$pg[,"action"]), col = 1:nrow(alpha), lwd=1)
 ```
+
+The lines represent the nodes in the policy graph and the optimal actions are shown in the legend.
+
+
 
 
 ## References

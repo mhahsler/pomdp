@@ -6,7 +6,8 @@
 
 \title{Define a POMDP Problem}
 
-\description{Defines all the elements of a POMDP problem including discount rate, states, actions, observations, transition probabilities, observation probabilities, and rewards.}
+\description{Defines all the elements of a POMDP problem including the discount rate, 
+the set of states, the set of actions, the set of observations, the transition probabilities, the observation probabilities, and rewards.}
 
 \usage{
 POMDP(discount, states, actions, observations, start, transition_prob, 
@@ -19,10 +20,10 @@ T_(action, start.state, end.state, probability)
 
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{discount}{numeric, discount rate where 1 is 100\%.}
-  \item{states}{character, a vector of strings specifying the names of the states.}
-  \item{actions}{character, a vector of strings specifying the names of the available actions.}
-  \item{observations}{character, a vector of strings specifying the names of the observations.}
+  \item{discount}{numeric; discount rate between 0 and 1.}
+  \item{states}{a character vector specifying the names of the states.}
+  \item{actions}{a character vector specifying the names of the available actions.}
+  \item{observations}{a character vector specifying the names of the observations.}
   \item{start}{Specifies the initial probabilities for each state (i.e., the initial belief state). 
     Options are:
     \itemize{
