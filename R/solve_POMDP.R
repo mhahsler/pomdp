@@ -117,57 +117,29 @@ solve_POMDP <- function(
     belief_proportions <- NULL
   }
   
-  ### outputs and results
-  
-  ## producing the starting belief vector
-  if (!is.character(start) && length(start) == number_of_states && sum(start) == 1) {
-    start_belief <- start
-  }
-  # if the starting beliefs are given by a uniform distribution over all states
-  if (length(start) == 1 && start[1] == "uniform") {
-    start_belief <- rep(1/number_of_states, number_of_states)
-  } else if (start[1] != "-") {  # if the starting beliefs include a specific subset of states
-    # if the starting beliefs are given by a uniform distribution over a subset of states (using their names)
-    if (!is.na(sum(match(start, states)))) {
-      start_belief <- rep(0, number_of_states)
-      start_belief[match(start, states)] <- 1/length(start)
-    }
-    # if the starting beliefs are given by a uniform distribution over a subset of states (using their numbers)
-    if (!is.character(start)) { 
-      if (sum(start)>=1 & length(start)<number_of_states) {
-        start_belief <- rep(0,number_of_states)
-        start_belief[start] <- 1/length(start)
-      }
-    }
-  } else if (start[1]=="-") { # if the starting beliefs exclude a specific subset of states
-    start_belief <- rep(1/(number_of_states-length(start)+1),number_of_states)
-    if (is.na(as.numeric(start[2]))) {
-      start_belief[match(start,states)] <- 0
-    }
-    if (!is.na(as.numeric(start[2]))) {
-      start_belief[start] <- 0
-    }
-  }
-  
-  ## calculating the total expected reward
-  initial_belief_state <- which.max(alpha %*% start_belief)
-  total_expected_reward <- max(alpha %*% start_belief)
-  
   solution <- structure(list(
     method = method, 
     parameter = parameter,
-    total_expected_reward = total_expected_reward,
-    initial_belief_state = initial_belief_state,
+    total_expected_reward = NA,
+    initial_pg_node = NA,
     belief_states = belief, 
     pg = pg,
     alpha = alpha,
     belief_proportions = belief_proportions
   ), class = "POMDP_solution")
-  
-  structure(list(model = model,
+ 
+   
+  solution <- structure(list(model = model,
     solution = solution,
     solver_output = solver_output
   ), class = "POMDP")
+  
+  ## add initial node and reward 
+  rew <- reward(solution, start = start)
+  solution$solution$total_expected_reward <- rew$total_expected_reward
+  solution$solution$initial_pg_node <- rew$initial_pg_node
+  
+  solution
 }
 
 print.POMDP <- function(x, ...) {
@@ -185,13 +157,63 @@ print.POMDP_solution <- function(x, ...) {
  print(unclass(x))
 }
 
+reward <- function(x, start = "uniform") {
+  if(!inherits(x, "POMDP")) stop("reward requires a solved POMDP problem, i.e., an object of class POMDP.")
+  
+  if(is.null(start)) return(list(total_expected_reward = NA, initial_pg_node = NA))
+  
+  number_of_states <- ncol(x$solution$alpha)
+  states <- x$model$states
+ 
+  ## FIXME: This needs fixing!   
+  ## producing the starting belief vector
+  if (!is.character(start) && length(start) == number_of_states && round(sum(start), 3) == 1) {
+    # a vector with probabilities
+    start_belief <- start
+  } else if (length(start) == 1 && start[1] == "uniform") {
+    # if the starting beliefs are given by a uniform distribution over all states
+    start_belief <- rep(1/number_of_states, number_of_states)
+  } else if (start[1] != "-") {  # if the starting beliefs include a specific subset of states
+    # if the starting beliefs are given by a uniform distribution over a subset of states (using their names)
+    if (!is.na(sum(match(start, states)))) {
+      start_belief <- rep(0, number_of_states)
+      start_belief[match(start, states)] <- 1/length(start)
+    }
+    # if the starting beliefs are given by a uniform distribution over a subset of states (using their numbers)
+    if (!is.character(start)) { 
+      if (all(start >= 1 & start <= number_of_states & start == floor(start))) {
+        start_belief <- rep(0,number_of_states)
+        start_belief[start] <- 1/length(start)
+      } else stop("illegal start belief state specification.")
+    }
+  } else if (start[1]=="-") { # if the starting beliefs exclude a specific subset of states
+    start_belief <- rep(1/(number_of_states-length(start)+1),number_of_states)
+    if (is.na(as.numeric(start[2]))) {
+      start_belief[match(start,states)] <- 0
+    }
+    if (!is.na(as.numeric(start[2]))) {
+      start_belief[start] <- 0
+    }
+  } else stop("illegal start belief state specification.")
+  
+  names(start_belief) <- states
+  
+  initial_pg_node <- which.max(x$solution$alpha %*% start_belief)
+  
+  
+  total_expected_reward <- max(x$solution$alpha %*% start_belief)
+  
+  list(total_expected_reward = total_expected_reward, initial_pg_node = initial_pg_node,
+    start_belief_state = start_belief)
+}
+
 
 parses_POMDP_model_file <- function(file) {
     problem <- readLines(file)  
     
     get_vals <- function(var) {
       ind <- grep(paste0(var,":"), problem)
-      if(length(ind) == 0) return("uniform")
+      if(length(ind) == 0) return(NULL)
       
       vals <- strsplit(problem[[ind]], "\\s+")[[1]][-1]
       

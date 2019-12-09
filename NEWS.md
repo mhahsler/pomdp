@@ -4,6 +4,8 @@
 * solve_POMDP can now solve POMDP files.
 * added helper functions O, R and T.
 * improved plot.
+* Added reward function.
+* values argument is now called max.
 
 ## Bugfix
 * fixed warning for start = "uniform".

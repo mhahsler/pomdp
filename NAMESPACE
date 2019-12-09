@@ -13,6 +13,7 @@ export(
   "solver_output", 
   "model",
   "solution",
+  "reward",
   "transitions",
   "policy_graph",
   "write_POMDP",

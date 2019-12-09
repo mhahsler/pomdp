@@ -5,11 +5,11 @@ POMDP <- function(
   states,
   actions,
   observations,
-  start = "uniform",
   transition_prob,
   observation_prob,
   reward,
-  values = "reward",
+  start = "uniform",
+  max = TRUE,
   name = NA) {
   
   ### FIXME: Check the values!
@@ -53,7 +53,7 @@ POMDP <- function(
     transition_prob = transition_prob,
     observation_prob = observation_prob, 
     reward = reward,
-    values = values
+    max = max
   ), class = "POMDP_model")
 }
 
@@ -61,6 +61,7 @@ print.POMDP_model <- function(x, ...) {
  cat("POMDP model:", x$name, "\n\n")
  print(unclass(x))
 }
+
 
 ### helper
 O_ <- function(action, end.state, observation, probability) 
