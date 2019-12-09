@@ -8,12 +8,13 @@ Extract the Policy Graph (as an igraph Object)
 Convert the policy graph in a POMDP solution object into an igraph object.
 }
 \usage{
-policy_graph(x)
+policy_graph(x, belief = TRUE, cols = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{ A POMDP object.
-}
+  \item{x}{ A POMDP object.}
+  \item{belief}{logical; add belief proportions as a pie chart in each node of the graph.}
+  \item{cols}{colors used for the states in the belief proportions.}
 }
 %\details{
 %%  ~~ If necessary, more details than the description above ~~
@@ -46,7 +47,9 @@ data("TigerProblem")
 tiger_solved <- solve_POMDP(model = TigerProblem)
 tiger_solved
 
-policy_graph(tiger_solved)
+pg <- policy_graph(tiger_solved)
+
+plot(pg)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

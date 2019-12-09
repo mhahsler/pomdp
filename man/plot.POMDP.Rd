@@ -7,8 +7,7 @@
 \description{The function plots the POMDP policy graph in an object of class POMDP. It uses \code{plot} in \pkg{igraph} with appropriate plotting options.}
 
 \usage{
-\method{plot}{POMDP}(x, y = NULL, belief = TRUE, legend = TRUE, 
-  vertex.size = 40, edge.arrow.size =.5, cols = NULL,...)
+\method{plot}{POMDP}(x, y = NULL, belief = TRUE, legend = TRUE, cols = NULL,...)
 }
 \arguments{
   \item{x}{object of class POMDP.}
@@ -16,7 +15,7 @@
   \item{belief}{logical; display belief proportions as a pie chart in each node.}
   \item{legend}{logical; display a legend for colors used belief proportions?}
   \item{cols}{colors used for the states.}
-  \item{vertex.size, edge.arrow.size, \dots}{plotting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{igraph} (see \code{\link[igraph]{plot.common}} for available options).}
+  \item{\dots}{plotting options passed on to \code{\link[igraph]{plot.igraph}} in \pkg{igraph} (see \code{\link[igraph]{plot.common}} for available options).}
 }
 
 \details{
@@ -59,5 +58,12 @@ plot(tiger_solved,
 
 ## add a plot title
 plot(tiger_solved, main = model(tiger_solved)$name)
+
+## plotting using the graph object 
+## (e.g., using the graph in the layout and to change the edge curvature)
+pg <- policy_graph(tiger_solved)
+plot(pg, 
+  layout = layout_as_tree(pg, root = 3, mode = "out"),
+  edge.curved = curve_multiple(pg, .2))
 }
 \keyword{hplot}
