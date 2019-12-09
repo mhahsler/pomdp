@@ -86,6 +86,8 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
 
 plot.POMDP <- function(x, y = NULL, belief = TRUE, legend = TRUE, cols = NULL, ...) {
   
+  if(is.null(x$solution)) stop("plot for POMDP needs a solved POMDP. Use solve_POMDP() first.")
+  
   pg<- policy_graph(x, belief = belief, cols = cols)
   plot.igraph(pg, ...)
   

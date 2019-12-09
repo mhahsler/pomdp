@@ -6,6 +6,7 @@
 * improved plot.
 * Added reward function.
 * values argument is now called max.
+* Fixed class structure. The central class is not POMDP with elements model and solution.
 
 ## Bugfix
 * fixed warning for start = "uniform".

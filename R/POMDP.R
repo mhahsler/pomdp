@@ -1,5 +1,6 @@
+# Class POMDP is a list with model and solution.
+# Unsolved models have no solution element.
 
-## Create a model
 POMDP <- function(
   discount = 0,
   states,
@@ -42,25 +43,55 @@ POMDP <- function(
   # a data frame with 5 columns
   # grid_size is an integer
   
-  ### model
+  ### unsolved pomdp model
   structure(list(
-    name = name,
-    discount = discount, 
-    states = states, 
-    actions = actions, 
-    observations = observations,  
-    start = start, 
-    transition_prob = transition_prob,
-    observation_prob = observation_prob, 
-    reward = reward,
-    max = max
-  ), class = "POMDP_model")
+    model = structure(list(
+      name = name,
+      discount = discount, 
+      states = states, 
+      actions = actions, 
+      observations = observations,  
+      start = start, 
+      transition_prob = transition_prob,
+      observation_prob = observation_prob, 
+      reward = reward,
+      max = max
+      ), class = "POMDP_model")
+  ), class = "POMDP")
+}
+
+print.POMDP <- function(x, ...) {
+  if(is.null(x$solution)) cat("Unsolved POMDP model:", x$model$name, "\n")
+  else cat(
+    "Solved POMDP model:", x$model$name, "\n", 
+    "\tsolution method:", x$solution$method, "\n",
+    "\tpolicy graph nodes:", nrow(x$solution$pg), "\n",
+    paste0("\ttotal expected reward:", x$solution$total_expected_reward), "\n\n" 
+  )
 }
 
 print.POMDP_model <- function(x, ...) {
  cat("POMDP model:", x$name, "\n\n")
+ if(!is.null(x$problem)) { 
+   cat("Model specification from POMDP file\n\n")
+   cat("--------------- Start ---------------\n")
+   cat(x$problem, sep = "\n")
+   cat("---------------- End ----------------\n\n")
+   x$problem <- NULL
+  }
  print(unclass(x))
 }
+
+model <- function(x) {
+  if(!inherits(x, "POMDP")) stop("x needs to be a POMDP object!")
+  x$model 
+}
+
+solution <- function(x) {
+  if(!inherits(x, "POMDP")) stop("x needs to be a POMDP object!")
+  x$solution
+}
+
 
 
 ### helper

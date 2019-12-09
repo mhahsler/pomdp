@@ -55,6 +55,7 @@ Hossein Kamalzadeh, Michael Hahsler
 }
 \examples{
 data("TigerProblem")
+TigerProblem
 
 tiger_solved <- solve_POMDP(model = TigerProblem, parameter = list(fg_points = 10))
 tiger_solved
@@ -65,10 +66,13 @@ model(tiger_solved)
 ## look at the solution
 solution(tiger_solved)
 
+## look at solver output
+solver_output(tiger_solved)
+
 ## plot the policy graph
 plot(tiger_solved)
 
-## display solver options
+## display available solver options which can be passed on to the solver as parameter.
 solve_POMDP_parameter()
 
 ## solve a POMDP from http://www.pomdp.org/examples

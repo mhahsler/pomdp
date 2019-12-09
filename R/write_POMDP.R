@@ -1,7 +1,9 @@
 
 ## write a model in POMDP format for pomdp-solve
 write_POMDP <- function(model, file) {
-  if(!inherits(model, "POMDP_model")) stop("model needs to be a POMDP model use POMDP()!")
+  if(!inherits(model, "POMDP")) stop("model needs to be a POMDP model use POMDP()!")
+  
+  model <- model$model
   
   discount    <- model$discount 
   states      <- model$states 

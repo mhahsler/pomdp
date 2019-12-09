@@ -10,7 +10,7 @@ Authors@R: c(person("Hossein", "Kamalzadeh", email = "hkamalzadeh@smu.edu",
                   role = c("ctb", "cph"))
 		  )
 Description: Provides an interface to pomdp-solve, a solver for Partially Observable Markov Decision Processes (POMDP). The package enables the user to simply define all components of a POMDP model and solve the problem using several methods. The package also contains functions to analyze and visualize the POMDP solutions (e.g., the optimal policy).
-Depends: R (>= 3.1.0)
+Depends: R (>= 3.5.0)
 License: GPL (>=3)
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

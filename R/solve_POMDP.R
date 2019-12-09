@@ -1,3 +1,6 @@
+# Class POMDP is a list with model and solution.
+# solve_POMDP uses the model and adds the solution to the list.
+
 find_pomdpsolve <- function() {
   exec <- system.file(c("pomdp-solve", "pomdp-solve.exe"), package="pomdp")[1]
   if(exec == "") stop("pomdp-solve executable not found. Reinstall package pomdp.")
@@ -28,9 +31,8 @@ solve_POMDP <- function(
   ### DEBUG
   #verbose <- TRUE
   ###
-    
-  methods <- c("grid", "enum", "twopass", "witness", "incprune")
-  ### Not implemented:  "linsup", "mcgs"
+  
+  methods <- c("grid", "enum", "twopass", "witness", "incprune") # Not implemented:  "linsup", "mcgs"
   method <- match.arg(method, methods)
   
   ### write model to file
@@ -39,8 +41,8 @@ solve_POMDP <- function(
   
   # is model a filename or a URL?
   if(is.character(model)) {
-    model <- parses_POMDP_model_file(model)
-    writeLines(model$problem, con = pomdp_filename)
+    model <- structure(list(model = parses_POMDP_model_file(model)), class = "POMDP")
+    writeLines(model$model$problem, con = pomdp_filename)
   } else {
     write_POMDP(model, pomdp_filename)
   }
@@ -75,10 +77,10 @@ solve_POMDP <- function(
   belief_filename <- paste0(file_prefix, ".belief")
   alpha_filename <- paste0(file_prefix, ".alpha")
   
-  states <- model$states
-  actions <- model$actions
-  observations <- model$observations
-  start <- model$start
+  states <- model$model$states
+  actions <- model$model$actions
+  observations <- model$model$observations
+  start <- model$model$start
   
   ## importing alpha file
   alpha <- readLines(alpha_filename)
@@ -117,7 +119,8 @@ solve_POMDP <- function(
     belief_proportions <- NULL
   }
   
-  solution <- structure(list(
+  # add solution to model
+  model$solution <- structure(list(
     method = method, 
     parameter = parameter,
     total_expected_reward = NA,
@@ -127,34 +130,28 @@ solve_POMDP <- function(
     alpha = alpha,
     belief_proportions = belief_proportions
   ), class = "POMDP_solution")
- 
    
-  solution <- structure(list(model = model,
-    solution = solution,
-    solver_output = solver_output
-  ), class = "POMDP")
   
   ## add initial node and reward 
-  rew <- reward(solution, start = start)
-  solution$solution$total_expected_reward <- rew$total_expected_reward
-  solution$solution$initial_pg_node <- rew$initial_pg_node
-  
-  solution
-}
-
-print.POMDP <- function(x, ...) {
-  cat(
-    "Solved POMDP model:", x$model$name, "\n", 
-    "\tsolution method:", x$solution$method, "\n",
-    "\tpolicy graph nodes:", nrow(x$solution$pg), "\n",
-    paste0("\ttotal expected:", x$model$values, ":"), 
-      x$solution$total_expected_reward,"\n\n" 
-  )
+  rew <- reward(model, start = start)
+  model$solution$total_expected_reward <- rew$total_expected_reward
+  model$solution$initial_pg_node <- rew$initial_pg_node
+ 
+  model$solver_output <- solver_output
+   
+  model
 }
 
 print.POMDP_solution <- function(x, ...) {
  cat("POMDP solution\n\n")
  print(unclass(x))
+}
+
+solver_output <- function(x) {
+  if(!inherits(x, "POMDP")) stop("x needs to be a POMDP object!")
+  if(is.null(solution(x))) stop("x conatains an unsolved POMDP.")
+  cat(x$solver_output, sep = "\n")
+  invisible(x$solver_output)
 }
 
 reward <- function(x, start = "uniform") {
@@ -229,13 +226,14 @@ parses_POMDP_model_file <- function(file) {
     vals
     }
     
-    list(
+    structure(list(
       name = file,
       states = get_vals("states"),
       observations = get_vals("observations"),
       actions = get_vals("actions"),
       start = get_vals("start"),
-      problem = problem
-      )
+      problem = problem),
+      class = "POMDP_model"
+    )
 }    
     

@@ -71,7 +71,9 @@ POMDP problems can be solved using \code{\link{solve_POMDP}}.
 Details about the available specifications can be found in [1].
 }
 \value{
-The function returns an object of class POMDP_model which is list with the model specification.
+The function returns an object of class POMDP which is list with an element called \code{model} containing
+a list with the model specification. \code{solve_POMDP} reads the object and adds a list element called
+\code{solution}.
 }
 \references{
 [1] For further details on how the POMDP solver utilized in this R package works check the following website:
@@ -119,4 +121,6 @@ TigerProblem <- POMDP(
 )
   
 TigerProblem
+
+model(TigerProblem)
 }
