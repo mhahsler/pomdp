@@ -628,8 +628,12 @@ void del_constraint(lprec *lp, int del_row)
       lp->orig_rh[i] = lp->orig_rh[i + 1];
       lp->ch_sign[i] = lp->ch_sign[i + 1];
       lp->bas[i] = lp->bas[i + 1];
+/* MFH: This produces the wollowing warning:
+   lpkit.c:632:9: warning: 'strcpy' accessing 1 byte at offsets ... and ... may overlap 1 byte at offset ... [-Wrestrict]
+
+   POMDP does not use names
       if(lp->names_used)
-        strcpy(lp->row_name[i], lp->row_name[i + 1]);
+        strcpy(lp->row_name[i], lp->row_name[i + 1]); */
     }
   for(i = 1; i < lp->rows; i++)
     if(lp->bas[i] >  del_row)
@@ -786,8 +790,13 @@ void del_column(lprec *lp, int column)
     }
   for(i = lp->rows+column; i < lp->sum; i++)
     {
-      if(lp->names_used)
+    /* MFH: This produces the wollowing warning:
+   lpkit.c:790:9: warning: 'strcpy' accessing 1 byte at offsets ... and ... may overlap 1 byte at offset ... [-Wrestrict]
+
+   POMDP does not use names
+	if(lp->names_used)
         strcpy(lp->col_name[i-lp->rows], lp->col_name[i-lp->rows+1]);
+   */
       lp->must_be_int[i]=lp->must_be_int[i + 1];
       lp->orig_upbo[i]=lp->orig_upbo[i + 1];
       lp->orig_lowbo[i]=lp->orig_lowbo[i + 1];
