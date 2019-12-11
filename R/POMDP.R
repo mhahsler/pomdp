@@ -87,8 +87,14 @@ model <- function(x) {
   x$model 
 }
 
-solution <- function(x) {
+# check if x is a solved POMDP
+.solved_POMDP <- function(x) {
   if(!inherits(x, "POMDP")) stop("x needs to be a POMDP object!")
+  if(is.null(x$solution)) stop("x needs to be a solved POMDP. Use solve_POMDP() first.")
+}
+
+solution <- function(x) {
+  .solved_POMDP(x)
   x$solution
 }
 

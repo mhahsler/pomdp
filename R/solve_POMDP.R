@@ -148,14 +148,14 @@ print.POMDP_solution <- function(x, ...) {
 }
 
 solver_output <- function(x) {
-  if(!inherits(x, "POMDP")) stop("x needs to be a POMDP object!")
-  if(is.null(solution(x))) stop("x conatains an unsolved POMDP.")
+  .solved_POMDP(x)
+  
   cat(x$solver_output, sep = "\n")
   invisible(x$solver_output)
 }
 
 reward <- function(x, start = "uniform") {
-  if(!inherits(x, "POMDP")) stop("reward requires a solved POMDP problem, i.e., an object of class POMDP.")
+  .solved_POMDP(x)
   
   if(is.null(start)) return(list(total_expected_reward = NA, initial_pg_node = NA))
   

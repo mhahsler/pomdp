@@ -1,4 +1,7 @@
 policy_graph <- function(x, belief = TRUE, cols = NULL) {
+ 
+  .solved_POMDP(x) 
+  
   ## producing the optimal policy graph
   pg <- x$solution$pg
   
@@ -23,7 +26,7 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
   
   ### Note: the space helps with moving the id away from the pie cut.
   init <- rep(":   ", nrow(x$solution$pg))
-  init[x$solution$initial_belief_state] <- ": initial"
+  init[x$solution$initial_pg_node] <- ": start"
   
   V(policy_graph)$label <- paste0(x$solution$pg$node, init, 
     "\n", x$solution$pg$action) 
@@ -86,7 +89,6 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
 
 plot.POMDP <- function(x, y = NULL, belief = TRUE, legend = TRUE, cols = NULL, ...) {
   
-  if(is.null(x$solution)) stop("plot for POMDP needs a solved POMDP. Use solve_POMDP() first.")
   
   pg<- policy_graph(x, belief = belief, cols = cols)
   plot.igraph(pg, ...)
