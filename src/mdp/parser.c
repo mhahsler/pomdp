@@ -154,8 +154,9 @@ int minObs, maxObs;
     We allocate this memory once we know how big they must be and we
     will free all of this when we convert it to its final sparse format.
     */
-I_Matrix *IP;   /* For transition matrices. */
-I_Matrix *IR;   /* For observation matrices. */
+/* IP and IR are not defined in mdp.h */
+/* I_Matrix *IP; */   /* For transition matrices. */
+/* I_Matrix *IR; */  /* For observation matrices. */
 I_Matrix **IW;  /* For reward matrices */
 
 /* These variables are used by the parser only, to keep some state
