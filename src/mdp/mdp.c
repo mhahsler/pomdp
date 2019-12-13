@@ -76,10 +76,9 @@ int gNumObservations = 0;   /* remains zero for MDPs */
 
 /* Intermediate variables */
 
-/* IP and IR are moved to mdp.h */
-/* I_Matrix *IP; */  /* Transition Probabilities */
+I_Matrix *IP; /* Transition Probabilities */
 
-/* I_Matrix *IR; */ /* Observation Probabilities (POMDP only) */
+I_Matrix *IR; /* Observation Probabilities (POMDP only) */
 
 I_Matrix IQ;  /* Immediate action-state pair values (both MDP and POMDP) */
 
