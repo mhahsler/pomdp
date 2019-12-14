@@ -16,7 +16,8 @@ export(
   "reward",
   "policy_graph",
   "write_POMDP",
-  "O_", "R_", "T_"
+  "O_", "R_", "T_",
+  "visNetwork_POMDP"
   )
 
 S3method("plot", "POMDP")

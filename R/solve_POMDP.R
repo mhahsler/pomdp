@@ -23,7 +23,7 @@ solve_POMDP_parameter <- function() {
 #solve a POMDP model
 solve_POMDP <- function(
   model,
-  horizon = NULL,
+  horizon = Inf,
   method = "grid",
   parameter = NULL,
   verbose = FALSE) {
@@ -32,11 +32,14 @@ solve_POMDP <- function(
   #verbose <- TRUE
   ###
   
+  if(is.null(horizon) || horizon < 1) horizon <- Inf 
+  else horizon <- floor(horizon)
+ 
   methods <- c("grid", "enum", "twopass", "witness", "incprune") # Not implemented:  "linsup", "mcgs"
   method <- match.arg(method, methods)
   
   ### write model to file
-  file_prefix <- tempfile(pattern = "model")
+  file_prefix <- tempfile(pattern = "pomdp_")
   pomdp_filename <- paste0(file_prefix, ".POMDP") 
   
   # is model a filename or a URL?
@@ -51,71 +54,66 @@ solve_POMDP <- function(
     paras <- sapply(names(parameter), FUN = function(n) paste0("-", n, " ", parameter[[n]]))
   } else paras <- ""
   
-  solver_output <- system2(find_pomdpsolve(), 
-    args = c(paste("-pomdp", pomdp_filename),
-      paste("-method", method),
-      (if(!is.null(horizon)) paste("-horizon", horizon) else ""),
-      paras, 
-      "-fg_save true"),
-    stdout = TRUE, stderr = TRUE, wait = TRUE
+ 
+  # for verbose it goes directly to the console ("") 
+  # for finite horizon we need to save all pg and alpha files
+  pomdp_args <- c(
+    paste("-pomdp", pomdp_filename),
+    paste("-method", method),
+    ifelse(is.finite(horizon), paste("-horizon", horizon, "-save_all true"), ""),
+    paras, 
+    "-fg_save true")
+  
+  if(verbose) cat("Calling pomdp-solve with the following arguments:", 
+    paste(pomdp_args, collapse =  " "), 
+    "\nSolver output:", sep = "\n")
+  
+  solver_output <- system2(find_pomdpsolve(), args = pomdp_args,
+    stdout = ifelse(verbose, "", TRUE), stderr = ifelse(verbose, "", TRUE), wait = TRUE
   )
-   
+  
   if(!is.null(attr(solver_output, "status"))) {
     cat(paste(solver_output, "\n"))
     stop("POMDP solver returned an error. Note that the action and state index for the solver starts with 0 and not with 1. So action=0 is the first action.")
   }
-   
-  ## the verbose mode: printing all the outputs from pomdp solver
-  if(verbose) cat(paste(solver_output, "\n"))
   
-  ### importing the outputs and results (pomdp-solve adds the PID to the file prefix)
-  file_prefix <- gsub("^o = (.*)\\s*$", "\\1", solver_output[16]) 
-  
-  ## Creating result files' names and extensions
-  pomdp_filename <- paste0(file_prefix, ".POMDP") 
-  pg_filename <- paste0(file_prefix, ".pg")
-  belief_filename <- paste0(file_prefix, ".belief")
-  alpha_filename <- paste0(file_prefix, ".alpha")
-  
-  states <- model$model$states
-  actions <- model$model$actions
-  observations <- model$model$observations
-  start <- model$model$start
-  
-  ## importing alpha file
-  alpha <- readLines(alpha_filename)
-  alpha <- alpha[seq(2, length(alpha), 3)]
-  alpha <- do.call(rbind, lapply(alpha, function(a) as.numeric(strsplit(a, " ")[[1]])))
-  colnames(alpha) <- paste0("coef_", 1:ncol(alpha))
-  
-  number_of_states <- ncol(alpha)
-  
-  ## importing pg file
-  pg <- read.table(pg_filename, header = FALSE, sep = "", colClasses = "numeric", na.strings = "-")
-  pg <- pg + 1 #index has to start from 1 not 0
-  
-  ### FIXME: I am not sure we need this now
-  #if (dim(pg)[2]==1 ) {
-  #  pg <- t(pg)
-  #}
-  
-  # renaming the columns and actions
-  colnames(pg) <- c("node", "action", observations)
-  pg[,2] <- actions[pg[,2]]
-  
-  ## importing belief file if it exists
-  if(file.exists(belief_filename)) {
-    belief <- as.matrix(read.table(belief_filename)) 
-    colnames(belief) <- states
-  
+  ## converged infinite horizon POMDPs produce a policy graph 
+  if(!is.finite(horizon)) { 
+    alpha <- .get_alpha_file(file_prefix, model)
+    pg <- .get_pg_file(file_prefix, model)
+    belief <- .get_belief_file(file_prefix, model)
+    
     ## finding the respective proportions for each line (node)
-    belief <- cbind(belief, node = apply(belief, MARGIN = 1, FUN = function(b) which.max(alpha %*% b)))
+    if(!is.null(belief)) {
+      belief <- cbind(belief, node = apply(belief, MARGIN = 1, FUN = function(b) which.max(alpha %*% b)))
+      
+      belief_proportions <- t(sapply(1:nrow(pg), FUN = 
+          function(i) colMeans(belief[belief[,"node"] == i, -ncol(belief), drop = FALSE])))
+    } else {
+      belief_proportions <- NULL
+    }
     
-    belief_proportions <- t(sapply(1:nrow(pg), FUN = 
-        function(i) colMeans(belief[belief[,"node"] == i, -ncol(belief), drop = FALSE])))
+  }else{
+    ## finite horizon pomdp: read the policy tree
+    belief <- .get_belief_file(file_prefix, model)
     
-  } else {
-    belief <- NULL
+    alpha <- list()
+    pg <- list()
+    for(i in 1:horizon) {
+      ## no more files exist after convergence 
+      r <- suppressWarnings(try({
+        alpha[[i]] <- .get_alpha_file(file_prefix, model, i)
+        pg[[i]] <- .get_pg_file(file_prefix, model, i)
+      }, silent = TRUE))
+      if(inherits(r, "try-error")) {
+        if(verbose) cat("Convergence: Finite-horizon POMDP converged early at epoch:", i-1, "\n")
+        break
+      }
+    }
+    
+    alpha <- rev(alpha)
+    pg <- rev(pg)
+    
     belief_proportions <- NULL
   }
   
@@ -123,6 +121,7 @@ solve_POMDP <- function(
   model$solution <- structure(list(
     method = method, 
     parameter = parameter,
+    horizon = horizon,
     total_expected_reward = NA,
     initial_pg_node = NA,
     belief_states = belief, 
@@ -133,14 +132,16 @@ solve_POMDP <- function(
    
   
   ## add initial node and reward 
-  rew <- reward(model, start = start)
+  rew <- reward(model, start = model$model$start)
   model$solution$total_expected_reward <- rew$total_expected_reward
   model$solution$initial_pg_node <- rew$initial_pg_node
- 
+  
   model$solver_output <- solver_output
    
   model
 }
+
+
 
 print.POMDP_solution <- function(x, ...) {
  cat("POMDP solution\n\n")
@@ -157,10 +158,8 @@ solver_output <- function(x) {
 reward <- function(x, start = "uniform") {
   .solved_POMDP(x)
   
-  if(is.null(start)) return(list(total_expected_reward = NA, initial_pg_node = NA))
-  
-  number_of_states <- ncol(x$solution$alpha)
   states <- x$model$states
+  number_of_states <- length(states)
  
   ## FIXME: This needs fixing!   
   ## producing the starting belief vector
@@ -194,11 +193,13 @@ reward <- function(x, start = "uniform") {
   } else stop("illegal start belief state specification.")
   
   names(start_belief) <- states
-  
-  initial_pg_node <- which.max(x$solution$alpha %*% start_belief)
-  
-  
-  total_expected_reward <- max(x$solution$alpha %*% start_belief)
+ 
+  ## alpha and pg is a list for finite horizon POMDPS
+  if(is.list(x$solution$alpha)) alpha <- x$solution$alpha[[1]]
+  else alpha <- x$solution$alpha
+   
+  initial_pg_node <- which.max(alpha %*% start_belief)
+  total_expected_reward <- max(alpha %*% start_belief)
   
   list(total_expected_reward = total_expected_reward, initial_pg_node = initial_pg_node,
     start_belief_state = start_belief)
@@ -236,4 +237,46 @@ parses_POMDP_model_file <- function(file) {
       class = "POMDP_model"
     )
 }    
-    
+
+  
+
+.get_alpha_file <- function(file_prefix, model, number = "") {  
+  filename <- paste0(file_prefix, '-0.alpha',number)
+  ## importing alpha file
+  alpha <- readLines(filename)
+  alpha <- alpha[seq(2, length(alpha), 3)]
+  alpha <- do.call(rbind, lapply(alpha, function(a) as.numeric(strsplit(a, " ")[[1]])))
+  colnames(alpha) <- paste0("coef_", 1:ncol(alpha))
+  alpha
+}
+
+## helpers to read pomdp-solve files
+
+## importing pg file
+.get_pg_file <- function(file_prefix, model, number="") {
+  filename <- paste0(file_prefix,'-0.pg', number)
+  pg <- read.table(filename, header = FALSE, sep = "", 
+    colClasses = "numeric", na.strings = "-")
+  pg <- pg + 1 #index has to start from 1 not 0
+  
+  ### FIXME: I am not sure we need this now
+  #if (dim(pg)[2]==1 ) {
+  #  pg <- t(pg)
+  #}
+  
+  # renaming the columns and actions
+  colnames(pg) <- c("node", "action", model$model$observations)
+  pg[,2] <- model$model$actions[pg[,2]]
+  pg
+}
+  
+## importing belief file if it exists
+.get_belief_file <- function(file_prefix, model) {
+  filename <- paste0(file_prefix,'-0.belief')
+  if(!file.exists(filename)) return(NULL)
+  
+  belief <- as.matrix(read.table(filename)) 
+  colnames(belief) <- model$model$states
+  belief
+} 
+

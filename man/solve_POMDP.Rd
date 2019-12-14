@@ -8,7 +8,7 @@ use different solution methods [2] to
 solve problems that are formulated as partially observable Markov decision processes (POMDPs) [1]. The result is a (close to) optimal policy.
 }
 \usage{
-solve_POMDP(model, horizon = NULL, method = "grid", parameter= NULL, verbose = FALSE)
+solve_POMDP(model, horizon = Inf, method = "grid", parameter= NULL, verbose = FALSE)
 solve_POMDP_parameter()
 }
 %- maybe also 'usage' for other objects documented here.
@@ -20,8 +20,8 @@ solve_POMDP_parameter()
   \code{"enum"},
   \code{"twopass"},
   \code{"witness"}, or
-  \code{"incprune"}. Details can be found in [1].}
-  \item{horizon}{ an integer with the number of iterations for finite horizon problems. If set to \code{NULL}, the algorithm continues running iterations till it converges to the infinite horizon solution.}
+  \code{"incprune"}. Details can be found in [1]. The default is \code{"grid"} implementing the finite grid method. The size of the grid can be set via \code{parameter = list(fg_points = 10)}.}
+  \item{horizon}{ an integer with the number of iterations for finite horizon problems. If set to \code{Inf}, the algorithm continues running iterations till it converges to the infinite horizon solution.}
   \item{parameter}{ a list with parameters passed on to the pomdp-solve program. }
   \item{verbose}{
 logical, if set to \code{TRUE}, the function provides the output of the pomdp solver in the R console.
@@ -30,6 +30,9 @@ logical, if set to \code{TRUE}, the function provides the output of the pomdp so
 \details{
 \code{solve_POMDP_parameter()} displays available solver parameter options.
 
+Infinite-horizon POMDPs (\code{horizon = Inf}) converge to a single policy graph. Finite-horizon POMDPs result in a
+policy tree of a depth equal to the smaller of the horizon or the number of epochs to convergence. The policty (and the associated alpha values for the value function) are stored in a list by level. The policy for the first epoch is stored as the first element. 
+  
 Note: The parser for POMDP files is experimental. Please report problems here: \url{https://github.com/farzad/pomdp/issues}.
 }
 \value{
@@ -69,7 +72,7 @@ solution(tiger_solved)
 ## look at solver output
 solver_output(tiger_solved)
 
-## plot the policy graph
+## plot the policy graph of the infinite-horizon POMDP
 plot(tiger_solved)
 
 ## display available solver options which can be passed on to the solver as parameter.
@@ -79,6 +82,12 @@ solve_POMDP_parameter()
 sol <- solve_POMDP("http://www.pomdp.org/examples/cheese.95.POMDP")
 sol
 plot(sol)
+
+## Finite horizon POMDP
+tiger_solved <- solve_POMDP(model = TigerProblem, horizon = 10)
+tiger_solved
+
+
 }
 
 

@@ -2,6 +2,8 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
  
   .solved_POMDP(x) 
   
+  if(is.finite(x$solution$horizon)) stop("Only infinite horizon POMDPs have a plotable policy graph!")
+  
   ## producing the optimal policy graph
   pg <- x$solution$pg
   
@@ -88,7 +90,6 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
 
 
 plot.POMDP <- function(x, y = NULL, belief = TRUE, legend = TRUE, cols = NULL, ...) {
-  
   
   pg<- policy_graph(x, belief = belief, cols = cols)
   plot.igraph(pg, ...)
