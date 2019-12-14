@@ -1,5 +1,12 @@
 # pomdp 0.9.2-1 (xx/xx/2019)
 
+## Changes
+* reward now looks at different epochs, calulates the optimal actions and the paramater names are improved.
+* solve_POMDP not looks at convergence.
+* added policy graph visualization with vizNetwork.
+* Many improvements to support finite-horizon POMDPs and store epochs.
+
+
 # pomdp 0.9.2 (12/06/2019)
 
 ## Changes
