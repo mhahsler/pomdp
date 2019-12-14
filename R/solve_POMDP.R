@@ -34,10 +34,12 @@ solve_POMDP <- function(
   
   if(is.null(horizon) || horizon < 1) horizon <- Inf 
   else horizon <- floor(horizon)
- 
+  
+  converged <- NA
+   
   methods <- c("grid", "enum", "twopass", "witness", "incprune") # Not implemented:  "linsup", "mcgs"
   method <- match.arg(method, methods)
-  
+    
   ### write model to file
   file_prefix <- tempfile(pattern = "pomdp_")
   pomdp_filename <- paste0(file_prefix, ".POMDP") 
@@ -79,6 +81,7 @@ solve_POMDP <- function(
   
   ## converged infinite horizon POMDPs produce a policy graph 
   if(!is.finite(horizon)) { 
+    converged <- TRUE
     alpha <- .get_alpha_file(file_prefix, model)
     pg <- .get_pg_file(file_prefix, model)
     belief <- .get_belief_file(file_prefix, model)
@@ -97,6 +100,7 @@ solve_POMDP <- function(
     ## finite horizon pomdp: read the policy tree
     belief <- .get_belief_file(file_prefix, model)
     
+    converged <- FALSE ### did the grid method converge?
     alpha <- list()
     pg <- list()
     for(i in 1:horizon) {
@@ -107,9 +111,12 @@ solve_POMDP <- function(
       }, silent = TRUE))
       if(inherits(r, "try-error")) {
         if(verbose) cat("Convergence: Finite-horizon POMDP converged early at epoch:", i-1, "\n")
+        converged <- i-1
         break
       }
     }
+    
+    if(!converged && method == "grid") warning("The grid method for finite horizon did not converge. The reward values may not be valid. Increase the horizon ot use an alternative method.")
     
     alpha <- rev(alpha)
     pg <- rev(pg)
@@ -122,6 +129,7 @@ solve_POMDP <- function(
     method = method, 
     parameter = parameter,
     horizon = horizon,
+    converged = converged,
     total_expected_reward = NA,
     initial_pg_node = NA,
     belief_states = belief, 
@@ -129,7 +137,6 @@ solve_POMDP <- function(
     alpha = alpha,
     belief_proportions = belief_proportions
   ), class = "POMDP_solution")
-   
   
   ## add initial node and reward 
   rew <- reward(model, start = model$model$start)

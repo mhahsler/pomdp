@@ -32,6 +32,8 @@ logical, if set to \code{TRUE}, the function provides the output of the pomdp so
 
 Infinite-horizon POMDPs (\code{horizon = Inf}) converge to a single policy graph. Finite-horizon POMDPs result in a
 policy tree of a depth equal to the smaller of the horizon or the number of epochs to convergence. The policty (and the associated alpha values for the value function) are stored in a list by level. The policy for the first epoch is stored as the first element. 
+
+Note on the finite grid method: This method is geared towards infinite-horizon models and will produce strange reward values for finite horizon problems.
   
 Note: The parser for POMDP files is experimental. Please report problems here: \url{https://github.com/farzad/pomdp/issues}.
 }
@@ -83,11 +85,12 @@ sol <- solve_POMDP("http://www.pomdp.org/examples/cheese.95.POMDP")
 sol
 plot(sol)
 
-## Finite horizon POMDP
-tiger_solved <- solve_POMDP(model = TigerProblem, horizon = 10)
+## Finite horizon POMDP using the incremental pruning method
+tiger_solved <- solve_POMDP(model = TigerProblem, horizon = 1, method = "incprune")
 tiger_solved
 
-
+reward(tiger_solved, start = "uniform")
+reward(tiger_solved, start = c(1,0))
 }
 
 
