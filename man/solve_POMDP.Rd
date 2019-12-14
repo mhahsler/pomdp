@@ -89,8 +89,8 @@ plot(sol)
 tiger_solved <- solve_POMDP(model = TigerProblem, horizon = 1, method = "incprune")
 tiger_solved
 
-reward(tiger_solved, start = "uniform")
-reward(tiger_solved, start = c(1,0))
+reward(tiger_solved, belief = "uniform")
+reward(tiger_solved, belief = c(1,0))
 }
 
 

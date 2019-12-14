@@ -139,7 +139,7 @@ solve_POMDP <- function(
   ), class = "POMDP_solution")
   
   ## add initial node and reward 
-  rew <- reward(model, start = model$model$start)
+  rew <- reward(model, belief = model$model$start)
   model$solution$total_expected_reward <- rew$total_expected_reward
   model$solution$initial_pg_node <- rew$initial_pg_node
   
@@ -162,7 +162,7 @@ solver_output <- function(x) {
   invisible(x$solver_output)
 }
 
-reward <- function(x, start = "uniform") {
+reward <- function(x, belief = "uniform", epoch = 1) {
   .solved_POMDP(x)
   
   states <- x$model$states
@@ -170,46 +170,57 @@ reward <- function(x, start = "uniform") {
  
   ## FIXME: This needs fixing!   
   ## producing the starting belief vector
-  if (!is.character(start) && length(start) == number_of_states && round(sum(start), 3) == 1) {
+  if (!is.character(belief) && length(belief) == number_of_states && round(sum(belief), 3) == 1) {
     # a vector with probabilities
-    start_belief <- start
-  } else if (length(start) == 1 && start[1] == "uniform") {
+    start_belief <- belief
+  } else if (length(belief) == 1 && belief[1] == "uniform") {
     # if the starting beliefs are given by a uniform distribution over all states
     start_belief <- rep(1/number_of_states, number_of_states)
-  } else if (start[1] != "-") {  # if the starting beliefs include a specific subset of states
+  } else if (belief[1] != "-") {  # if the starting beliefs include a specific subset of states
     # if the starting beliefs are given by a uniform distribution over a subset of states (using their names)
-    if (!is.na(sum(match(start, states)))) {
+    if (!is.na(sum(match(belief, states)))) {
       start_belief <- rep(0, number_of_states)
-      start_belief[match(start, states)] <- 1/length(start)
+      start_belief[match(belief, states)] <- 1/length(belief)
     }
     # if the starting beliefs are given by a uniform distribution over a subset of states (using their numbers)
-    if (!is.character(start)) { 
-      if (all(start >= 1 & start <= number_of_states & start == floor(start))) {
+    if (!is.character(belief)) { 
+      if (all(belief >= 1 & belief <= number_of_states & belief == floor(belief))) {
         start_belief <- rep(0,number_of_states)
-        start_belief[start] <- 1/length(start)
+        start_belief[belief] <- 1/length(belief)
       } else stop("illegal start belief state specification.")
     }
-  } else if (start[1]=="-") { # if the starting beliefs exclude a specific subset of states
-    start_belief <- rep(1/(number_of_states-length(start)+1),number_of_states)
-    if (is.na(as.numeric(start[2]))) {
-      start_belief[match(start,states)] <- 0
+  } else if (belief[1]=="-") { # if the starting beliefs exclude a specific subset of states
+    start_belief <- rep(1/(number_of_states-length(belief)+1),number_of_states)
+    if (is.na(as.numeric(belief[2]))) {
+      start_belief[match(belief,states)] <- 0
     }
-    if (!is.na(as.numeric(start[2]))) {
-      start_belief[start] <- 0
+    if (!is.na(as.numeric(belief[2]))) {
+      start_belief[belief] <- 0
     }
   } else stop("illegal start belief state specification.")
   
   names(start_belief) <- states
  
   ## alpha and pg is a list for finite horizon POMDPS
-  if(is.list(x$solution$alpha)) alpha <- x$solution$alpha[[1]]
-  else alpha <- x$solution$alpha
-   
+  if(is.list(x$solution$alpha)) {
+    if(epoch > length(x$solution$alpha)) stop("The solution does not contain that many epochs. Either the horizon was set to less epochs or the solution converged earlier.")
+    alpha <- x$solution$alpha[[epoch]]
+    pg <- x$solution$pg[[epoch]]
+  }
+  else { 
+    pg <- x$solution$pg
+    alpha <- x$solution$alpha
+  }
+  
   initial_pg_node <- which.max(alpha %*% start_belief)
   total_expected_reward <- max(alpha %*% start_belief)
   
-  list(total_expected_reward = total_expected_reward, initial_pg_node = initial_pg_node,
-    start_belief_state = start_belief)
+  list(
+    total_expected_reward = total_expected_reward, 
+    belief = start_belief,
+    pg_node = initial_pg_node,
+    optimal_action = pg$action[initial_pg_node]
+    )
 }
 
 
