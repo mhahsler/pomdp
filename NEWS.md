@@ -3,6 +3,7 @@
 ## Changes
 * reward now looks at different epochs, calulates the optimal actions and the paramater names are improved.
 * solve_POMDP not looks at convergence.
+* solve_POMDP gained parameter discount to overwrite the discount rate specified in the model.
 * added policy graph visualization with vizNetwork.
 * Many improvements to support finite-horizon POMDPs and store epochs.
 

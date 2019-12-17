@@ -33,17 +33,13 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
   V(policy_graph)$label <- paste0(x$solution$pg$node, init, 
     "\n", x$solution$pg$action) 
   
-  belief <- belief && !is.null(x$solution$belief_proportions)
-  
   if(belief) {
-    pie_values <- lapply(1:nrow(x$solution$belief_proportions), 
-      FUN = function(i) {
-        pv <- x$solution$belief_proportions[i,]
-        if(any(is.na(pv))) pv <- rep(1, length(pv)) else pv
-      })
+    bp <- .belief_proportions(x$solution$alpha, 
+      belief_states = x$solution$belief_states[,1:ncol(x$solution$alpha)])
+    pie_values <- lapply(1:nrow(bp), FUN = function(i) if(any(is.na(bp[i,]))) rep(1/ncol(bp), times = ncol(bp)) else bp[i,]) 
     
     ### Set1 from Colorbrewer
-    number_of_states <- ncol(x$solution$belief_proportions)
+    number_of_states <- length(x$model$states)
     if(is.null(cols)) {
       cols <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33",
         "#A65628", "#F781BF", "#999999")
@@ -64,6 +60,28 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
   policy_graph
 }
 
+
+.belief_proportions <- function(alpha, belief_states = NULL, n = 10000) {
+  
+  ### sample n belief states uniformly of nore are available
+  if(is.null(belief_states)) {
+    d <- ncol(alpha)
+    # this is not uniform
+    #grid <- matrix(runif(n*d), ncol = d)
+    #belief_states <- sweep(grid, MARGIN = 1, STATS = rowSums(grid), "/")
+
+    # uniformly sample from a simplex.
+    # https://cs.stackexchange.com/questions/3227/uniform-sampling-from-a-simplex)
+    # Luc Devroye, Non-Uniform Random Variate Generation, Springer Verlag, 1986. 
+    m <- cbind(0, matrix(runif(n*(d-1)), ncol = d-1), 1)
+    belief_states <- t(apply(m, MARGIN = 1, FUN = function(x) diff(sort(x))))
+    
+  } else belief_states <- belief_states[,1:ncol(alpha)] ### in case there is a node column
+  vs <- .rew(belief_states, alpha)
+  vs <- aggregate(belief_states, by = list(vs$segment), mean, drop = FALSE)[,-1]
+  colnames(vs) <- colnames(alpha)
+  as.matrix(vs)
+}
 
 
 ### fix the broken curve_multiple for directed graphs (igraph_1.2.2)
@@ -95,7 +113,7 @@ plot.POMDP <- function(x, y = NULL, belief = TRUE, legend = TRUE, cols = NULL, .
   plot.igraph(pg, ...)
   
   if(legend && belief && !is.null(V(pg)$pie)) {
-    legend("topright", legend = colnames(x$solution$belief_proportions), title = "Belief Proportions", 
+    legend("topright", legend = x$model$states, title = "Belief Proportions", 
       #horiz = TRUE,
       bty = "n",
       col = V(pg)$pie.color[[1]], 

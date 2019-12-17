@@ -2,7 +2,7 @@ importFrom("grDevices", "rainbow")
 importFrom("graphics", "legend")
 importFrom("utils", "read.table", "type.convert")
 importFrom("graphics", "plot")
-importFrom("stats", "ave")
+importFrom("stats", "ave", "aggregate", "runif")
 
 import("igraph")
 

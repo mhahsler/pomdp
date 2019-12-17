@@ -24,6 +24,7 @@ solve_POMDP_parameter <- function() {
 solve_POMDP <- function(
   model,
   horizon = Inf,
+  discount = NULL,
   method = "grid",
   parameter = NULL,
   verbose = FALSE) {
@@ -46,7 +47,7 @@ solve_POMDP <- function(
   
   # is model a filename or a URL?
   if(is.character(model)) {
-    model <- structure(list(model = parses_POMDP_model_file(model)), class = "POMDP")
+    model <- structure(list(model = .parse_POMDP_model_file(model)), class = "POMDP")
     writeLines(model$model$problem, con = pomdp_filename)
   } else {
     write_POMDP(model, pomdp_filename)
@@ -63,9 +64,14 @@ solve_POMDP <- function(
     paste("-pomdp", pomdp_filename),
     paste("-method", method),
     ifelse(is.finite(horizon), paste("-horizon", horizon, "-save_all true"), ""),
+    ifelse(!is.null(discount), paste("-discount", discount), ""),
     paras, 
     "-fg_save true")
-  
+ 
+  # fix discount if overwritten
+  if(is.null(discount)) discount <- model$model$discount
+  if(is.null(discount)) discount <- NA
+   
   if(verbose) cat("Calling pomdp-solve with the following arguments:", 
     paste(pomdp_args, collapse =  " "), 
     "\nSolver output:", sep = "\n")
@@ -89,11 +95,6 @@ solve_POMDP <- function(
     ## finding the respective proportions for each line (node)
     if(!is.null(belief)) {
       belief <- cbind(belief, node = apply(belief, MARGIN = 1, FUN = function(b) which.max(alpha %*% b)))
-      
-      belief_proportions <- t(sapply(1:nrow(pg), FUN = 
-          function(i) colMeans(belief[belief[,"node"] == i, -ncol(belief), drop = FALSE])))
-    } else {
-      belief_proportions <- NULL
     }
     
   }else{
@@ -121,7 +122,6 @@ solve_POMDP <- function(
     alpha <- rev(alpha)
     pg <- rev(pg)
     
-    belief_proportions <- NULL
   }
   
   # add solution to model
@@ -129,13 +129,13 @@ solve_POMDP <- function(
     method = method, 
     parameter = parameter,
     horizon = horizon,
+    discount = discount,
     converged = converged,
     total_expected_reward = NA,
     initial_pg_node = NA,
     belief_states = belief, 
     pg = pg,
-    alpha = alpha,
-    belief_proportions = belief_proportions
+    alpha = alpha
   ), class = "POMDP_solution")
   
   ## add initial node and reward 
@@ -162,69 +162,9 @@ solver_output <- function(x) {
   invisible(x$solver_output)
 }
 
-reward <- function(x, belief = "uniform", epoch = 1) {
-  .solved_POMDP(x)
-  
-  states <- x$model$states
-  number_of_states <- length(states)
- 
-  ## FIXME: This needs fixing!   
-  ## producing the starting belief vector
-  if (!is.character(belief) && length(belief) == number_of_states && round(sum(belief), 3) == 1) {
-    # a vector with probabilities
-    start_belief <- belief
-  } else if (length(belief) == 1 && belief[1] == "uniform") {
-    # if the starting beliefs are given by a uniform distribution over all states
-    start_belief <- rep(1/number_of_states, number_of_states)
-  } else if (belief[1] != "-") {  # if the starting beliefs include a specific subset of states
-    # if the starting beliefs are given by a uniform distribution over a subset of states (using their names)
-    if (!is.na(sum(match(belief, states)))) {
-      start_belief <- rep(0, number_of_states)
-      start_belief[match(belief, states)] <- 1/length(belief)
-    }
-    # if the starting beliefs are given by a uniform distribution over a subset of states (using their numbers)
-    if (!is.character(belief)) { 
-      if (all(belief >= 1 & belief <= number_of_states & belief == floor(belief))) {
-        start_belief <- rep(0,number_of_states)
-        start_belief[belief] <- 1/length(belief)
-      } else stop("illegal start belief state specification.")
-    }
-  } else if (belief[1]=="-") { # if the starting beliefs exclude a specific subset of states
-    start_belief <- rep(1/(number_of_states-length(belief)+1),number_of_states)
-    if (is.na(as.numeric(belief[2]))) {
-      start_belief[match(belief,states)] <- 0
-    }
-    if (!is.na(as.numeric(belief[2]))) {
-      start_belief[belief] <- 0
-    }
-  } else stop("illegal start belief state specification.")
-  
-  names(start_belief) <- states
- 
-  ## alpha and pg is a list for finite horizon POMDPS
-  if(is.list(x$solution$alpha)) {
-    if(epoch > length(x$solution$alpha)) stop("The solution does not contain that many epochs. Either the horizon was set to less epochs or the solution converged earlier.")
-    alpha <- x$solution$alpha[[epoch]]
-    pg <- x$solution$pg[[epoch]]
-  }
-  else { 
-    pg <- x$solution$pg
-    alpha <- x$solution$alpha
-  }
-  
-  initial_pg_node <- which.max(alpha %*% start_belief)
-  total_expected_reward <- max(alpha %*% start_belief)
-  
-  list(
-    total_expected_reward = total_expected_reward, 
-    belief = start_belief,
-    pg_node = initial_pg_node,
-    optimal_action = pg$action[initial_pg_node]
-    )
-}
+## Helper functions
 
-
-parses_POMDP_model_file <- function(file) {
+.parse_POMDP_model_file <- function(file) {
     problem <- readLines(file)  
     
     get_vals <- function(var) {
@@ -264,7 +204,7 @@ parses_POMDP_model_file <- function(file) {
   alpha <- readLines(filename)
   alpha <- alpha[seq(2, length(alpha), 3)]
   alpha <- do.call(rbind, lapply(alpha, function(a) as.numeric(strsplit(a, " ")[[1]])))
-  colnames(alpha) <- paste0("coef_", 1:ncol(alpha))
+  colnames(alpha) <- model$model$states
   alpha
 }
 
@@ -298,3 +238,85 @@ parses_POMDP_model_file <- function(file) {
   belief
 } 
 
+# translate belief specifications into belief vectors
+.translate_belief <- function(belief = NULL, model) {
+  ## producing the starting belief vector
+  
+  if(is.null(belief)) belief <- "uniform"
+  
+  states <- model$model$states
+  
+  # start: 0.3 0.1 0.0 0.2 0.5
+  if(is.numeric(belief) &&
+      length(belief) == length(states) && 
+      round(sum(belief), 3) == 1) {
+    names(belief) <- states
+    return(belief) 
+  }
+  
+  # start: uniform
+  if(is.character(belief) &&
+      length(belief) == 1 && 
+      belief[1] == "uniform") {
+    belief <- rep(1/length(states), times = length(states))
+    names(belief) <- states
+    return(belief) 
+  }
+  
+  
+  # general checks for state IDs
+  if(is.numeric(belief)) {
+    belief <- as.integer(belief)
+    if(any(abs(belief) <1) || any(abs(belief) > length(states)))
+      stop("Illegal belief format.\n", belief,
+        "\nState IDs need to be in [1, # of states].")
+  }
+  
+  # general checks for state names
+  else if(is.character(belief)) {
+    if(any(is.na(match(belief, c(states, "-")))))
+      stop("Illegal belief format.\n", belief,
+        "\nUnrecognized state name.")
+  
+  } else stop("Illegal belief format.")
+  
+  #start: first-state
+  #start: 5
+  #start include: first-state third state
+  #start include: 1 3
+  if((is.numeric(belief) && all(belief > 0)) ||
+      (is.character(belief) && belief[1] != "-")) {
+    if(length(belief) > length(states)) 
+      stop("Illegal belief format.\n", belief,
+        "\nToo many states specified.")
+    belief_ <- rep(0, times = length(states))
+    names(belief_) <- states
+    belief_[belief] <- 1/length(belief) 
+    return(belief_)
+  }
+  
+  #start exclude: 1 3
+  if(is.numeric(belief) && any(belief < 0)) {
+    belief_ <- rep(1, times = length(states))
+    if(length(belief) >= length(states)) 
+      stop("Illegal belief format.\n", belief,
+        "\nToo many states specified.")
+    names(belief_) <- states
+    belief_[-belief] <- 0
+    belief_ <- belief_/sum(belief_)
+    return(belief_)
+  }
+  
+  #start exclude: fifth-state seventh-state
+  if(is.character(belief) && belief[1] == "-") {
+    belief <- belief[-1]
+    belief_ <- rep(1, times = length(states))
+    names(belief_) <- states
+    belief_[belief] <- 0
+    belief_ <- belief_/sum(belief_)
+    return(belief_)
+  }
+  
+  stop("Illegal belief format.\n", belief)
+}
+  
