@@ -145,7 +145,7 @@ solve_POMDP <- function(
   model$solution$total_expected_reward <- rew$total_expected_reward
   model$solution$initial_pg_node <- rew$pg_node
   
-  model$solver_output <- solver_output
+  model$solver_output <- structure(solver_output, class = "text")
    
   model
 }
@@ -186,7 +186,7 @@ print.POMDP_solution <- function(x, ...) {
       observations = get_vals("observations"),
       actions = get_vals("actions"),
       start = get_vals("start"),
-      problem = problem),
+      problem = structure(problem, class = "text")),
       class = "POMDP_model"
     )
 }    
