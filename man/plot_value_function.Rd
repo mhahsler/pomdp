@@ -21,7 +21,17 @@ plot_value_function(model, projection = 1:2, ylim = NULL, legend = TRUE)
 \examples{
 data("TigerProblem")
 tiger_solved <- solve_POMDP(model = TigerProblem)
+tiger_solved
 
 plot_value_function(tiger_solved, ylim = c(0,20))
+
+## finite-horizon
+tiger_solved <- solve_POMDP(model = TigerProblem, horizon = 3, discount = 1, 
+  method = "enum")
+tiger_solved
+
+plot_value_function(tiger_solved, epoch =1, ylim = c(-5, 25))
+plot_value_function(tiger_solved, epoch =2, ylim = c(-5, 25))
+plot_value_function(tiger_solved, epoch =3, ylim = c(-5, 25))
 }
 \keyword{hplot}
