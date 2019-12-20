@@ -75,7 +75,6 @@ where
 
 * `observations` defines the set of observations $\Omega$,
 
-* `start` is the initial probability distribution over the system states $S$,
 
 * `transition_prob` defines the conditional transition probabilities $T(s' \mid s,a)$,
 
@@ -84,9 +83,11 @@ $O(o \mid s',a)$,
 
 * `reward` specifies the reward function $R$,
 
-* `values` indicates whether the problem is 
-a maximization (`values = "reward"`, the default) or a 
-minimization (`values = "cost"`), and
+* `start` is the initial probability distribution over the system states $S$,
+
+* `max` indicates whether the problem is 
+a maximization or a 
+minimization, and
 
 * `name` used to give the POMDP problem a name.
 
@@ -322,7 +323,7 @@ tiger_solved
 The output is an object of class POMDP which contains the solution.
 
 ```{r}
-solution(tiger_solved)
+tiger_solved$solution
 ```
 
 The solution contains the following elements:
@@ -357,14 +358,10 @@ The are arcs back from the nodes with the open actions to the initial state rese
 Since we only have two states, we can visualize the piecewise linear convex value function as a simple plot.
 
 ```{r}
-alpha <- solution(tiger_solved)$alpha
+alpha <- tiger_solved$solution$alpha
 alpha
 
-plot(NA, xlim = c(0, 1), ylim = c(0, 20), xlab = "Belief space (for tiger is left)", 
-  ylab = "Value function")
-for(i in 1:nrow(alpha)) abline(a = alpha[i,2], b = alpha[i,1]- alpha[i,2], col = i, xpd = FALSE)
-legend("topright", legend = 
-    paste0(1:nrow(alpha),": ", solution(tiger_solved)$pg[,"action"]), col = 1:nrow(alpha), lwd=1)
+plot_value_function(tiger_solved, ylim = c(0,20))
 ```
 
 The lines represent the nodes in the policy graph and the optimal actions are shown in the legend.

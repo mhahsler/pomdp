@@ -21,6 +21,9 @@ write_POMDP <- function(model, file) {
   
   ### POMDP file
   code <-  paste0(
+    "# POMDP File: ", model$name, "\n",
+    "# Produced with R package pomdp\n",
+    "\n",
     "discount: ", discount, "\n",
     "values: ", values, "\n",
     "states: ", paste(states, collapse = " "), "\n",
@@ -28,12 +31,13 @@ write_POMDP <- function(model, file) {
     "observations: ", paste(observations, collapse = " "), "\n"
   )
   
+  
   ### starting beliefs
   if(!is.null(start)) { 
     ## if the starting beliefs are given by enumerating the probabilities for each state
     if (!is.character(start)) {
       if (length(start) == length(states) && sum(start)==1) {
-        code <- paste(c(code,"start:", start, "\n"), collapse = " ")
+        code <- paste0(code,"start: ", paste(start, collapse = " "), "\n")
       }
     }
     ## if the starting beliefs are given by a uniform distribution over all states
@@ -42,19 +46,21 @@ write_POMDP <- function(model, file) {
     } else if (start[1] != "-") {  ## if the starting beliefs include a specific subset of states
       # if the starting beliefs are given by a uniform distribution over a subset of states (using their names)
       if (!any(is.na(match(start, states)))) {
-        code <- paste(c(code, "start include:", start, "\n"), collapse = " ")
+        code <- paste0(code, "start include: ", paste(start, collapse = " "), "\n")
       }
       # if the starting beliefs are given by a uniform distribution over a subset of states (using their numbers)
       if (is.numeric(start)) { 
         start <- as.integer(start) -1L ### pomdp-solve starts with index 0
         if (all(start >= 0 & start < number_of_states) && length(start) <= number_of_states) {
-          code <- paste(c(code, "start include:", start, "\n"), collapse = " ")
+          code <- paste0(code, "start include: ", paste(start, collapse = " "), "\n")
         }
       }
     } else if (start[1] == "-") { ## if the starting beliefs exclude a specific subset of states
-      code <- paste(c(code, "start exclude:", start[-1], "\n"), collapse = " ")
+      code <- paste0(code, "start exclude: ", paste(start[-1], collapse = " "), "\n")
     }
   }
+  
+  code <- paste0(code, "\n")
   
   ### Transition Probabilities
   
@@ -72,12 +78,12 @@ write_POMDP <- function(model, file) {
       if(is.numeric(transition_prob[i,2])) transition_prob[i,1] <- transition_prob[i,1] -1    
       if(is.numeric(transition_prob[i,3])) transition_prob[i,1] <- transition_prob[i,1] -1    
       
-      code <- paste0(c(code,"T:", 
+      code <- paste0(code,"T: ", 
                       transition_prob[i,1], " : ", 
                       transition_prob[i,2], " : ", 
                       transition_prob[i,3], " ",
                       format(transition_prob[i,4], scientific = FALSE),  
-        "\n"))
+        "\n")
     }
   }else{
     ## if the transition probabilities are given in the form of action dependent matrices
@@ -103,6 +109,7 @@ write_POMDP <- function(model, file) {
     }
   }
   
+  code <- paste0(code, "\n")
   
   ### Observation Probabilities
   
@@ -120,7 +127,7 @@ write_POMDP <- function(model, file) {
       if(is.numeric(observation_prob[i,2])) observation_prob[i,1] <- observation_prob[i,1] -1    
       if(is.numeric(observation_prob[i,3])) observation_prob[i,1] <- observation_prob[i,1] -1    
       
-      code <- paste0(code,"O:", 
+      code <- paste0(code,"O: ", 
                       observation_prob[i,1], " : ", 
                       observation_prob[i,2], " : ", 
                       observation_prob[i,3], " ", 
@@ -149,6 +156,8 @@ write_POMDP <- function(model, file) {
     }
   }
   
+  code <- paste0(code, "\n")
+  
   ### Rewards/Costs
   
   ## if the rewards are given in the general form
@@ -160,7 +169,7 @@ write_POMDP <- function(model, file) {
     
     # writing the reward lines
     for (i in 1:nrow(reward)) {
-      code <- paste0(code,"R:", 
+      code <- paste0(code,"R: ", 
                       format(reward[i,1], scientific = FALSE), " : ", 
                       format(reward[i,2], scientific = FALSE), " : ", 
                       format(reward[i,3], scientific = FALSE), " : ", 
@@ -193,10 +202,12 @@ write_POMDP <- function(model, file) {
             c_m <- paste0(c_m, paste(format(reward[[actions[i]]][[states[j]]][k,], scientific = FALSE),
               collapse = " "), "\n")
           }
-          code <- paste(c(code, c_m), collapse = " ")
+          code <- paste0(code, c_m, "\n")
         }
       }
     }
+  
+    code <- paste0(code, "\n")
     
     # ## if the rewards are given in the form of action-and-start-state dependent matrix
     # # writing the reward section

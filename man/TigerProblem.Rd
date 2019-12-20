@@ -48,7 +48,7 @@ TigerProblem
 sol <- solve_POMDP(TigerProblem)
 sol
 
-solution(sol)$pg
+sol$solution$pg
 plot(sol)
 }
 \keyword{datasets}

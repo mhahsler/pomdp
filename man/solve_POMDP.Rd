@@ -44,10 +44,6 @@ The solver returns an object of class POMDP which is a list with
 the model specifications (\code{model}),
 the solution (\code{solution}), and 
 the solver output (\code{solver_output}).
-The elements can be extracted with the functions  
-\code{\link{model}},
-\code{\link{solution}}, and
-\code{\link{solver_output}}. 
 }
 
 \references{
@@ -68,26 +64,22 @@ tiger_solved <- solve_POMDP(model = TigerProblem, parameter = list(fg_points = 1
 tiger_solved
 
 ## look at the model
-model(tiger_solved)
+tiger_solved$model
 
 ## look at solver output
-solver_output(tiger_solved)
+tiger_solved$solver_output
 
 ## look at the solution
-solution(tiger_solved)
-
-## plot the value function (alpha vectors)
-alpha <- solution(tiger_solved)$alpha
-alpha
-
-plot(NA, xlim = c(0, 1), ylim = c(0, 20), xlab = "Belief space (for tiger is left)", 
-  ylab = "Value function")
-for(i in 1:nrow(alpha)) abline(a = alpha[i,2], b = alpha[i,1]- alpha[i,2], col = i, xpd = FALSE)
-legend("topright", legend = 
-    paste0(1:nrow(alpha),": ", solution(tiger_solved)$pg[,"action"]), col = 1:nrow(alpha), lwd=1)
+tiger_solved$solution
 
 ## plot the policy graph of the infinite-horizon POMDP
 plot(tiger_solved)
+
+## look at the value function (alpha vectors)
+alpha <- tiger_solved$solution$alpha
+alpha
+
+plot_value_function(tiger_solved, ylim = c(0,20))
 
 ## display available solver options which can be passed on to the solver as parameter.
 solve_POMDP_parameter()

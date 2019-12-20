@@ -1,5 +1,5 @@
 importFrom("grDevices", "rainbow")
-importFrom("graphics", "legend")
+importFrom("graphics", "legend", "axis", "box", "lines")
 importFrom("utils", "read.table", "type.convert")
 importFrom("graphics", "plot")
 importFrom("stats", "ave", "aggregate", "runif")
@@ -10,14 +10,12 @@ export(
   "POMDP", 
   "solve_POMDP",
   "solve_POMDP_parameter",
-  "solver_output", 
-  "model",
-  "solution",
   "reward",
   "policy_graph",
   "write_POMDP",
   "O_", "R_", "T_",
-  "visNetwork_POMDP"
+  "plot_policy_graph",
+  "plot_value_function"
   )
 
 S3method("plot", "POMDP")

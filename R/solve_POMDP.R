@@ -132,6 +132,7 @@ solve_POMDP <- function(
     discount = discount,
     converged = converged,
     total_expected_reward = NA,
+    initial_belief = NA,
     initial_pg_node = NA,
     belief_states = belief, 
     pg = pg,
@@ -140,8 +141,9 @@ solve_POMDP <- function(
   
   ## add initial node and reward 
   rew <- reward(model, belief = model$model$start)
+  model$solution$initial_belief <- rew$belief
   model$solution$total_expected_reward <- rew$total_expected_reward
-  model$solution$initial_pg_node <- rew$initial_pg_node
+  model$solution$initial_pg_node <- rew$pg_node
   
   model$solver_output <- solver_output
    
@@ -153,13 +155,6 @@ solve_POMDP <- function(
 print.POMDP_solution <- function(x, ...) {
  cat("POMDP solution\n\n")
  print(unclass(x))
-}
-
-solver_output <- function(x) {
-  .solved_POMDP(x)
-  
-  cat(x$solver_output, sep = "\n")
-  invisible(x$solver_output)
 }
 
 ## Helper functions

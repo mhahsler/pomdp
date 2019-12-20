@@ -28,7 +28,7 @@ reward <- function(x, belief = "uniform", epoch = 1) {
   )
 }
 
-## this helper is used by .belief_proportions in plot.POMDP.R
+## this reward helper is used by .belief_proportions in plot.POMDP.R
 .rew <- function(belief, alpha) {
   if(!is.matrix(belief)) belief <- rbind(belief)
   r <- apply(belief, MARGIN = 1, FUN = function(b) {

@@ -5,6 +5,7 @@
 * solve_POMDP not looks at convergence.
 * solve_POMDP gained parameter discount to overwrite the discount rate specified in the model.
 * added policy graph visualization with vizNetwork.
+* added plot_value_function.
 * Many improvements to support finite-horizon POMDPs and store epochs.
 
 
