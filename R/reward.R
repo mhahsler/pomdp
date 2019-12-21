@@ -10,21 +10,18 @@ reward <- function(x, belief = "uniform", epoch = 1) {
     if(epoch > length(x$solution$alpha)) stop("The solution does not contain that many epochs. Either the horizon was set to less epochs or the solution converged earlier.")
     alpha <- x$solution$alpha[[epoch]]
     pg <- x$solution$pg[[epoch]]
-  }
-  else { 
+  } else { 
     pg <- x$solution$pg
     alpha <- x$solution$alpha
   }
   
-  rewards <- alpha %*% start_belief
-  initial_pg_node <- which.max(rewards)
-  total_expected_reward <- max(rewards)
+  rewards <- .rew(start_belief, alpha)
   
   list(
-    total_expected_reward = total_expected_reward, 
+    total_expected_reward = rewards$reward, 
     belief = start_belief,
-    pg_node = initial_pg_node,
-    optimal_action = pg$action[initial_pg_node]
+    pg_node = rewards$segment,
+    optimal_action = pg$action[rewards$segment]
   )
 }
 
