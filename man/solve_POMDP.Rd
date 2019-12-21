@@ -8,7 +8,7 @@ use different solution methods [2] to
 solve problems that are formulated as partially observable Markov decision processes (POMDPs) [1]. The result is a (close to) optimal policy.
 }
 \usage{
-solve_POMDP(model, horizon = Inf, discount = NULL, 
+solve_POMDP(model, horizon = Inf, discount = NULL, terminal_values = NULL,
   method = "grid", parameter= NULL, verbose = FALSE)
 solve_POMDP_parameter()
 }
@@ -24,6 +24,7 @@ solve_POMDP_parameter()
   \code{"incprune"}. Details can be found in [1]. The default is \code{"grid"} implementing the finite grid method. The size of the grid can be set via \code{parameter = list(fg_points = 10)}.}
   \item{horizon}{ an integer with the number of iterations for finite horizon problems. If set to \code{Inf}, the algorithm continues running iterations till it converges to the infinite horizon solution.}
   \item{discount}{ discount factor in range [0, 1]. If \code{discount} is not \code{NULL}, then the discount factor specified in \code{model} will be overwritten.} 
+  \item{terminal_values}{a matrix specifying the terminal rewards via a terminal value function. }
   \item{parameter}{ a list with parameters passed on to the pomdp-solve program. }
   \item{verbose}{
 logical, if set to \code{TRUE}, the function provides the output of the pomdp solver in the R console.
@@ -33,11 +34,16 @@ logical, if set to \code{TRUE}, the function provides the output of the pomdp so
 \code{solve_POMDP_parameter()} displays available solver parameter options.
 
 Infinite-horizon POMDPs (\code{horizon = Inf}) converge to a single policy graph. Finite-horizon POMDPs result in a
-policy tree of a depth equal to the smaller of the horizon or the number of epochs to convergence. The policty (and the associated alpha values for the value function) are stored in a list by level. The policy for the first epoch is stored as the first element. 
+policy tree of a depth equal to the smaller of the horizon or the number of epochs to convergence. The policy (and the associated value function) are stored in a list by level. The policy for the first epoch is stored as the first element.
 
-Note on the finite grid method: This method is geared towards infinite-horizon models and will produce strange reward values for finite horizon problems.
+The policy graph is a data frame where each row representing a policy graoh node with an associated optimal action and
+a list of node IDs to go to depending on the observation (specified as the column names). For the finite-horizon case, the observation specific node IDs refer to nodes in the next epoch creating a policy tree. 
+
+The value function is stored as a matrix. Each row is associated with a node (row) in the policy graph and represents the coefficients of a hyperplane passing through the origin.   
+
+\bold{Note on the finite grid method:} This method is geared towards infinite-horizon models and will produce strange reward values for finite horizon problems.
   
-Note: The parser for POMDP files is experimental. Please report problems here: \url{https://github.com/farzad/pomdp/issues}.
+\bold{Note:} The parser for POMDP files is experimental. Please report problems here: \url{https://github.com/farzad/pomdp/issues}.
 }
 \value{
 The solver returns an object of class POMDP which is a list with 

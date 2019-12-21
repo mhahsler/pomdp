@@ -25,6 +25,7 @@ solve_POMDP <- function(
   model,
   horizon = Inf,
   discount = NULL,
+  terminal_values = NULL,
   method = "grid",
   parameter = NULL,
   verbose = FALSE) {
@@ -52,7 +53,15 @@ solve_POMDP <- function(
   } else {
     write_POMDP(model, pomdp_filename)
   }
-  
+ 
+  # terminal values
+  if(!is.null(terminal_values)) {
+    if(!is.matrix(terminal_values)) terminal_values <- rbind(terminal_values)
+    if(ncol(terminal_values) != length(model$model$states))
+      stop("number of terminal values does not match the number of states.")
+    terminal_values_filename <- .write_alpha_file(file_prefix, terminal_values)  
+  }
+   
   if(!is.null(parameter)) {
     paras <- sapply(names(parameter), FUN = function(n) paste0("-", n, " ", parameter[[n]]))
   } else paras <- ""
@@ -65,6 +74,7 @@ solve_POMDP <- function(
     paste("-method", method),
     ifelse(is.finite(horizon), paste("-horizon", horizon, "-save_all true"), ""),
     ifelse(!is.null(discount), paste("-discount", discount), ""),
+    ifelse(!is.null(terminal_values), paste("-terminal_values", terminal_values_filename), ""),
     paras, 
     "-fg_save true")
  
@@ -192,7 +202,7 @@ print.POMDP_solution <- function(x, ...) {
 }    
 
   
-
+## helpers to read pomdp-solve files
 .get_alpha_file <- function(file_prefix, model, number = "") {  
   filename <- paste0(file_prefix, '-0.alpha',number)
   ## importing alpha file
@@ -203,7 +213,19 @@ print.POMDP_solution <- function(x, ...) {
   alpha
 }
 
-## helpers to read pomdp-solve files
+# alpha is a matrix with # of states columns
+.write_alpha_file <- function(file_prefix, alpha) {
+  filename <- paste0(file_prefix, '_terminal_values.alpha')
+  if(!is.matrix(alpha)) alpha <- rbind(alpha)
+ 
+  # we don't care about the action so we always use "0" 
+  for(i in seq(nrow(alpha))) 
+    cat("0", paste0(alpha[i, ], collapse = " "), "", 
+      file = filename, sep = "\n", append = i>1)
+  filename
+}  
+
+
 
 ## importing pg file
 .get_pg_file <- function(file_prefix, model, number="") {
