@@ -3,7 +3,7 @@
 reward <- function(x, belief = "uniform", epoch = 1) {
   .solved_POMDP(x)
   
-  start_belief <- .translate_belief(belief, x)
+  belief <- .translate_belief(belief, x)
   
   ## alpha and pg is a list for finite horizon POMDPS
   if(is.list(x$solution$alpha)) {
@@ -15,17 +15,17 @@ reward <- function(x, belief = "uniform", epoch = 1) {
     alpha <- x$solution$alpha
   }
   
-  rewards <- .rew(start_belief, alpha)
+  vs <- .rew(belief, alpha)
   
   list(
-    total_expected_reward = rewards$reward, 
-    belief = start_belief,
-    pg_node = rewards$segment,
-    optimal_action = pg$action[rewards$segment]
+    belief = belief,
+    total_expected_reward = vs$reward, 
+   pg_node = vs$pg_node,
+    optimal_action = pg$action[vs$pg_node]
   )
 }
 
-## this reward helper is used by .belief_proportions in plot.POMDP.R
+## this reward helper
 .rew <- function(belief, alpha) {
   if(!is.matrix(belief)) belief <- rbind(belief)
   r <- apply(belief, MARGIN = 1, FUN = function(b) {
@@ -33,7 +33,7 @@ reward <- function(x, belief = "uniform", epoch = 1) {
     c(max(rewards), which.max(rewards))
   })
   r <- as.data.frame(t(r))
-  colnames(r) <- c("reward", "segment")
-  r$segment <- factor(r$segment, levels = 1:nrow(alpha))
+  colnames(r) <- c("reward", "pg_node")
+  r$pg_node <- factor(r$pg_node, levels = 1:nrow(alpha))
   r
 }

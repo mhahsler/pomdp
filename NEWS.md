@@ -8,6 +8,7 @@
 * solve_POMDP gained parameter discount to overwrite the discount rate specified in the model.
 * added policy graph visualization with vizNetwork.
 * added plot_value_function.
+* added function sample_belief_space to sample from the belief space.
 
 
 # pomdp 0.9.2 (12/06/2019)

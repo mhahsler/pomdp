@@ -15,7 +15,8 @@ export(
   "write_POMDP",
   "O_", "R_", "T_",
   "plot_policy_graph",
-  "plot_value_function"
+  "plot_value_function",
+  "sample_belief_space"
   )
 
 S3method("plot", "POMDP")
