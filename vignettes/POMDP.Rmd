@@ -275,7 +275,7 @@ The problem can be specified using function `POMDP()` as follows.
 ```{r}
 library("pomdp")
 
-TigerProblem <- POMDP(
+Tiger <- POMDP(
   name = "Tiger Problem",
   
   discount = 0.75,
@@ -305,7 +305,7 @@ TigerProblem <- POMDP(
   )
 )
 
-TigerProblem
+Tiger
 ```
 
 Note that we use for each component the way that lets us specify them in the easiest way (i.e., for observations and transitions a list and for rewards a data frame created with the `R_` function).
@@ -316,14 +316,14 @@ implements a form of point-based value iteration that can find approximate solut
 
 
 ``` {r}
-tiger_solved <- solve_POMDP(TigerProblem)
-tiger_solved
+sol <- solve_POMDP(Tiger)
+sol
 ```
 
 The output is an object of class POMDP which contains the solution.
 
 ```{r}
-tiger_solved$solution
+sol$solution
 ```
 
 The solution contains the following elements:
@@ -346,7 +346,7 @@ Column two indicates the optimal action for the node. Columns three and after re
 In this section, we will visualize the policy graph provided in the solution by the `solve_POMDP` function. 
 
 ```{r fig.width = 10, fig.asp = .7}
-plot(tiger_solved)
+plot(sol)
 ```
 
 The policy graph can be easily interpreted. Without prior information, the agent starts at the node marked with "initial." In this case the agent beliefs that there
@@ -358,10 +358,10 @@ The are arcs back from the nodes with the open actions to the initial state rese
 Since we only have two states, we can visualize the piecewise linear convex value function as a simple plot.
 
 ```{r}
-alpha <- tiger_solved$solution$alpha
+alpha <- sol$solution$alpha
 alpha
 
-plot_value_function(tiger_solved, ylim = c(0,20))
+plot_value_function(sol, ylim = c(0,20))
 ```
 
 The lines represent the nodes in the policy graph and the optimal actions are shown in the legend.

@@ -146,6 +146,8 @@ write_POMDP <- function(model, file) {
       if (is.character(observation_prob[[actions[i]]]) && length(observation_prob[[actions[i]]]) == 1) {
         code <- paste0(code, observation_prob[[actions[i]]], "\n")
       } else {
+        if(any(dim(observation_prob[[actions[i]]]) != c(number_of_states, number_of_observations)))
+          stop("Observation matrix for action '", actions[i], "' is not of size # of states times # of observations!")
         c_m <- character()
         for (j in 1:number_of_states) {
           c_m <- paste0(c_m, paste(format(observation_prob[[actions[i]]][j,], scientific = FALSE),

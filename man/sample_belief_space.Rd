@@ -27,8 +27,8 @@ Luc Devroye, Non-Uniform Random Variate Generation, Springer Verlag, 1986.
 Michael Hahsler
 }
 \examples{
-data("TigerProblem")
+data("Tiger")
 
-sol <- solve_POMDP(TigerProblem)
+sol <- solve_POMDP(Tiger)
 sample_belief_space(sol, n = 5)
 }

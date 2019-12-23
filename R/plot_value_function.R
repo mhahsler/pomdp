@@ -34,7 +34,8 @@ plot_value_function <- function(model, projection = 1:2, epoch = 1, ylim = NULL,
   for(i in 1:nrow(alpha)) lines(x = c(0, 1), y = c(alpha[i,1], alpha[i,2]), col = i, xpd = FALSE)
   
   if(legend) legend("topright", legend = 
-      paste0(1:nrow(alpha),": ", pg[,"action"]), col = 1:nrow(alpha), lwd=1, bty = "n")
+      paste0(1:nrow(alpha),": ", pg[,"action"]), col = 1:nrow(alpha), lwd=1, bty = "n",
+    title = "Action")
   
   ### use ggplot instead
   #alpha <- cbind(as.data.frame(alpha), Action = factor(paste0(1:nrow(alpha), ": ", pg[,"action"])))

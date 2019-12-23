@@ -50,36 +50,36 @@ From \pkg{visNetwork}:
 }
 
 \examples{
-data("TigerProblem")
-tiger_solved <- solve_POMDP(model = TigerProblem)
-tiger_solved
+data("Tiger")
+sol <- solve_POMDP(model = Tiger)
+sol
 
 ## policy graph
-policy_graph(tiger_solved)
+policy_graph(sol)
 
 ## visualization
-plot(tiger_solved)
+plot(sol)
 
 ## use a different graph layout (circle and manual; needs igraph)
 library("igraph")
-plot(tiger_solved, layout = layout.circle)
-plot(tiger_solved, layout = rbind(c(1,1), c(1,-1), c(0,0), c(-1,-1), c(-1,1)))
+plot(sol, layout = layout.circle)
+plot(sol, layout = rbind(c(1,1), c(1,-1), c(0,0), c(-1,-1), c(-1,1)))
 
 ## hide labels and legend
-plot(tiger_solved, edge.label = NA, vertex.label = NA, legend = FALSE)
+plot(sol, edge.label = NA, vertex.label = NA, legend = FALSE)
 
 ## add a plot title
-plot(tiger_solved, main = tiger_solved$model$name)
+plot(sol, main = sol$model$name)
 
 ## custom larger vertex labels (A, B, ...)
-plot(tiger_solved, 
-  vertex.label = LETTERS[1:nrow(tiger_solved$solution$pg)], 
+plot(sol, 
+  vertex.label = LETTERS[1:nrow(sol$solution$pg)], 
   vertex.label.cex = 2,
   vertex.label.color = "white")
 
 ## plotting using the graph object 
 ## (e.g., using the graph in the layout and to change the edge curvature)
-pg <- policy_graph(tiger_solved)
+pg <- policy_graph(sol)
 plot(pg, 
   layout = layout_as_tree(pg, root = 3, mode = "out"),
   edge.curved = curve_multiple(pg, .2))
@@ -87,13 +87,13 @@ plot(pg,
 ## changes labels
 plot(pg, 
   edge.label = abbreviate(E(pg)$label),
-  vertex.label = tiger_solved$solution$pg$action,
+  vertex.label = sol$solution$pg$action,
   vertex.size = 10)
 
 ## plot interactive graphs using the visNetwork library
-plot(tiger_solved, engine = "visNetwork")
+plot(sol, engine = "visNetwork")
 
 ## add smooth edges and a layout (note, engine can be abbreviated)
-plot(tiger_solved, engine = "vis", smooth = TRUE, layout = "layout_in_circle")
+plot(sol, engine = "vis", smooth = TRUE, layout = "layout_in_circle")
 }
 \keyword{hplot}

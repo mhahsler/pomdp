@@ -43,11 +43,11 @@ Hossein Kamalzadeh, Michael Hahsler
 \code{\link{solve_POMDP}}
 }
 \examples{
-data("TigerProblem")
-tiger_solved <- solve_POMDP(model = TigerProblem)
-tiger_solved
+data("Tiger")
+sol <- solve_POMDP(model = Tiger)
+sol
 
-pg <- policy_graph(tiger_solved)
+pg <- policy_graph(sol)
 
 plot(pg)
 }

@@ -1,0 +1,44 @@
+\name{plot_belief_space}
+\alias{plot_belief_space}
+\title{Plot a 2d or 3d Projection of the Belief Space}
+\description{
+Samples forom the (projected) belief space and plots the optimal action, the node in the policy graph or the reward on a line (2d) or on  ternary plot (3d).
+}
+\usage{
+plot_belief_space(model, projection = c(1, 2), n = 100, 
+  what = c("action", "pg_node", "reward"), legend = TRUE)
+}
+\arguments{
+  \item{model}{ a solved POMDP.}
+  \item{projection}{Project on these states. Allowed are projections on two or three states.}
+  \item{n}{ number of samples to use. }
+  \item{what}{ what to plot.}
+  \item{legend}{ logical; add a legend? If the legend covers the plot then you need to increase the plotting region of the plotting device. }
+}
+\value{
+Returns invisibly the sampled points.
+}
+\author{
+Michael Hahsler
+}
+\seealso{
+\code{\link{sample_belief_space}}
+}
+\examples{
+# two states
+data("Tiger")
+sol <- solve_POMDP(Tiger)
+
+plot_belief_space(sol, n = 100)
+plot_belief_space(sol, n = 100, what = "pg_node")
+plot_belief_space(sol, n = 100, what = "reward")
+
+# three states
+data("Three_doors")
+sol <- solve_POMDP(Three_doors)
+
+plot_belief_space(sol, n = 100, projection = c(1,2,3))
+plot_belief_space(sol, n = 100, what = "pg_node", projection = c(1,2,3))
+plot_belief_space(sol, n = 100, what = "reward", projection = c(1,2,3))
+}
+\keyword{hplot}

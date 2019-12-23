@@ -1,5 +1,5 @@
 library(pomdp)
-TigerProblem <- POMDP(
+Tiger <- POMDP(
   name = "Tiger Problem",
   
   discount = 0.75,
@@ -32,7 +32,7 @@ TigerProblem <- POMDP(
 )
 
 
-TigerProblem
+Tiger
 
-save(TigerProblem, file = "data/TigerProblem.rda")
+save(Tiger, file = "data/Tiger.rda")
 

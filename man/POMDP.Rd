@@ -91,7 +91,7 @@ Hossein Kamalzadeh, Michael Hahsler
 \examples{
 ## The Tiger Problem
 
-TigerProblem <- POMDP(
+Tiger <- POMDP(
   name = "Tiger Problem",
   
   discount = 0.75,
@@ -123,7 +123,7 @@ TigerProblem <- POMDP(
   )
 )
   
-TigerProblem
+Tiger
 
-TigerProblem$model
+Tiger$model
 }

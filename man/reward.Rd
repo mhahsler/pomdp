@@ -31,18 +31,18 @@ Michael Hahsler
 \code{\link{solve_POMDP}}
 }
 \examples{
-data("TigerProblem")
-tiger_solved <- solve_POMDP(model = TigerProblem)
+data("Tiger")
+sol <- solve_POMDP(model = Tiger)
 
 # if no start is specified, a uniform belief is used.
-reward(tiger_solved)
+reward(sol)
 
 # we have additional information that makes us belief that the tiger 
 # is more likely to the left.
-reward(tiger_solved, belief = c(0.85, 0.15))
+reward(sol, belief = c(0.85, 0.15))
 
 # we start with strong evidence that the tiger is to the left.
-reward(tiger_solved, belief = "tiger-left")
+reward(sol, belief = "tiger-left")
 
 # Note that in this case, the total discounted expected reward is greater 
 # than 10 since the tiger problem resets and another game staring with 

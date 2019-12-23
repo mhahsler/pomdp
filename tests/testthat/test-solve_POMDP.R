@@ -3,12 +3,12 @@ library("pomdp")
 
 context("solve_POMDP")
 
-data("TigerProblem")
-sol <- solve_POMDP(TigerProblem)
+data("Tiger")
+sol <- solve_POMDP(Tiger)
 expect_identical(nrow(sol$solution$pg), 5L)
 plot(sol)
 
-sol <- solve_POMDP(TigerProblem, horizon = 3, method = "incprune")
+sol <- solve_POMDP(Tiger, horizon = 3, method = "incprune")
 expect_identical(length(sol$solution$pg), 3L)
 
 reward(sol)
@@ -18,14 +18,14 @@ reward(sol, belief = c(0,1), epoch = 3)
 context("solve_POMDP with terminal values")
 
 # solve 10 epochs
-sol <- solve_POMDP(TigerProblem, discount = 1, horizon = 10, method = "enum")
+sol <- solve_POMDP(Tiger, discount = 1, horizon = 10, method = "enum")
 alpha_horizon <- sol$solution$alpha[[1]]
 pg_horizon <- sol$solution$pg[[1]]
 
 # compare with 10 times 1 episode with the last episode as the terminal values
-sol <- solve_POMDP(TigerProblem, discount = 1, horizon = 1, method = "enum")
+sol <- solve_POMDP(Tiger, discount = 1, horizon = 1, method = "enum")
 for(i in 2:10)
-  sol <- solve_POMDP(TigerProblem, discount = 1, horizon = 1, method = "enum", terminal_values = sol$solution$alpha[[1]])
+  sol <- solve_POMDP(Tiger, discount = 1, horizon = 1, method = "enum", terminal_values = sol$solution$alpha[[1]])
 alpha_stepwise <- sol$solution$alpha[[1]]
 pg_stepwise <- sol$solution$pg[[1]]
 

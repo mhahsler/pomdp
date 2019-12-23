@@ -63,29 +63,29 @@ the solver output (\code{solver_output}).
 Hossein Kamalzadeh, Michael Hahsler
 }
 \examples{
-data("TigerProblem")
-TigerProblem
+data("Tiger")
+Tiger
 
-tiger_solved <- solve_POMDP(model = TigerProblem, parameter = list(fg_points = 10))
-tiger_solved
+sol <- solve_POMDP(model = Tiger, parameter = list(fg_points = 10))
+sol
 
 ## look at the model
-tiger_solved$model
+sol$model
 
 ## look at solver output
-tiger_solved$solver_output
+sol$solver_output
 
 ## look at the solution
-tiger_solved$solution
+sol$solution
 
 ## plot the policy graph of the infinite-horizon POMDP
-plot(tiger_solved)
+plot(sol)
 
 ## look at the value function (alpha vectors)
-alpha <- tiger_solved$solution$alpha
+alpha <- sol$solution$alpha
 alpha
 
-plot_value_function(tiger_solved, ylim = c(0,20))
+plot_value_function(sol, ylim = c(0,20))
 
 ## display available solver options which can be passed on to the solver as parameter.
 solve_POMDP_parameter()
@@ -96,14 +96,14 @@ sol
 plot(sol)
 
 ## Finite horizon POMDP using the incremental pruning method (without discounting)
-tiger_solved <- solve_POMDP(model = TigerProblem, 
+sol <- solve_POMDP(model = Tiger, 
   horizon = 3, discount = 1, method = "incprune")
-tiger_solved
+sol
 
-reward(tiger_solved, belief = "uniform") # listen twice and then open the door ot listen 3 times
-reward(tiger_solved, belief = c(1,0)) # open-left = 10 and then listen twice
-reward(tiger_solved, belief = c(1,0), epoch = 3) # just open the right door
-reward(tiger_solved, belief = c(.95,.05), epoch = 3) # just open the right door (maybe wrong)
+reward(sol, belief = "uniform") # listen twice and then open the door ot listen 3 times
+reward(sol, belief = c(1,0)) # open-left = 10 and then listen twice
+reward(sol, belief = c(1,0), epoch = 3) # just open the right door
+reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (maybe wrong)
 }
 
 
