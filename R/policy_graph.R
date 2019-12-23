@@ -20,9 +20,6 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
   l <- do.call(rbind, l)
   l <- l[!is.na(l$to),] # remove links to nowhere ('-' in pg)
   
-  # deleting the reset arc
-  #list_of_arcs <- list_of_arcs[!rowSums(list_of_arcs[,1:2] == 1) == 2,]
-  
   # creating the initial graph
   policy_graph <- graph.edgelist(as.matrix(l[,1:2]))
   edge.attributes(policy_graph) <- list(label = l$label)
@@ -35,9 +32,14 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
   V(policy_graph)$label <- paste0(x$solution$pg$node, init, 
     "\n", x$solution$pg$action) 
   
+  # add belief proportions
   if(belief) {
-    bp <- .belief_proportions(x$solution$alpha, 
-      belief_states = x$solution$belief_states[,1:ncol(x$solution$alpha)])
+    if(!is.null(x$solution$belief_states)) s <- list(
+      belief = x$solution$belief_states[,1:length(x$model$states)], 
+      optimal = reward(x, belief = x$solution$belief_states[,1:length(x$model$states)]))
+    else s <- sample_belief_space(x)
+    bp <- as.matrix(aggregate(s$belief, by = list(s$optimal$pg_node), mean, drop = FALSE)[, -1]) 
+    
     pie_values <- lapply(1:nrow(bp), FUN = function(i) if(any(is.na(bp[i,]))) rep(1/ncol(bp), times = ncol(bp)) else bp[i,]) 
     
     ### Set1 from Colorbrewer
@@ -62,26 +64,4 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
   policy_graph
 }
 
-
-.belief_proportions <- function(alpha, belief_states = NULL, n = 10000) {
-  
-  ### sample n belief states uniformly of nore are available
-  if(is.null(belief_states)) {
-    d <- ncol(alpha)
-    # this is not uniform
-    #grid <- matrix(runif(n*d), ncol = d)
-    #belief_states <- sweep(grid, MARGIN = 1, STATS = rowSums(grid), "/")
-
-    # uniformly sample from a simplex.
-    # https://cs.stackexchange.com/questions/3227/uniform-sampling-from-a-simplex)
-    # Luc Devroye, Non-Uniform Random Variate Generation, Springer Verlag, 1986. 
-    m <- cbind(0, matrix(runif(n*(d-1)), ncol = d-1), 1)
-    belief_states <- t(apply(m, MARGIN = 1, FUN = function(x) diff(sort(x))))
-    
-  } else belief_states <- belief_states[,1:ncol(alpha)] ### in case there is a node column
-  vs <- .rew(belief_states, alpha)
-  vs <- aggregate(belief_states, by = list(vs$segment), mean, drop = FALSE)[,-1]
-  colnames(vs) <- colnames(alpha)
-  as.matrix(vs)
-}
 

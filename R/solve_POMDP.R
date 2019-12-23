@@ -259,9 +259,16 @@ print.POMDP_solution <- function(x, ...) {
 .translate_belief <- function(belief = NULL, model) {
   ## producing the starting belief vector
   
-  if(is.null(belief)) belief <- "uniform"
-  
   states <- model$model$states
+  
+  if(is.null(belief)) belief <- "uniform"
+ 
+  if(is.matrix(belief)) {
+    if(ncol(belief) != length(states)) stop("Number of column is not the number if states.")
+    colnames(belief) <- states
+    return(belief)
+  }
+   
   
   # start: 0.3 0.1 0.0 0.2 0.5
   if(is.numeric(belief) &&

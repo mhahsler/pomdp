@@ -35,4 +35,13 @@ plot_value_function <- function(model, projection = 1:2, epoch = 1, ylim = NULL,
   
   if(legend) legend("topright", legend = 
       paste0(1:nrow(alpha),": ", pg[,"action"]), col = 1:nrow(alpha), lwd=1, bty = "n")
+  
+  ### use ggplot instead
+  #alpha <- cbind(as.data.frame(alpha), Action = factor(paste0(1:nrow(alpha), ": ", pg[,"action"])))
+  #ggplot() + geom_segment(data = alpha, mapping = 
+  #    aes_(x=0, y=as.name(colnames(alpha)[1]), xend=1, yend=as.name(colnames(alpha)[2]), color = quote(Action))
+  #  ) + coord_cartesian(ylim = c(0, 15)) +
+  #   ylab("Reward") + xlab("Belief")
+  
 }
+
