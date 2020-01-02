@@ -37,8 +37,8 @@ plot_belief_space(sol, n = 100, what = "reward")
 data("Three_doors")
 sol <- solve_POMDP(Three_doors)
 
-plot_belief_space(sol, n = 100, projection = c(1,2,3))
-plot_belief_space(sol, n = 100, what = "pg_node", projection = c(1,2,3))
-plot_belief_space(sol, n = 100, what = "reward", projection = c(1,2,3))
+plot_belief_space(sol, n = 100)
+plot_belief_space(sol, n = 100, what = "pg_node")
+plot_belief_space(sol, n = 100, what = "reward")
 }
 \keyword{hplot}

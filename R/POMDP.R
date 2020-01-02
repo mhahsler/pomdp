@@ -48,9 +48,9 @@ POMDP <- function(
     model = structure(list(
       name = name,
       discount = discount, 
-      states = states, 
-      actions = actions, 
-      observations = observations,  
+      states = factor(states), 
+      actions = factor(actions), 
+      observations = factor(observations),  
       start = start, 
       transition_prob = transition_prob,
       observation_prob = observation_prob, 
