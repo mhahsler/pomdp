@@ -120,7 +120,9 @@ getPid(  )
      this gets ported to another platform.  Note that for POSIX, the
      'pid_t' type returned by getpid() is an 'int'.
   */
-  return( (int) getpid() );
+  return( 0 );
+  /* We do not use PID for filenames */
+  /* return( (int) getpid() ); */
 }  /* getPid */
 /**********************************************************************/
 void 

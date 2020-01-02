@@ -10,8 +10,8 @@
 the set of states, the set of actions, the set of observations, the transition probabilities, the observation probabilities, and rewards.}
 
 \usage{
-POMDP(discount, states, actions, observations, transition_prob, 
-      observation_prob, reward, start = "uniform", max = TRUE, name = NA)
+POMDP(states, actions, observations, transition_prob, 
+      observation_prob, reward, discount = 0.9, start = "uniform", max = TRUE, name = NA)
 
 R_(action, start.state, end.state, observation, value)
 O_(action, end.state, observation, probability)
@@ -50,10 +50,13 @@ T_(action, start.state, end.state, probability)
     \item a named list of \eqn{m} lists, where \eqn{m} is the number of actions (names should be the actions). Each list contains \eqn{n} named matrices where each matrix is of size \eqn{n \times o}{n x o}, in which \eqn{n} is the number of states and \eqn{o} is the number of observations. Names of these matrices should be the name of states.
   }
   }
-  \item{start}{Specifies the initial probabilities for each state (i.e., the initial belief state)
-    used to find the initial node in the policy graph and to calculate the total expected reward.
-    The default initial belief state is a uniform distribution over all states. No initial belief state can be used by setting \code{start = NULL}.
-    Options to specift start are:
+  \item{start}{Specifies the initial probabilities for each state (i.e., the initial belief). Some methods
+  use this belief to decide which belief states to explore (e.g., the finite grid method). The
+  initial beief is also used to find the associated node in the policy graph and to calculate the 
+  total expected reward. The default initial belief is a uniform distribution over all states. No 
+  initial belief state can be used by setting \code{start = NULL}.
+    
+  Options to specift start are:
     \itemize{
       \item a probability distribution over the \eqn{n} states. That is, a vector of \eqn{n} probabilities, that add up to \eqn{1}.
       \item the string \code{"uniform"} for a uniform distribution over all states.
@@ -88,7 +91,7 @@ Hossein Kamalzadeh, Michael Hahsler
 \examples{
 ## The Tiger Problem
 
-TigerProblem <- POMDP(
+Tiger <- POMDP(
   name = "Tiger Problem",
   
   discount = 0.75,
@@ -120,7 +123,7 @@ TigerProblem <- POMDP(
   )
 )
   
-TigerProblem
+Tiger
 
-model(TigerProblem)
+Tiger$model
 }

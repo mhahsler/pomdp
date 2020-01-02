@@ -2,13 +2,13 @@
 # Unsolved models have no solution element.
 
 POMDP <- function(
-  discount = 0,
   states,
   actions,
   observations,
   transition_prob,
   observation_prob,
   reward,
+  discount = .9,
   start = "uniform",
   max = TRUE,
   name = NA) {
@@ -64,9 +64,11 @@ print.POMDP <- function(x, ...) {
   if(is.null(x$solution)) cat("Unsolved POMDP model:", x$model$name, "\n")
   else cat(
     "Solved POMDP model:", x$model$name, "\n", 
+    "\thorizon:", x$solution$horizon, "\n",
+    "\tdiscount:", x$solution$discount, "\n",
     "\tsolution method:", x$solution$method, "\n",
     "\tpolicy graph nodes:", nrow(x$solution$pg), "\n",
-    paste0("\ttotal expected reward:", x$solution$total_expected_reward), "\n\n" 
+    "\ttotal expected reward:", x$solution$total_expected_reward, "\n\n" 
   )
 }
 
@@ -82,22 +84,12 @@ print.POMDP_model <- function(x, ...) {
  print(unclass(x))
 }
 
-model <- function(x) {
-  if(!inherits(x, "POMDP")) stop("x needs to be a POMDP object!")
-  x$model 
-}
 
 # check if x is a solved POMDP
 .solved_POMDP <- function(x) {
   if(!inherits(x, "POMDP")) stop("x needs to be a POMDP object!")
   if(is.null(x$solution)) stop("x needs to be a solved POMDP. Use solve_POMDP() first.")
 }
-
-solution <- function(x) {
-  .solved_POMDP(x)
-  x$solution
-}
-
 
 
 ### helper

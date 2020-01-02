@@ -5,23 +5,23 @@
 This function calculates the expexted total reward for a POMDP solution given a starting belief state. 
 }
 \usage{
-reward(x, start = "uniform")
+reward(x, belief = "uniform", epoch = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{a POMDP solution (object of class POMDP).
-}
-  \item{start}{specification of the starting belief state (see argument start in \code{\link{POMDP}} for details).
-}
+  \item{x}{a POMDP solution (object of class POMDP).}
+  \item{belief}{specification of the current belief state (see argument start in \code{\link{POMDP}} for details).}
+  \item{epoch}{return reward for this epoch. Default is the first epoch.}
 }
 \details{
 The value is calculated using the value function stored in the POMDP solution.
 }
 \value{
 A list with the components
-  \item{total_expected_reward}{the total expected reward starting with the initial policy graph node representing the starting belief state.}
-  \item{initial_pg_node}{the policy graph node that represents the starting belief state.'}
-  \item{start_belief_state}{the starting belief state specified in \code{start}.}
+  \item{total_expected_reward}{the total expected reward given a belief and epoch. }
+  \item{belief_state}{the belief state specified in \code{belief}.}
+  \item{pg_node}{the policy node that represents the belief state.}
+  \item{optimal_action}{the optimal action.}
 }
 \author{
 Michael Hahsler
@@ -31,18 +31,18 @@ Michael Hahsler
 \code{\link{solve_POMDP}}
 }
 \examples{
-data("TigerProblem")
-tiger_solved <- solve_POMDP(model = TigerProblem)
+data("Tiger")
+sol <- solve_POMDP(model = Tiger)
 
 # if no start is specified, a uniform belief is used.
-reward(tiger_solved)
+reward(sol)
 
 # we have additional information that makes us belief that the tiger 
 # is more likely to the left.
-reward(tiger_solved, start = c(0.85, 0.15))
+reward(sol, belief = c(0.85, 0.15))
 
 # we start with strong evidence that the tiger is to the left.
-reward(tiger_solved, start = "tiger-left")
+reward(sol, belief = "tiger-left")
 
 # Note that in this case, the total discounted expected reward is greater 
 # than 10 since the tiger problem resets and another game staring with 
