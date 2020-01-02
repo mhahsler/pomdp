@@ -298,7 +298,7 @@ print.POMDP_solution <- function(x, ...) {
   
   # general checks for state names
   else if(is.character(belief)) {
-    if(any(is.na(match(belief, c(states, "-")))))
+    if(any(is.na(match(belief, c(as.character(states), "-")))))
       stop("Illegal belief format.\n", belief,
         "\nUnrecognized state name.")
   

@@ -21,7 +21,7 @@ plot_belief_space <- function(model, projection = NULL, n = 100,
       clab=paste("\u2190", colnames(belief)[3]), 
       grid.lines=10, grid.lty='dotted',
       grid.minor.lines=1, grid.minor.lty='dotted')  
-    TernaryPoints(alpha, pch = 20, col = col)
+    TernaryPoints(belief, pch = 20, col = col)
     
     #FunctionToContour <- function (a, b, c) pomdp:::.rew(belief = cbind(a,b,c), model$solution$alpha[,projection])[,what]
     #values <- Ternary::TernaryPointValues(FunctionToContour, resolution=128L)

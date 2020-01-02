@@ -1,16 +1,16 @@
 \name{plot_belief_space}
 \alias{plot_belief_space}
-\title{Plot a 2d or 3d Projection of the Belief Space}
+\title{Plot a 2D or 3D Projection of the Belief Space}
 \description{
-Samples forom the (projected) belief space and plots the optimal action, the node in the policy graph or the reward on a line (2d) or on  ternary plot (3d).
+Samples forom the (projected) belief space and plots the optimal action, the node in the policy graph or the reward on a line (2D) or on  ternary plot (3D).
 }
 \usage{
-plot_belief_space(model, projection = c(1, 2), n = 100, 
+plot_belief_space(model, projection = NULL, n = 100, 
   what = c("action", "pg_node", "reward"), legend = TRUE)
 }
 \arguments{
   \item{model}{ a solved POMDP.}
-  \item{projection}{Project on these states. Allowed are projections on two or three states.}
+  \item{projection}{a vector with state IDs or names to project on. Allowed are projections on two or three states. \code{NULL} uses the first two or three states.}
   \item{n}{ number of samples to use. }
   \item{what}{ what to plot.}
   \item{legend}{ logical; add a legend? If the legend covers the plot then you need to increase the plotting region of the plotting device. }
