@@ -1,7 +1,7 @@
 
 ### FIXME: Add belief points
 plot_belief_space <- function(model, projection = NULL, n = 100, 
-  what = c("action", "pg_node", "reward"), legend = TRUE) {
+  what = c("action", "pg_node", "reward"), legend = TRUE, pch = 20, ...) {
   
   if(is.null(projection)) projection <- 1:min(length(model$model$states), 3)
   
@@ -21,7 +21,7 @@ plot_belief_space <- function(model, projection = NULL, n = 100,
       clab=paste("\u2190", colnames(belief)[3]), 
       grid.lines=10, grid.lty='dotted',
       grid.minor.lines=1, grid.minor.lty='dotted')  
-    TernaryPoints(belief, pch = 20, col = col)
+    TernaryPoints(belief, pch = pch, col = col, ...)
     
     #FunctionToContour <- function (a, b, c) pomdp:::.rew(belief = cbind(a,b,c), model$solution$alpha[,projection])[,what]
     #values <- Ternary::TernaryPointValues(FunctionToContour, resolution=128L)
@@ -33,7 +33,7 @@ plot_belief_space <- function(model, projection = NULL, n = 100,
       xlim = c(0,1), ylim = c(0,2),
       axes = FALSE, xlab = NA, ylab = NA)
     
-    points(belief[,1], rep(0, times = nrow(belief)), col = col, pch = 20) 
+    points(belief[,1], rep(0, times = nrow(belief)), col = col, pch = pch, ...) 
     
     axis(1, at = c(0,1), labels = colnames(belief), xaxs = "i")
     axis(1, at = .5, .5) 
@@ -43,7 +43,7 @@ plot_belief_space <- function(model, projection = NULL, n = 100,
   if(legend) 
     if(is.integer(col)) 
       legend("topright", legend = levels(p$optimal[[what]]), 
-        pch = 20, 
+        pch = pch, 
         col = seq(length(levels(p$optimal[[what]])))+1, 
         bty = "n", 
         title = what)     
