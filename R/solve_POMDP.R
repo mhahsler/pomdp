@@ -90,9 +90,25 @@ solve_POMDP <- function(
     stdout = ifelse(verbose, "", TRUE), stderr = ifelse(verbose, "", TRUE), wait = TRUE
   )
   
-  if(!is.null(attr(solver_output, "status"))) {
-    cat(paste(solver_output, "\n"))
-    stop("POMDP solver returned an error. Note that the action and state index for the solver starts with 0 and not with 1. So action=0 is the first action.")
+  if(!is.null(attr(solver_output, "status")) || (verbose && solver_output !=0)) {
+    if(!verbose) cat(paste(solver_output, "\n\n"))
+    
+    cat("Note that the action and state index reported by the solver starts with 0 and not with 1:\n")
+    
+    m <- max(length(model$model$states), 
+      length(model$model$actions),
+      length(model$model$observations)
+    )
+    
+    print(data.frame(index = (1:m)-1, 
+      action = model$model$actions[1:m],
+      state = model$model$states[1:m], 
+      observation = model$model$observations[1:m]
+    ))
+    
+    cat("\n")
+    
+    stop("POMDP solver returned an error (see above).")
   }
   
   ## converged infinite horizon POMDPs produce a policy graph 
