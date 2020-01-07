@@ -8,13 +8,13 @@ Extract the Policy Graph (as an igraph Object)
 Convert the policy graph in a POMDP solution object into an igraph object.
 }
 \usage{
-policy_graph(x, belief = TRUE, cols = NULL)
+policy_graph(x, belief = TRUE, col = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{ A POMDP object.}
-  \item{belief}{logical; add belief proportions as a pie chart in each node of the graph.}
-  \item{cols}{colors used for the states in the belief proportions.}
+  \item{belief}{logical; add belief proportions as a pie chart in each node of the graph? If belief points are provided by the solver, then these are used. If a number is specified, then a random sample of that size is used instead to calculate belief proportions. }
+  \item{col}{colors used for the states in the belief proportions.}
 }
 %\details{
 %%  ~~ If necessary, more details than the description above ~~

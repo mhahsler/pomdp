@@ -5,12 +5,12 @@
 This function calculates the expexted total reward for a POMDP solution given a starting belief state. 
 }
 \usage{
-reward(x, belief = "uniform", epoch = 1)
+reward(x, belief = NULL, epoch = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{a POMDP solution (object of class POMDP).}
-  \item{belief}{specification of the current belief state (see argument start in \code{\link{POMDP}} for details).}
+  \item{belief}{specification of the current belief state (see argument start in \code{\link{POMDP}} for details). By default the belief state defined in the model as start is used.}
   \item{epoch}{return reward for this epoch. Default is the first epoch.}
 }
 \details{

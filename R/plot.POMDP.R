@@ -16,8 +16,8 @@ plot_policy_graph <- function(x, belief = TRUE, legend = TRUE,
 }  
 
 
-.plot.igraph <- function(x, belief, legend, cols, ...) {
-  pg<- policy_graph(x, belief = belief, cols = cols)
+.plot.igraph <- function(x, belief, legend, col, ...) {
+  pg<- policy_graph(x, belief = belief, col = col)
   plot.igraph(pg, ...)
   
   if(legend && belief && !is.null(V(pg)$pie)) {

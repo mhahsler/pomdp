@@ -1,7 +1,9 @@
 # calcualte the optimal reward from alpha vectors in a model
 
-reward <- function(x, belief = "uniform", epoch = 1) {
+reward <- function(x, belief = NULL, epoch = 1) {
   .solved_POMDP(x)
+  
+  if(is.null(belief)) belief <- x$model$start
   
   belief <- .translate_belief(belief, x)
   
@@ -20,7 +22,7 @@ reward <- function(x, belief = "uniform", epoch = 1) {
   list(
     belief = belief,
     total_expected_reward = vs$reward, 
-   pg_node = vs$pg_node,
+    pg_node = vs$pg_node,
     optimal_action = pg$action[vs$pg_node]
   )
 }

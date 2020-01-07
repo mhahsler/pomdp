@@ -1,6 +1,6 @@
 # create a policy graph as an igraph object
 
-policy_graph <- function(x, belief = TRUE, cols = NULL) {
+policy_graph <- function(x, belief = TRUE, col = NULL) {
  
   .solved_POMDP(x) 
   
@@ -33,21 +33,28 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
   
   # add belief proportions
   if(belief) {
-    if(!is.null(x$solution$belief_states)) s <- list(
+    if(!is.null(x$solution$belief_states) && !is.numeric(belief)) s <- list(
       belief = x$solution$belief_states[,1:length(x$model$states)], 
       optimal = reward(x, belief = x$solution$belief_states[,1:length(x$model$states)]))
-    else s <- sample_belief_space(x)
+    else s <- sample_belief_space(x, n = if(is.numeric(sample)) sample else 1000)
+    
     bp <- as.matrix(aggregate(s$belief, by = list(s$optimal$pg_node), mean, drop = FALSE)[, -1]) 
     
-    pie_values <- lapply(1:nrow(bp), FUN = function(i) if(any(is.na(bp[i,]))) rep(1/ncol(bp), times = ncol(bp)) else bp[i,]) 
+    # missing belief points?
+    missing_bp <- which(apply(is.na(bp), MARGIN = 1, any))
+    if(length(missing_bp) > 0) warning("No belief points for policy graph node(s): ", 
+      paste(missing_bp, collapse = ", "), ". Increase the number for parameter belief.")
+     
+    pie_values <- lapply(1:nrow(bp), FUN = function(i) 
+      if(any(is.na(bp[i,]))) structure(rep(1/ncol(bp), times = ncol(bp)), names = colnames(bp)) else bp[i,]) 
     
     ### Set1 from Colorbrewer
     number_of_states <- length(x$model$states)
-    cols <- .get_colors_descrete(number_of_states, cols)
+    col <- .get_colors_descrete(number_of_states, col)
     
     V(policy_graph)$shape <- "pie"
     V(policy_graph)$pie = pie_values
-    V(policy_graph)$pie.color = list(cols)
+    V(policy_graph)$pie.color = list(col)
   }    
   
   V(policy_graph)$size <- 40 
