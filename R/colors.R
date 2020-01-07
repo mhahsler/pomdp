@@ -16,6 +16,6 @@
 }
 
 .get_colors_cont <- function(val, col = NULL) {
-  if(is.null(col)) col <- c("blue", "red") 
+  if(is.null(col)) col <- c("#377EB8", "#E41A1C") # blue -> red 
   rgb(colorRamp(col, space = "Lab")((val-min(val))/(max(val)-min(val)))/255) 
 }
