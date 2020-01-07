@@ -2,7 +2,8 @@
 
 ### FIXME: Add ternary plots for 3 states
 
-plot_value_function <- function(model, projection = 1:2, epoch = 1, ylim = NULL, legend = TRUE) {
+plot_value_function <- function(model, projection = 1:2, epoch = 1, ylim = NULL, 
+  legend = TRUE, col = NULL, lwd = 1, lty = 1, ...) {
 
   .solved_POMDP(model)
 
@@ -11,9 +12,10 @@ plot_value_function <- function(model, projection = 1:2, epoch = 1, ylim = NULL,
   
   alpha <- model$solution$alpha
   pg <- model$solution$pg
+  
    
   # finite-horizon
-  if(is.list(alpha)) {
+  if(!is.matrix(alpha)) {
     if(epoch > length(alpha)) stop("The solution does not contain that many epochs. Either the horizon was set to less epochs or the solution converged earlier.")
     alpha <- alpha[[epoch]]
     pg <- pg[[epoch]]
@@ -21,6 +23,9 @@ plot_value_function <- function(model, projection = 1:2, epoch = 1, ylim = NULL,
   
   alpha <- alpha[,projection, drop = FALSE]
   if(is.null(ylim)) ylim <- c(min(alpha), max(alpha))
+  col <- .get_colors_descrete(nrow(alpha), col)  
+  lwd <- rep(lwd, length.out = nrow(alpha))
+  lty <- rep(lty, length.out = nrow(alpha))
   
   plot(NA, xlim = c(0, 1), ylim = ylim, 
     xlab = paste0("Belief space", 
@@ -31,11 +36,12 @@ plot_value_function <- function(model, projection = 1:2, epoch = 1, ylim = NULL,
   axis(1, at = .5, .5)
   box() 
   
-  for(i in 1:nrow(alpha)) lines(x = c(0, 1), y = c(alpha[i,1], alpha[i,2]), col = i, xpd = FALSE)
+  for(i in 1:nrow(alpha)) lines(x = c(0, 1), y = c(alpha[i,1], alpha[i,2]), 
+    col = col[i], lwd = lwd[i], lty = lty[i], xpd = FALSE, ...)
   
   if(legend) legend("topright", legend = 
-      paste0(1:nrow(alpha),": ", pg[,"action"]), col = 1:nrow(alpha), lwd=1, bty = "n",
-    title = "Action")
+      paste0(1:nrow(alpha),": ", pg[,"action"]), col = col, bty = "n", lwd = lwd, lty = lty,
+    title = "Action", ...)
   
   ### use ggplot instead
   #alpha <- cbind(as.data.frame(alpha), Action = factor(paste0(1:nrow(alpha), ": ", pg[,"action"])))

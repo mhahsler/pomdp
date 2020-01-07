@@ -6,7 +6,7 @@ Samples forom the (projected) belief space and plots the optimal action, the nod
 }
 \usage{
 plot_belief_space(model, projection = NULL, n = 100, 
-  what = c("action", "pg_node", "reward"), legend = TRUE, pch = 20, ...)
+  what = c("action", "pg_node", "reward"), legend = TRUE, pch = 20, col = NULL, ...)
 }
 \arguments{
   \item{model}{ a solved POMDP.}
@@ -15,6 +15,7 @@ plot_belief_space(model, projection = NULL, n = 100,
   \item{what}{ what to plot.}
   \item{legend}{ logical; add a legend? If the legend covers the plot then you need to increase the plotting region of the plotting device. }
   \item{pch}{ plotting symbols.}
+  \item{col}{ plotting colors.}
   \item{...}{ additional arguments are passed on to \code{points} for 2D or \code{TerneryPoints} for 3D.}
 }
 \value{

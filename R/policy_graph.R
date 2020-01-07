@@ -43,14 +43,7 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
     
     ### Set1 from Colorbrewer
     number_of_states <- length(x$model$states)
-    if(is.null(cols)) {
-      cols <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33",
-        "#A65628", "#F781BF", "#999999")
-      if(number_of_states <= 9) cols <- cols[1:number_of_states]
-      else cols <- rainbow(number_of_states)
-    }else{
-      if(length(cols) != number_of_states) stop("Number of colors is not the number of states.")
-    }
+    cols <- .get_colors_descrete(number_of_states, cols)
     
     V(policy_graph)$shape <- "pie"
     V(policy_graph)$pie = pie_values

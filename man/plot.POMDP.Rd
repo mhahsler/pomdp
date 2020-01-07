@@ -8,8 +8,8 @@
 \description{The function plots the POMDP policy graph in an object of class POMDP. It uses \code{plot} in \pkg{igraph} with appropriate plotting options.}
 
 \usage{
-plot_policy_graph(x, belief = TRUE, legend = TRUE, cols = NULL, 
-  engine = c("igraph", "visNetwork"), ...)
+plot_policy_graph(x, belief = TRUE, legend = TRUE, 
+  engine = c("igraph", "visNetwork"), col = NULL, ...)
 
 \method{plot}{POMDP}(x, y = NULL, ...)
 }
@@ -18,8 +18,8 @@ plot_policy_graph(x, belief = TRUE, legend = TRUE, cols = NULL,
   \item{y}{ignored.}
   \item{belief}{logical; display belief proportions as a pie chart in each node.}
   \item{legend}{logical; display a legend for colors used belief proportions?}
-  \item{cols}{colors used for the states.}
   \item{engine}{The plotting engine to be used.}
+  \item{col}{colors used for the states.}
   \item{\dots}{plotting options passed on to the plotting engine (see Details section).} 
 }
 

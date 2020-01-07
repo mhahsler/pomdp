@@ -3,15 +3,15 @@
 
 plot.POMDP <- function(x, y = NULL, ...) plot_policy_graph(x, ...)
 
-plot_policy_graph <- function(x, belief = TRUE, legend = TRUE, cols = NULL, 
-  engine = c("igraph", "visNetwork"), ...) {
+plot_policy_graph <- function(x, belief = TRUE, legend = TRUE, 
+  engine = c("igraph", "visNetwork"), col = NULL, ...) {
   
   .solved_POMDP(x)
   
   engine <- match.arg(engine)
   switch(engine,
-    igraph = .plot.igraph(x, belief, legend, cols, ...),
-    visNetwork = .plot.visNetwork(x, belief, legend, cols, ...)
+    igraph = .plot.igraph(x, belief, legend, col, ...),
+    visNetwork = .plot.visNetwork(x, belief, legend, col, ...)
   )
 }  
 

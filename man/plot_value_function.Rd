@@ -5,7 +5,8 @@
 Plots the value function of a POMDP solution as a line plot. The solution is projected on two states (i.e., the belief for the other states is held constant at zero).
 }
 \usage{
-plot_value_function(model, projection = 1:2, epoch = 1, ylim = NULL, legend = TRUE)
+plot_value_function(model, projection = 1:2, epoch = 1, ylim = NULL, legend = TRUE, 
+  col = NULL, lwd = 1, lty = 1, ...)
 }
 \arguments{
   \item{model}{a solved POMDP.}
@@ -13,6 +14,10 @@ plot_value_function(model, projection = 1:2, epoch = 1, ylim = NULL, legend = TR
   \item{epoch}{the value function of what epoch should be plotted? Ignorred for infinite-horizon solutions. }
   \item{ylim}{the y limits of the plot.}
   \item{legend}{logical; add a legend?}
+  \item{col}{potting colors.}
+  \item{lwd}{line width.}
+  \item{lty}{line type.}
+  \item{...}{additional arguments are passed on to \code{line}.}
 }
 \author{Michael Hahsler}
 \examples{
