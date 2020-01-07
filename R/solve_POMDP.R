@@ -30,16 +30,13 @@ solve_POMDP <- function(
   parameter = NULL,
   verbose = FALSE) {
 
-  ### DEBUG
-  #verbose <- TRUE
-  ###
-  
   if(is.null(horizon) || horizon < 1) horizon <- Inf 
   else horizon <- floor(horizon)
   
   converged <- NA
    
-  methods <- c("grid", "enum", "twopass", "witness", "incprune") # Not implemented:  "linsup", "mcgs"
+  methods <- c("grid", "enum", "twopass", "witness", "incprune") 
+  # Not implemented:  "linsup", "mcgs"
   method <- match.arg(method, methods)
     
   ### write model to file
@@ -59,6 +56,8 @@ solve_POMDP <- function(
     if(!is.matrix(terminal_values)) terminal_values <- rbind(terminal_values)
     if(ncol(terminal_values) != length(model$model$states))
       stop("number of terminal values does not match the number of states.")
+    colnames(terminal_values) <- as.character(model$model$states)
+    
     terminal_values_filename <- .write_alpha_file(file_prefix, terminal_values)  
   }
    
@@ -143,7 +142,7 @@ solve_POMDP <- function(
       }
     }
     
-    if(!converged && method == "grid") warning("The grid method for finite horizon did not converge. The reward values may not be valid. Increase the horizon ot use an alternative method.")
+    if(!converged && method == "grid") warning("The grid method for finite horizon did not converge. The reward values may not be valid if there are negative rewards. Increase the horizon or use an alternative method.")
     
     alpha <- rev(alpha)
     pg <- rev(pg)
@@ -160,6 +159,7 @@ solve_POMDP <- function(
     total_expected_reward = NA,
     initial_belief = NA,
     initial_pg_node = NA,
+    terminal_values = terminal_values, 
     belief_states = belief, 
     pg = pg,
     alpha = alpha
