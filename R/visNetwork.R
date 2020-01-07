@@ -3,8 +3,6 @@
 # Note: legend is not used right now!
 .plot.visNetwork <- function(x,  belief = TRUE, legend = NULL, cols = NULL, ...) {
   
-  if(is.finite(x$solution$horizon)) stop("Only infinite horizon POMDPs have a plotable policy graph!")
-  
   pg <- policy_graph(x, belief = belief, cols = cols)
 
   ### add tooltip

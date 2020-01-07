@@ -64,10 +64,10 @@ print.POMDP <- function(x, ...) {
   if(is.null(x$solution)) cat("Unsolved POMDP model:", x$model$name, "\n")
   else cat(
     "Solved POMDP model:", x$model$name, "\n", 
-    "\thorizon:", x$solution$horizon, "\n",
-    "\tdiscount:", x$solution$discount, "\n",
     "\tsolution method:", x$solution$method, "\n",
-    "\tpolicy graph nodes:", nrow(x$solution$pg), "\n",
+    "\thorizon:", x$solution$horizon, "\n",
+    "\tconverged: ", x$solution$converged, "\n",
+    "\tpolicy graph nodes:", if(is.data.frame(x$solution$pg)) nrow(x$solution$pg) else nrow(x$solution$pg[[1]]), "\n",
     "\ttotal expected reward:", x$solution$total_expected_reward, "\n\n" 
   )
 }

@@ -4,10 +4,10 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
  
   .solved_POMDP(x) 
   
-  if(is.finite(x$solution$horizon)) stop("Only infinite horizon POMDPs have a plotable policy graph!")
+  if(!x$solution$converged) stop("POMDP has not converged within horizon to a policy graph. Policy tree conversion is not available yet!")
   
   ## producing the optimal policy graph
-  pg <- x$solution$pg
+  pg <- if(is.data.frame(x$solution$pg)) x$solution$pg else x$solution$pg[[1]]
   
   # producing a list containing arcs
   l <- list()
@@ -26,11 +26,10 @@ policy_graph <- function(x, belief = TRUE, cols = NULL) {
   edge.attributes(policy_graph) <- list(label = l$label)
   
   ### Note: the space helps with moving the id away from the pie cut.
-  init <- rep(":   ", nrow(x$solution$pg))
+  init <- rep(":   ", nrow(pg))
   init[x$solution$initial_pg_node] <- ": initial belief"
   
-  V(policy_graph)$label <- paste0(x$solution$pg$node, init, 
-    "\n", x$solution$pg$action) 
+  V(policy_graph)$label <- paste0(pg$node, init, "\n", pg$action) 
   
   # add belief proportions
   if(belief) {

@@ -256,7 +256,7 @@ print.POMDP_solution <- function(x, ...) {
   #}
   
   # renaming the columns and actions
-  colnames(pg) <- c("node", "action", model$model$observations)
+  colnames(pg) <- c("node", "action", as.character(model$model$observations))
   pg[,2] <- model$model$actions[pg[,2]]
   pg
 }
@@ -267,7 +267,7 @@ print.POMDP_solution <- function(x, ...) {
   if(!file.exists(filename)) return(NULL)
   
   belief <- as.matrix(read.table(filename)) 
-  colnames(belief) <- model$model$states
+  colnames(belief) <- as.character(model$model$states)
   belief
 } 
 
@@ -275,7 +275,7 @@ print.POMDP_solution <- function(x, ...) {
 .translate_belief <- function(belief = NULL, model) {
   ## producing the starting belief vector
   
-  states <- model$model$states
+  states <- as.character(model$model$states)
   
   if(is.null(belief)) belief <- "uniform"
  
