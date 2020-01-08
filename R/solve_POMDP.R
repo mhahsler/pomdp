@@ -32,7 +32,9 @@ solve_POMDP <- function(
 
   if(is.null(horizon) || horizon < 1) horizon <- Inf 
   else horizon <- floor(horizon)
-  
+ 
+  if(is.null(discount)) discount <- model$model$discount
+   
   converged <- NA
    
   methods <- c("grid", "enum", "twopass", "witness", "incprune") 
@@ -142,7 +144,7 @@ solve_POMDP <- function(
       }
     }
     
-    if(!converged && method == "grid") warning("The grid method for finite horizon did not converge. The reward values may not be valid if there are negative rewards. Increase the horizon or use an alternative method.")
+    if(!converged && method == "grid") warning("The grid method for finite horizon did not converge. The reward values may not be valid if there are negative rewards.")
     
     alpha <- rev(alpha)
     pg <- rev(pg)
@@ -247,7 +249,7 @@ print.POMDP_solution <- function(x, ...) {
 .get_pg_file <- function(file_prefix, model, number="") {
   filename <- paste0(file_prefix,'-0.pg', number)
   pg <- read.table(filename, header = FALSE, sep = "", 
-    colClasses = "numeric", na.strings = "-")
+    colClasses = "numeric", na.strings = c("-", "X"))
   pg <- pg + 1 #index has to start from 1 not 0
   
   ### FIXME: I am not sure we need this now

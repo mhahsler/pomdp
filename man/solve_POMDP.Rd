@@ -22,7 +22,7 @@ solve_POMDP_parameter()
   \code{"twopass"},
   \code{"witness"}, or
   \code{"incprune"}. Details can be found in [1]. The default is \code{"grid"} implementing the finite grid method. The size of the grid can be set via \code{parameter = list(fg_points = 10)}.}
-  \item{horizon}{ an integer with the number of iterations for finite horizon problems. If set to \code{Inf}, the algorithm continues running iterations till it converges to the infinite horizon solution.}
+  \item{horizon}{ an integer with the number of epochs for problems with a finite planning horizon. If set to \code{Inf}, the algorithm continues running iterations till it converges to the infinite horizon solution.}
   \item{discount}{ discount factor in range [0, 1]. If \code{discount} is not \code{NULL}, then the discount factor specified in \code{model} will be overwritten.} 
   \item{terminal_values}{a vector with the terminal values for each state or a matrix specifying the terminal rewards via a terminal value function (e.g., the alpha component produced by \code{solve_POMDP}). }
   \item{parameter}{ a list with parameters passed on to the pomdp-solve program. }
@@ -37,7 +37,7 @@ Infinite-horizon POMDPs (\code{horizon = Inf}) converge to a single policy graph
 policy tree of a depth equal to the smaller of the horizon or the number of epochs to convergence. The policy (and the associated value function) are stored in a list by level. The policy for the first epoch is stored as the first element.
 
 The policy graph is a data frame where each row representing a policy graph node with an associated optimal action and
-a list of node IDs to go to depending on the observation (specified as the column names). For the finite-horizon case, the observation specific node IDs refer to nodes in the next epoch creating a policy tree. 
+a list of node IDs to go to depending on the observation (specified as the column names). For the finite-horizon case, the observation specific node IDs refer to nodes in the next epoch creating a policy tree. Impossible observations have a \code{NA} as the next state. 
 
 The value function is stored as a matrix. Each row is associated with a node (row) in the policy graph and represents the coefficients (alpha vector) of a hyperplane. An alpha vector contains one value per state and is the value for the belief state that has a probability of 1 for that state and 0s for all others.   
 
@@ -108,7 +108,7 @@ sol$solution$pg
 reward(sol) # listen twice and then open the door or listen 3 times
 reward(sol, belief = c(1,0)) # listen twice (-2) and then open-left (10)
 reward(sol, belief = c(1,0), epoch = 3) # just open the right door (10)
-reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (maybe wrong)
+reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (5% chance of being maybe wrong)
 
 ## terminal values 
 

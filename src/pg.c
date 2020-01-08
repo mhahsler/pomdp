@@ -521,12 +521,18 @@ PG_printf( PG pg, FILE *file  )
 	 fprintf( file, "%d %d  ", n, pg->action[n] );
 	 
 	 for( z = 0; z < pg->num_obs; z++ )
-	   if ( pg->next[n][z] != INVALID_NODE )
+	   if ( pg->next[n][z] == INVALID_NODE )
+		fprintf( file, "%s ", INVALID_NODE_STR );
+	   else if ( pg->next[n][z] == NO_INFO_NODE )
+		fprintf( file, "%s ", NO_INFO_NODE_STR );
+	   else
+		fprintf( file, "%d ", pg->next[n][z] );
+	   /* if ( pg->next[n][z] != INVALID_NODE )
 		fprintf( file, "%d ", pg->next[n][z] );
 	   else if ( pg->next[n][z] == NO_INFO_NODE )
 		fprintf( file, "%s ", INVALID_NODE_STR );
 	   else
-		fprintf( file, "%s ", NO_INFO_NODE_STR );
+		fprintf( file, "%s ", NO_INFO_NODE_STR ); */
 	 
 	 fprintf( file, "\n");
     }  /* for n */
@@ -652,7 +658,7 @@ void PG_relink( PG pg, int* link_map, int max_idx ) {
 		if ( pg->next[n][z] > max_idx )
 		  {
 		    Warning( "Link index too large. Policy graph mismatch?" );
-		    pg->next[n][z] = NO_INFO_NODE;
+		   // pg->next[n][z] = NO_INFO_NODE;
 		    continue;
 		  }
 
