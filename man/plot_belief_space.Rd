@@ -18,7 +18,7 @@ plot_belief_space(model, projection = NULL, epoch = 1, n = 100, random = FALSE,
   \item{legend}{ logical; add a legend? If the legend covers the plot then you need to increase the plotting region of the plotting device. }
   \item{pch}{ plotting symbols.}
   \item{col}{ plotting colors.}
-  \item{...}{ additional arguments are passed on to \code{points} for 2D or \code{TerneryPoints} for 3D.}
+  \item{...}{ additional arguments are passed on to \code{plot} for 2D or \code{TerneryPlot} for 3D.}
 }
 \value{
 Returns invisibly the sampled points.

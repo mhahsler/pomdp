@@ -26,11 +26,11 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, n = 100, rand
       blab=paste(colnames(belief)[2], "\u2192"), 
       clab=paste("\u2190", colnames(belief)[3]), 
       grid.lines=10, grid.lty='dotted',
-      grid.minor.lines=1, grid.minor.lty='dotted')  
+      grid.minor.lines=1, grid.minor.lty='dotted', ...)  
     
-    Ternary::TernaryPoints(belief, pch = pch, col = cols, ...)
+    Ternary::TernaryPoints(belief, pch = pch, col = cols)
     
-   # if(random) Ternary::TernaryPoints(belief, pch = pch, col = cols, ...)
+   # if(random) Ternary::TernaryPoints(belief, pch = pch, col = cols)
    # else {
    #   values <- rbind(
    #     x = attr(p$belief, "TernaryTriangleCenters")["x",], 
@@ -43,9 +43,9 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, n = 100, rand
   } else if(length(projection) == 2) {
     plot(NA, 
       xlim = c(0,1), ylim = c(0,2),
-      axes = FALSE, xlab = NA, ylab = NA)
+      axes = FALSE, xlab = NA, ylab = NA, ...)
     
-    points(belief[,1], rep(0, times = nrow(belief)), col = cols, pch = pch, ...) 
+    points(belief[,1], rep(0, times = nrow(belief)), col = cols, pch = pch) 
     
     axis(1, at = c(0,1), labels = colnames(belief), xaxs = "i")
     axis(1, at = .5, .5) 

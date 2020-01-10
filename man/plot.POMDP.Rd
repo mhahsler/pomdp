@@ -94,6 +94,6 @@ plot(pg,
 plot(sol, engine = "visNetwork")
 
 ## add smooth edges and a layout (note, engine can be abbreviated)
-plot(sol, engine = "vis", smooth = TRUE, layout = "layout_in_circle")
+plot(sol, engine = "vis", layout = "layout_in_circle", smooth =  list(type = "continuous"))
 }
 \keyword{hplot}
