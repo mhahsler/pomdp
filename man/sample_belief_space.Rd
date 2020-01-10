@@ -1,16 +1,17 @@
 \name{sample_belief_space}
 \alias{sample_belief_space}
 \title{Sample from the Belief Space}
-\description{Sample uniformly points from the belief space and calculte the value and optimal action from the policy.}
+\description{Sample randomly (uniform) or regularly spaced points from the belief space and calculate the value and optimal action from the policy.}
 \usage{
-sample_belief_space(model, n = 1000, projection = NULL, epoch = 1)
+sample_belief_space(model, projection = NULL, epoch = 1, n = 1000, random = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{model}{ a solved POMDP.}
-  \item{n}{ size of the sample.}
   \item{projection}{ Sample in a projected belief space. All states not included in the projection are held at a belief of 0. \code{NULL} means no projection.  }
   \item{epoch}{ evaluate the value/action for what epoch? Ignorred for infinite-horizon solutions.}
+  \item{n}{ size of the sample.}
+  \item{random}{ logical; sample points randomly or from a regular grid. }
 }
 \details{
 Uses the method described by Luc Deroye to uniformly sample from the belief space.

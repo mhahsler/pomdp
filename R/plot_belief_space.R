@@ -1,14 +1,13 @@
 
 ### FIXME: Add belief points
-plot_belief_space <- function(model, projection = NULL, n = 100, 
+plot_belief_space <- function(model, projection = NULL, epoch = 1, n = 100, random = FALSE, 
   what = c("action", "pg_node", "reward"), legend = TRUE, pch = 20, col = NULL, ...) {
   
-  if(is.null(projection)) projection <- 1:min(length(model$model$states), 3)
-  
-  p <- sample_belief_space(model, n = n, projection = projection)
-  belief <- p$belief[,projection]
-  
   what <- match.arg(what)
+  if(is.null(projection)) projection <- 1:min(length(model$model$states), 3)
+ 
+  p <- sample_belief_space(model, projection = projection, epoch = epoch, n = n, random = random)
+  belief <- p$belief[,projection]
   val <- p$optimal[[what]]
   
   # col ... palette used for legend
@@ -22,18 +21,24 @@ plot_belief_space <- function(model, projection = NULL, n = 100,
   }
     
   if(length(projection) == 3) {
-    TernaryPlot(
+    Ternary::TernaryPlot(
       alab=paste(colnames(belief)[1], "\u2192"), 
       blab=paste(colnames(belief)[2], "\u2192"), 
       clab=paste("\u2190", colnames(belief)[3]), 
       grid.lines=10, grid.lty='dotted',
       grid.minor.lines=1, grid.minor.lty='dotted')  
-    TernaryPoints(belief, pch = pch, col = cols, ...)
     
-    #FunctionToContour <- function (a, b, c) pomdp:::.rew(belief = cbind(a,b,c), model$solution$alpha[,projection])[,what]
-    #values <- Ternary::TernaryPointValues(FunctionToContour, resolution=128L)
-    #Ternary::ColourTernary(values)
-    #Ternary::TernaryContour(FunctionToContour, resolution=6L)
+    Ternary::TernaryPoints(belief, pch = pch, col = cols, ...)
+    
+   # if(random) Ternary::TernaryPoints(belief, pch = pch, col = cols, ...)
+   # else {
+   #   values <- rbind(
+   #     x = attr(p$belief, "TernaryTriangleCenters")["x",], 
+   #     y = attr(p$belief, "TernaryTriangleCenters")["y",], 
+   #     z = val, 
+   #     down = attr(p$belief, "TernaryTriangleCenters")["triDown",]) 
+   #   Ternary::ColourTernary(values, spectrum = col)
+   # }
     
   } else if(length(projection) == 2) {
     plot(NA, 
@@ -63,6 +68,7 @@ plot_belief_space <- function(model, projection = NULL, n = 100,
       bty = "n", 
       title = what) 
   }
-  
+ 
+  invisible(p) 
 }
 

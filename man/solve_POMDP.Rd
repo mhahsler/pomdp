@@ -108,7 +108,7 @@ sol$solution$pg
 reward(sol) # listen twice and then open the door or listen 3 times
 reward(sol, belief = c(1,0)) # listen twice (-2) and then open-left (10)
 reward(sol, belief = c(1,0), epoch = 3) # just open the right door (10)
-reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (5% chance of being maybe wrong)
+reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (95% chance)
 
 ## terminal values 
 

@@ -33,7 +33,6 @@ solve_POMDP <- function(
   if(is.null(horizon) || horizon < 1) horizon <- Inf 
   else horizon <- floor(horizon)
  
-  if(is.null(discount)) discount <- model$model$discount
    
   converged <- NA
    
@@ -52,6 +51,9 @@ solve_POMDP <- function(
   } else {
     write_POMDP(model, pomdp_filename)
   }
+  
+  # discount
+  if(is.null(discount)) discount <- model$model$discount
  
   # terminal values
   if(!is.null(terminal_values)) {
@@ -64,7 +66,10 @@ solve_POMDP <- function(
   }
    
   if(!is.null(parameter)) {
-    paras <- sapply(names(parameter), FUN = function(n) paste0("-", n, " ", parameter[[n]]))
+    paras <- sapply(names(parameter), FUN = function(n) 
+      paste0("-", n, " ", if(is.logical(parameter[[n]])) { 
+        if(parameter[[n]]) "true" else "false"} else parameter[[n]])
+      )
   } else paras <- ""
   
  
@@ -170,7 +175,7 @@ solve_POMDP <- function(
   ## add initial node and reward 
   rew <- reward(model, belief = model$model$start)
   model$solution$initial_belief <- rew$belief
-  model$solution$total_expected_reward <- rew$total_expected_reward
+  model$solution$total_expected_reward <- rew$reward
   model$solution$initial_pg_node <- rew$pg_node
   
   model$solver_output <- structure(solver_output, class = "text")
@@ -190,7 +195,7 @@ print.POMDP_solution <- function(x, ...) {
 .parse_POMDP_model_file <- function(file) {
     problem <- readLines(file)  
     
-    get_vals <- function(var) {
+    get_vals <- function(var, number = FALSE) {
       ind <- grep(paste0(var,":"), problem)
       if(length(ind) == 0) return(NULL)
       
@@ -203,17 +208,18 @@ print.POMDP_solution <- function(x, ...) {
       vals <- type.convert(vals, as.is = TRUE)
       
       # create labels if just the number is mentioned
-      if(length(vals) == 1 && is.numeric(vals)) 
+      if(number && length(vals) == 1 && is.numeric(vals)) 
         vals <- paste0(substr(var, 1, 1), seq(vals)) 
     vals
     }
     
     structure(list(
       name = file,
-      states = get_vals("states"),
-      observations = get_vals("observations"),
-      actions = get_vals("actions"),
+      states = get_vals("states", number = TRUE),
+      observations = get_vals("observations", number = TRUE),
+      actions = get_vals("actions", number = TRUE),
       start = get_vals("start"),
+      discount = get_vals("discount"),
       problem = structure(problem, class = "text")),
       class = "POMDP_model"
     )

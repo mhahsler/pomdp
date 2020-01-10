@@ -604,7 +604,7 @@ epochEndStats( SolutionStats stat,
   */
 
   fprintf(stat->report_file, 
-          "%d vectors (err=%.2e)\n", 
+          "%d vectors (delta=%.2e)\n", 
           solution_size,
           cur_error );
   

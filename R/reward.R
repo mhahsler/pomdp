@@ -21,9 +21,9 @@ reward <- function(x, belief = NULL, epoch = 1) {
   
   list(
     belief = belief,
-    total_expected_reward = vs$reward, 
+    reward = vs$reward, 
     pg_node = vs$pg_node,
-    optimal_action = pg$action[vs$pg_node]
+    action = pg$action[vs$pg_node]
   )
 }
 

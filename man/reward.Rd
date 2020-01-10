@@ -18,10 +18,10 @@ The value is calculated using the value function stored in the POMDP solution.
 }
 \value{
 A list with the components
-  \item{total_expected_reward}{the total expected reward given a belief and epoch. }
+  \item{reward}{the total expected reward given a belief and epoch. }
   \item{belief_state}{the belief state specified in \code{belief}.}
   \item{pg_node}{the policy node that represents the belief state.}
-  \item{optimal_action}{the optimal action.}
+  \item{action}{the optimal action.}
 }
 \author{
 Michael Hahsler
