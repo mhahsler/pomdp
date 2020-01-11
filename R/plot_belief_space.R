@@ -1,14 +1,13 @@
 
 ### FIXME: Add belief points
-plot_belief_space <- function(model, projection = NULL, epoch = 1, n = 100, random = FALSE, 
+plot_belief_space <- function(model, projection = NULL, epoch = 1, belief = NULL, n = 100, random = FALSE, 
   what = c("action", "pg_node", "reward"), legend = TRUE, pch = 20, col = NULL, ...) {
   
   what <- match.arg(what)
   if(is.null(projection)) projection <- 1:min(length(model$model$states), 3)
  
-  p <- sample_belief_space(model, projection = projection, epoch = epoch, n = n, random = random)
-  belief <- p$belief[,projection]
-  val <- p$optimal[[what]]
+  if(is.null(belief)) belief <- sample_belief_space(model, projection = projection, n = n, random = random)
+  val <- reward(model, belief = belief, epoch = epoch)[[what]]
   
   # col ... palette used for legend
   # cols ... colors for all points
@@ -54,7 +53,7 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, n = 100, rand
   
   if(legend) 
     if(is.factor(val)) 
-      legend("topright", legend = levels(p$optimal[[what]]), 
+      legend("topright", legend = levels(val), 
         pch = pch, 
         col = col, 
         bty = "n", 
@@ -69,6 +68,6 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, n = 100, rand
       title = what) 
   }
  
-  invisible(p) 
+  invisible(list(belief = belief, val = val)) 
 }
 

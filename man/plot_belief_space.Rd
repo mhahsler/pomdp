@@ -2,16 +2,20 @@
 \alias{plot_belief_space}
 \title{Plot a 2D or 3D Projection of the Belief Space}
 \description{
-Sample at regular intervals or randomly form the (projected) belief space and plots the optimal action, the node in the policy graph or the reward on a line (2D) or on a ternary plot (3D).
+Plots  the optimal action, the node in the policy graph or the reward 
+for a given set of belief points on a line (2D) or on a ternary plot (3D). If no points
+are given, points are sampled using a regular arrangement or randomly form the (projected) belief space.
 }
 \usage{
-plot_belief_space(model, projection = NULL, epoch = 1, n = 100, random = FALSE, 
-  what = c("action", "pg_node", "reward"), legend = TRUE, pch = 20, col = NULL, ...)
+plot_belief_space(model, projection = NULL, epoch = 1, belief = NULL, 
+  n = 100, random = FALSE, what = c("action", "pg_node", "reward"), 
+  legend = TRUE, pch = 20, col = NULL, ...)
 }
 \arguments{
   \item{model}{ a solved POMDP.}
   \item{projection}{a vector with state IDs or names to project on. Allowed are projections on two or three states. \code{NULL} uses the first two or three states.}
   \item{epoch}{ display this epoch. }
+  \item{belief}{ a matrix with belief points as rows. }
   \item{n}{ number of samples to use. }
   \item{random}{ logical; sample randomly from the belief space.}
   \item{what}{ what to plot.}
@@ -48,5 +52,8 @@ sol <- solve_POMDP(Three_doors)
 plot_belief_space(sol)
 plot_belief_space(sol, what = "pg_node")
 plot_belief_space(sol, what = "reward")
+
+# plot the belief points used by the grid-based solver
+plot_belief_space(sol, belief = sol$solution$belief_states)
 }
 \keyword{hplot}

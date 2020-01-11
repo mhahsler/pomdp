@@ -124,11 +124,6 @@ solve_POMDP <- function(
     pg <- .get_pg_file(file_prefix, model)
     belief <- .get_belief_file(file_prefix, model)
     
-    ## finding the respective proportions for each line (node)
-    if(!is.null(belief)) {
-      belief <- cbind(belief, node = apply(belief, MARGIN = 1, FUN = function(b) which.max(alpha %*% b)))
-    }
-    
   }else{
     ## finite horizon pomdp: read the policy tree
     belief <- .get_belief_file(file_prefix, model)

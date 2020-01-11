@@ -1,14 +1,8 @@
 # sample randomly from the belief space
 
-sample_belief_space <- function(model, projection = NULL, epoch = 1, n = 1000, random = TRUE) {
-  alpha <- model$solution$alpha
-  pg <- model$solution$pg
-  if(is.list(alpha)) {
-    alpha <- alpha[[epoch]]
-    pg <- pg[[epoch]]
-  }
+sample_belief_space <- function(model, projection = NULL, n = 1000, random = TRUE) {
   
-  if(is.null(projection)) projection <- seq(ncol(alpha))
+  if(is.null(projection)) projection <- seq(length(model$model$states))
   if(is.character(projection)) projection <- pmatch(projection, model$model$states)
   
   d <- length(projection)
@@ -43,9 +37,5 @@ sample_belief_space <- function(model, projection = NULL, epoch = 1, n = 1000, r
     attr(belief_states, "TernaryTriangleCenters") <- triangleCentres 
 }
   
-  vs <- .rew(belief_states, alpha)
-  action <- pg$action[vs$pg_node]
-  
-  ret <- list(belief = belief_states, optimal = cbind(vs, action))
-  ret
+  belief_states
 }

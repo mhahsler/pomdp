@@ -305,7 +305,7 @@ endPomdpSolve( PomdpSolveParams param,
 
   APG_writePolicyGraph( solution, param->pg_filename );
   
-  if ( gVerbose[V_POMDP_SOLVE] ) {
+  if ( param->opts->verbose == POMDP_SOLVE_OPTS_Verbose_pomdp ) {
     fprintf( param->report_file, 
              "The solution to the (in)finite horizon is:\n" );
     displayAlphaList( param->report_file, solution );
@@ -860,7 +860,7 @@ improveByQ( AlphaList **projection,
   
   for( a = 0; a < gNumActions; a++ ) {
     
-    if ( gVerbose[V_POMDP_SOLVE] == TRUE ) 
+  if ( param->opts->verbose == POMDP_SOLVE_OPTS_Verbose_pomdp )
       getLpStats( param->stat, &start_lps, &start_constraints );
     
     startContext( param->stat, Context_Q_a_build );
@@ -885,7 +885,7 @@ improveByQ( AlphaList **projection,
     
     endContext( param->stat, Context_Q_a_build );
     
-    if ( gVerbose[V_POMDP_SOLVE] == TRUE ) {
+    if ( param->opts->verbose == POMDP_SOLVE_OPTS_Verbose_pomdp ) {
       
       getLpStats( param->stat, &end_lps, &end_constraints );
       fprintf( param->report_file, 
@@ -1031,7 +1031,9 @@ solvePomdp( PomdpSolveParams param )
     next_alpha_list = duplicateAlphaList( param->initial_policy );
   
   /* Just report the initial policy used. */
-  if ( gVerbose[V_POMDP_SOLVE] == TRUE ) {
+  /* Always show this */
+  /*if ( param->opts->verbose == POMDP_SOLVE_OPTS_Verbose_pomdp ) {*/
+  if ( TRUE ) {
     fprintf( param->report_file, "The initial policy being used:\n");
     displayAlphaList( param->report_file, next_alpha_list );
   }

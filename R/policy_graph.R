@@ -38,9 +38,11 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
   
   # add belief proportions
   if(belief) {
-    if(!is.null(x$solution$belief_states) && !is.numeric(belief)) s <- list(
-      belief = x$solution$belief_states[,1:length(x$model$states)], 
-      optimal = reward(x, belief = x$solution$belief_states[,1:length(x$model$states)]))
+    if(!is.null(x$solution$belief_states) && !is.numeric(belief)) 
+      s <- list(
+        belief = x$solution$belief_states, 
+        optimal = reward(x, belief = x$solution$belief_states)
+      )
     else s <- sample_belief_space(x, n = if(is.numeric(sample)) sample else 1000)
     
     bp <- as.matrix(aggregate(s$belief, by = list(s$optimal$pg_node), mean, drop = FALSE)[, -1]) 
