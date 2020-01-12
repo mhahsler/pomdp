@@ -1,3 +1,5 @@
+### Read and write files used by pomdp-solve
+
 
 ## write a model in POMDP format for pomdp-solve
 write_POMDP <- function(model, file) {
@@ -79,10 +81,10 @@ write_POMDP <- function(model, file) {
       if(is.numeric(transition_prob[i,3])) transition_prob[i,1] <- transition_prob[i,1] -1    
       
       code <- paste0(code,"T: ", 
-                      transition_prob[i,1], " : ", 
-                      transition_prob[i,2], " : ", 
-                      transition_prob[i,3], " ",
-                      format(transition_prob[i,4], scientific = FALSE),  
+        transition_prob[i,1], " : ", 
+        transition_prob[i,2], " : ", 
+        transition_prob[i,3], " ",
+        format(transition_prob[i,4], scientific = FALSE),  
         "\n")
     }
   }else{
@@ -119,7 +121,7 @@ write_POMDP <- function(model, file) {
     if (dim(observation_prob)[2] != 4) {
       stop("the given data frame for the observation probabilities needs to have 4 columns including 'action', 'end-state','observation','probability'")
     }
-     
+    
     # writing the transition probabilities lines
     for (i in 1:dim(observation_prob)[1]) {
       # fix indexing
@@ -128,10 +130,10 @@ write_POMDP <- function(model, file) {
       if(is.numeric(observation_prob[i,3])) observation_prob[i,1] <- observation_prob[i,1] -1    
       
       code <- paste0(code,"O: ", 
-                      observation_prob[i,1], " : ", 
-                      observation_prob[i,2], " : ", 
-                      observation_prob[i,3], " ", 
-                      format(observation_prob[i,4], scientific = FALSE), "\n")
+        observation_prob[i,1], " : ", 
+        observation_prob[i,2], " : ", 
+        observation_prob[i,3], " ", 
+        format(observation_prob[i,4], scientific = FALSE), "\n")
     }
   }else{
     ## if the observation probabilities are given in the form of action dependent matrices
@@ -172,11 +174,11 @@ write_POMDP <- function(model, file) {
     # writing the reward lines
     for (i in 1:nrow(reward)) {
       code <- paste0(code,"R: ", 
-                      format(reward[i,1], scientific = FALSE), " : ", 
-                      format(reward[i,2], scientific = FALSE), " : ", 
-                      format(reward[i,3], scientific = FALSE), " : ", 
-                      format(reward[i,4], scientific = FALSE), " ",
-                      format(reward[i,5], scientific = FALSE),  "\n")
+        format(reward[i,1], scientific = FALSE), " : ", 
+        format(reward[i,2], scientific = FALSE), " : ", 
+        format(reward[i,3], scientific = FALSE), " : ", 
+        format(reward[i,4], scientific = FALSE), " ",
+        format(reward[i,5], scientific = FALSE),  "\n")
     }
   }else{
     
@@ -208,7 +210,7 @@ write_POMDP <- function(model, file) {
         }
       }
     }
-  
+    
     code <- paste0(code, "\n")
     
     # ## if the rewards are given in the form of action-and-start-state dependent matrix
@@ -228,8 +230,3 @@ write_POMDP <- function(model, file) {
   ### saving the POMDP file
   cat(code, file = file)
 }
-
-
-
-
-
