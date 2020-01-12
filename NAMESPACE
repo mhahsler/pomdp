@@ -10,6 +10,7 @@ export(
   "POMDP", 
   "O_", "R_", "T_",
   "write_POMDP",
+  "read_POMDP",
   "solve_POMDP",
   "solve_POMDP_parameter",
   "policy_graph",

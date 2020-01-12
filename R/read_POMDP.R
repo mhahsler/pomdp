@@ -1,5 +1,5 @@
 ## read a POMDP model description as a .POMDP file.
-.parse_POMDP_model_file <- function(file) {
+read_POMDP <- function(file) {
     problem <- readLines(file)  
     
     get_vals <- function(var, number = FALSE) {
@@ -31,16 +31,3 @@
       class = "POMDP_model"
     )
 }    
-
-  
-## helpers to read pomdp-solve files
-.get_alpha_file <- function(file_prefix, model, number = "") {  
-  filename <- paste0(file_prefix, '-0.alpha',number)
-  ## importing alpha file
-  alpha <- readLines(filename)
-  alpha <- alpha[seq(2, length(alpha), 3)]
-  alpha <- do.call(rbind, lapply(alpha, function(a) as.numeric(strsplit(a, " ")[[1]])))
-  colnames(alpha) <- model$model$states
-  alpha
-}
-

@@ -1,46 +1,4 @@
-### Read and write auxiliary files used by pomdp-solve
-
-# alpha is a matrix with # of states columns
-.write_alpha_file <- function(file_prefix, alpha) {
-  filename <- paste0(file_prefix, '_terminal_values.alpha')
-  if(!is.matrix(alpha)) alpha <- rbind(alpha)
- 
-  # we don't care about the action so we always use "0" 
-  for(i in seq(nrow(alpha))) 
-    cat("0", paste0(alpha[i, ], collapse = " "), "", 
-      file = filename, sep = "\n", append = i>1)
-  filename
-}  
-
-
-
-## importing pg file
-.get_pg_file <- function(file_prefix, model, number="") {
-  filename <- paste0(file_prefix,'-0.pg', number)
-  pg <- read.table(filename, header = FALSE, sep = "", 
-    colClasses = "numeric", na.strings = c("-", "X"))
-  pg <- pg + 1 #index has to start from 1 not 0
-  
-  ### FIXME: I am not sure we need this now
-  #if (dim(pg)[2]==1 ) {
-  #  pg <- t(pg)
-  #}
-  
-  # renaming the columns and actions
-  colnames(pg) <- c("node", "action", as.character(model$model$observations))
-  pg[,2] <- model$model$actions[pg[,2]]
-  pg
-}
-  
-## importing belief file if it exists
-.get_belief_file <- function(file_prefix, model) {
-  filename <- paste0(file_prefix,'-0.belief')
-  if(!file.exists(filename)) return(NULL)
-  
-  belief <- as.matrix(read.table(filename)) 
-  colnames(belief) <- as.character(model$model$states)
-  belief
-} 
+### Convert sepcifications and read and write auxiliary files used by pomdp-solve
 
 # translate belief specifications into belief vectors
 .translate_belief <- function(belief = NULL, model) {
@@ -131,3 +89,59 @@
   stop("Illegal belief format.\n", belief)
 }
   
+## helpers to read/write pomdp-solve files
+
+# alpha file is a matrix with # of states columns
+.write_alpha_file <- function(file_prefix, alpha) {
+  filename <- paste0(file_prefix, '_terminal_values.alpha')
+  if(!is.matrix(alpha)) alpha <- rbind(alpha)
+ 
+  # we don't care about the action so we always use "0" 
+  for(i in seq(nrow(alpha))) 
+    cat("0", paste0(alpha[i, ], collapse = " "), "", 
+      file = filename, sep = "\n", append = i>1)
+  filename
+}  
+
+
+
+
+.get_alpha_file <- function(file_prefix, model, number = "") {  
+  filename <- paste0(file_prefix, '-0.alpha',number)
+  ## importing alpha file
+  alpha <- readLines(filename)
+  alpha <- alpha[seq(2, length(alpha), 3)]
+  alpha <- do.call(rbind, lapply(alpha, function(a) as.numeric(strsplit(a, " ")[[1]])))
+  colnames(alpha) <- model$model$states
+  alpha
+}
+
+
+
+## importing pg file
+.get_pg_file <- function(file_prefix, model, number="") {
+  filename <- paste0(file_prefix,'-0.pg', number)
+  pg <- read.table(filename, header = FALSE, sep = "", 
+    colClasses = "numeric", na.strings = c("-", "X"))
+  pg <- pg + 1 #index has to start from 1 not 0
+  
+  ### FIXME: I am not sure we need this now
+  #if (dim(pg)[2]==1 ) {
+  #  pg <- t(pg)
+  #}
+  
+  # renaming the columns and actions
+  colnames(pg) <- c("node", "action", as.character(model$model$observations))
+  pg[,2] <- model$model$actions[pg[,2]]
+  pg
+}
+  
+## importing belief file if it exists
+.get_belief_file <- function(file_prefix, model) {
+  filename <- paste0(file_prefix,'-0.belief')
+  if(!file.exists(filename)) return(NULL)
+  
+  belief <- as.matrix(read.table(filename)) 
+  colnames(belief) <- as.character(model$model$states)
+  belief
+} 

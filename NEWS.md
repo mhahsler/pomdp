@@ -6,6 +6,7 @@
 * solve_POMDP not looks at convergence.
 * solve_POMDP gained paramter terminal_values.
 * solve_POMDP gained parameter discount to overwrite the discount rate specified in the model.
+* added read_POMDP to read POMDP files. 
 * added policy graph visualization with vizNetwork.
 * added plot_value_function.
 * added function sample_belief_space to sample from the belief space.

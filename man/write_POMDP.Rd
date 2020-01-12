@@ -1,13 +1,15 @@
 \name{write_POMDP}
 \alias{write_POMDP}
+\alias{read_POMDP}
 \title{
-Write a POMDP Model to a File in POMDP Format
+Read and write a POMDP Model to a File in POMDP Format
 }
 \description{
-Writes a POMDP file suitable for the pomdp-solve program. This function is used internally.
+Reads and write a POMDP file suitable for the pomdp-solve program.
 }
 \usage{
 write_POMDP(model, file)
+read_POMDP(file)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,13 +20,9 @@ write_POMDP(model, file)
 }
 %\details{
 %}
-%\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-%}
+\value{
+\code{read_POMDP} returns a POMDP object.
+}
 \references{
 POMDP solver website: \url{http://www.pomdp.org} 
 }

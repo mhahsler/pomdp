@@ -46,7 +46,7 @@ solve_POMDP <- function(
   
   # is model a filename or a URL?
   if(is.character(model)) {
-    model <- structure(list(model = .parse_POMDP_model_file(model)), class = "POMDP")
+    model <- structure(list(model = read_POMDP(model)), class = "POMDP")
     writeLines(model$model$problem, con = pomdp_filename)
   } else {
     write_POMDP(model, pomdp_filename)
