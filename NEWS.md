@@ -12,6 +12,7 @@
 * added function sample_belief_space to sample from the belief space.
 * added function plot_belief_space.
 * added function transition_matrix.
+* added function observation_matrix.
 
 
 # pomdp 0.9.2 (12/06/2019)

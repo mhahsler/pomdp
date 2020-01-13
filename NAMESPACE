@@ -15,6 +15,7 @@ export(
   "solve_POMDP_parameter",
   "policy_graph",
   "transition_matrix",
+  "observation_matrix",
   "plot_policy_graph",
   "reward",
   "plot_value_function",

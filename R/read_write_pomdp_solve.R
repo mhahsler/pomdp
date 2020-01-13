@@ -90,49 +90,52 @@
 }
 
 ### FIXME... test translating a data.frame with T_
-.translate_transitions <- function(model) {
-  states <- model$model$states
+.translate_probabilities <- function(model, 
+  field = "transition_prob", from = "states", to = "states") {
+  
+  from <- model$model[[from]]
+  to <- model$model[[to]]
   actions <- model$model$actions
   observations <- model$model$observations
-  trans <-  model$model$transition_prob
+  prob <-  model$model[[field]]
   
-  if(is.data.frame(trans)) {
+  if(is.data.frame(prob)) {
     tr <- lapply(actions, FUN = function(x) 
-      matrix(0, nrow = length(states), ncol = length(states), 
-        dimnames = list(states, states)))
+      matrix(0, nrow = length(from), ncol = length(to), 
+        dimnames = list(from, to)))
     names(tr) <- actions
     
-    for(i in 1:nrow(trans)){
-      if(trans[i,"action"] == "*") acts <- actions
-      else acts <- trans[i,"action"]
+    for(i in 1:nrow(prob)){
+      if(prob[i,"action"] == "*") acts <- actions
+      else acts <- prob[i,"action"]
       for(a in acts) {
-        if(trans[i,"start.state"] == "*" && trans[i,"start.state"] == "*")
-          tr[[a]][] <- trans[i,"probability"]
-        else if (trans[i,"start.state"] == "*")
-          tr[[a]][, trans[i,"end.state"]] <- trans[i,"probability"]
-        else if (trans[i,"end.state"] == "*")
-          tr[[a]][trans[i,"start.state"], ] <- trans[i,"probability"]
+        if(prob[i, 2] == "*" && prob[i, 3] == "*")
+          tr[[a]][] <- prob[i,"probability"]
+        else if (prob[i, 2] == "*")
+          tr[[a]][, prob[i, 3]] <- prob[i,"probability"]
+        else if (prob[i, 3] == "*")
+          tr[[a]][prob[i, 2], ] <- prob[i,"probability"]
         else 
-          tr[[a]][trans[i,"start.state"], trans[i,"end.state"]] <- trans[i,"probability"]
+          tr[[a]][prob[i, 2], prob[i, 3]] <- prob[i,"probability"]
       }
     }
-  } else if(is.list(trans)) {
-    trans <- lapply(trans, FUN = function(tr) {
+  } else if(is.list(prob)) {
+    prob <- lapply(prob, FUN = function(tr) {
       if(is.character(tr)) {
         tr <- switch(tr, 
-          identity = diag(1, nrow = length(states), ncol = length(states)),
-          uniform = matrix(1/length(states), 
-            nrow = length(states), ncol = length(states)))
-        dimnames(tr) <- list(states, states)
+          identity = diag(1, nrow = length(from), ncol = length(to)),
+          uniform = matrix(1/length(to), 
+            nrow = length(from), ncol = length(to)))
       }
-      if(!is.matrix(tr)) 
-        stop("Transition probabilities cannot be converted to matrix.")
+      
+      if(!is.matrix(tr)) stop("Probabilities cannot be converted to matrix.")
+      dimnames(tr) <- list(from, to)
       
       tr
     })
-  } else stop("Unknown transition matrix format.")
+  } else stop("Unknown transition/observation matrix format.")
+  prob 
   
-  trans  
 }
 
 ## helpers to read/write pomdp-solve files

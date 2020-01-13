@@ -1,1 +1,5 @@
-transition_matrix <- function(x) .translate_transitions(x)
+transition_matrix <- function(x) 
+  .translate_probabilities(x, field = "transition_prob", from = "states", to = "states")
+
+observation_matrix <- function(x) 
+  .translate_probabilities(x, field = "observation_prob", from = "states", to = "observations")

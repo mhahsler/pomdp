@@ -1,12 +1,12 @@
 \name{transition_matrix}
 \alias{transition_matrix}
+\alias{observation_matrix}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Extract the Transition Matrices from a POMDP
+Extract the Transition or Observation Matrices from a POMDP
 }
 \description{
-Converts the description of transitions in a POMDP in a list of transition matrices, one for each
-action.
+Converts the description of transition or observation probabilities in a POMDP in a list of probability matrices, one for each action.
 }
 \usage{
 transition_matrix(x)
@@ -16,7 +16,7 @@ transition_matrix(x)
   \item{x}{ A POMDP object.}
 }
 \value{
-A list with transition matrices.
+A list with probability matrices.
 }
 %\references{
 %% ~put references to the literature/web site here ~
@@ -30,12 +30,12 @@ Michael Hahsler
 \examples{
 data("Tiger")
 
-m <- transition_matrix(Tiger)
-m 
+transition_matrix(Tiger)
+observation_matrix(Tiger)
 
 # Visualize transition matrix for action 'open-left'
 library("igraph")
-g <- graph_from_adjacency_matrix(m$"open-left", weighted = TRUE)
+g <- graph_from_adjacency_matrix(transition_matrix(Tiger)$"open-left", weighted = TRUE)
 edge_attr(g, "label") <- edge_attr(g, "weight")
 
 igraph.options("edge.curved" = TRUE)
