@@ -1,0 +1,1 @@
+transition_matrix <- function(x) .translate_transitions(x)
