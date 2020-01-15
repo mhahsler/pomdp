@@ -144,7 +144,10 @@ solve_POMDP <- function(
       }
     }
     
-    if(!converged && method == "grid") warning("The grid method for finite horizon did not converge. The reward values may not be valid if there are negative rewards.")
+    if(method == "grid" && 
+        !converged && 
+        any(unlist(reward_matrix(model))<0)) 
+      warning("The grid method for finite horizon did not converge. The value function and the calculated reward values may not be valid with negative reward in the reward matrix.")
     
     alpha <- rev(alpha)
     pg <- rev(pg)

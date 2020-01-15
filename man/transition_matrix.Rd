@@ -1,22 +1,26 @@
 \name{transition_matrix}
 \alias{transition_matrix}
 \alias{observation_matrix}
+\alias{reward_matrix}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Extract the Transition or Observation Matrices from a POMDP
+Extract the Transition, Observation or Reward Matrices from a POMDP
 }
 \description{
-Converts the description of transition or observation probabilities in a POMDP in a list of probability matrices, one for each action.
+Converts the description of transition probabilities and observation probabilities in a POMDP
+into a list of matrices, one for each action. Rewards are converted into a list (actions) of lists (start states) of matrices.
 }
 \usage{
 transition_matrix(x)
+observation_matrix(x)
+reward_matrix(x)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{ A POMDP object.}
 }
 \value{
-A list with probability matrices.
+A list or a list of lists of matrices.
 }
 %\references{
 %% ~put references to the literature/web site here ~
@@ -30,8 +34,15 @@ Michael Hahsler
 \examples{
 data("Tiger")
 
+# transition matrices for each action in the from states x states
 transition_matrix(Tiger)
+
+# observation matrices for each action in the from states x observations
 observation_matrix(Tiger)
+
+# reward matrices for each matrix and (start) state in 
+# the form (end) state x observation
+reward_matrix(Tiger)
 
 # Visualize transition matrix for action 'open-left'
 library("igraph")

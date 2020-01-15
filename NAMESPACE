@@ -16,6 +16,7 @@ export(
   "policy_graph",
   "transition_matrix",
   "observation_matrix",
+  "reward_matrix",
   "plot_policy_graph",
   "reward",
   "plot_value_function",

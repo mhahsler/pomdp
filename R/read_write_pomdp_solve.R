@@ -1,6 +1,6 @@
-### Convert sepcifications and read and write auxiliary files used by pomdp-solve
+# Convert sepcifications and read and write auxiliary files used by pomdp-solve
 
-# translate belief specifications into belief vectors
+# translate belief specifications into numeric belief vectors
 .translate_belief <- function(belief = NULL, model) {
   ## producing the starting belief vector
   
@@ -89,37 +89,47 @@
   stop("Illegal belief format.\n", belief)
 }
 
-### FIXME... test translating a data.frame with T_
+# translate different specifications of transitions, observations and rewards
+# into a list of matrices 
+
+# df needs to have 3 columns: from, to, and val
+.df2matrix <- function(model, df, from = "states", to = "observations"){
+  from <- model$model[[from]]
+  to <- model$model[[to]]
+  m <- matrix(0, nrow = length(from), ncol = length(to), 
+    dimnames = list(from, to))
+  
+  for(i in 1:nrow(df)){
+    if(df[i, 1] == "*" && df[i, 2] == "*")
+      m[] <- df[i, 3]
+    else if (df[i, 1] == "*")
+      m[, df[i, 2]] <- df[i, 3]
+    else if (df[i, 2] == "*")
+      m[df[i, 1], ] <- df[i, 3]
+    else 
+      m[df[i, 1], df[i, 2]] <- df[i, 3]
+  }
+  
+  m
+}
+
 .translate_probabilities <- function(model, 
   field = "transition_prob", from = "states", to = "states") {
   
-  from <- model$model[[from]]
-  to <- model$model[[to]]
   actions <- model$model$actions
-  observations <- model$model$observations
   prob <-  model$model[[field]]
   
   if(is.data.frame(prob)) {
-    tr <- lapply(actions, FUN = function(x) 
-      matrix(0, nrow = length(from), ncol = length(to), 
-        dimnames = list(from, to)))
-    names(tr) <- actions
+    prob <- sapply(actions, function(a) {
+      .df2matrix(model, 
+        prob[(prob$action == a | prob$action == "*"), 2:4],
+        from = from, to = to)
+    }, simplify = FALSE, USE.NAMES = TRUE)
     
-    for(i in 1:nrow(prob)){
-      if(prob[i,"action"] == "*") acts <- actions
-      else acts <- prob[i,"action"]
-      for(a in acts) {
-        if(prob[i, 2] == "*" && prob[i, 3] == "*")
-          tr[[a]][] <- prob[i,"probability"]
-        else if (prob[i, 2] == "*")
-          tr[[a]][, prob[i, 3]] <- prob[i,"probability"]
-        else if (prob[i, 3] == "*")
-          tr[[a]][prob[i, 2], ] <- prob[i,"probability"]
-        else 
-          tr[[a]][prob[i, 2], prob[i, 3]] <- prob[i,"probability"]
-      }
-    }
   } else if(is.list(prob)) {
+    from <- model$model[[from]]
+    to <- model$model[[to]]
+    
     prob <- lapply(prob, FUN = function(tr) {
       if(is.character(tr)) {
         tr <- switch(tr, 
@@ -135,10 +145,39 @@
     })
   } else stop("Unknown transition/observation matrix format.")
   prob 
-  
 }
 
-## helpers to read/write pomdp-solve files
+.translate_reward <- function(model) {
+  actions <- as.character(model$model$actions)
+  states <- as.character(model$model$states)
+  reward <-  model$model$reward
+  
+  # no reward avaiable (e.g., for reading POMDP files)
+  if(is.null(reward)) {
+    warning("Reward is not specified in the model description (e.g., when a POMDP model file is read).")
+    return (NULL)
+  }
+  
+  for(i in 1:4) reward[[i]] <- as.character(reward[[i]])
+  
+  
+  if(is.data.frame(reward)) {
+    reward <- sapply(actions, FUN = function(a) 
+      sapply(states, FUN = function(s) {
+        .df2matrix(model, 
+          reward[(reward$action == a | reward$action == "*") & 
+              (reward$start.state == s | reward$start.state == "*"), 3:5],
+          from = "states", to = "observations")
+      }, simplify = FALSE, USE.NAMES = TRUE
+      ), simplify = FALSE, USE.NAMES = TRUE
+    )
+  }
+  
+  reward
+}
+
+
+# helpers to read/write pomdp-solve files
 
 # alpha file is a matrix with # of states columns
 .write_alpha_file <- function(file_prefix, alpha) {
@@ -152,9 +191,6 @@
   filename
 }  
 
-
-
-
 .get_alpha_file <- function(file_prefix, model, number = "") {  
   filename <- paste0(file_prefix, '-0.alpha',number)
   ## importing alpha file
@@ -164,8 +200,6 @@
   colnames(alpha) <- model$model$states
   alpha
 }
-
-
 
 ## importing pg file
 .get_pg_file <- function(file_prefix, model, number="") {
@@ -185,7 +219,7 @@
   pg
 }
   
-## importing belief file if it exists
+# importing belief file (used belief points) if it exists
 .get_belief_file <- function(file_prefix, model) {
   filename <- paste0(file_prefix,'-0.belief')
   if(!file.exists(filename)) return(NULL)

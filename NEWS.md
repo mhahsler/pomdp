@@ -13,6 +13,7 @@
 * added function plot_belief_space.
 * added function transition_matrix.
 * added function observation_matrix.
+* added function reward_matrix.
 
 
 # pomdp 0.9.2 (12/06/2019)
