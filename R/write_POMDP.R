@@ -2,7 +2,7 @@
 
 
 ## write a model in POMDP format for pomdp-solve
-write_POMDP <- function(model, file) {
+write_POMDP <- function(model, file, digits = 7) {
   if(!inherits(model, "POMDP")) stop("model needs to be a POMDP model use POMDP()!")
   
   model <- model$model
@@ -26,7 +26,7 @@ write_POMDP <- function(model, file) {
     "# POMDP File: ", model$name, "\n",
     "# Produced with R package pomdp\n",
     "\n",
-    "discount: ", discount, "\n",
+    "discount: ", format(discount, digits = digits), "\n",
     "values: ", values, "\n",
     "states: ", paste(states, collapse = " "), "\n",
     "actions: ", paste(actions, collapse = " "), "\n",
@@ -84,7 +84,7 @@ write_POMDP <- function(model, file) {
         transition_prob[i,1], " : ", 
         transition_prob[i,2], " : ", 
         transition_prob[i,3], " ",
-        format(transition_prob[i,4], scientific = FALSE),  
+        format(transition_prob[i,4], digits = digits, scientific = FALSE),  
         "\n")
     }
   }else{
@@ -103,7 +103,8 @@ write_POMDP <- function(model, file) {
       else {
         c_m <- character()
         for (j in 1:number_of_states) {
-          c_m <- paste(c(c_m, format(transition_prob[[actions[i]]][j,], scientific = FALSE), "\n"), 
+          c_m <- paste(c(c_m, format(transition_prob[[actions[i]]][j,], 
+            digits = digits, scientific = FALSE), "\n"), 
             collapse = " ")
         }
         code <- paste(c(code, c_m), collapse = " ")
@@ -133,7 +134,7 @@ write_POMDP <- function(model, file) {
         observation_prob[i,1], " : ", 
         observation_prob[i,2], " : ", 
         observation_prob[i,3], " ", 
-        format(observation_prob[i,4], scientific = FALSE), "\n")
+        format(observation_prob[i,4], digits = digits, scientific = FALSE), "\n")
     }
   }else{
     ## if the observation probabilities are given in the form of action dependent matrices
@@ -152,7 +153,8 @@ write_POMDP <- function(model, file) {
           stop("Observation matrix for action '", actions[i], "' is not of size # of states times # of observations!")
         c_m <- character()
         for (j in 1:number_of_states) {
-          c_m <- paste0(c_m, paste(format(observation_prob[[actions[i]]][j,], scientific = FALSE),
+          c_m <- paste0(c_m, paste(format(observation_prob[[actions[i]]][j,], 
+            digits = digits, scientific = FALSE),
             collapse = " "), "\n")
         }
         code <- paste0(code, c_m)
@@ -174,11 +176,11 @@ write_POMDP <- function(model, file) {
     # writing the reward lines
     for (i in 1:nrow(reward)) {
       code <- paste0(code,"R: ", 
-        format(reward[i,1], scientific = FALSE), " : ", 
-        format(reward[i,2], scientific = FALSE), " : ", 
-        format(reward[i,3], scientific = FALSE), " : ", 
-        format(reward[i,4], scientific = FALSE), " ",
-        format(reward[i,5], scientific = FALSE),  "\n")
+        reward[i,1], " : ", 
+        reward[i,2], " : ", 
+        reward[i,3], " : ", 
+        reward[i,4], " ",
+        format(reward[i,5], digits = digits, scientific = FALSE),  "\n")
     }
   }else{
     
@@ -203,7 +205,8 @@ write_POMDP <- function(model, file) {
         else {
           c_m <- character()
           for (k in 1:number_of_states) {
-            c_m <- paste0(c_m, paste(format(reward[[actions[i]]][[states[j]]][k,], scientific = FALSE),
+            c_m <- paste0(c_m, paste(format(reward[[actions[i]]][[states[j]]][k,],
+              digits = digits, scientific = FALSE),
               collapse = " "), "\n")
           }
           code <- paste0(code, c_m, "\n")

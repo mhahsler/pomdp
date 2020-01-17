@@ -6,6 +6,7 @@
 * solve_POMDP not looks at convergence.
 * solve_POMDP gained paramter terminal_values.
 * solve_POMDP gained parameter discount to overwrite the discount rate specified in the model.
+* write_POMDP gained parameter digits.
 * added read_POMDP to read POMDP files. 
 * added policy graph visualization with vizNetwork.
 * added plot_value_function.
@@ -14,7 +15,6 @@
 * added function transition_matrix.
 * added function observation_matrix.
 * added function reward_matrix.
-
 
 # pomdp 0.9.2 (12/06/2019)
 

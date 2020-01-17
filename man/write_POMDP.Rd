@@ -8,15 +8,14 @@ Read and write a POMDP Model to a File in POMDP Format
 Reads and write a POMDP file suitable for the pomdp-solve program.
 }
 \usage{
-write_POMDP(model, file)
+write_POMDP(model, file, digits = 7)
 read_POMDP(file)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{model}{ an object of class POMDP_model.
-}
-  \item{file}{ a file name.
-}
+  \item{model}{ an object of class POMDP_model.}
+  \item{digits}{ precision for writing numbers.}
+  \item{file}{ a file name.}
 }
 %\details{
 %}
