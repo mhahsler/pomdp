@@ -8,7 +8,7 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, belief = NULL
  
   if(is.null(belief)) belief <- sample_belief_space(model, projection = projection, n = n, random = random)
   val <- reward(model, belief = belief, epoch = epoch)[[what]]
-  
+   
   # col ... palette used for legend
   # cols ... colors for all points
   if(is.factor(val)) {
@@ -18,6 +18,8 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, belief = NULL
     col <- .get_colors_cont(seq(0,1, length.out = 11), col)
     cols <- .get_colors_cont(val, col)
   }
+  
+  belief <- belief[, projection]
     
   if(length(projection) == 3) {
     Ternary::TernaryPlot(
