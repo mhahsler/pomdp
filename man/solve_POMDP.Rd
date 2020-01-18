@@ -3,9 +3,8 @@
 \alias{solve_POMDP_parameter}
 \title{Solve a POMDP Problem}
 \description{
-This function utilizes the 'pomdp-solve' program (written in C) to 
-use different solution methods [2] to
-solve problems that are formulated as partially observable Markov decision processes (POMDPs) [1]. The result is a (close to) optimal policy.
+This function utilizes the C implementation of 'pomdp-solve'  by Cassandra (2015) to
+solve problems that are formulated as partially observable Markov decision processes (POMDPs). The result is an optimal or approximately optimal policy.
 }
 \usage{
 solve_POMDP(model, horizon = Inf, discount = NULL, terminal_values = NULL,
@@ -21,7 +20,8 @@ solve_POMDP_parameter()
   \code{"enum"},
   \code{"twopass"},
   \code{"witness"}, or
-  \code{"incprune"}. Details can be found in [1]. The default is \code{"grid"} implementing the finite grid method. The size of the grid can be set via \code{parameter = list(fg_points = 10)}.}
+  \code{"incprune"}.
+  The default is \code{"grid"} implementing the finite grid method.}
   \item{horizon}{ an integer with the number of epochs for problems with a finite planning horizon. If set to \code{Inf}, the algorithm continues running iterations till it converges to the infinite horizon solution.}
   \item{discount}{ discount factor in range [0, 1]. If \code{discount} is not \code{NULL}, then the discount factor specified in \code{model} will be overwritten.} 
   \item{terminal_values}{a vector with the terminal values for each state or a matrix specifying the terminal rewards via a terminal value function (e.g., the alpha component produced by \code{solve_POMDP}). }
@@ -33,16 +33,40 @@ logical, if set to \code{TRUE}, the function provides the output of the pomdp so
 \details{
 \code{solve_POMDP_parameter()} displays available solver parameter options.
 
+\bold{Horizon:}
 Infinite-horizon POMDPs (\code{horizon = Inf}) converge to a single policy graph. Finite-horizon POMDPs result in a
-policy tree of a depth equal to the smaller of the horizon or the number of epochs to convergence. The policy (and the associated value function) are stored in a list by level. The policy for the first epoch is stored as the first element.
+policy tree of a depth equal to the smaller of the horizon or the number of epochs to convergence. 
+The policy (and the associated value function) are stored in a list by epoch. The policy for the first epoch is stored as the first element.
 
-The policy graph is a data frame where each row representing a policy graph node with an associated optimal action and
-a list of node IDs to go to depending on the observation (specified as the column names). For the finite-horizon case, the observation specific node IDs refer to nodes in the next epoch creating a policy tree. Impossible observations have a \code{NA} as the next state. 
+\bold{Policy:}
+Each policy is a data frame where each row representing a policy graph node with an associated optimal action and
+a list of node IDs to go to depending on the observation (specified as the column names). For the finite-horizon case, the observation specific node IDs refer to nodes in the next epoch creating a policy tree. 
+Impossible observations have a \code{NA} as the next state. 
 
-The value function is stored as a matrix. Each row is associated with a node (row) in the policy graph and represents the coefficients (alpha vector) of a hyperplane. An alpha vector contains one value per state and is the value for the belief state that has a probability of 1 for that state and 0s for all others.   
+\bold{Value function:}
+The value function is stored as a matrix. Each row is associated with a node (row) in the policy graph and represents the coefficients (alpha vector) of a hyperplane. An alpha vector contains one value per state and is the value for the belief state that has a probability of 1 for that state and 0s for all others.
 
-\bold{Note on the finite grid method:} This method is geared towards infinite-horizon models and will produce strange reward values for finite horizon problems with negative rewards.
-  
+\bold{Precision:} The POMDP solver uses various epsilon values to control precision for comparing alpha vectors to check for convergence, and solving LPs. Overall precision can be changed using
+\code{parameter = list(epsilon = 1e-3)}.
+
+\bold{Methods:} 
+Several algorithms for dynamic-programming updates are available:
+enumeration and two pass (Sondik 1971),
+%exhaustive (Monahan 1982), 
+%linear support (Cheng 1988), and 
+witness (Littman, Cassandra, Kaelbling, 1996)
+incremental pruning (Zhang and Liu, 1996, Cassandra et al 1997)
+grid is an implementation of point-based value iteration (PBVI).
+Details can be found in (Cassandra, 2015). 
+
+\bold{Note on method grid:} The point based finite grid method uses points that are reachable from the 
+initial belief (\code{start}) by following all combinations of actions and observations. 
+The size of the grid can be set via \code{parameter = list(fg_points = 100)}.
+To guarantee convergence in point-based (finite grid) value iteration, the initial value function must be
+a lower bound on the optimal value function. If all rewards are strictly non-negative, a  initial value function with an all zero vector can be used and results will be similar to other methods. However,
+if there are negative rewards, lower bounds can be guaranteed by setting a single vector with
+the values \eqn{min(reward)/(1 - discount)}. The value function is guaranteed to converge to the true value function, but finite-horizon value functions will not be as expected. \code{solve_POMDP} produces a warning in this case.
+
 \bold{Note:} The parser for POMDP files is experimental. Please report problems here: \url{https://github.com/farzad/pomdp/issues}.
 }
 \value{
@@ -53,11 +77,27 @@ the solver output (\code{solver_output}).
 }
 
 \references{
-[1] For further details on how the POMDP solver utilized in this R package works check the following website:
-\url{http://www.pomdp.org} 
+Cassandra, A. (2015). pomdp-solve: POMDP Solver Software, \url{http://www.pomdp.org}. 
 
-[2] Cassandra, A. Rocco, Exact and approximate algorithms for partially observable Markov decision processes, (1998). 
-\url{https://dl.acm.org/citation.cfm?id=926710}
+Sondik, E. (1971). The Optimal Control of Partially
+Observable Markov Processes. Ph.D. Dissertation,
+Stanford University. 
+
+Cassandra, A., Littman M.L., Zhang L. (1997). Incremental Pruning: A Simple, Fast, Exact Algorithm for Partially Observable Markov Decision Processes. UAI'97: Proceedings of the Thirteenth conference on Uncertainty in artificial intelligence, August 1997, pp. 54-61. 
+
+Monahan, G. E. (1982). A survey of partially observable Markov decision processes: Theory, models, and
+algorithms. Management Science 28(1):1-16.
+
+Littman, M. L.; Cassandra, A. R.; and Kaelbling,
+L. P. (1996). Efficient dynamic-programming updates
+in partially observable Markov decision processes.
+Technical Report CS-95-19, Brown University, Providence, RI. 
+
+Zhang, N. L., and Liu, W. (1996). Planning in stochastic domains: Problem characteristics and approximation. Technical Report HKUST-CS96-31, Department of Computer Science, Hong Kong University of
+Science and Technology. 
+
+
+
 }
 \author{
 Hossein Kamalzadeh, Michael Hahsler
@@ -146,6 +186,6 @@ sol <- solve_POMDP(model = Tiger,
 sol
 sol$solution$pg
 # note: it is optimal to mostly listen till the Tiger gets in the scared mood. Only if we are 
-# extremely sure in the first epoch, then openig a door is optimal.
+# extremely sure in the first epoch, then opening a door is optimal.
 }
 
