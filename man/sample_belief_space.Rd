@@ -3,17 +3,18 @@
 \title{Sample from the Belief Space}
 \description{Sample randomly (uniform) or regularly spaced points from the projected belief space.}
 \usage{
-sample_belief_space(model, projection = NULL, n = 1000, random = TRUE)
+sample_belief_space(model, projection = NULL, n = 1000, method = "random")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{model}{ a unsolved or solved POMDP.}
   \item{projection}{ Sample in a projected belief space. All states not included in the projection are held at a belief of 0. \code{NULL} means no projection.  }
   \item{n}{ size of the sample.}
-  \item{random}{ logical; sample points randomly or from a regular grid. }
+  \item{method}{ character string specifying the sampling strategy. Available are \code{"random"}
+    and \code{"regular"}.}
 }
 \details{
-Uses the method described by Luc Deroye to uniformly sample from the belief space.
+Method random samples uniformly sample from the projected belief space using the method described by Luc Deroye. Method regular samples points using a regularly spaced grid. This method is only available for projections on 2 or 3 states.  
 }
 \value{
 Returns a matrix. Each row is a sample from the belief space.
@@ -28,9 +29,9 @@ Michael Hahsler
 data("Tiger")
 
 sample_belief_space(Tiger, n = 5)
-sample_belief_space(Tiger, n = 5, random = FALSE)
+sample_belief_space(Tiger, n = 5, method = "regular")
 
 # sample and calculate the reward for a solve POMDP
 sol <- solve_POMDP(Tiger)
-reward(sol, belief= sample_belief_space(sol, n = 5, random = FALSE))
+reward(sol, belief = sample_belief_space(sol, n = 5, method = "regular"))
 }

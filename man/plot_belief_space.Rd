@@ -7,17 +7,16 @@ for a given set of belief points on a line (2D) or on a ternary plot (3D). If no
 are given, points are sampled using a regular arrangement or randomly form the (projected) belief space.
 }
 \usage{
-plot_belief_space(model, projection = NULL, epoch = 1, belief = NULL, 
-  n = 100, random = FALSE, what = c("action", "pg_node", "reward"), 
+plot_belief_space(model, projection = NULL, epoch = 1, sample = "regular", 
+  n = 100, what = c("action", "pg_node", "reward"), 
   legend = TRUE, pch = 20, col = NULL, ...)
 }
 \arguments{
   \item{model}{ a solved POMDP.}
   \item{projection}{a vector with state IDs or names to project on. Allowed are projections on two or three states. \code{NULL} uses the first two or three states.}
   \item{epoch}{ display this epoch. }
-  \item{belief}{ a matrix with belief points as rows. }
-  \item{n}{ number of samples to use. }
-  \item{random}{ logical; sample randomly from the belief space.}
+  \item{sample}{ a matrix with belief points as rows or a character string specifying the \code{method} used for \code{sample_belief_space}.  }
+  \item{n}{ number of points sampled. }
   \item{what}{ what to plot.}
   \item{legend}{ logical; add a legend? If the legend covers the plot then you need to increase the plotting region of the plotting device. }
   \item{pch}{ plotting symbols.}
@@ -40,7 +39,12 @@ sol <- solve_POMDP(Tiger)
 
 plot_belief_space(sol)
 plot_belief_space(sol, n = 10)
-plot_belief_space(sol, n = 10, random = TRUE)
+plot_belief_space(sol, n = 10, sample = "random")
+
+# plot the belief points used by the grid-based solver
+plot_belief_space(sol, sample = sol$solution$belief_states)
+
+# plot differnt measures
 plot_belief_space(sol, what = "pg_node")
 plot_belief_space(sol, what = "reward")
 
@@ -50,10 +54,11 @@ data("Three_doors")
 sol <- solve_POMDP(Three_doors)
 
 plot_belief_space(sol)
+plot_belief_space(sol, sample = "random")
 plot_belief_space(sol, what = "pg_node")
 plot_belief_space(sol, what = "reward")
 
 # plot the belief points used by the grid-based solver
-plot_belief_space(sol, belief = sol$solution$belief_states)
+plot_belief_space(sol, sample = sol$solution$belief_states)
 }
 \keyword{hplot}

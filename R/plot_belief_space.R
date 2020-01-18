@@ -1,13 +1,17 @@
 
 ### FIXME: Add belief points
-plot_belief_space <- function(model, projection = NULL, epoch = 1, belief = NULL, n = 100, random = FALSE, 
+plot_belief_space <- function(model, projection = NULL, epoch = 1, sample = "regular", n = 100, 
   what = c("action", "pg_node", "reward"), legend = TRUE, pch = 20, col = NULL, ...) {
+  
+  # sample: a matrix with belief points or a character string passed on to sample_belief_space as method.
+  # E.g., "regular", "random", ...
   
   what <- match.arg(what)
   if(is.null(projection)) projection <- 1:min(length(model$model$states), 3)
- 
-  if(is.null(belief)) belief <- sample_belief_space(model, projection = projection, n = n, random = random)
-  val <- reward(model, belief = belief, epoch = epoch)[[what]]
+  
+  if(is.character(sample)) sample <-  sample_belief_space(model, projection = projection, 
+    n = n, method = sample)
+  val <- reward(model, belief = sample, epoch = epoch)[[what]]
    
   # col ... palette used for legend
   # cols ... colors for all points
@@ -19,17 +23,17 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, belief = NULL
     cols <- .get_colors_cont(val, col)
   }
   
-  belief <- belief[, projection]
+  sample <- sample[, projection]
     
   if(length(projection) == 3) {
     Ternary::TernaryPlot(
-      alab=paste(colnames(belief)[1], "\u2192"), 
-      blab=paste(colnames(belief)[2], "\u2192"), 
-      clab=paste("\u2190", colnames(belief)[3]), 
+      alab=paste(colnames(sample)[1], "\u2192"), 
+      blab=paste(colnames(sample)[2], "\u2192"), 
+      clab=paste("\u2190", colnames(sample)[3]), 
       grid.lines=10, grid.lty='dotted',
       grid.minor.lines=1, grid.minor.lty='dotted', ...)  
     
-    Ternary::TernaryPoints(belief, pch = pch, col = cols)
+    Ternary::TernaryPoints(sample, pch = pch, col = cols)
     
    # if(random) Ternary::TernaryPoints(belief, pch = pch, col = cols)
    # else {
@@ -46,9 +50,9 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, belief = NULL
       xlim = c(0,1), ylim = c(0,2),
       axes = FALSE, xlab = NA, ylab = NA, ...)
     
-    points(belief[,1], rep(0, times = nrow(belief)), col = cols, pch = pch) 
+    points(sample[,1], rep(0, times = nrow(sample)), col = cols, pch = pch) 
     
-    axis(1, at = c(0,1), labels = colnames(belief), xaxs = "i")
+    axis(1, at = c(0,1), labels = colnames(sample), xaxs = "i")
     axis(1, at = .5, .5) 
     
   } else stop("projection needs to be 2d or 3d.")
@@ -70,6 +74,6 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, belief = NULL
       title = what) 
   }
  
-  invisible(list(belief = belief, val = val)) 
+  invisible(list(belief = sample, val = val)) 
 }
 
