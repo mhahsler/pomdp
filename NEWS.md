@@ -15,6 +15,7 @@
 * added function transition_matrix.
 * added function observation_matrix.
 * added function reward_matrix.
+* POMDP model now also contains horizon and terminal_values.
 
 # pomdp 0.9.2 (12/06/2019)
 

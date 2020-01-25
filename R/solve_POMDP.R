@@ -23,39 +23,48 @@ solve_POMDP_parameter <- function() {
 #solve a POMDP model
 solve_POMDP <- function(
   model,
-  horizon = Inf,
+  horizon = NULL,
   discount = NULL,
   terminal_values = NULL,
   method = "grid",
   parameter = NULL,
   verbose = FALSE) {
-
-  if(is.null(horizon) || horizon < 1) horizon <- Inf 
-  else horizon <- floor(horizon)
- 
-   
-  converged <- NA
-   
-  methods <- c("grid", "enum", "twopass", "witness", "incprune") 
-  # Not implemented:  "linsup", "mcgs"
-  method <- match.arg(method, methods)
-    
-  ### write model to file
+  
+  ### write model to file and create model if a filename is specified
   file_prefix <- tempfile(pattern = "pomdp_")
   pomdp_filename <- paste0(file_prefix, ".POMDP") 
   
-  # is model a filename or a URL?
+  # write model
   if(is.character(model)) {
     model <- structure(list(model = read_POMDP(model)), class = "POMDP")
     writeLines(model$model$problem, con = pomdp_filename)
   } else {
     write_POMDP(model, pomdp_filename)
   }
+
   
-  # discount
+  if(is.null(horizon)) horizon <- model$model$horizon
+  if(is.null(horizon) || horizon < 1) horizon <- Inf 
+  else horizon <- floor(horizon)
+   
+  if(is.null(terminal_values)) terminal_values <- model$model$terminal_values
+  if(!is.null(terminal_values) && 
+      length(terminal_values) == 1 && terminal_values == 0) terminal_values <- NULL
+  
   if(is.null(discount)) discount <- model$model$discount
- 
-  # terminal values
+  if(is.null(discount)) {
+    warning("No discount rate specified. Using .9!")
+    discount <- .9
+  }
+    
+  converged <- NA
+   
+  methods <- c("grid", "enum", "twopass", "witness", "incprune") 
+  # Not implemented:  "linsup", "mcgs"
+  method <- match.arg(method, methods)
+    
+  
+  # write terminal values
   if(!is.null(terminal_values)) {
     if(!is.matrix(terminal_values)) terminal_values <- rbind(terminal_values)
     if(ncol(terminal_values) != length(model$model$states))
@@ -65,6 +74,7 @@ solve_POMDP <- function(
     terminal_values_filename <- .write_alpha_file(file_prefix, terminal_values)  
   }
    
+  # construct parameter string
   if(!is.null(parameter)) {
     paras <- sapply(names(parameter), FUN = function(n) 
       paste0("-", n, " ", if(is.logical(parameter[[n]])) { 
@@ -72,7 +82,6 @@ solve_POMDP <- function(
       )
   } else paras <- ""
   
- 
   # for verbose it goes directly to the console ("") 
   # for finite horizon we need to save all pg and alpha files
   pomdp_args <- c(
@@ -84,10 +93,6 @@ solve_POMDP <- function(
     paras, 
     "-fg_save true")
  
-  # fix discount if overwritten
-  if(is.null(discount)) discount <- model$model$discount
-  if(is.null(discount)) discount <- NA
-   
   if(verbose) cat("Calling pomdp-solve with the following arguments:", 
     paste(pomdp_args, collapse =  " "), 
     "\nSolver output:", sep = "\n")
@@ -164,7 +169,7 @@ solve_POMDP <- function(
     total_expected_reward = NA,
     initial_belief = NA,
     initial_pg_node = NA,
-    terminal_values = terminal_values, 
+    terminal_values = if(!is.null(terminal_values)) terminal_values else 0, 
     belief_states = belief, 
     pg = pg,
     alpha = alpha

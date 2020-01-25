@@ -10,8 +10,9 @@
 the set of states, the set of actions, the set of observations, the transition probabilities, the observation probabilities, and rewards.}
 
 \usage{
-POMDP(states, actions, observations, transition_prob, 
-      observation_prob, reward, discount = 0.9, start = "uniform", max = TRUE, name = NA)
+POMDP(states, actions, observations, transition_prob, observation_prob, reward, 
+  discount = 0.9, horizon = Inf, terminal_values = 0, start = "uniform", 
+  max = TRUE, name = NA)
 
 R_(action, start.state, end.state, observation, value)
 O_(action, end.state, observation, probability)
@@ -20,7 +21,6 @@ T_(action, start.state, end.state, probability)
 
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{discount}{numeric; discount rate between 0 and 1.}
   \item{states}{a character vector specifying the names of the states.}
   \item{actions}{a character vector specifying the names of the available actions.}
   \item{observations}{a character vector specifying the names of the observations.}
@@ -50,6 +50,10 @@ T_(action, start.state, end.state, probability)
     \item a named list of \eqn{m} lists, where \eqn{m} is the number of actions (names should be the actions). Each list contains \eqn{n} named matrices where each matrix is of size \eqn{n \times o}{n x o}, in which \eqn{n} is the number of states and \eqn{o} is the number of observations. Names of these matrices should be the name of states.
   }
   }
+  \item{discount}{numeric; discount rate between 0 and 1.}
+  \item{horizon}{numeric; Number of epochs. \code{Inf} specifies an infinite horizon.}
+  \item{terminal_values}{a vector with the terminal values for each state or a matrix specifying the terminal rewards via a terminal value function (e.g., the alpha component produced by solve_POMDP).
+  A single 0 specifies that all terminal values are zero.}
   \item{start}{Specifies the initial probabilities for each state (i.e., the initial belief). Some methods
   use this belief to decide which belief states to explore (e.g., the finite grid method). The
   initial beief is also used to find the associated node in the policy graph and to calculate the 

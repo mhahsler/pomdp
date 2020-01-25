@@ -7,7 +7,7 @@ This function utilizes the C implementation of 'pomdp-solve'  by Cassandra (2015
 solve problems that are formulated as partially observable Markov decision processes (POMDPs). The result is an optimal or approximately optimal policy.
 }
 \usage{
-solve_POMDP(model, horizon = Inf, discount = NULL, terminal_values = NULL,
+solve_POMDP(model, horizon = NULL, discount = NULL, terminal_values = NULL,
   method = "grid", parameter= NULL, verbose = FALSE)
 solve_POMDP_parameter()
 }
@@ -22,9 +22,10 @@ solve_POMDP_parameter()
   \code{"witness"}, or
   \code{"incprune"}.
   The default is \code{"grid"} implementing the finite grid method.}
-  \item{horizon}{ an integer with the number of epochs for problems with a finite planning horizon. If set to \code{Inf}, the algorithm continues running iterations till it converges to the infinite horizon solution.}
-  \item{discount}{ discount factor in range [0, 1]. If \code{discount} is not \code{NULL}, then the discount factor specified in \code{model} will be overwritten.} 
-  \item{terminal_values}{a vector with the terminal values for each state or a matrix specifying the terminal rewards via a terminal value function (e.g., the alpha component produced by \code{solve_POMDP}). }
+  \item{horizon}{ an integer with the number of epochs for problems with a finite planning horizon. If set to \code{Inf}, the algorithm continues running iterations till it converges to the infinite horizon solution. If \code{NULL}, then the horizon specified in \code{model} will be used.}
+  \item{discount}{ discount factor in range [0, 1]. If \code{NULL}, then the discount factor specified in \code{model} will be used.} 
+  \item{terminal_values}{a vector with the terminal values for each state or a matrix specifying the terminal rewards via a terminal value function (e.g., the alpha component produced by \code{solve_POMDP}). 
+  If \code{NULL}, then the terminal values specified in \code{model} will be used.}
   \item{parameter}{ a list with parameters passed on to the pomdp-solve program. }
   \item{verbose}{
 logical, if set to \code{TRUE}, the function provides the output of the pomdp solver in the R console.
@@ -51,12 +52,15 @@ The value function is stored as a matrix. Each row is associated with a node (ro
 
 \bold{Methods:} 
 Several algorithms for dynamic-programming updates are available:
-enumeration and two pass (Sondik 1971),
+\itemize{
+\item Enumeration (Sondik 1971).
+\item Two pass (Sondik 1971).
 %exhaustive (Monahan 1982), 
 %linear support (Cheng 1988), and 
-witness (Littman, Cassandra, Kaelbling, 1996)
-incremental pruning (Zhang and Liu, 1996, Cassandra et al 1997)
-grid is an implementation of point-based value iteration (PBVI).
+\item Witness (Littman, Cassandra, Kaelbling, 1996).
+\item Incremental pruning (Zhang and Liu, 1996, Cassandra et al 1997).
+\item Grid implements a variation of point-based value iteration to solve larger POMDPs (PBVI; see Pineau 2003) without dynamic belief set expansion.
+}
 Details can be found in (Cassandra, 2015). 
 
 \bold{Note on method grid:} The point based finite grid method uses points that are reachable from the 
@@ -96,8 +100,7 @@ Technical Report CS-95-19, Brown University, Providence, RI.
 Zhang, N. L., and Liu, W. (1996). Planning in stochastic domains: Problem characteristics and approximation. Technical Report HKUST-CS96-31, Department of Computer Science, Hong Kong University of
 Science and Technology. 
 
-
-
+Pineau J., Geoffrey J Gordon G.J., Thrun S.B. (2003). Point-based value iteration: an anytime algorithm for POMDPs. IJCAI'03: Proceedings of the 18th international joint conference on Artificial Intelligence. Pages 1025-1030.
 }
 \author{
 Hossein Kamalzadeh, Michael Hahsler

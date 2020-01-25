@@ -9,6 +9,8 @@ POMDP <- function(
   observation_prob,
   reward,
   discount = .9,
+  horizon = Inf,
+  terminal_values = 0,
   start = "uniform",
   max = TRUE,
   name = NA) {
@@ -48,13 +50,15 @@ POMDP <- function(
     model = structure(list(
       name = name,
       discount = discount, 
+      horizon = horizon,
       states = factor(states), 
       actions = factor(actions), 
       observations = factor(observations),  
-      start = start, 
       transition_prob = transition_prob,
       observation_prob = observation_prob, 
       reward = reward,
+      start = start, 
+      terminal_values = terminal_values,
       max = max
       ), class = "POMDP_model")
   ), class = "POMDP")
@@ -65,12 +69,11 @@ print.POMDP <- function(x, ...) {
   else cat(
     "Solved POMDP model:", x$model$name, "\n", 
     "\tsolution method:", x$solution$method, "\n",
-    "\thorizon:", x$solution$horizon, "\n",
-    "\tconverged: ", x$solution$converged, "\n",
-    "\tpolicy graph nodes:", if(is.data.frame(x$solution$pg)) nrow(x$solution$pg) else nrow(x$solution$pg[[1]]), "\n",
-    "\ttotal expected reward:", x$solution$total_expected_reward, "\n\n" 
+    "\thorizon:", x$solution$horizon, paste0("(converged: ", x$solution$converged, ")"), "\n",
+    "\ttotal expected reward (for start probabilities):", x$solution$total_expected_reward, "\n" 
   )
-}
+  cat("\n")
+  }
 
 print.POMDP_model <- function(x, ...) {
  cat("POMDP model:", x$name, "\n\n")
