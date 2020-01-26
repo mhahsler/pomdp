@@ -22,7 +22,8 @@ solve_POMDP_parameter()
   \code{"witness"}, or
   \code{"incprune"}.
   The default is \code{"grid"} implementing the finite grid method.}
-  \item{horizon}{ an integer with the number of epochs for problems with a finite planning horizon. If set to \code{Inf}, the algorithm continues running iterations till it converges to the infinite horizon solution. If \code{NULL}, then the horizon specified in \code{model} will be used.}
+  \item{horizon}{ an integer with the number of epochs for problems with a finite planning horizon. If set to \code{Inf}, the algorithm continues running iterations till it converges to the infinite horizon solution. If \code{NULL}, then the horizon specified in \code{model} will be used. 
+    For time-dependent POMDPs a vector of horizons can be specified (see Details section).}
   \item{discount}{ discount factor in range [0, 1]. If \code{NULL}, then the discount factor specified in \code{model} will be used.} 
   \item{terminal_values}{a vector with the terminal values for each state or a matrix specifying the terminal rewards via a terminal value function (e.g., the alpha component produced by \code{solve_POMDP}). 
   If \code{NULL}, then the terminal values specified in \code{model} will be used.}
@@ -71,6 +72,14 @@ a lower bound on the optimal value function. If all rewards are strictly non-neg
 if there are negative rewards, lower bounds can be guaranteed by setting a single vector with
 the values \eqn{min(reward)/(1 - discount)}. The value function is guaranteed to converge to the true value function, but finite-horizon value functions will not be as expected. \code{solve_POMDP} produces a warning in this case.
 
+\bold{Time-dependent POMDPs:} Time dependence of transition probabilities, observation probabilities and 
+reward structure can be modeled by considering a set of episodes representing epoch with the same settings.
+In the scared tiger example (see Examples section), the tiger has the normal behavior for the first three epochs (episode 1) and then become scared with different transition probabilities for the next three 
+epochs (episode 2). The episodes can be solved in reverse order where the value function is used 
+as the terminal values of the preceding episode. This can be done by specifying a vector of horizons
+(one horizon for each episode) and then lists with transitions matrices, observation matrices, and rewards.
+If the horizon vector has names, then the lists also need to be named, otherwise they have to be in the same order (the numeric index is used). Only the time-varying matrices need to be specified. An example can be found in Example 4 in the Examples section. The procedure can also be done by calling the solver multiple times (see Example 5).
+
 \bold{Note:} The parser for POMDP files is experimental. Please report problems here: \url{https://github.com/farzad/pomdp/issues}.
 }
 \value{
@@ -106,40 +115,45 @@ Pineau J., Geoffrey J Gordon G.J., Thrun S.B. (2003). Point-based value iteratio
 Hossein Kamalzadeh, Michael Hahsler
 }
 \examples{
+################################################################
+# Example 1: Solving the simple infinite-horizon Tiger problem
 data("Tiger")
 Tiger
 
 sol <- solve_POMDP(model = Tiger)
 sol
 
-## look at the model
+# look at the model
 sol$model
 
-## look at solver output
+# look at solver output
 sol$solver_output
 
-## look at the solution
+# look at the solution
 sol$solution
 
-## plot the policy graph of the infinite-horizon POMDP
+# plot the policy graph of the infinite-horizon POMDP
 plot(sol)
 
-## look at the value function (alpha vectors)
+# look at the value function (alpha vectors)
 alpha <- sol$solution$alpha
 alpha
 
 plot_value_function(sol, ylim = c(0,20))
 
-## display available solver options which can be passed on to the solver as parameter.
+# display available solver options which can be passed on to the solver as parameter.
 solve_POMDP_parameter()
 
-## solve a POMDP from http://www.pomdp.org/examples using a grid of size 10
+################################################################
+# Example 2: Solve a problem specified as a POMDP file
+#            using a grid of size 10
 sol <- solve_POMDP("http://www.pomdp.org/examples/cheese.95.POMDP", 
   method = "grid", parameter = list(fg_points = 10))
 sol
 plot(sol)
 
-## finite-horizon POMDP using the incremental pruning method (without discounting)
+# Example 3: Solving a finite-horizon POMDP using the incremental 
+#            pruning method (without discounting)
 sol <- solve_POMDP(model = Tiger, 
   horizon = 3, discount = 1, method = "incprune")
 sol
@@ -153,8 +167,9 @@ reward(sol, belief = c(1,0)) # listen twice (-2) and then open-left (10)
 reward(sol, belief = c(1,0), epoch = 3) # just open the right door (10)
 reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (95% chance)
 
-## terminal values 
-
+################################################################
+# Example 4: Using terminal values 
+#
 # Specify 1000 if the tiger is right after horizon epochs
 sol <- solve_POMDP(model = Tiger, 
   horizon = 3, discount = 1,  method = "incprune",
@@ -165,16 +180,44 @@ sol$solution$pg
 # note: the optimal strategy is never to open the left door, because we get 1000
 # as the terminal value if the Tiger is there.
 
-## model changing transition probabilities. 
+################################################################
+# Example 4: Model time-dependent transition probabilities 
 
 # The tiger reacts normally for 3 epochs (goes randomly two one
 # of the two doors when a door was opened). After 3 epochs he gets 
 # scared and when a door is opened then he always goes to the other door.
 
+# specify the horizon for each of the two differnt episodes
+Tiger_time_dependent <- Tiger
+Tiger_time_dependent$model$horizon <- c(normal_tiger = 3, scared_tiger = 3)
+Tiger_time_dependent$model$transition_prob <- list(
+  normal_tiger = list(
+    "listen" = "identity", 
+    "open-left" = "uniform", 
+    "open-right" = "uniform"),
+  scared_tiger = list(
+    "listen" = "identity", 
+    "open-left" = rbind(c(0, 1), c(0, 1)), 
+    "open-right" = rbind(c(1, 0), c(1, 0))
+  )
+)
+
+sol <- solve_POMDP(model = Tiger_time_dependent, discount = 1,  method = "incprune")
+sol
+
+sol
+sol$solution$pg
+
+################################################################
+# Example 5: Alternative method to solve time-dependent POMDPs
+
 # 1) create the scared tiger model
 Tiger_scared <- Tiger
-Tiger_scared$model$transition_prob$"open-left" <- rbind(c(0, 1), c(0, 1))
-Tiger_scared$model$transition_prob$"open-right" <- rbind(c(1, 0), c(1, 0))
+Tiger_scared$model$transition_prob <- list(
+    "listen" = "identity", 
+    "open-left" = rbind(c(0, 1), c(0, 1)), 
+    "open-right" = rbind(c(1, 0), c(1, 0))
+  )
 
 # 2) Solve in reverse order. Scared tiger without terminal values first.
 sol_scared <- solve_POMDP(model = Tiger_scared, 
@@ -191,4 +234,3 @@ sol$solution$pg
 # note: it is optimal to mostly listen till the Tiger gets in the scared mood. Only if we are 
 # extremely sure in the first epoch, then opening a door is optimal.
 }
-
