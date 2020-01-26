@@ -8,7 +8,7 @@ solve problems that are formulated as partially observable Markov decision proce
 }
 \usage{
 solve_POMDP(model, horizon = NULL, discount = NULL, terminal_values = NULL,
-  method = "grid", parameter= NULL, verbose = FALSE)
+  method = "grid", digits = 7, parameter= NULL, verbose = FALSE)
 solve_POMDP_parameter()
 }
 %- maybe also 'usage' for other objects documented here.
@@ -27,6 +27,7 @@ solve_POMDP_parameter()
   \item{discount}{ discount factor in range [0, 1]. If \code{NULL}, then the discount factor specified in \code{model} will be used.} 
   \item{terminal_values}{a vector with the terminal values for each state or a matrix specifying the terminal rewards via a terminal value function (e.g., the alpha component produced by \code{solve_POMDP}). 
   If \code{NULL}, then the terminal values specified in \code{model} will be used.}
+  \item{digits}{ precision used when writing POMDP files (see \code{\link{write_POMDP}}).}
   \item{parameter}{ a list with parameters passed on to the pomdp-solve program. }
   \item{verbose}{
 logical, if set to \code{TRUE}, the function provides the output of the pomdp solver in the R console.

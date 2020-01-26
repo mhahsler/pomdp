@@ -14,7 +14,7 @@ read_POMDP(file)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{model}{ an object of class POMDP_model.}
-  \item{digits}{ precision for writing numbers.}
+  \item{digits}{ precision for writing numbers (digits after the decimal point).}
   \item{file}{ a file name.}
 }
 %\details{

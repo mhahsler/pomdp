@@ -7,7 +7,7 @@
 * solve_POMDP gained paramter terminal_values.
 * solve_POMDP gained parameter discount to overwrite the discount rate specified in the model.
 * solve_POMDP can now solve POMDPs with time-dependent transition probabilities, observation probabilities and reward structure. 
-* write_POMDP gained parameter digits.
+* write_POMDP and solve_POMDP gained parameter digits.
 * added read_POMDP to read POMDP files. 
 * added policy graph visualization with vizNetwork.
 * added plot_value_function.

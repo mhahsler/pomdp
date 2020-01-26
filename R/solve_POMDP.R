@@ -27,6 +27,7 @@ solve_POMDP <- function(
   discount = NULL,
   terminal_values = NULL,
   method = "grid",
+  digits = 7,
   parameter = NULL,
   verbose = FALSE) {
   
@@ -69,7 +70,7 @@ solve_POMDP <- function(
   if(!is.null(model$model$problem)) 
     writeLines(model$model$problem, con = pomdp_filename)
   else
-    write_POMDP(model, pomdp_filename)
+    write_POMDP(model, pomdp_filename, digits = digits)
   
   # write terminal values file
   if(!is.null(terminal_values)) {
