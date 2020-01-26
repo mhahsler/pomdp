@@ -1,5 +1,10 @@
 ### Read and write files used by pomdp-solve
 
+format_fixed <- function(x, digits = 7) {
+  if(is.vector(x)) paste(sprintf(paste0("%.",digits,"f"), x), collapse = " ")
+  else if(is.matrix(x)) paste(apply(x, MARGIN = 1, format_fixed, digits = digits), collapse = "\n")
+  else stop("formating not implemented for ", class(x))
+}
 
 ## write a model in POMDP format for pomdp-solve
 write_POMDP <- function(model, file, digits = 7) {
@@ -39,7 +44,8 @@ write_POMDP <- function(model, file, digits = 7) {
     ## if the starting beliefs are given by enumerating the probabilities for each state
     if (!is.character(start)) {
       if (length(start) == length(states) && sum(start)==1) {
-        code <- paste0(code,"start: ", paste(start, collapse = " "), "\n")
+        start <- format_fixed(start, digits)
+        code <- paste0(code,"start: ", format_fixed(start, digits), "\n")
       }
     }
     ## if the starting beliefs are given by a uniform distribution over all states
@@ -84,34 +90,24 @@ write_POMDP <- function(model, file, digits = 7) {
         transition_prob[i,1], " : ", 
         transition_prob[i,2], " : ", 
         transition_prob[i,3], " ",
-        format(transition_prob[i,4], digits = digits, scientific = FALSE),  
+        format_fixed(transition_prob[i,4], digits = digits),  
         "\n")
     }
   }else{
     ## if the transition probabilities are given in the form of action dependent matrices
     # checking if the number of the given transition probability matrices matches the number of actions
-    if (length(transition_prob)!=number_of_actions) {
+    if (length(transition_prob)!=number_of_actions) 
       stop("the number of given transition probability matrices does not match the number of actions")
-    }
     # writing the transition probability matrices
     for (i in 1:number_of_actions) {
       code <- paste0(code, "T: ", actions[i], "\n")
       
-      if (is.character(transition_prob[[actions[i]]]) && length(transition_prob[[actions[i]]]) == 1){
+      if (is.character(transition_prob[[actions[i]]]) && length(transition_prob[[actions[i]]]) == 1)
         code <- paste0(code, transition_prob[[actions[i]]], "\n")
-      } 
-      else {
-        c_m <- character()
-        for (j in 1:number_of_states) {
-          c_m <- paste(c(c_m, format(transition_prob[[actions[i]]][j,], 
-            digits = digits, scientific = FALSE), "\n"), 
-            collapse = " ")
-        }
-        code <- paste(c(code, c_m), collapse = " ")
-      }
+      else 
+        code <- paste0(code, format_fixed(transition_prob[[actions[i]]], digits), "\n")
     }
   }
-  
   code <- paste0(code, "\n")
   
   ### Observation Probabilities
@@ -134,7 +130,7 @@ write_POMDP <- function(model, file, digits = 7) {
         observation_prob[i,1], " : ", 
         observation_prob[i,2], " : ", 
         observation_prob[i,3], " ", 
-        format(observation_prob[i,4], digits = digits, scientific = FALSE), "\n")
+        format_fixed(observation_prob[i,4], digits = digits), "\n")
     }
   }else{
     ## if the observation probabilities are given in the form of action dependent matrices
@@ -151,13 +147,7 @@ write_POMDP <- function(model, file, digits = 7) {
       } else {
         if(any(dim(observation_prob[[actions[i]]]) != c(number_of_states, number_of_observations)))
           stop("Observation matrix for action '", actions[i], "' is not of size # of states times # of observations!")
-        c_m <- character()
-        for (j in 1:number_of_states) {
-          c_m <- paste0(c_m, paste(format(observation_prob[[actions[i]]][j,], 
-            digits = digits, scientific = FALSE),
-            collapse = " "), "\n")
-        }
-        code <- paste0(code, c_m)
+        code <- paste0(code, format_fixed(observation_prob[[actions[i]]], digits), "\n")
       }
     }
   }
@@ -180,7 +170,7 @@ write_POMDP <- function(model, file, digits = 7) {
         reward[i,2], " : ", 
         reward[i,3], " : ", 
         reward[i,4], " ",
-        format(reward[i,5], digits = digits, scientific = FALSE),  "\n")
+        format_fixed(reward[i,5], digits),  "\n")
     }
   }else{
     
@@ -203,30 +193,12 @@ write_POMDP <- function(model, file, digits = 7) {
           code <- paste0(code, reward[[actions[i]]][[states[j]]] , "\n")
         } 
         else {
-          c_m <- character()
-          for (k in 1:number_of_states) {
-            c_m <- paste0(c_m, paste(format(reward[[actions[i]]][[states[j]]][k,],
-              digits = digits, scientific = FALSE),
-              collapse = " "), "\n")
-          }
-          code <- paste0(code, c_m, "\n")
+          code <- paste0(code, format_fixed(reward[[actions[i]]][[states[j]]], digits), "\n")
         }
       }
     }
     
     code <- paste0(code, "\n")
-    
-    # ## if the rewards are given in the form of action-and-start-state dependent matrix
-    # # writing the reward section
-    # for (i in 1:number_of_actions) {
-    #   for (j in 1:number_of_states) {
-    #     code <- paste(c(code, "R:" , actions[i], ":" , states[j], "\n"))
-    #     c_m <- paste(rep(paste(c(rep(reward[i,j], number_of_observations), "\n"),
-    #                            collapse = " "), number_of_states), collapse = " ")
-    #     code <- paste(c(code, c_m),collapse = " ")
-    #   }
-    # }
-    
     
   }
   
