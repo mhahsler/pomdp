@@ -39,7 +39,7 @@ T_(action, start.state, end.state, probability)
       \item a data frame with 4 columns, where the columns specify \emph{action}, \emph{end-state}, \emph{observation} and the \emph{probability}, respectively. The first 3 columns could be either character (the name of the action, state, or observation), integer
   indices, or they can be \code{"*"} to indicate that the observation probability applies to all actions or states. Use \code{rbind()} with helper function \code{O_()} to create this data frame.
       \item a named list of \eqn{m} matrices, where \eqn{m} is the number of actions. Each matrix is of size \eqn{n \times o}{n x o}, where \eqn{n} is the number of states and \eqn{o} is the number of observations. The name of each matrix is the action it applies to.
-  Instead of a matrix, also the strings \code{"identity"} or \code{"uniform"} can be specified.
+  Instead of a matrix, also the string \code{"uniform"} can be specified.
     }
   }
   \item{reward}{Specifies the rewards dependent on action, states and observations. 
