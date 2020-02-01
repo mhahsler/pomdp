@@ -9,7 +9,7 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
   ## try to make a graph from a not converged policy
   ## FIXME: This needs to be improved!
   if(!is.data.frame(x$solution$pg) && nrow(x$solution$pg[[1]]) != nrow(x$solution$pg[[2]]))
-    stop("Number of nodes the of last two epoch does not aggree! Cannot create graph!")
+    stop("Number of nodes the of last two epoch does not agree! Cannot create graph!")
   
   ## producing the optimal policy graph
   pg <- if(is.data.frame(x$solution$pg)) x$solution$pg else x$solution$pg[[1]]

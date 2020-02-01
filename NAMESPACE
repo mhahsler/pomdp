@@ -8,6 +8,7 @@ import("igraph")
 
 export(
   "POMDP", 
+  "MDP",
   "O_", "R_", "T_",
   "write_POMDP",
   "read_POMDP",
