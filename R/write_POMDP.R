@@ -42,32 +42,31 @@ write_POMDP <- function(model, file, digits = 7) {
   ### starting beliefs
   if(!is.null(start)) { 
     ## if the starting beliefs are given by enumerating the probabilities for each state
-    if (!is.character(start)) {
+    if (is.numeric(start)) {
       if (length(start) == length(states) && sum(start)==1) {
-        start <- format_fixed(start, digits)
         code <- paste0(code,"start: ", format_fixed(start, digits), "\n")
+      } else {
+      ## this should be indices (pomdp_solve starts with 0)
+      start_ids <- as.integer(abs(start)) - 1L
+      if(all(start < 0)) 
+        code <- paste0(code, "start include: ", paste(start_ids, collapse = " "), "\n")
+      if(all(start > 0))
+        code <- paste0(code, "start exclude: ", paste(start_ids, collapse = " "), "\n")
+      else stop("Illegal specification of start. State ids start with 1 need to be all positive or negative (for exclusion).")
       }
-    }
-    ## if the starting beliefs are given by a uniform distribution over all states
-    if (length(start) == 0 && start[1] == "uniform") {
-      code <- paste(c(code,"start:", start, "\n"), collapse = " ")
-    } else if (start[1] != "-") {  ## if the starting beliefs include a specific subset of states
-      # if the starting beliefs are given by a uniform distribution over a subset of states (using their names)
-      if (!any(is.na(match(start, states)))) {
+    
+    } else if(is.character(start))
+      ## if the starting beliefs are given by a uniform distribution over all states
+      if (length(start) == 1 && start[1] == "uniform") {
+        code <- paste(c(code,"start:", start, "\n"), collapse = " ")
+        
+      } else if (start[1] != "-")  
         code <- paste0(code, "start include: ", paste(start, collapse = " "), "\n")
-      }
-      # if the starting beliefs are given by a uniform distribution over a subset of states (using their numbers)
-      if (is.numeric(start)) { 
-        start <- as.integer(start) -1L ### pomdp-solve starts with index 0
-        if (all(start >= 0 & start < number_of_states) && length(start) <= number_of_states) {
-          code <- paste0(code, "start include: ", paste(start, collapse = " "), "\n")
-        }
-      }
-    } else if (start[1] == "-") { ## if the starting beliefs exclude a specific subset of states
-      code <- paste0(code, "start exclude: ", paste(start[-1], collapse = " "), "\n")
-    }
-  }
-  
+      else 
+        code <- paste0(code, "start exclude: ", paste(start[-1], collapse = " "), "\n")
+  } else stop("Illegal specification of start.")
+
+
   code <- paste0(code, "\n")
   
   ### Transition Probabilities
