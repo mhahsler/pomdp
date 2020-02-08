@@ -12,9 +12,16 @@ policy(x)
 \arguments{
   \item{x}{ A solved POMDP object.}
 }
-%\details{
-%%  ~~ If necessary, more details than the description above ~~
-%}
+\details{
+A list (one entry per epoch) with the optimal policy. The policy is a data frame consisting of three parts.
+
+Part 1: The value function with one column per state. (For MDPs this is just one column with the state).
+
+Part 2: One column with the optimal action.
+
+Part 3: One column per observation with the index of the row representing the policy node in the next epoch.
+  
+}
 \value{
 A list with the policy for each epoch.
 %%  ~Describe the value returned
@@ -38,13 +45,10 @@ Michael Hahsler
 \examples{
 data("Tiger")
 sol <- solve_POMDP(model = Tiger)
-
-policy(sol)
 sol
 
-pg <- policy_graph(sol)
-
-plot(pg)
+# policy with value function, optimal action and transitions for observations.
+policy(sol)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

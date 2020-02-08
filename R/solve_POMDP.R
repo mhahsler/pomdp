@@ -34,8 +34,7 @@ solve_POMDP <- function(
   converged <- NA
    
   methods <- c("grid", "enum", "twopass", "witness", "incprune") 
-  # Not implemented:  "linsup", "mcgs"
-  method <- match.arg(method, methods)
+  # Not available (linsup need CPLEX and mcgs is not finished):  "linsup", "mcgs")
   
   # do we have a model POMDP file?
   if(is.character(model)) 
@@ -80,6 +79,16 @@ solve_POMDP <- function(
     colnames(terminal_values) <- as.character(model$model$states)
     
     terminal_values_filename <- .write_alpha_file(file_prefix, terminal_values)  
+  }
+  
+  # write grid file for method grid
+  if(!is.null(parameter$grid)) {
+    if(method != "grid") warning("Custom grids are ignored by all methods but 'grid'!")
+  
+    # TODO: check grid 
+    parameter$grid_filename <- .write_grid_file(file_prefix, parameter$grid)
+    parameter$grid <- NULL
+    parameter$fg_type <- "file"
   }
    
   # construct parameter string

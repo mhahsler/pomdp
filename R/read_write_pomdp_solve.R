@@ -180,13 +180,13 @@
 # helpers to read/write pomdp-solve files
 
 # alpha file is a matrix with # of states columns
-.write_alpha_file <- function(file_prefix, alpha) {
+.write_alpha_file <- function(file_prefix, alpha, digits = 7) {
   filename <- paste0(file_prefix, '_terminal_values.alpha')
   if(!is.matrix(alpha)) alpha <- rbind(alpha)
  
   # we don't care about the action so we always use "0" 
   for(i in seq(nrow(alpha))) 
-    cat("0", paste0(alpha[i, ], collapse = " "), "", 
+    cat("0", paste0(format_fixed(alpha[i, ], digits = digits), collapse = " "), "", 
       file = filename, sep = "\n", append = i>1)
   filename
 }  
@@ -219,7 +219,7 @@
   pg
 }
   
-# importing belief file (used belief points) if it exists
+# importing belief file (used belief points) if it exists (only grid method)
 .get_belief_file <- function(file_prefix, model) {
   filename <- paste0(file_prefix,'-0.belief')
   if(!file.exists(filename)) return(NULL)
@@ -228,3 +228,13 @@
   colnames(belief) <- as.character(model$model$states)
   belief
 } 
+
+# write belief file to specify which belief points the grid method should use.
+.write_grid_file <- function(file_prefix, belief, digits = 7) {
+  filename <- paste0(file_prefix, '.grid')
+  if(!is.matrix(belief)) belief <- rbind(belief)
+ 
+  
+    cat(format_fixed(belief, digits), file = filename)
+  filename
+}

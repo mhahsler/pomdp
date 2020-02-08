@@ -65,9 +65,14 @@ Several algorithms for dynamic-programming updates are available:
 }
 Details can be found in (Cassandra, 2015). 
 
-\bold{Note on method grid:} The point based finite grid method uses points that are reachable from the 
-initial belief (\code{start}) by following all combinations of actions and observations. 
-The size of the grid can be set via \code{parameter = list(fg_points = 100)}.
+\bold{Note on method grid:} The grid method implements a version of 
+Point Based Value Iteration (PBVI). The used belief points are by default created
+using points that are reachable from the initial belief (\code{start}) by following all combinations 
+of actions and observations. The size of the grid can be set via \code{parameter = list(fg_points = 100)}.
+Alternatively, different strategies can be chosen using the parameter \code{fg_type}. In this implementation,
+the user can also specify manualy a grid of belief states by providing a matrix with belief states as produced 
+by \code{sample_belief_space} as the parameter \code{grid}.
+
 To guarantee convergence in point-based (finite grid) value iteration, the initial value function must be
 a lower bound on the optimal value function. If all rewards are strictly non-negative, a  initial value function with an all zero vector can be used and results will be similar to other methods. However,
 if there are negative rewards, lower bounds can be guaranteed by setting a single vector with
@@ -133,13 +138,13 @@ sol$solver_output
 # look at the solution
 sol$solution
 
+# policy (value function (alpha vectors), optimal action and observation dependent transitions)
+policy(sol)
+
 # plot the policy graph of the infinite-horizon POMDP
 plot(sol)
 
-# look at the value function (alpha vectors)
-alpha <- sol$solution$alpha
-alpha
-
+# value function
 plot_value_function(sol, ylim = c(0,20))
 
 # display available solver options which can be passed on to the solver as parameter.
@@ -151,6 +156,8 @@ solve_POMDP_parameter()
 sol <- solve_POMDP("http://www.pomdp.org/examples/cheese.95.POMDP", 
   method = "grid", parameter = list(fg_points = 10))
 sol
+
+policy(sol)
 plot(sol)
 
 # Example 3: Solving a finite-horizon POMDP using the incremental 
@@ -160,7 +167,7 @@ sol <- solve_POMDP(model = Tiger,
 sol
 
 # look at the policy tree
-sol$solution$pg
+policy(sol)
 # note: it does not make sense to open the door in epochs 1 or 2 if you only have 3 epochs.
 
 reward(sol) # listen twice and then open the door or listen 3 times
@@ -177,7 +184,7 @@ sol <- solve_POMDP(model = Tiger,
   terminal_values = c(0, 1000))
 sol
 
-sol$solution$pg
+policy(sol)
 # note: the optimal strategy is never to open the left door, because we get 1000
 # as the terminal value if the Tiger is there.
 
@@ -206,8 +213,7 @@ Tiger_time_dependent$model$transition_prob <- list(
 sol <- solve_POMDP(model = Tiger_time_dependent, discount = 1,  method = "incprune")
 sol
 
-sol
-sol$solution$pg
+policy(sol)
 
 ################################################################
 # Example 5: Alternative method to solve time-dependent POMDPs
@@ -224,14 +230,25 @@ Tiger_scared$model$transition_prob <- list(
 sol_scared <- solve_POMDP(model = Tiger_scared, 
   horizon = 3, discount = 1,  method = "incprune")
 sol_scared
-sol_scared$solution$pg
+policy(sol_scared)
 
 # 3) Solve the regular tiger with the value function of the scared tiger as terminal values
 sol <- solve_POMDP(model = Tiger, 
   horizon = 3, discount = 1, method = "incprune",
   terminal_values = sol_scared$solution$alpha[[1]])
 sol
-sol$solution$pg
+policy(sol)
 # note: it is optimal to mostly listen till the Tiger gets in the scared mood. Only if we are 
 # extremely sure in the first epoch, then opening a door is optimal.
+
+################################################################
+# Example 5: PBVI with a custom grid
+custom_grid <- sample_belief_space(Tiger, n = 10, method = "regular")
+custom_grid
+
+sol <- solve_POMDP(Tiger, method = "grid", parameter = list(grid = custom_grid))
+sol
+
+# visualize used grid
+plot_belief_space(sol, sample = custom_grid)
 }
