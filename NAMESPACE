@@ -1,4 +1,4 @@
-importFrom("graphics", "plot", "legend", "axis", "box", "lines", "points")
+importFrom("graphics", "plot", "legend", "axis", "box", "lines", "points", "barplot", "mtext")
 importFrom("grDevices", "colorRamp", "colorRampPalette", "rgb", "rainbow")
 importFrom("utils", "read.table", "type.convert")
 importFrom("stats", "ave", "aggregate", "runif")
@@ -14,6 +14,7 @@ export(
   "read_POMDP",
   "solve_POMDP",
   "solve_POMDP_parameter",
+  "policy",
   "policy_graph",
   "transition_matrix",
   "observation_matrix",
@@ -27,6 +28,7 @@ export(
 
 S3method("plot", "POMDP")
 S3method("print", "POMDP")
+S3method("print", "MDP")
 S3method("print", "POMDP_model")
 S3method("print", "POMDP_solution")
 S3method("print", "text")

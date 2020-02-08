@@ -10,11 +10,12 @@ sample_belief_space(model, projection = NULL, n = 1000, method = "random")
   \item{model}{ a unsolved or solved POMDP.}
   \item{projection}{ Sample in a projected belief space. All states not included in the projection are held at a belief of 0. \code{NULL} means no projection.  }
   \item{n}{ size of the sample.}
-  \item{method}{ character string specifying the sampling strategy. Available are \code{"random"}
-    and \code{"regular"}.}
+  \item{method}{ character string specifying the sampling strategy. Available are \code{"random"}, \code{"regular"},
+    and \code{"vertices"}.}
 }
 \details{
-Method random samples uniformly sample from the projected belief space using the method described by Luc Deroye. Method regular samples points using a regularly spaced grid. This method is only available for projections on 2 or 3 states.  
+Method random samples uniformly sample from the projected belief space using the method described by Luc Deroye. Method regular samples points using a regularly spaced grid. This method is only available for projections on 2 or 3 states. 
+Method vertices only samples from the vertices of the belief space.  
 }
 \value{
 Returns a matrix. Each row is a sample from the belief space.

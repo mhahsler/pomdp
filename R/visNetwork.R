@@ -1,7 +1,7 @@
 # plot policy graph using visNetwork
 
 # Note: legend is not used right now!
-.plot.visNetwork <- function(x,  belief = TRUE, legend = NULL, col = NULL, ...) {
+.plot.visNetwork <- function(x,  belief = TRUE, legend = NULL, col = NULL, smooth = list(type = "continuous"), ...) {
   
   pg <- policy_graph(x, belief = belief, col = col)
   
@@ -28,7 +28,7 @@
   #  do.call(hsv, as.list(rgb2hsv(col2rgb(V(pg)$pie.color[[1]])) %*% V(pg)$pie[[i]])))
   }
   
-  visNetwork::visIgraph(pg, idToLabel = FALSE, ...) %>% 
+  visNetwork::visIgraph(pg, idToLabel = FALSE, smooth = smooth, ...) %>% 
     visNetwork::visOptions(highlightNearest = list(enabled = TRUE, degree = 0),
       nodesIdSelection = TRUE)
 }

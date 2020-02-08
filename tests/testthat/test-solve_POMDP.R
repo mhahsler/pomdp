@@ -5,7 +5,7 @@ context("solve_POMDP")
 
 data("Tiger")
 sol <- solve_POMDP(Tiger)
-expect_identical(nrow(sol$solution$pg), 5L)
+expect_identical(nrow(sol$solution$pg[[1]]), 5L)
 plot(sol)
 
 sol <- solve_POMDP(Tiger, horizon = 3, method = "incprune")

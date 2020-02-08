@@ -133,14 +133,11 @@ solve_POMDP <- function(
   ## converged infinite horizon POMDPs produce a policy graph 
   if(!is.finite(horizon)) { 
     converged <- TRUE
-    alpha <- .get_alpha_file(file_prefix, model)
-    pg <- .get_pg_file(file_prefix, model)
-    belief <- .get_belief_file(file_prefix, model)
+    alpha <- list(.get_alpha_file(file_prefix, model))
+    pg <- list(.get_pg_file(file_prefix, model))
     
   }else{
     ## finite horizon pomdp: read the policy tree
-    belief <- .get_belief_file(file_prefix, model)
-    
     converged <- FALSE ### did the grid method converge?
     alpha <- list()
     pg <- list()
@@ -157,6 +154,7 @@ solve_POMDP <- function(
       }
     }
     
+    
     if(method == "grid" && 
         !converged && 
         any(unlist(reward_matrix(model))<0)) 
@@ -166,6 +164,9 @@ solve_POMDP <- function(
     pg <- rev(pg)
     
   }
+   
+  # read belief states if available (method: grid) 
+  belief <- .get_belief_file(file_prefix, model)
   
   # add solution to model
   model$solution <- structure(list(

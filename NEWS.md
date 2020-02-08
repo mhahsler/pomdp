@@ -18,6 +18,7 @@
 * added function reward_matrix.
 * POMDP model now also contains horizon and terminal_values.
 * added MDP formulated as a POMDP.
+* added policy function to extract a better readable policy.
 
 # pomdp 0.9.2 (12/06/2019)
 

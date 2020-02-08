@@ -14,9 +14,9 @@ POMDP(states, actions, observations, transition_prob, observation_prob, reward,
   discount = 0.9, horizon = Inf, terminal_values = 0, start = "uniform", 
   max = TRUE, name = NA)
 
-R_(action, start.state, end.state, observation, value)
-O_(action, end.state, observation, probability)
-T_(action, start.state, end.state, probability)
+R_(action = "*", start.state = "*", end.state = "*", observation = "*", value)
+O_(action = "*", end.state = "*", observation = "*", probability)
+T_(action = "*", start.state = "*", end.state = "*", probability)
 }
 
 %- maybe also 'usage' for other objects documented here.
@@ -71,7 +71,7 @@ T_(action, start.state, end.state, probability)
   }
   \item{max}{logical; is this a maximization problem (maximize reward) or a minimization (minimize cost specified in \code{reward})?}
   \item{name}{ a string to identify the POMDP problem.}
-  \item{action, start.state, end.state, observation, probability, value}{ Values used in the helper functions \code{O_()}, \code{R_()}, and \code{T_()} to create an entry for \code{observation_prob}, \code{reward}, or \code{transistion_prob} above, respectively.}
+  \item{action, start.state, end.state, observation, probability, value}{ Values used in the helper functions \code{O_()}, \code{R_()}, and \code{T_()} to create an entry for \code{observation_prob}, \code{reward}, or \code{transistion_prob} above, respectively. The default value \code{"*"} matches any action/state/observation. }
 }
 \details{
 POMDP problems can be solved using \code{\link{solve_POMDP}}.
@@ -117,13 +117,13 @@ Tiger <- POMDP(
     "open-left" =  "uniform",
     "open-right" = "uniform"),
   
-  # the rew helper expects: action, start.state, end.state, observation, value
+  # the reward helper expects: action, start.state, end.state, observation, value
   reward = rbind(
-    R_("listen",     "*",           "*", "*", -1  ),
-    R_("open-left",  "tiger-left",  "*", "*", -100),
-    R_("open-left",  "tiger-right", "*", "*", 10  ),
-    R_("open-right", "tiger-left",  "*", "*", 10  ),
-    R_("open-right", "tiger-right", "*", "*", -100)
+    R_("listen",                    v =   -1),
+    R_("open-left",  "tiger-left",  v = -100),
+    R_("open-left",  "tiger-right", v =   10),
+    R_("open-right", "tiger-left",  v =   10),
+    R_("open-right", "tiger-right", v = -100)
   )
 )
   

@@ -1,8 +1,8 @@
 # sample randomly from the belief space
 
 sample_belief_space <- function(model, projection = NULL, n = 1000, method = "random") {
-  
-  method <- match.arg(method, choices = c("random", "regular"))
+   
+  method <- match.arg(method, choices = c("random", "regular", "vertices"))
   
   if(is.null(projection)) projection <- seq(length(model$model$states))
   if(is.character(projection)) projection <- pmatch(projection, model$model$states)
@@ -40,7 +40,14 @@ sample_belief_space <- function(model, projection = NULL, n = 1000, method = "ra
           direction = 1))
         attr(belief_states, "TernaryTriangleCenters") <- triangleCentres 
       } else stop("method redular is only available for projections on 2 or 3 states.")
-    })
+    },
+    
+    vertices = {
+      belief_states <- belief_states[rep(1, d),] 
+      belief_states[cbind(projection, projection)] <- 1
+      belief_states <- belief_states[sample(d, size = n, replace = TRUE),]
+    }
+  )
     
     belief_states
 }

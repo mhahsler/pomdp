@@ -66,3 +66,14 @@ MDP <- function(
   ), class = c("MDP", "POMDP"))
 }
 
+
+print.MDP <- function(x, ...) {
+  if(is.null(x$solution)) cat("Unsolved MDP model (formulated as a POMDP):", x$model$name, "\n")
+  else cat(
+    "Solved MDP model (formulated as a POMDP):", x$model$name, "\n", 
+    "\tsolution method:", x$solution$method, "\n",
+    "\thorizon:", x$solution$horizon, paste0("(converged: ", x$solution$converged, ")"), "\n",
+    "\ttotal expected reward (for start probabilities):", x$solution$total_expected_reward, "\n" 
+  )
+  cat("\n")
+}

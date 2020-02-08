@@ -7,19 +7,18 @@ plot_value_function <- function(model, projection = 1:2, epoch = 1, ylim = NULL,
 
   .solved_POMDP(model)
 
+  if(inherits(model, "MDP")) return(.plot_value_function_MDP(model, epoch = epoch, 
+    ylim = ylim, col = col, lwd = lwd, ...))
+  
   if(is.character(projection)) projection <- pmatch(projection, model$model$states)
   if(length(projection) != 2) stop("Value function needs to be projected onto two states for plotting.")
   
   alpha <- model$solution$alpha
   pg <- model$solution$pg
   
-   
-  # finite-horizon
-  if(!is.matrix(alpha)) {
-    if(epoch > length(alpha)) stop("The solution does not contain that many epochs. Either the horizon was set to less epochs or the solution converged earlier.")
-    alpha <- alpha[[epoch]]
-    pg <- pg[[epoch]]
-  }
+  if(epoch > length(alpha)) stop("The solution does not contain that many epochs. Either the horizon was set to less epochs or the solution converged earlier.")
+  alpha <- alpha[[epoch]]
+  pg <- pg[[epoch]]
   
   alpha <- alpha[,projection, drop = FALSE]
   if(is.null(ylim)) ylim <- c(min(alpha), max(alpha))
@@ -30,7 +29,7 @@ plot_value_function <- function(model, projection = 1:2, epoch = 1, ylim = NULL,
   plot(NA, xlim = c(0, 1), ylim = ylim, 
     xlab = paste0("Belief space", 
       ifelse(length(projection) < length(model$model$states), " (projected)", "")), 
-    ylab = "Value function", axes = FALSE)
+    ylab = "Reward", axes = FALSE)
   axis(2)
   axis(1, at = c(0,1), labels = model$model$states[projection])
   axis(1, at = .5, .5)
@@ -49,6 +48,21 @@ plot_value_function <- function(model, projection = 1:2, epoch = 1, ylim = NULL,
   #    aes_(x=0, y=as.name(colnames(alpha)[1]), xend=1, yend=as.name(colnames(alpha)[2]), color = quote(Action))
   #  ) + coord_cartesian(ylim = c(0, 15)) +
   #   ylab("Reward") + xlab("Belief")
+  invisible(alpha)
+   
+}
+
+.plot_value_function_MDP <- function(x, epoch = 1, ...) {
+  
+  # belief points representing the vertices of the belief space
+  belief <- diag(1, nrow = length(x$model$states), ncol = length(x$model$states))
+  rew <- reward(x, belief = belief, epoch = epoch)
+  
+  barplot(rew$reward, ylab = "Reward", names.arg = paste(x$model$states, "\n", rew$action), ...)
+  mtext("State", side = 1, line = 0, adj = 1, at = 0)
+  mtext("Action", side = 1, line = 1, adj = 1, at = 0)
+
+  invisible(rew)
   
 }
 

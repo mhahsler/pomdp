@@ -7,15 +7,9 @@ reward <- function(x, belief = NULL, epoch = 1) {
   
   belief <- .translate_belief(belief, x)
   
-  ## alpha and pg is a list for finite horizon POMDPS
-  if(is.list(x$solution$alpha)) {
-    if(epoch > length(x$solution$alpha)) stop("The solution does not contain that many epochs. Either the horizon was set to less epochs or the solution converged earlier.")
-    alpha <- x$solution$alpha[[epoch]]
-    pg <- x$solution$pg[[epoch]]
-  } else { 
-    pg <- x$solution$pg
-    alpha <- x$solution$alpha
-  }
+  if(epoch > length(x$solution$alpha)) stop("The solution does not contain that many epochs. Either the horizon was set to less epochs or the solution converged earlier.")
+  alpha <- x$solution$alpha[[epoch]]
+  pg <- x$solution$pg[[epoch]]
   
   vs <- .rew(belief, alpha)
   

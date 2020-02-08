@@ -73,7 +73,7 @@ plot(sol, main = sol$model$name)
 
 ## custom larger vertex labels (A, B, ...)
 plot(sol, 
-  vertex.label = LETTERS[1:nrow(sol$solution$pg)], 
+  vertex.label = LETTERS[1:nrow(policy(sol)[[1]])], 
   vertex.label.cex = 2,
   vertex.label.color = "white")
 
@@ -94,6 +94,6 @@ plot(pg,
 plot(sol, engine = "visNetwork")
 
 ## add smooth edges and a layout (note, engine can be abbreviated)
-plot(sol, engine = "vis", layout = "layout_in_circle", smooth =  list(type = "continuous"))
+plot(sol, engine = "vis", layout = "layout_in_circle", smooth = TRUE)
 }
 \keyword{hplot}

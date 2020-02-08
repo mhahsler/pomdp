@@ -42,38 +42,38 @@ a list with the model specification. \code{solve_POMDP} reads the object and add
 Michael Hahsler
 }
 \examples{
-## The Tiger Problem as an MDP with perfect observability
+## Michael's Sleepy Tiger Problem is a MDP with perfect observability
 
 Tiger_MDP <- MDP(
-  name = "Tiger Problem",
-  discount = 0.75,
+  name = "Michael's Sleepy Tiger Problem",
+  discount = 1,
   
   states = c("tiger-left" , "tiger-right"),
-  actions = c("open-left", "open-right"),
+  actions = c("open-left", "open-right", "do-nothing"),
   start = "tiger-left",
   
   transition_prob = list(
     "open-left" =  "uniform", 
-    "open-right" = "uniform"),
-  
+    "open-right" = "uniform",
+    "do-nothing" = "identity"),
 
   # the rew helper expects: action, start.state, end.state, observation, value
   reward = rbind(
-    R_("open-left",  "tiger-left",  "*", "*", -100),
-    R_("open-left",  "tiger-right", "*", "*", 10  ),
-    R_("open-right", "tiger-left",  "*", "*", 10  ),
-    R_("open-right", "tiger-right", "*", "*", -100)
+    R_("open-left",  "tiger-left",  v = -100),
+    R_("open-left",  "tiger-right", v =   10),
+    R_("open-right", "tiger-left",  v =   10),
+    R_("open-right", "tiger-right", v = -100),
+    R_("do-nothing",                v =    0)
   )
 )
   
 Tiger_MDP
 
 # do 5 epochs with no discounting
-s <- solve_POMDP(Tiger_MDP, method = "enum", discount = 1, horizon = 5)
+s <- solve_POMDP(Tiger_MDP, method = "enum", horizon = 5)
 s
 
-# policy
-plot(s, belief = FALSE)
-
+# value function and policy
 plot_value_function(s)
+s$solution$pg
 }

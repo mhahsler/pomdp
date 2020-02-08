@@ -96,12 +96,12 @@ print.POMDP_model <- function(x, ...) {
 
 
 ### helper
-O_ <- function(action, end.state, observation, probability) 
+O_ <- function(action = "*", end.state = "*", observation = "*", probability) 
   data.frame(action = action, end.state = end.state, observation = observation, probability = probability)
 
-R_ <- function(action, start.state, end.state, observation, value) 
+T_ <- function(action = "*", start.state = "*", end.state = "*", probability) 
+  data.frame(action = action, start.state = start.state, end.state= end.state, probability = probability)
+
+R_ <- function(action = "*", start.state = "*", end.state = "*", observation = "*", value) 
   data.frame(action = action, start.state = start.state, end.state = end.state, 
     observation = observation, value = value)
-
-T_ <- function(action, start.state, end.state, probability) 
-  data.frame(action = action, start.state = start.state, end.state= end.state, probability = probability)

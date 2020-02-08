@@ -58,7 +58,7 @@ write_POMDP <- function(model, file, digits = 7) {
     } else if(is.character(start))
       ## if the starting beliefs are given by a uniform distribution over all states
       if (length(start) == 1 && start[1] == "uniform") {
-        code <- paste(c(code,"start:", start, "\n"), collapse = " ")
+        code <- paste0(c(code,"start:", start, "\n"), collapse = " ")
         
       } else if (start[1] != "-")  
         code <- paste0(code, "start include: ", paste(start, collapse = " "), "\n")
@@ -98,13 +98,13 @@ write_POMDP <- function(model, file, digits = 7) {
     if (length(transition_prob)!=number_of_actions) 
       stop("the number of given transition probability matrices does not match the number of actions")
     # writing the transition probability matrices
-    for (i in 1:number_of_actions) {
-      code <- paste0(code, "T: ", actions[i], "\n")
+    for (a in actions) {
+      code <- paste0(code, "T: ", a, "\n")
       
-      if (is.character(transition_prob[[actions[i]]]) && length(transition_prob[[actions[i]]]) == 1)
-        code <- paste0(code, transition_prob[[actions[i]]], "\n")
+      if (is.character(transition_prob[[a]]) && length(transition_prob[[a]]) == 1)
+        code <- paste0(code, transition_prob[[a]], "\n")
       else 
-        code <- paste0(code, format_fixed(transition_prob[[actions[i]]], digits), "\n")
+        code <- paste0(code, format_fixed(transition_prob[[a]], digits), "\n")
     }
   }
   code <- paste0(code, "\n")
@@ -138,15 +138,15 @@ write_POMDP <- function(model, file, digits = 7) {
       stop("the number of given observation probability matrices does not match the number of actions")
     }
     # writing the observation probability matrices
-    for (i in 1:number_of_actions) {
-      code <- paste0(code,"O: ", actions[i], "\n")
+    for (a in actions) {
+      code <- paste0(code,"O: ", a, "\n")
       
-      if (is.character(observation_prob[[actions[i]]]) && length(observation_prob[[actions[i]]]) == 1) {
-        code <- paste0(code, observation_prob[[actions[i]]], "\n")
+      if (is.character(observation_prob[[a]]) && length(observation_prob[[a]]) == 1) {
+        code <- paste0(code, observation_prob[[a]], "\n")
       } else {
-        if(any(dim(observation_prob[[actions[i]]]) != c(number_of_states, number_of_observations)))
+        if(any(dim(observation_prob[[a]]) != c(number_of_states, number_of_observations)))
           stop("Observation matrix for action '", actions[i], "' is not of size # of states times # of observations!")
-        code <- paste0(code, format_fixed(observation_prob[[actions[i]]], digits), "\n")
+        code <- paste0(code, format_fixed(observation_prob[[a]], digits), "\n")
       }
     }
   }
