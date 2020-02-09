@@ -24,58 +24,99 @@ T_(action = "*", start.state = "*", end.state = "*", probability)
   \item{states}{a character vector specifying the names of the states.}
   \item{actions}{a character vector specifying the names of the available actions.}
   \item{observations}{a character vector specifying the names of the observations.}
-  \item{transition_prob}{Specifies the transition probabilities between states. 
-    Options are:
-    \itemize{
-      \item a data frame with 4 columns, where the columns specify \emph{action}, \emph{start-state}, \emph{end-state} and the \emph{probability} respectively. The first 3 columns could be either character (the name of the action or state) or integer indices.
-      \item a named list of \eqn{m} (number of actions) matrices.
-  Each matrix is square of size \eqn{n \times n}{n x n}, where \eqn{n} is the number of states. The name of each matrix the action it applies to.
-  Instead of a matrix, also the strings \code{"identity"} or \code{"uniform"} can be specified.
-    }
-  }
-  \item{observation_prob}{Specifies the probability that a state produces an observation. 
-    Options are:
-    \itemize{
-      \item a data frame with 4 columns, where the columns specify \emph{action}, \emph{end-state}, \emph{observation} and the \emph{probability}, respectively. The first 3 columns could be either character (the name of the action, state, or observation), integer
-  indices, or they can be \code{"*"} to indicate that the observation probability applies to all actions or states. Use \code{rbind()} with helper function \code{O_()} to create this data frame.
-      \item a named list of \eqn{m} matrices, where \eqn{m} is the number of actions. Each matrix is of size \eqn{n \times o}{n x o}, where \eqn{n} is the number of states and \eqn{o} is the number of observations. The name of each matrix is the action it applies to.
-  Instead of a matrix, also the string \code{"uniform"} can be specified.
-    }
-  }
-  \item{reward}{Specifies the rewards dependent on action, states and observations. 
-    Options are:
-    \itemize{
-    \item a data frame with 5 columns, where the columns specify \emph{action}, \emph{start.state}, \emph{end.state}, \emph{observation} and the \emph{reward}, respectively. The first 4 columns could be either character (names of the action, states, or observation), integer indices, or they can be \code{"*"} to indicate that the reward applies to all transitions.
-     Use \code{rbind()} with helper function \code{R_()} to create this data frame.
-    \item a named list of \eqn{m} lists, where \eqn{m} is the number of actions (names should be the actions). Each list contains \eqn{n} named matrices where each matrix is of size \eqn{n \times o}{n x o}, in which \eqn{n} is the number of states and \eqn{o} is the number of observations. Names of these matrices should be the name of states.
-  }
-  }
-  \item{discount}{numeric; discount rate between 0 and 1.}
+  \item{transition_prob}{Specifies action-dependent transition probabilities between states. 
+    See Details section.} 
+  \item{observation_prob}{Specifies the probability that an action/state combination produces an observation. 
+    See Details section.} 
+  \item{reward}{Specifies the rewards structure dependent on action, states and observations. 
+    See Details section.} 
+  \item{discount}{numeric; discount factor between 0 and 1.}
   \item{horizon}{numeric; Number of epochs. \code{Inf} specifies an infinite horizon.}
   \item{terminal_values}{a vector with the terminal values for each state or a matrix specifying the terminal rewards via a terminal value function (e.g., the alpha component produced by solve_POMDP).
   A single 0 specifies that all terminal values are zero.}
-  \item{start}{Specifies the initial probabilities for each state (i.e., the initial belief). Some methods
-  use this belief to decide which belief states to explore (e.g., the finite grid method). The
-  initial beief is also used to find the associated node in the policy graph and to calculate the 
-  total expected reward. The default initial belief is a uniform distribution over all states. No 
-  initial belief state can be used by setting \code{start = NULL}.
-    
-  Options to specift start are:
-    \itemize{
-      \item a probability distribution over the \eqn{n} states. That is, a vector of \eqn{n} probabilities, that add up to \eqn{1}.
-      \item the string \code{"uniform"} for a uniform distribution over all states.
-      \item an integer in the range \eqn{1} to \eqn{n} to specify a single starting state. or
-      \item a string specifying the name of a single starting state.
-      \item a vector of strings, specifying a subset of states with a uniform start distribution. If the first element of the vector is \code{"-"}, then the following subset of states is excluded from the set of start states.
-    }
-  }
+  \item{start}{Specifies the initial probabilities for each state (i.e., the initial belief),
+  typically as a vector or the string \code{"uniform"} (default). 
+  This belief is used to calculate the total expected cumulative reward. It is also used by some
+  solvers. See Details section for more information.}
   \item{max}{logical; is this a maximization problem (maximize reward) or a minimization (minimize cost specified in \code{reward})?}
   \item{name}{ a string to identify the POMDP problem.}
   \item{action, start.state, end.state, observation, probability, value}{ Values used in the helper functions \code{O_()}, \code{R_()}, and \code{T_()} to create an entry for \code{observation_prob}, \code{reward}, or \code{transistion_prob} above, respectively. The default value \code{"*"} matches any action/state/observation. }
 }
 \details{
-POMDP problems can be solved using \code{\link{solve_POMDP}}.
-Details about the available specifications can be found in [1].
+  POMDP problems can be solved using \code{\link{solve_POMDP}}.
+  More details about the available specifications can be found in [1].
+
+  In the following we use the following notation. The POMDP is a 7-duple 
+   \eqn{(S,A,T,R, \Omega ,O, \gamma)}. 
+   \eqn{S} is the set of states; 
+   \eqn{A} is the set of actions; 
+   \eqn{T} are the conditional transition probabilities between states;
+   \eqn{R} is the reward function;
+   \eqn{\Omega} is the set of observations; 
+   \eqn{O} are the conditional observation probabilities; and
+   \eqn{\gamma} is the discount factor. We will use lower case letters to represent a member of a
+   set, e.g., \eqn{s} is a specific state. To refer to the size of a set we will use carnality,
+   e.g., the number of actions is \eqn{|A|}.
+  
+  \bold{Specification of transition probabilities}
+ 
+  Transition probability to transition to state \eqn{s'} from \eqn{s} given action \eqn{a} 
+  is \eqn{T(s' | s, a)}. The transition probabilities can be specified
+  in the following ways:
+  
+  \itemize{
+    \item A data frame with 4 columns, where the columns specify action \eqn{a}, start-state \eqn{s}, end-state \eqn{s'} and the transition probability \eqn{T(s' | s, a)}, respectively. The first 3 columns can be either character (the name of the action or state) or integer indices. 
+    You can use \code{rbind()} with helper function \code{T_()} to create this data frame.
+    
+    \item A named list of \eqn{|A|} matrices.
+    Each matrix is square of size \eqn{|S| \times |S|}{|S| x |S|}. Instead of a matrix, also the strings \code{"identity"} or \code{"uniform"} can be specified.
+    }
+
+  \bold{Specification of observation probabilities}
+  
+  The POMDP specifies the probability for each observation \eqn{o} given an action \eqn{a} and that the system transitioned to a specific state \eqn{s'}, \eqn{O(o | s', a)}. These probabilities can be specified
+  in the following ways:
+    
+    \itemize{
+    \item A data frame with 4 columns, where the columns specify the action \eqn{a}, the end-state \eqn{s'}, the observation \eqn{o} and the probability \eqn{O(o | s', a)}, respectively. The first 3 columns could be either character (the name of the action, state, or observation), integer
+    indices, or they can be \code{"*"} to indicate that the observation probability applies to all actions or states. 
+    You can use \code{rbind()} with helper function \code{O_()} to create this data frame.
+    
+    \item A named list of \eqn{|A|} matrices. Each matrix is of size \eqn{|S| \times |\Omega|}{|S| x |\Omega|}.
+    The name of each matrix is the action it applies to.
+    Instead of a matrix, also the string \code{"uniform"} can be specified.
+    }
+    
+  \bold{Specification of the reward function}
+  
+  The reward function \eqn{R(s, s', o, a)} can be specified
+  in the following ways:
+  
+  \itemize{
+  \item a data frame with 5 columns, where the columns specify action \eqn{a}, start.state \eqn{s}, end.state \eqn{s'}, observation \eqn{o} and the associated reward \eqn{R(s, s', a)}, respectively. The first 4 columns could be either character (names of the action, states, or observation), integer indices, or they can be \code{"*"} to indicate that the reward applies to all transitions.
+  Use \code{rbind()} with helper function \code{R_()} to create this data frame.
+  
+  \item a named list of \eqn{|A|} lists. Each list contains \eqn{|S|} named matrices representing the start states \eqn{s}. Each matrix is of size \eqn{|S| \times |\Omega|}{|S| x |\Omega|}, representing the 
+  end states \eqn{s'} and observations.
+  }
+  
+  \bold{Start Belief}
+  
+  This belief is used to calculate the total expected cumulative reward printed with the solved model.
+  The function \code{\link{reward}} can be used to calculate rewards for any belief.
+  
+  Some methods use this belief to decide which belief states to explore (e.g., the finite grid method). 
+  The default initial belief is a uniform distribution over all states. No 
+  initial belief state can be used by setting \code{start = NULL}.
+  
+  Options to specify the start belief state are:
+  \itemize{
+  \item a probability distribution over the states. That is, a vector of \eqn{|S|} probabilities, that add up to \eqn{1}.
+  \item the string \code{"uniform"} for a uniform distribution over all states.
+  \item an integer in the range \eqn{1} to \eqn{n} to specify the index of a single starting state.
+  \item a string specifying the name of a single starting state.
+  }
+
 }
 \value{
 The function returns an object of class POMDP which is list with an element called \code{model} containing
