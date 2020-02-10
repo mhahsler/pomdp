@@ -36,7 +36,8 @@ a list with the model specification. \code{solve_POMDP} reads the object and add
 \code{solution}.
 }
 \seealso{
-\code{\link{POMDP}}
+\code{\link{POMDP}},
+\code{\link{solve_POMDP}}.
 }
 \author{
 Michael Hahsler
@@ -75,5 +76,5 @@ s
 
 # value function and policy
 plot_value_function(s)
-s$solution$pg
+policy(s)
 }
