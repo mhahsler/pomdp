@@ -116,7 +116,7 @@
 .translate_probabilities <- function(model, 
   field = "transition_prob", from = "states", to = "states") {
   
-  actions <- model$model$actions
+  actions <- as.character(model$model$actions)
   prob <-  model$model[[field]]
   
   if(is.data.frame(prob)) {
@@ -127,8 +127,11 @@
     }, simplify = FALSE, USE.NAMES = TRUE)
     
   } else if(is.list(prob)) {
-    from <- model$model[[from]]
-    to <- model$model[[to]]
+    if(is.null(names(prob))) names(prob) <- actions
+    else prob <- prob[actions]
+    
+    from <- as.character(model$model[[from]])
+    to <- as.character(model$model[[to]])
     
     prob <- lapply(prob, FUN = function(tr) {
       if(is.character(tr)) {
@@ -139,8 +142,9 @@
       }
       
       if(!is.matrix(tr)) stop("Probabilities cannot be converted to matrix.")
-      dimnames(tr) <- list(from, to)
-      
+      if(is.null(dimnames(tr))) dimnames(tr) <- list(from, to)
+      else tr <- tr[from, to]
+        
       tr
     })
   } else stop("Unknown transition/observation matrix format.")
