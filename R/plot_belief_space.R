@@ -47,7 +47,7 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, sample = "reg
     
   } else if(length(projection) == 2) {
     plot(NA, 
-      xlim = c(0,1), ylim = c(0,2),
+      xlim = c(0,1), ylim = c(0,4),
       axes = FALSE, xlab = NA, ylab = NA, ...)
     
     points(sample[,1], rep(0, times = nrow(sample)), col = cols, pch = pch) 

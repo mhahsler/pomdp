@@ -6,6 +6,7 @@
   
   states <- as.character(model$model$states)
   
+  if(is.null(belief)) belief <- model$model$start
   if(is.null(belief)) belief <- "uniform"
  
   if(is.matrix(belief)) {
