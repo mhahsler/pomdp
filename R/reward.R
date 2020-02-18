@@ -6,10 +6,12 @@ reward <- function(x, belief = NULL, epoch = 1) {
   if(is.null(belief)) belief <- x$model$start
   
   belief <- .translate_belief(belief, x)
+ 
+  ## translate for converged POMDPs 
+  e <- .get_pg_index(x, epoch)
   
-  if(epoch > length(x$solution$alpha)) stop("The solution does not contain that many epochs. Either the horizon was set to less epochs or the solution converged earlier.")
-  alpha <- x$solution$alpha[[epoch]]
-  pg <- x$solution$pg[[epoch]]
+  alpha <- x$solution$alpha[[e]]
+  pg <- x$solution$pg[[e]]
   
   vs <- .rew(belief, alpha)
   

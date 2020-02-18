@@ -41,7 +41,9 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
     if(!is.null(x$solution$belief_states) && !is.numeric(belief)) 
       rew <- reward(x, belief = x$solution$belief_states)
     else 
-      rew <- reward(x, sample_belief_space(x, n = if(is.numeric(belief)) belief else 1000))
+      # simulate reachable belief states instead
+      #rew <- reward(x, sample_belief_space(x, n = if(is.numeric(belief)) belief else 1000))
+      rew <- reward(x, simulate_POMDP(x, n = if(is.numeric(belief)) belief else 100, visited_beliefs = TRUE))
     
     bp <- as.matrix(aggregate(rew$belief, by = list(rew$pg_node), mean, drop = FALSE)[, -1]) 
     

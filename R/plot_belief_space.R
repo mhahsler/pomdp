@@ -24,6 +24,8 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, sample = "reg
   }
   
   sample <- sample[, projection]
+  ### remove points that have only 0 in the projection
+  sample <- sample[rowSums(sample) != 0,]
     
   if(length(projection) == 3) {
     Ternary::TernaryPlot(

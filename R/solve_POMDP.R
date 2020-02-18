@@ -35,6 +35,7 @@ solve_POMDP <- function(
    
   methods <- c("grid", "enum", "twopass", "witness", "incprune") 
   # Not available (linsup need CPLEX and mcgs is not finished):  "linsup", "mcgs")
+  method <- match.arg(method, methods)
   
   # do we have a model POMDP file?
   if(is.character(model)) 

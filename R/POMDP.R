@@ -94,6 +94,33 @@ print.POMDP_model <- function(x, ...) {
   if(is.null(x$solution)) stop("x needs to be a solved POMDP. Use solve_POMDP() first.")
 }
 
+# get pg and alpha for a epoch
+.get_pg_index <- function(model, epoch) {
+  .solved_POMDP(model)
+  
+  if(epoch < 1) stop("Epoch has to be >= 1")
+  
+  h <- model$solution$horizon
+  l <- length(model$solution$pg)
+  
+  if(epoch > h) 
+    stop("POMDP model was only solved for ", h, " epochs!")
+  
+  ### (converged) infinite horizon POMDPs
+  if(is.infinite(h)) epoch <- 1L
+  
+  ### converged finite horizon model
+  else {
+    if(epoch <= h-l) epoch <- 1L
+    else epoch <- epoch-(h-l) 
+  }
+  
+  epoch  
+}
+
+.get_pg <- function(model, epoch) model$solution$pg[[.get_pg_index(model, epoch)]]
+.get_alpha <- function(model, epoch) model$solution$alpha[[.get_pg_index(model, epoch)]]
+    
 
 ### helper
 O_ <- function(action = "*", end.state = "*", observation = "*", probability) 

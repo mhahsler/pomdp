@@ -46,15 +46,26 @@ update_belief <- function(model, belief = NULL, action = NULL, observation = NUL
 #' 
 #' If we have a solution, the policy is followed. Otherwise, a random action is chosen. 
 
-simulate_POMDP <- function(model, n = 100, belief = NULL, epochs = NULL, 
-  visited_beliefs = FALSE, digits = 7, verbose = FALSE) {
-
-  if(is.null(epochs)) epochs <- model$solution$horizon
-  if(is.null(epochs)) stop("The number of epochs has to be specified!")
-   
+simulate_POMDP <- function(model, n = 100, belief = NULL, horizon = NULL, 
+  visited_beliefs = FALSE, random_actions = NULL, digits = 7, verbose = FALSE) {
+  
   belief <- .translate_belief(belief, model = model)
   solved <- !is.null(model$solution)
+
+  if(is.null(horizon)) horizon <- model$solution$horizon
+  if(is.null(horizon)) horizon <- model$model$horizon
+  if(is.null(horizon)) stop("The horizon (number of epochs) has to be specified!")
+  if(is.infinite(horizon)) stop("Simulation needs a finite simulation horizon.")
   
+  ### FIXME 
+  if(length(horizon) !=1) stop("Simulation of time-dependent POMDPs not implemented yet!")
+  
+  if(!is.null(random_actions)) {
+    random_actions <- as.logical(random_actions)
+    if(!solved && !random_actions) stop("Only random actions are possible for unsolved POMDPs.")
+    solved <- !random_actions
+  }
+
   states <- as.character(model$model$states)
   n_states <- length(states)
   trans_m <- transition_matrix(model)
@@ -72,7 +83,7 @@ simulate_POMDP <- function(model, n = 100, belief = NULL, epochs = NULL,
   if(verbose) {
     cat("Simulating POMDP trajectories.\n")
     cat("- using optimal actions:", solved, "\n")
-    cat("- epochs:", epochs, "\n")
+    cat("- horizon:", horizon, "\n")
     cat("- discount factor:", disc, "\n")
     cat("- starting belief:\n")
     print(belief)
@@ -89,17 +100,23 @@ simulate_POMDP <- function(model, n = 100, belief = NULL, epochs = NULL,
       names(action_cnt) <- actions
       rew <- 0
         
-      if(visited_beliefs) b_all <- matrix(NA, nrow = epochs, ncol = n_states, dimnames = list(NULL, states))
+      if(visited_beliefs) b_all <- matrix(NA, nrow = horizon, ncol = n_states, dimnames = list(NULL, states))
       
-      for(j in 1:epochs) {
+      for(j in 1:horizon) {
         # find action (if we have no solution then take a random action) and update state and sample obs
+       
         
-        #if(solved) a <- as.character(reward(model, b, j)$action)
-        #else a <- sample(actions, 1)
+        #if(solved) {
+        # e <- .get_pg_index(model, j)
+        # a <- as.character(reward(model, b, e)$action)
+        #}else a <- sample(actions, 1)
         # this takes about 1/2 the time
-        if(solved) a <- as.character(model$solution$pg[[j]][
-          which.max(model$solution$alpha[[j]] %*% b), "action"])
-        else a <- sample(actions, 1)
+        if(solved) {
+          #  convert intex for converged POMDPs 
+          e <- .get_pg_index(model, j)
+          a <- as.character(model$solution$pg[[e]][
+            which.max(model$solution$alpha[[e]] %*% b), "action"])
+        } else a <- sample(actions, 1)
           
         action_cnt[a] <- action_cnt[a] + 1L
         s_prev <- s

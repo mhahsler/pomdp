@@ -4,23 +4,24 @@
 \description{
 Simulate several trajectories through a POMDP. The start state for each trajectory is randomly chosen using the specified belief. For solved POMDPs the optimal actions will be chosen, for unsolved POMDPs random actions will be used.}
 \usage{
-simulate_POMDP(model, n= 100, belief = NULL, epochs = NULL, visited_beliefs = FALSE, 
-  digits = 7, verbose = FALSE)
+simulate_POMDP(model, n= 100, belief = NULL, horizon = NULL, visited_beliefs = FALSE, 
+  random_actions = NULL, digits = 7, verbose = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{model}{ a POMDP model. }
   \item{n}{ number of trajectories. }
-  \item{belief}{ probability distribution over the states for chosing the stating states for the trajectories. }
-  \item{epochs}{ number of epochs for the simulation. If \code{NULL} then the horizon for the model is used. }
+  \item{belief}{ probability distribution over the states for choosing the starting states for the trajectories. }
+  \item{horizon}{ number of epochs for the simulation. If \code{NULL} then the horizon for the model is used. }
   \item{visited_beliefs}{ logical; Should all belief points visited on the trajectories be returned? If \code{FALSE} then only the belief at the final epoch is returned.}
+  \item{random_actions}{ logical; should random actions be used. If \code{NULL} then a policy is used when available (i.e., for a solved POMDP) and randomized actions, otherwise. }
   \item{digits}{ round belief points. }
   \item{verbose}{ report used parameters. }
 }
 %\details{
 %}
 \value{
-A matrix with belief points as rows. Attributes containing action counts, and rewards may be avaialble.
+A matrix with belief points as rows. Attributes containing action counts, and rewards may be available.
 }
 \author{Michael Hahsler}
 
@@ -58,6 +59,6 @@ axis(2); title(ylab = "Density")
 
 
 ## Example 3: simulate trajectories for an unsolved POMDP (actions are taken randomly)
-sim <- simulate_POMDP(Tiger, n = 100, epochs = 5, visited_beliefs = TRUE)
+sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, visited_beliefs = TRUE)
 plot_belief_space(sol, sample = sim)
 }
