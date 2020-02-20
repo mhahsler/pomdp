@@ -178,15 +178,17 @@ reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (95% chan
 ################################################################
 # Example 4: Using terminal values 
 #
-# Specify 1000 if the tiger is right after horizon epochs
+# Specify 1000 if the tiger is right after 3 (horizon) epochs
 sol <- solve_POMDP(model = Tiger, 
   horizon = 3, discount = 1,  method = "incprune",
   terminal_values = c(0, 1000))
 sol
 
 policy(sol)
-# note: the optimal strategy is never to open the left door, because we get 1000
-# as the terminal value if the Tiger is there.
+# Note: the optimal strategy is never to open the left door, because we think the 
+# tiger is there then we better wait to get 1000 as the terminal value. If we think 
+# the Tiger is to the left then open the right door and have a 50/50 chance that the 
+# Tiger will go to the right door.
 
 ################################################################
 # Example 4: Model time-dependent transition probabilities 

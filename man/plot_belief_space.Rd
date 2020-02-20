@@ -33,7 +33,7 @@ Michael Hahsler
 \code{\link{sample_belief_space}}
 }
 \examples{
-# two states
+# two-state POMDP
 data("Tiger")
 sol <- solve_POMDP(Tiger)
 
@@ -44,14 +44,15 @@ plot_belief_space(sol, n = 10, sample = "random")
 # plot the belief points used by the grid-based solver
 plot_belief_space(sol, sample = sol$solution$belief_states)
 
-# plot differnt measures
+# plot different measures
 plot_belief_space(sol, what = "pg_node")
 plot_belief_space(sol, what = "reward")
 
-# three states
+# three-state POMDP
 # Note: If the plotting region is too small then the legend might run into the plot 
 data("Three_doors")
 sol <- solve_POMDP(Three_doors)
+sol
 
 plot_belief_space(sol)
 plot_belief_space(sol, sample = "random")
@@ -60,5 +61,9 @@ plot_belief_space(sol, what = "reward")
 
 # plot the belief points used by the grid-based solver
 plot_belief_space(sol, sample = sol$solution$belief_states)
+
+# plot the belief points obtained using simulated trajectories
+plot_belief_space(sol, sample = simulate_POMDP(Three_doors, horizon = 100, 
+  random_actions = TRUE, visited_beliefs = TRUE))
 }
 \keyword{hplot}
