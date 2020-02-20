@@ -197,6 +197,7 @@ policy(sol)
 
 # specify the horizon for each of the two differnt episodes
 Tiger_time_dependent <- Tiger
+Tiger_time_dependent$model$name <- "Scared Tiger Problem"
 Tiger_time_dependent$model$horizon <- c(normal_tiger = 3, scared_tiger = 3)
 Tiger_time_dependent$model$transition_prob <- list(
   normal_tiger = list(
@@ -209,6 +210,8 @@ Tiger_time_dependent$model$transition_prob <- list(
     "open-right" = rbind(c(1, 0), c(1, 0))
   )
 )
+
+Tiger_time_dependent
 
 sol <- solve_POMDP(model = Tiger_time_dependent, discount = 1,  method = "incprune")
 sol

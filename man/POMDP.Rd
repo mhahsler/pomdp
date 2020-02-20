@@ -117,6 +117,12 @@ T_(action = "*", start.state = "*", end.state = "*", probability)
   \item a string specifying the name of a single starting state.
   }
 
+\bold{Time-dependent POMDPs}
+
+Time dependence of transition probabilities, observation probabilities and reward structure can be modeled by considering a set of episodes representing epoch with the same settings. The length of each episode
+is specified as a vector for \code{horizon}, where the length is the number of episodes and each
+value is the length of the episode in epochs. Transition probabilities, observation probabilities and/or reward structure can contain a list with the values for each episode. See \code{\link{solve_POMDP}} for more details and an example.
+
 }
 \value{
 The function returns an object of class POMDP which is list with an element called \code{model} containing

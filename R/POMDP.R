@@ -65,15 +65,21 @@ POMDP <- function(
 }
 
 print.POMDP <- function(x, ...) {
-  if(is.null(x$solution)) cat("Unsolved POMDP model:", x$model$name, "\n")
+  if(is.null(x$solution)) cat(
+    "Unsolved POMDP model:", x$model$name, "\n",
+    "\thorizon:", paste(x$model$horizon, collapse = "+"), "\n",
+    if(!is.null(x$model$horizon) && length(x$model$horizon) > 1) paste("\ttime-dependent:", length(x$model$horizon), "episodes\n") 
+    )
   else cat(
     "Solved POMDP model:", x$model$name, "\n", 
     "\tsolution method:", x$solution$method, "\n",
-    "\thorizon:", x$solution$horizon, paste0("(converged: ", x$solution$converged, ")"), "\n",
+    "\thorizon:", x$solution$horizon, "\n",
+    if(!is.null(x$model$horizon) && length(x$model$horizon) > 1) paste("\ttime-dependent:", length(x$model$horizon), "episodes\n") 
+    else "",
+    "\tconverged:", x$solution$converged, "\n",
     "\ttotal expected reward (for start probabilities):", x$solution$total_expected_reward, "\n" 
   )
-  cat("\n")
-  }
+}
 
 print.POMDP_model <- function(x, ...) {
  cat("POMDP model:", x$name, "\n\n")
@@ -92,6 +98,10 @@ print.POMDP_model <- function(x, ...) {
 .solved_POMDP <- function(x) {
   if(!inherits(x, "POMDP")) stop("x needs to be a POMDP object!")
   if(is.null(x$solution)) stop("x needs to be a solved POMDP. Use solve_POMDP() first.")
+}
+
+.timedependent_POMDP <- function(x) {
+  !is.null(x$model$horizon) && length(x$model$horizon) > 1L
 }
 
 # get pg and alpha for a epoch

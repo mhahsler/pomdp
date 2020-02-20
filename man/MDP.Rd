@@ -14,7 +14,6 @@ MDP(states, actions, transition_prob, reward,
   max = TRUE, name = NA)
 }
 
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{states}{a character vector specifying the names of the states.}
   \item{actions}{a character vector specifying the names of the available actions.}

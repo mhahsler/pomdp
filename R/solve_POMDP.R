@@ -42,15 +42,15 @@ solve_POMDP <- function(
     model <- structure(list(model = read_POMDP(model)), class = "POMDP")
   
   if(is.null(horizon)) horizon <- model$model$horizon
+  
   # time-dependent POMDP?
-  if(!is.null(horizon) && length(horizon) > 1) 
+  if(.timedependent_POMDP(model)) 
     return(.solve_POMDP_time_dependent(
       model = model, horizon = horizon, discount = discount,
       terminal_values = terminal_values, method = method,
       parameter = parameter, verbose = verbose))
   if(is.null(horizon) || horizon < 1) horizon <- Inf 
   else horizon <- floor(horizon)
-  
   
   if(is.null(terminal_values)) terminal_values <- model$model$terminal_values
   if(!is.null(terminal_values) && 
@@ -213,6 +213,25 @@ print.POMDP_solution <- function(x, ...) {
 }
 
 
+# is a field time dependent? For time-dependence we have a list of 
+# matrices/data.frames or for observation_prob we have a list of a list
+.is_timedependent <- function(x, field) {
+  m <- x$model[[field]]
+  
+  if(is.null(m)) stop("Field ", field, " does not exist.")
+  
+  # for observation_prob
+  if(field == "observation_prob") m <- m[[1]]
+  
+  if(!is.list(m) || is.data.frame(m)) return(FALSE)
+  
+  if(length(m) != length(x$model$horizon))
+    stop("Inconsistent POMDP specification. Field ", field,
+      " does not contain data for the appropriate number of episodes.")
+  
+  TRUE
+}
+
 # solve time-dependent POMDP
 # we can have different transition_probs, observation_probs or rewards
 .solve_POMDP_time_dependent <- function(model, horizon = NULL, ..., verbose = FALSE) {
@@ -224,29 +243,9 @@ print.POMDP_solution <- function(x, ...) {
   if(n < 2) return(solve_POMDP(model, horizon, ..., verbose = verbose))
   
   # check what is time dependent
-  do_trans <- FALSE
-  if(is.list(model$model$transition_prob) && 
-      is.list(model$model$transition_prob[[1]])) {
-    if(length(model$model$transition_prob) != n) 
-      stop("Not the right number of time-dependent transition probability matrices specified!")
-    do_trans <- TRUE
-  }
-  
-  do_obs <- FALSE
-  if(is.list(model$model$observation_prob) && 
-      is.list(model$model$observation_prob[[1]])) {
-    if(length(model$model$observation_prob) != n) 
-      stop("Not the right number of time-dependent observation probability matrices specified!")
-    do_obs <- TRUE
-  }
-  
-  do_reward <- FALSE
-  if(is.list(model$model$reward) && 
-      is.list(model$model$reward[[1]])) {
-    if(length(model$model$reward) != n) 
-      stop("Not the right number of time-dependent rewards specified!")
-    do_reward <- TRUE
-  }
+  do_trans <- .is_timedependent(model, "transition_prob")
+  do_obs <- .is_timedependent(model, "observation_prob")
+  do_reward <- .is_timedependent(model, "reward")
   
   if(verbose) { 
     if(do_trans) cat(" * Using time-dependent transition probabilities.\n")
@@ -267,7 +266,7 @@ print.POMDP_solution <- function(x, ...) {
     
     if(verbose) cat(
       "\n++++++++++++++++++++++++++++++++++++++++\n", 
-      "Solving problem ", i, " (", take, ") with horizon ", m$model$horizon, 
+      "Solving episode ", i, " of ", n, " (", take, ") with horizon ", m$model$horizon, 
       "\n", sep = "")
    
     

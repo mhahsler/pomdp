@@ -2,7 +2,7 @@
 \alias{transition_matrix}
 \alias{observation_matrix}
 \alias{reward_matrix}
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
 Extract the Transition, Observation or Reward Matrices from a POMDP
 }
@@ -11,20 +11,17 @@ Converts the description of transition probabilities and observation probabiliti
 into a list of matrices, one for each action. Rewards are converted into a list (actions) of lists (start states) of matrices.
 }
 \usage{
-transition_matrix(x)
-observation_matrix(x)
-reward_matrix(x)
+transition_matrix(x, episode = 1)
+observation_matrix(x, episode = 1)
+reward_matrix(x, episode = 1)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{ A POMDP object.}
+  \item{episode}{ Episode used for time-dependent POMDPs (see \code{\link{POMDP}}). }
 }
 \value{
 A list or a list of lists of matrices.
 }
-%\references{
-%% ~put references to the literature/web site here ~
-%}
 \author{
 Michael Hahsler
 }

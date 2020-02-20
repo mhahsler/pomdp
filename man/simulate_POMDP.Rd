@@ -5,7 +5,7 @@
 Simulate several trajectories through a POMDP. The start state for each trajectory is randomly chosen using the specified belief. For solved POMDPs the optimal actions will be chosen, for unsolved POMDPs random actions will be used.}
 \usage{
 simulate_POMDP(model, n= 100, belief = NULL, horizon = NULL, visited_beliefs = FALSE, 
-  random_actions = NULL, digits = 7, verbose = FALSE)
+  random_actions = FALSE, digits = 7, verbose = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -14,7 +14,7 @@ simulate_POMDP(model, n= 100, belief = NULL, horizon = NULL, visited_beliefs = F
   \item{belief}{ probability distribution over the states for choosing the starting states for the trajectories. }
   \item{horizon}{ number of epochs for the simulation. If \code{NULL} then the horizon for the model is used. }
   \item{visited_beliefs}{ logical; Should all belief points visited on the trajectories be returned? If \code{FALSE} then only the belief at the final epoch is returned.}
-  \item{random_actions}{ logical; should random actions be used. If \code{NULL} then a policy is used when available (i.e., for a solved POMDP) and randomized actions, otherwise. }
+  \item{random_actions}{ logical; should randomized actions be used instead of the policy of the solved POMDP? Randomized actions can be used for unsolved POMDPs. }
   \item{digits}{ round belief points. }
   \item{verbose}{ report used parameters. }
 }
@@ -51,14 +51,14 @@ colMeans(attr(sim, "action"))
 
 ## Example 2: look at all belief states in the trajectory starting with an initial start belief.
 sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), visited_beliefs = TRUE)
-plot_belief_space(sol, sample = sim)
 
-# add density
-lines(density(sim[,1], bw = .05))
-axis(2); title(ylab = "Density")
+# plot with added density
+plot_belief_space(sol, sample = sim, ylim = c(0,3))
+lines(density(sim[,1], bw = .05)); axis(2); title(ylab = "Density")
 
 
-## Example 3: simulate trajectories for an unsolved POMDP (actions are taken randomly)
-sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, visited_beliefs = TRUE)
-plot_belief_space(sol, sample = sim)
+## Example 3: simulate trajectories for an unsolved POMDP using randomized actions
+sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, random_actions = TRUE, visited_beliefs = TRUE)
+plot_belief_space(sol, sample = sim, ylim = c(0,6))
+lines(density(sim[,1], bw = .05)); axis(2); title(ylab = "Density")
 }
