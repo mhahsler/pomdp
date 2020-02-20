@@ -1186,7 +1186,12 @@ readAlphaList( char *filename, int max_alphas )
    }  /* while */
    
    fclose( file );
-   
+ 
+
+    fprintf( gStdErrFile, "here.......................\n");
+
+   renumberAlphaList( list ); 
+
    return ( list );
 }  /* readAlphaList */
 /**********************************************************************/

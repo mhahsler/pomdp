@@ -1027,9 +1027,13 @@ solvePomdp( PomdpSolveParams param )
      is to swap in the next_alpha_list for the current_alpha_list. */
   if ( param->initial_policy == NULL )
     next_alpha_list = getDefaultInitialPolicy( param );
-  else
+  else { 
+    /* MFH: somehow this looses the id so I use renumberAlphaList */ 
     next_alpha_list = duplicateAlphaList( param->initial_policy );
-  
+    renumberAlphaList( next_alpha_list );
+  }
+
+
   /* Just report the initial policy used. */
   /* Always show this */
   /*if ( param->opts->verbose == POMDP_SOLVE_OPTS_Verbose_pomdp ) {*/

@@ -234,13 +234,14 @@ print.POMDP_solution <- function(x, ...) {
 
 # solve time-dependent POMDP
 # we can have different transition_probs, observation_probs or rewards
-.solve_POMDP_time_dependent <- function(model, horizon = NULL, ..., verbose = FALSE) {
+.solve_POMDP_time_dependent <- function(model, horizon = NULL, ..., terminal_values = NULL, verbose = FALSE) {
     
   if(verbose) cat("\n+++++++++ time-dependent POMDP +++++++++\n", sep = "")
   
   if(is.null(horizon)) horizon <- model$model$horizon
   n <- length(horizon)
-  if(n < 2) return(solve_POMDP(model, horizon, ..., verbose = verbose))
+  if(n < 2) return(solve_POMDP(model, horizon, ..., 
+    terminal_values = terminal_values, verbose = verbose))
   
   # check what is time dependent
   do_trans <- .is_timedependent(model, "transition_prob")
@@ -256,6 +257,8 @@ print.POMDP_solution <- function(x, ...) {
   # solve POMDPS in reverse order
   s <- list()
   m <- model
+  if(!is.null(terminal_values)) m$model$terminal_values <- terminal_values
+  
   for(i in n:1) {
     if(i < n) m$model$terminal_values <- prev_alpha
     m$model$horizon <- model$model$horizon[i]
