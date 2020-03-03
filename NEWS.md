@@ -20,8 +20,9 @@
 * POMDP model now also contains horizon and terminal_values.
 * added MDP formulated as a POMDP.
 * added policy function to extract a better readable policy.
-* added update_belief
-* added simulate_POMDP
+* added update_belief.
+* added simulate_POMDP.
+* added round_stochastic.
 
 # pomdp 0.9.2 (12/06/2019)
 

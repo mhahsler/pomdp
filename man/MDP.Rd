@@ -4,8 +4,7 @@
 \title{Define an MDP Problem}
 
 \description{Defines all the elements of a MDP problem and formulates them as a POMDP where all states are
-observable. This is achieved by defining
-one observation per state and identity observation probability matrices.
+observable. 
 }
 
 \usage{
@@ -27,7 +26,11 @@ MDP(states, actions, transition_prob, reward,
   \item{name}{ a string to identify the MDP problem.}
 }
 \details{
-See \code{\link{POMDP}} for details on specifying the parameters.
+The MDP is formulated as a POMDP where all states are completely observable. 
+This is achieved by defining
+one observation per state with identity observation probability matrices.
+  
+More details on specifying the parameters can be found in the documentation for \code{\link{POMDP}}.
 }
 \value{
 The function returns an object of class POMDP which is list with an element called \code{model} containing

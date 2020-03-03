@@ -1,6 +1,6 @@
 importFrom("graphics", "plot", "legend", "axis", "box", "lines", "points", "barplot", "mtext")
 importFrom("grDevices", "colorRamp", "colorRampPalette", "rgb", "rainbow")
-importFrom("utils", "read.table", "type.convert", "head")
+importFrom("utils", "read.table", "type.convert", "head", "tail")
 importFrom("stats", "ave", "aggregate", "runif")
 importFrom("Ternary", "TernaryPlot", "TernaryPoints")
 
@@ -25,7 +25,8 @@ export(
   "reward",
   "plot_value_function",
   "sample_belief_space",
-  "plot_belief_space"
+  "plot_belief_space",
+  "round_stochastic"
   )
 
 S3method("plot", "POMDP")

@@ -3,13 +3,11 @@
 #' $$b'(s') = \eta O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)$$
 #' $$\eta = 1/ \sum_{s' \in S}[ O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)]$$
 
-round_fixed <- function(x, digits) round(x*10^digits) / 10^digits
-
 # update for a single belief vector, one action, and one observation.
 .update_belief <- function(belief, action, observation, Tr, Ob, digits = 7) {
     belief <- Ob[[action]][, observation, drop = FALSE] * crossprod(Tr[[action]], cbind(belief))
     belief <- belief/sum(belief)
-    belief <- round_fixed(belief, digits)
+    belief <- round_stochastic(belief, digits)
     drop(belief)
 }
 
