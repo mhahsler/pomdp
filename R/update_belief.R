@@ -7,7 +7,7 @@
 .update_belief <- function(belief, action, observation, Tr, Ob, digits = 7) {
     belief <- Ob[[action]][, observation, drop = FALSE] * crossprod(Tr[[action]], cbind(belief))
     belief <- belief/sum(belief)
-    belief <- round_stochastic(belief, digits)
+    belief <- round(belief, digits)
     drop(belief)
 }
 

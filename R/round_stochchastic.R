@@ -7,7 +7,7 @@
   indices <- tail(order(x - y), round(sum(x)) - sum(y))
   y[indices] <- y[indices] + 1
   r <- y / up
-  if(sum(r) != 1) warning("The rounded vector is not stochastic.")
+  if(zapsmall(sum(r)) != 1) warning("The rounded vector is not stochastic.")
   r
 }
 
@@ -15,4 +15,3 @@ round_stochastic <- function(x, digits = 3) {
   if(is.matrix(x)) t(apply(x, MARGIN = 1, .round_preserve_sum, digits = digits))
   else .round_preserve_sum(x, digits = digits)
 }
-
