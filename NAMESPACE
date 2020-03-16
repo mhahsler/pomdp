@@ -12,20 +12,26 @@ export(
   "O_", "R_", "T_",
   "write_POMDP",
   "read_POMDP",
+  "transition_matrix",
+  "observation_matrix",
+  "reward_matrix",
+  
   "solve_POMDP",
   "solve_POMDP_parameter",
   "policy",
   "policy_graph",
-  "transition_matrix",
-  "observation_matrix",
-  "reward_matrix",
-  "update_belief",
-  "simulate_POMDP",
   "plot_policy_graph",
-  "reward",
   "plot_value_function",
+  
+  "reward",
+  "optimal_action",
+  
+  "simulate_POMDP",
+  "update_belief",
+  
   "sample_belief_space",
   "plot_belief_space",
+  
   "round_stochastic"
   )
 

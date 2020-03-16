@@ -103,9 +103,14 @@ simulate_POMDP <- function(model, n = 100, belief = NULL, horizon = NULL,
      
       action_cnt <- rep(0L, length(actions))
       names(action_cnt) <- actions
+      
+      state_cnt <- rep(0L, length(states))
+      names(state_cnt) <- states
+      
       rew <- 0
         
-      if(visited_beliefs) b_all <- matrix(NA, nrow = horizon, ncol = n_states, dimnames = list(NULL, states))
+      if(visited_beliefs) b_all <- matrix(NA, nrow = horizon, ncol = n_states, 
+        dimnames = list(NULL, states))
       
       for(j in 1:horizon) {
         # change matrices for time-dependent POMDPs
@@ -126,15 +131,16 @@ simulate_POMDP <- function(model, n = 100, belief = NULL, horizon = NULL,
         #}else a <- sample(actions, 1)
         # this takes about 1/2 the time
         if(solved) {
-          #  convert intex for converged POMDPs 
+          #  convert index for converged POMDPs 
           e <- .get_pg_index(model, j)
           a <- as.character(model$solution$pg[[e]][
             which.max(model$solution$alpha[[e]] %*% b), "action"])
         } else a <- sample(actions, 1)
-          
+        
         action_cnt[a] <- action_cnt[a] + 1L
+        state_cnt[s] <- state_cnt[s] + 1L
+          
         s_prev <- s
-       
         s <- sample(states, 1, prob = trans_m[[a]][s,])
         o <- sample(obs, 1, prob = obs_m[[a]][s,])
         
@@ -152,6 +158,7 @@ simulate_POMDP <- function(model, n = 100, belief = NULL, horizon = NULL,
       
       rownames(b_all) <- NULL
       attr(b_all, "action_cnt") <- action_cnt
+      attr(b_all, "state_cnt") <- state_cnt
       attr(b_all, "reward") <- rew
       b_all
       
@@ -160,12 +167,15 @@ simulate_POMDP <- function(model, n = 100, belief = NULL, horizon = NULL,
 
   ac <- Reduce(rbind, lapply(bs, attr, "action_cnt"))
   rownames(ac) <- NULL
+  sc <- Reduce(rbind, lapply(bs, attr, "state_cnt"))
+  rownames(sc) <- NULL
   rew <- Reduce(rbind, lapply(bs, attr, "reward"))
   rownames(rew) <- NULL
   bs <- Reduce(rbind, bs) 
   rownames(bs) <- NULL
   
   attr(bs, "action_cnt") <- ac
+  attr(bs, "state_cnt") <- sc
   attr(bs, "reward") <- rew
   attr(bs, "avg_reward") <- mean(rew, na.rm = TRUE)
   

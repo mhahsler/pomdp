@@ -23,6 +23,7 @@
 * added update_belief.
 * added simulate_POMDP.
 * added round_stochastic.
+* added optimal_action.
 
 # pomdp 0.9.2 (12/06/2019)
 
