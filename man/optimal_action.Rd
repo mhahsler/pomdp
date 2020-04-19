@@ -10,7 +10,7 @@ optimal_action(model, belief, epoch = 1)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{model}{a solved POMDP model.}
-  \item{belief}{The belief (probability distribution over the states). }
+  \item{belief}{The belief (probability distribution over the states) as a vector or a matrix with multiple belief states as rows. }
   \item{epoch}{what epoch of the policy should be used. }
 }
 %\details{

@@ -10,7 +10,14 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, sample = "reg
   if(is.null(projection)) projection <- 1:min(length(model$model$states), 3)
   
   if(is.character(sample)) sample <-  sample_belief_space(model, projection = projection, 
-    n = n, method = sample)
+    n = n, method = sample) 
+  else {
+  # a given sample needs to be projected
+    sample[,-projection] <- 0
+    sample <- sample[rowSums(sample) > 0,, drop = FALSE]
+    sample <- sweep(sample, MARGIN = 1, STATS = rowSums(sample), FUN = "/")
+  }
+  
   val <- reward(model, belief = sample, epoch = epoch)[[what]]
    
   # col ... palette used for legend
