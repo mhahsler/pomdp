@@ -11,13 +11,13 @@ a variety of algorithms.
 The package provides the following algorithms:
 
 * Exact value iteration
-  - Enumeration algorithm (Sondik 1971).
-  - Two pass algorihtm (Sondik 1971).
-  - Witness algorithm (Littman, Cassandra, Kaelbling, 1996).
-  - Incremental pruning algorithm (Zhang and Liu, 1996, Cassandra et al 1997).
+  - __Enumeration algorithm__ (Sondik 1971).
+  - __Two pass algorithm__ (Sondik 1971).
+  - __Witness algorithm__ (Littman, Cassandra, Kaelbling 1996).
+  - __Incremental pruning algorithm__ (Zhang and Liu 1996, Cassandra et al 1997).
 
 * Approximate value iteration
-  - Finite grid algorithm, a variation of point-based value iteration to solve larger POMDPs (PBVI; see Pineau 2003) without dynamic belief set expansion.
+  - __Finite grid algorithm__ (Cassandra 2015), a variation of point-based value iteration to solve larger POMDPs (__PBVI__; see Pineau 2003) without dynamic belief set expansion.
 
 ## Installation
 
