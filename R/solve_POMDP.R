@@ -2,7 +2,7 @@
 # solve_POMDP uses the model and adds the solution to the list.
 
 find_pomdpsolve <- function() {
-  exec <- system.file(c("pomdp-solve", "pomdp-solve.exe"), package="pomdp")[1]
+  exec <- system.file(file.path("bin", c("pomdp-solve", "pomdp-solve.exe")), package="pomdp")[1] 
   if(exec == "") stop("pomdp-solve executable not found. Reinstall package pomdp.")
   exec
 }
