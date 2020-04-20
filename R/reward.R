@@ -1,4 +1,4 @@
-# calcualte the optimal reward from alpha vectors in a model
+# calculate the optimal reward from alpha vectors in a model
 
 reward <- function(x, belief = NULL, epoch = 1) {
   .solved_POMDP(x)

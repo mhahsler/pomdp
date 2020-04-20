@@ -4,15 +4,19 @@
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/grand-total/pomdp)](https://cran.r-project.org/package=pomdp)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/pomdp)](https://cran.r-project.org/package=pomdp)
 
-Provides an interface to [pomdp-solve](http://www.pomdp.org/code/index.html) (Cassandra, 2015), a solver for Partially Observable Markov Decision Processes (POMDP) origninally written by Anthony R. Cassandra. The package enables the user to simply define all components of a POMDP model and solve the problem using the finite grid method. The package also contains functions to analyze and visualize the solutions (e.g., the optimal policy).
+Provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Processes (POMDP) models. The package includes [pomdp-solve](http://www.pomdp.org/code/index.html) (Cassandra, 2015) to solve POMDPs using
+a variety of algorithms.
 
-The package provides the solution algorithms:
+The package provides the following algorithms:
 
-* Enumeration (Sondik 1971).
-* Two pass (Sondik 1971).
-* Witness (Littman, Cassandra, Kaelbling, 1996).
-* Incremental pruning (Zhang and Liu, 1996, Cassandra et al 1997).
-* Grid implements a variation of point-based value iteration to solve larger POMDPs (PBVI; see Pineau 2003) without dynamic belief set expansion.
+* Exact value iteration
+  - Enumeration algorithm (Sondik 1971).
+  - Two pass algorihtm (Sondik 1971).
+  - Witness algorithm (Littman, Cassandra, Kaelbling, 1996).
+  - Incremental pruning algorithm (Zhang and Liu, 1996, Cassandra et al 1997).
+
+* Approximate value iteration
+  - Finite grid, a variation of point-based value iteration to solve larger POMDPs (PBVI; see Pineau 2003) without dynamic belief set expansion.
 
 ## Installation
 
