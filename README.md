@@ -1,8 +1,9 @@
 # R package pomdp: Partially Observable Markov Decision Processes
 
-[![CRAN version](http://www.r-pkg.org/badges/version/pomdp)](https://cran.r-project.org/package=pomdp)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/grand-total/pomdp)](https://cran.r-project.org/package=pomdp)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/pomdp)](https://cran.r-project.org/package=pomdp)
+[![CRAN version](https://www.r-pkg.org/badges/version/pomdp)](https://cran.r-project.org/package=pomdp)
+[![Rdoc](https://www.rdocumentation.org/badges/version/pomdp)](https://www.rdocumentation.org/packages/pomdp)
+[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/grand-total/pomdp)](https://cran.r-project.org/package=pomdp)
+[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/pomdp)](https://cran.r-project.org/package=pomdp)
 
 Provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Processes (POMDP) models. The package includes [pomdp-solve](http://www.pomdp.org/code/index.html) (Cassandra, 2015) to solve POMDPs using
 a variety of algorithms.
@@ -16,7 +17,7 @@ The package provides the following algorithms:
   - Incremental pruning algorithm (Zhang and Liu, 1996, Cassandra et al 1997).
 
 * Approximate value iteration
-  - Finite grid, a variation of point-based value iteration to solve larger POMDPs (PBVI; see Pineau 2003) without dynamic belief set expansion.
+  - Finite grid algorithm, a variation of point-based value iteration to solve larger POMDPs (PBVI; see Pineau 2003) without dynamic belief set expansion.
 
 ## Installation
 
