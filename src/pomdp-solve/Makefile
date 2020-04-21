@@ -29,5 +29,5 @@ clean:
 	rm -f pomdp-solve
 	rm -f pomdp-solve.exe
 	for dir in $(SUBDIRS); do \
-	  $(MAKE) -C $$dir clean; \
+	  $(MAKE) -C $${dir} clean; \
 	done

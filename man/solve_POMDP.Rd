@@ -158,7 +158,7 @@ sol$solution
 policy(sol)
 
 # plot the policy graph of the infinite-horizon POMDP
-plot(sol)
+plot_policy_graph(sol)
 
 # value function
 plot_value_function(sol, ylim = c(0,20))
@@ -174,7 +174,7 @@ sol <- solve_POMDP("http://www.pomdp.org/examples/cheese.95.POMDP",
 sol
 
 policy(sol)
-plot(sol)
+plot_policy_graph(sol)
 
 # Example 3: Solving a finite-horizon POMDP using the incremental 
 #            pruning method (without discounting)

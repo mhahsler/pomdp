@@ -2,29 +2,50 @@
 title: "POMDP: Introduction to Partially Observable Markov Decision Processes"
 author: "Hossein Kamalzadeh, Michael Hahsler"
 date: "December 8, 2019"
-output: rmarkdown::pdf_document
 bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{POMDP: Introduction to Partially Observable Markov Decision Processes}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+output:
+  knitr:::html_vignette:
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library("pomdp")
 ```
-The R package __pomdp__ provides an interface to ['pomdp-solve'](http://pomdp.org/code/), a solver (written in C) for Partially Observable Markov Decision Processes (POMDP). The package enables the user to simply define all components of a POMDP model and solve the problem using several methods. The package also contains functions to analyze and visualize the POMDP solutions (e.g., the optimal policy). 
+
+# Introduction
+
+The R package __pomdp__ provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Processes (POMDP) models. The package includes [pomdp-solve](http://www.pomdp.org/code) [@Cassandra2015] to solve POMDPs using
+a variety of algorithms.
+
+The package provides the following algorithms:
+
+* Exact value iteration
+  - __Enumeration algorithm__ [@Sondik1971].
+  - __Two pass algorithm__ [@Sondik1971].
+  - __Witness algorithm__ [@Littman1995].
+  - __Incremental pruning algorithm__ [@Zhang1996], [@Cassandra1997].
+
+* Approximate value iteration
+  - __Finite grid algorithm__ [@Cassandra2015], a variation of point-based value iteration to solve larger POMDPs (__PBVI__; see [@Pineau2003]) without dynamic belief set expansion.
+  
+  
+  
+
+an interface to ['pomdp-solve'](http://www.pomdp.org/code/), a solver (written in C) for Partially Observable Markov Decision Processes (POMDP). The package enables the user to simply define all components of a POMDP model and solve the problem using several methods. The package also contains functions to analyze and visualize the POMDP solutions (e.g., the optimal policy). 
 
 In this document we will give a very brief introduction to the concept of POMDP, describe the features of the R package, and illustrate the usage with a toy example. 
 
-# Introduction on POMDPs
+# Partially Observable markov Decision Processes
 
 A partially observable Markov decision process (POMDP) is a combination of an MDP 
 to model system dynamics with a hidden Markov model that connects unobservant system states to observations. The agent can perform actions which affect the system (i.e., may cause the system state to change) with the goal to maximize a reward that depends on the sequence of system state and the agent's actions. However, the agent
 cannot directly observe the system state, but at each discrete point in time, the agent makes observations that depend on the state. The agent uses these observations to form a belief of in what state the system currently is. This belief is called a belief state and is expressed as a probability distribution over the states. The solution of the POMDP is a policy prescribing which action is optimal for each belief state.     
 
-The POMDP framework is general enough to model a variety of real-world sequential decision-making problems. Applications include robot navigation problems, machine maintenance, and planning under uncertainty in general. The general framework of Markov decision processes with incomplete information was described by Karl Johan Åström in 1965 in the case of a discrete state space, and it was further studied in the operations research community where the acronym POMDP was coined. It was later adapted for problems in artificial intelligence and automated planning by Leslie P. Kaelbling and Michael L. Littman [@Littman].
+The POMDP framework is general enough to model a variety of real-world sequential decision-making problems. Applications include robot navigation problems, machine maintenance, and planning under uncertainty in general. The general framework of Markov decision processes with incomplete information was described by Karl Johan Åström [@Astrom1965] in the case of a discrete state space, and it was further studied in the operations research community where the acronym POMDP was coined. It was later adapted for problems in artificial intelligence and automated planning by Leslie P. Kaelbling and Michael L. Littman [@Kaelbling1998].
 
 A discrete-time POMDP can formally be described as a 7-tuple 
 $$\mathcal{P} = (S, A, T, R, \Omega , O, \lambda),$$ 
@@ -233,11 +254,11 @@ str(args(solve_POMDP))
 ```
 
 The `model` argument is a POMDP problem created using the `POMDP` function,
-but it can also be the name of a POMDP file using the format described on 
-[www.pomdp.org](http://www.pomdp.org/code/pomdp-file-spec.html).
+but it can also be the name of a POMDP file using the format described in the 
+[file specification section of pomdp-solve](http://www.pomdp.org/code/pomdp-file-spec.html).
 The `horizon`
 argument specifies the finite time horizon (i.e, the number of time steps) considered in solving the problem. If the horizon is unspecified (i.e., `NULL`), then 
-the algorithm continues running iterations till it converges to the infinite horizon solution [@Cassandra]. 
+the algorithm continues running iterations till it converges to the infinite horizon solution. 
 The `method` argument specifies what algorithm the solver should use.
 Available methods including `"grid"`, `"enum"`, `"twopass"`, `"witness"`, and `"incprune"`. Further solver parameters can be specified as a list as `parameters`.
 The list of available parameters can be obtained using the function `solve_POMDP_parameter()`.
@@ -255,7 +276,7 @@ The package provides a plot function to visualize the solution's policy graph us
 
 # The Tiger Problem Example
 We will demonstrate how to use the package with the Tiger Problem 
-[@Cassandra94]. 
+[@Cassandra1994]. 
 
 A tiger is put with equal probability behind one of two doors, while treasure is put behind the other one. You are standing in front of the two closed doors and need to decide which one to open. If you open the door with the tiger, you will get hurt by the tiger (negative reward), but if you open the door with the treasure, you receive a positive reward. Instead of opening a door right away, you also have the option to wait and listen for tiger noises. But listening is neither free nor entirely accurate. You might hear the tiger behind the left door while it is actually behind the right door and vice versa.
 
@@ -342,11 +363,11 @@ Column two indicates the optimal action for the node. Columns three and after re
 
 * **`belief_proportions`:** A data frame which summarized the belief states associated with a node in the policy graph by averaging the beliefs. 
 
-### Visualization
+## Visualization
 In this section, we will visualize the policy graph provided in the solution by the `solve_POMDP` function. 
 
 ```{r fig.width = 10, fig.asp = .7}
-plot(sol)
+plot_policy_graph(sol)
 ```
 
 The policy graph can be easily interpreted. Without prior information, the agent starts at the node marked with "initial." In this case the agent beliefs that there
@@ -369,5 +390,5 @@ The lines represent the nodes in the policy graph and the optimal actions are sh
 
 
 
-## References
+# References
 

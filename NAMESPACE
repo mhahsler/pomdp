@@ -35,7 +35,6 @@ export(
   "round_stochastic"
   )
 
-S3method("plot", "POMDP")
 S3method("print", "POMDP")
 S3method("print", "MDP")
 S3method("print", "POMDP_model")

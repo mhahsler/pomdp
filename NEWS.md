@@ -1,15 +1,16 @@
-# pomdp 0.9.2-1 (xx/xx/2019)
+# pomdp 0.99.0 (04/21/2020)
 
 ## Changes
 * Support finite-horizon POMDPs and store epochs.
-* reward now looks at different epochs, calulates the optimal actions and the paramater names are improved.
+* reward now looks at different epochs, calculates the optimal actions and the parameter names are improved.
 * solve_POMDP not looks at convergence.
-* solve_POMDP gained paramter terminal_values.
+* solve_POMDP gained parameter terminal_values.
 * solve_POMDP gained parameter discount to overwrite the discount rate specified in the model.
 * solve_POMDP can now solve POMDPs with time-dependent transition probabilities, observation probabilities and reward structure. 
 * solve_POMDP gained parameter grid in parameter list to specify a custom belief point grid for the grid method.
 * write_POMDP and solve_POMDP gained parameter digits.
 * added read_POMDP to read POMDP files. 
+* plot for POMDP is now replaced by plot_policy_graph.
 * added policy graph visualization with vizNetwork.
 * added plot_value_function.
 * added function sample_belief_space to sample from the belief space.

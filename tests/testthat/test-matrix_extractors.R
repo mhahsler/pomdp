@@ -95,3 +95,4 @@ expect_equal(names(om), as.character(Tiger$model$actions))
 rew <- reward_matrix(Tiger)
 expect_equal(names(rew), as.character(Tiger$model$actions))
 expect_equal(names(rew[[1]]), as.character(Tiger$model$states))
+

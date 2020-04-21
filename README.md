@@ -5,13 +5,13 @@
 [![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/grand-total/pomdp)](https://cran.r-project.org/package=pomdp)
 [![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/pomdp)](https://cran.r-project.org/package=pomdp)
 
-Provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Processes (POMDP) models. The package includes [pomdp-solve](http://www.pomdp.org/code/index.html) (Cassandra, 2015) to solve POMDPs using
+Provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Processes (POMDP) models. The package includes [pomdp-solve](http://www.pomdp.org/code) (Cassandra, 2015) to solve POMDPs using
 a variety of algorithms.
 
 The package provides the following algorithms:
 
 * Exact value iteration
-  - __Enumeration algorithm__ (Sondik 1971).
+  - __Enumeration algorithm__ (Sondik 1971, Mohan 1982).
   - __Two pass algorithm__ (Sondik 1971).
   - __Witness algorithm__ (Littman, Cassandra, Kaelbling 1996).
   - __Incremental pruning algorithm__ (Zhang and Liu 1996, Cassandra et al 1997).

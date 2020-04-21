@@ -1,10 +1,9 @@
 #' Visualize a POMDP Policy Graph
 #' 
-#' The function plots the POMDP policy graph in an object of class POMDP. It
+#' The function plots the POMDP policy graph in a POMDP. It
 #' uses \code{plot} in \pkg{igraph} with appropriate plotting options.
 #' 
-#' The method \code{plot} for objects of class POMDP calls for convenience
-#' \code{plot_policy_graph}.
+#' The function currenly only plots converged policy graphs.
 #' 
 #' The policy graph nodes represent segments in the value function. Each
 #' segment represents one or more believe states. The pie chart in each node
@@ -22,9 +21,8 @@
 #' igraph object) using \code{\link{policy_graph}} and converting it into a
 #' suitable representation for that library.
 #' 
-#' @aliases plot.POMDP plot_policy_graph plot
+#' @aliases plot_policy_graph plot
 #' @param x object of class POMDP containing a solved POMDP problem.
-#' @param y ignored.
 #' @param belief logical; display belief proportions as a pie chart in each
 #' node.
 #' @param legend logical; display a legend for colors used belief proportions?
@@ -49,21 +47,21 @@
 #' policy_graph(sol)
 #' 
 #' ## visualization
-#' plot(sol)
+#' plot_policy_graph(sol)
 #' 
 #' ## use a different graph layout (circle and manual; needs igraph)
 #' library("igraph")
-#' plot(sol, layout = layout.circle)
-#' plot(sol, layout = rbind(c(1,1), c(1,-1), c(0,0), c(-1,-1), c(-1,1)))
+#' plot_policy_graph(sol, layout = layout.circle)
+#' plot_policy_graph(sol, layout = rbind(c(1,1), c(1,-1), c(0,0), c(-1,-1), c(-1,1)))
 #' 
 #' ## hide labels and legend
-#' plot(sol, edge.label = NA, vertex.label = NA, legend = FALSE)
+#' plot_policy_graph(sol, edge.label = NA, vertex.label = NA, legend = FALSE)
 #' 
 #' ## add a plot title
-#' plot(sol, main = sol$model$name)
+#' plot_policy_graph(sol, main = sol$model$name)
 #' 
 #' ## custom larger vertex labels (A, B, ...)
-#' plot(sol, 
+#' plot_policy_graph(sol, 
 #'   vertex.label = LETTERS[1:nrow(policy(sol)[[1]])], 
 #'   vertex.label.cex = 2,
 #'   vertex.label.color = "white")
@@ -82,14 +80,10 @@
 #'   vertex.size = 10)
 #' 
 #' ## plot interactive graphs using the visNetwork library
-#' plot(sol, engine = "visNetwork")
+#' plot_policy_graph(sol, engine = "visNetwork")
 #' 
 #' ## add smooth edges and a layout (note, engine can be abbreviated)
-#' plot(sol, engine = "vis", layout = "layout_in_circle", smooth = TRUE)
-#' @export
-plot.POMDP <- function(x, y = NULL, ...) plot_policy_graph(x, ...)
-
-#' @rdname plot.POMDP
+#' plot_policy_graph(sol, engine = "vis", layout = "layout_in_circle", smooth = TRUE)
 #' @export
 plot_policy_graph <- function(x, belief = TRUE, legend = TRUE, 
   engine = c("igraph", "visNetwork"), col = NULL, ...) {
