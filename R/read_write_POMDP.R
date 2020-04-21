@@ -1,13 +1,26 @@
-### Read and write files used by pomdp-solve
-
-### FIXME: we should use pomdp:::round_stochastic here!
+# FIXME: we should use pomdp:::round_stochastic here!
 format_fixed <- function(x, digits = 7) {
   if(is.vector(x)) paste(sprintf(paste0("%.",digits,"f"), x), collapse = " ")
   else if(is.matrix(x)) paste(apply(x, MARGIN = 1, format_fixed, digits = digits), collapse = "\n")
   else stop("formating not implemented for ", class(x))
 }
 
-## write a model in POMDP format for pomdp-solve
+#' Read and write a POMDP Model to a File in POMDP Format
+#' 
+#' Reads and write a POMDP file suitable for the pomdp-solve program.
+#' 
+#' 
+#' @aliases write_POMDP read_POMDP
+#' @param model an object of class POMDP_model.
+#' @param digits precision for writing numbers (digits after the decimal
+#' point).
+#' @param file a file name.
+#' @return \code{read_POMDP} returns a POMDP object.
+#' @author Hossein Kamalzadeh, Michael Hahsler
+#' @seealso \code{\link{POMDP}}
+#' @references POMDP solver website: \url{http://www.pomdp.org}
+#' @keywords IO
+#' @export
 write_POMDP <- function(model, file, digits = 7) {
   if(!inherits(model, "POMDP")) stop("model needs to be a POMDP model use POMDP()!")
   
@@ -205,3 +218,38 @@ write_POMDP <- function(model, file, digits = 7) {
   ### saving the POMDP file
   cat(code, file = file)
 }
+
+#' @rdname write_POMDP
+#' @export
+read_POMDP <- function(file) {
+    problem <- readLines(file)  
+    
+    get_vals <- function(var, number = FALSE) {
+      ind <- grep(paste0(var,":"), problem)
+      if(length(ind) == 0) return(NULL)
+      
+      vals <- strsplit(problem[[ind]], "\\s+")[[1]][-1]
+      
+      # the data may be in the next line
+      if(length(vals) == 0) vals <- strsplit(problem[[ind+1]], "\\s+")[[1]]
+      
+      # numbers?
+      vals <- type.convert(vals, as.is = TRUE)
+      
+      # create labels if just the number is mentioned
+      if(number && length(vals) == 1 && is.numeric(vals)) 
+        vals <- paste0(substr(var, 1, 1), seq(vals)) 
+    vals
+    }
+    
+    structure(list(
+      name = file,
+      states = get_vals("states", number = TRUE),
+      observations = get_vals("observations", number = TRUE),
+      actions = get_vals("actions", number = TRUE),
+      start = get_vals("start"),
+      discount = get_vals("discount"),
+      problem = structure(problem, class = "text")),
+      class = "POMDP_model"
+    )
+}    

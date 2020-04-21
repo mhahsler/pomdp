@@ -1,5 +1,42 @@
-# calculate the optimal reward from alpha vectors in a model
-
+#' Calculate the Reward for a POMDP Solution
+#' 
+#' This function calculates the expexted total reward for a POMDP solution
+#' given a starting belief state.
+#' 
+#' The value is calculated using the value function stored in the POMDP
+#' solution.
+#' 
+#' @param x a POMDP solution (object of class POMDP).
+#' @param belief specification of the current belief state (see argument start
+#' in \code{\link{POMDP}} for details). By default the belief state defined in
+#' the model as start is used.
+#' @param epoch return reward for this epoch. Default is the first epoch.
+#' @return A list with the components \item{reward}{the total expected reward
+#' given a belief and epoch. } \item{belief_state}{the belief state specified
+#' in \code{belief}.} \item{pg_node}{the policy node that represents the belief
+#' state.} \item{action}{the optimal action.}
+#' @author Michael Hahsler
+#' @seealso \code{\link{POMDP}}, \code{\link{solve_POMDP}}
+#' @examples
+#' 
+#' data("Tiger")
+#' sol <- solve_POMDP(model = Tiger)
+#' 
+#' # if no start is specified, a uniform belief is used.
+#' reward(sol)
+#' 
+#' # we have additional information that makes us belief that the tiger 
+#' # is more likely to the left.
+#' reward(sol, belief = c(0.85, 0.15))
+#' 
+#' # we start with strong evidence that the tiger is to the left.
+#' reward(sol, belief = "tiger-left")
+#' 
+#' # Note that in this case, the total discounted expected reward is greater 
+#' # than 10 since the tiger problem resets and another game staring with 
+#' # a uniform belief is played which produces addional reward.
+#' 
+#' @export
 reward <- function(x, belief = NULL, epoch = 1) {
   .solved_POMDP(x)
   

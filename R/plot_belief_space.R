@@ -1,5 +1,68 @@
+# FIXME: Add belief points
 
-### FIXME: Add belief points
+#' Plot a 2D or 3D Projection of the Belief Space
+#' 
+#' Plots the optimal action, the node in the policy graph or the reward for a
+#' given set of belief points on a line (2D) or on a ternary plot (3D). If no
+#' points are given, points are sampled using a regular arrangement or randomly
+#' form the (projected) belief space.
+#' 
+#' 
+#' @param model a solved POMDP.
+#' @param projection a vector with state IDs or names to project on. Allowed
+#' are projections on two or three states. \code{NULL} uses the first two or
+#' three states.
+#' @param epoch display this epoch.
+#' @param sample a matrix with belief points as rows or a character string
+#' specifying the \code{method} used for \code{sample_belief_space}.
+#' @param n number of points sampled.
+#' @param what what to plot.
+#' @param legend logical; add a legend? If the legend covers the plot then you
+#' need to increase the plotting region of the plotting device.
+#' @param pch plotting symbols.
+#' @param col plotting colors.
+#' @param ...  additional arguments are passed on to \code{plot} for 2D or
+#' \code{TerneryPlot} for 3D.
+#' @return Returns invisibly the sampled points.
+#' @author Michael Hahsler
+#' @seealso \code{\link{sample_belief_space}}
+#' @keywords hplot
+#' @examples
+#' 
+#' # two-state POMDP
+#' data("Tiger")
+#' sol <- solve_POMDP(Tiger)
+#' 
+#' plot_belief_space(sol)
+#' plot_belief_space(sol, n = 10)
+#' plot_belief_space(sol, n = 10, sample = "random")
+#' 
+#' # plot the belief points used by the grid-based solver
+#' plot_belief_space(sol, sample = sol$solution$belief_states)
+#' 
+#' # plot different measures
+#' plot_belief_space(sol, what = "pg_node")
+#' plot_belief_space(sol, what = "reward")
+#' 
+#' # three-state POMDP
+#' # Note: If the plotting region is too small then the legend might run into the plot 
+#' data("Three_doors")
+#' sol <- solve_POMDP(Three_doors)
+#' sol
+#' 
+#' plot_belief_space(sol)
+#' plot_belief_space(sol, sample = "random")
+#' plot_belief_space(sol, what = "pg_node")
+#' plot_belief_space(sol, what = "reward")
+#' 
+#' # plot the belief points used by the grid-based solver
+#' plot_belief_space(sol, sample = sol$solution$belief_states)
+#' 
+#' # plot the belief points obtained using simulated trajectories (we use n = 50 to save time). 
+#' plot_belief_space(sol, sample = simulate_POMDP(Three_doors, n = 50, horizon = 100, 
+#'   random_actions = TRUE, visited_beliefs = TRUE))
+#'
+#' @export
 plot_belief_space <- function(model, projection = NULL, epoch = 1, sample = "regular", n = 100, 
   what = c("action", "pg_node", "reward"), legend = TRUE, pch = 20, col = NULL, ...) {
   

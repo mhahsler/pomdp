@@ -1,9 +1,7 @@
-#' # Updating the belief state
-#'
-#' $$b'(s') = \eta O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)$$
-#' $$\eta = 1/ \sum_{s' \in S}[ O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)]$$
+# Updating the belief state: update for a single belief vector, one action, and one observation.
+# $$b'(s') = \eta O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)$$
+# $$\eta = 1/ \sum_{s' \in S}[ O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)]$$
 
-# update for a single belief vector, one action, and one observation.
 .update_belief <- function(belief, action, observation, Tr, Ob, digits = 7) {
     belief <- Ob[[action]][, observation, drop = FALSE] * crossprod(Tr[[action]], cbind(belief))
     belief <- belief/sum(belief)
@@ -11,10 +9,34 @@
     drop(belief)
 }
 
-#' # Update the belief using an action and and observation   
-#'
-#' If no action or observation is specified, all reachable belief states for the next epoch
-#' are calculated
+
+
+#' Belief Update
+#' 
+#' Update the belief given a taken action and observation.
+#' 
+#' 
+#' @param model a POMDP model. Defaults to the start belief state specified in
+#' the model or "uniform".
+#' @param belief the current belief state.
+#' @param action the taken action.
+#' @param observation the received observation.
+#' @param episode Use transition and observation matrices for the given episode
+#' for time-dependent POMDPs (see \code{\link{POMDP}}).
+#' @param digits round decimals.
+#' @param drop logical; drop the result to a vector if only a single belief
+#' state is returned.
+#' @author Michael Hahsler
+#' @seealso \code{\link{POMDP}}
+#' @examples
+#' 
+#' data(Tiger)
+#' 
+#' update_belief(c(.5,.5), model = Tiger)
+#' update_belief(c(.5,.5), action = "listen", observation = "tiger-left", model = Tiger)
+#' update_belief(c(.15,.85), action = "listen", observation = "tiger-right", model = Tiger)
+#' 
+#' @export
 update_belief <- function(model, belief = NULL, action = NULL, observation = NULL, 
   episode = 1, digits = 7, drop = TRUE){
   
@@ -44,6 +66,69 @@ update_belief <- function(model, belief = NULL, action = NULL, observation = NUL
 #' 
 #' If we have a solution, the policy is followed. Otherwise, a random action is chosen. 
 
+
+
+#' Simulate Trajectories in a POMDP
+#' 
+#' Simulate several trajectories through a POMDP. The start state for each
+#' trajectory is randomly chosen using the specified belief. For solved POMDPs
+#' the optimal actions will be chosen, for unsolved POMDPs random actions will
+#' be used.
+#' 
+#' 
+#' @param model a POMDP model.
+#' @param n number of trajectories.
+#' @param belief probability distribution over the states for choosing the
+#' starting states for the trajectories.
+#' @param horizon number of epochs for the simulation. If \code{NULL} then the
+#' horizon for the model is used.
+#' @param visited_beliefs logical; Should all belief points visited on the
+#' trajectories be returned? If \code{FALSE} then only the belief at the final
+#' epoch is returned.
+#' @param random_actions logical; should randomized actions be used instead of
+#' the policy of the solved POMDP? Randomized actions can be used for unsolved
+#' POMDPs.
+#' @param digits round belief points.
+#' @param verbose report used parameters.
+#' @return A matrix with belief points as rows. Attributes containing action
+#' counts, and rewards may be available.
+#' @author Michael Hahsler
+#' @seealso \code{\link{POMDP}}
+#' @examples
+#' 
+#' data(Tiger)
+#' 
+#' # solve the POMDP for 5 epochs and no discounting
+#' sol <- solve_POMDP(Tiger, horizon = 5, discount = 1, method = "enum")
+#' sol
+#' policy(sol)
+#' 
+#' ## Example 1: simulate 10 trajectories, only the final belief state is returned
+#' sim <- simulate_POMDP(sol, n = 100, verbose = TRUE)
+#' head(sim)
+#' 
+#' # plot the final belief state, look at the average reward and how often different actions were used.
+#' plot_belief_space(sol, sample = sim)
+#' 
+#' # additional data is available as attributes
+#' names(attributes(sim))
+#' attr(sim, "avg_reward")
+#' colMeans(attr(sim, "action"))
+#' 
+#' 
+#' ## Example 2: look at all belief states in the trajectory starting with an initial start belief.
+#' sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), visited_beliefs = TRUE)
+#' 
+#' # plot with added density
+#' plot_belief_space(sol, sample = sim, ylim = c(0,3))
+#' lines(density(sim[,1], bw = .05)); axis(2); title(ylab = "Density")
+#' 
+#' 
+#' ## Example 3: simulate trajectories for an unsolved POMDP using randomized actions
+#' sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, random_actions = TRUE, visited_beliefs = TRUE)
+#' plot_belief_space(sol, sample = sim, ylim = c(0,6))
+#' lines(density(sim[,1], bw = .05)); axis(2); title(ylab = "Density")
+#' 
 simulate_POMDP <- function(model, n = 100, belief = NULL, horizon = NULL, 
   visited_beliefs = FALSE, random_actions = FALSE, digits = 7, verbose = FALSE) {
   

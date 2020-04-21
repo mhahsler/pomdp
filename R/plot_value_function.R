@@ -1,7 +1,40 @@
-# plot a projection of the value function
-
-### FIXME: Add ternary plots for 3 states
-
+#' Plot the Value Function of a POMDP Solution
+#' 
+#' Plots the value function of a POMDP solution as a line plot. The solution is
+#' projected on two states (i.e., the belief for the other states is held
+#' constant at zero).
+#' 
+#' 
+#' @param model a solved POMDP.
+#' @param projection index or name of two states for the projection.
+#' @param epoch the value function of what epoch should be plotted? Ignorred
+#' for infinite-horizon solutions.
+#' @param ylim the y limits of the plot.
+#' @param legend logical; add a legend?
+#' @param col potting colors.
+#' @param lwd line width.
+#' @param lty line type.
+#' @param ... additional arguments are passed on to \code{line}.
+#' @author Michael Hahsler
+#' @keywords hplot
+#' @examples
+#' 
+#' data("Tiger")
+#' sol <- solve_POMDP(model = Tiger)
+#' sol
+#' 
+#' plot_value_function(sol, ylim = c(0,20))
+#' 
+#' ## finite-horizon
+#' sol <- solve_POMDP(model = Tiger, horizon = 3, discount = 1, 
+#'   method = "enum")
+#' sol
+#' 
+#' plot_value_function(sol, epoch =1, ylim = c(-5, 25))
+#' plot_value_function(sol, epoch =2, ylim = c(-5, 25))
+#' plot_value_function(sol, epoch =3, ylim = c(-5, 25))
+#' 
+#' @export
 plot_value_function <- function(model, projection = 1:2, epoch = 1, ylim = NULL, 
   legend = TRUE, col = NULL, lwd = 1, lty = 1, ...) {
 

@@ -1,5 +1,29 @@
-# create a policy graph as an igraph object
-
+#' Extract the Policy Graph (as an igraph Object)
+#' 
+#' Convert the policy graph in a POMDP solution object into an igraph object.
+#' 
+#' 
+#' @param x A POMDP object.
+#' @param belief logical; add belief proportions as a pie chart in each node of
+#' the graph? If belief points are provided by the solver, then these are used.
+#' If a number is specified, then a random sample of that size is used instead
+#' to calculate belief proportions.
+#' @param col colors used for the states in the belief proportions.
+#' @return An object of class igraph containing a directed graph. 
+#' @author Hossein Kamalzadeh, Michael Hahsler
+#' @seealso \code{\link{solve_POMDP}}
+#' @keywords graphs
+#' @examples
+#' 
+#' data("Tiger")
+#' sol <- solve_POMDP(model = Tiger)
+#' sol
+#' 
+#' pg <- policy_graph(sol)
+#' 
+#' plot(pg)
+#' 
+#' @export
 policy_graph <- function(x, belief = TRUE, col = NULL) {
  
   .solved_POMDP(x) 

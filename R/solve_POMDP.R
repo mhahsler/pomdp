@@ -20,7 +20,282 @@ solve_POMDP_parameter <- function() {
 }
 
 
-#solve a POMDP model
+#' Solve a POMDP Problem
+#' 
+#' This function utilizes the C implementation of 'pomdp-solve' by Cassandra
+#' (2015) to solve problems that are formulated as partially observable Markov
+#' decision processes (POMDPs). The result is an optimal or approximately
+#' optimal policy.
+#' 
+#' \code{solve_POMDP_parameter()} displays available solver parameter options.
+#' 
+#' \bold{Horizon:} Infinite-horizon POMDPs (\code{horizon = Inf}) converge to a
+#' single policy graph. Finite-horizon POMDPs result in a policy tree of a
+#' depth equal to the smaller of the horizon or the number of epochs to
+#' convergence.  The policy (and the associated value function) are stored in a
+#' list by epoch. The policy for the first epoch is stored as the first
+#' element.
+#' 
+#' \bold{Policy:} Each policy is a data frame where each row representing a
+#' policy graph node with an associated optimal action and a list of node IDs
+#' to go to depending on the observation (specified as the column names). For
+#' the finite-horizon case, the observation specific node IDs refer to nodes in
+#' the next epoch creating a policy tree.  Impossible observations have a
+#' \code{NA} as the next state.
+#' 
+#' \bold{Value function:} The value function is stored as a matrix. Each row is
+#' associated with a node (row) in the policy graph and represents the
+#' coefficients (alpha vector) of a hyperplane. An alpha vector contains one
+#' value per state and is the value for the belief state that has a probability
+#' of 1 for that state and 0s for all others.
+#' 
+#' \bold{Precision:} The POMDP solver uses various epsilon values to control
+#' precision for comparing alpha vectors to check for convergence, and solving
+#' LPs. Overall precision can be changed using \code{parameter = list(epsilon =
+#' 1e-3)}.
+#' 
+#' \bold{Methods:} Several algorithms for dynamic-programming updates are
+#' available: \itemize{ \item Enumeration (Sondik 1971). \item Two pass (Sondik
+#' 1971). %exhaustive (Monahan 1982), %linear support (Cheng 1988), and \item
+#' Witness (Littman, Cassandra, Kaelbling, 1996). \item Incremental pruning
+#' (Zhang and Liu, 1996, Cassandra et al 1997). \item Grid implements a
+#' variation of point-based value iteration to solve larger POMDPs (PBVI; see
+#' Pineau 2003) without dynamic belief set expansion. } Details can be found in
+#' (Cassandra, 2015).
+#' 
+#' \bold{Note on method grid:} The grid method implements a version of Point
+#' Based Value Iteration (PBVI). The used belief points are by default created
+#' using points that are reachable from the initial belief (\code{start}) by
+#' following all combinations of actions and observations. The size of the grid
+#' can be set via \code{parameter = list(fg_points = 100)}. Alternatively,
+#' different strategies can be chosen using the parameter \code{fg_type}. In
+#' this implementation, the user can also specify manualy a grid of belief
+#' states by providing a matrix with belief states as produced by
+#' \code{sample_belief_space} as the parameter \code{grid}.
+#' 
+#' To guarantee convergence in point-based (finite grid) value iteration, the
+#' initial value function must be a lower bound on the optimal value function.
+#' If all rewards are strictly non-negative, a initial value function with an
+#' all zero vector can be used and results will be similar to other methods.
+#' However, if there are negative rewards, lower bounds can be guaranteed by
+#' setting a single vector with the values \eqn{min(reward)/(1 - discount)}.
+#' The value function is guaranteed to converge to the true value function, but
+#' finite-horizon value functions will not be as expected. \code{solve_POMDP}
+#' produces a warning in this case.
+#' 
+#' \bold{Time-dependent POMDPs:} Time dependence of transition probabilities,
+#' observation probabilities and reward structure can be modeled by considering
+#' a set of episodes representing epoch with the same settings. In the scared
+#' tiger example (see Examples section), the tiger has the normal behavior for
+#' the first three epochs (episode 1) and then become scared with different
+#' transition probabilities for the next three epochs (episode 2). The episodes
+#' can be solved in reverse order where the value function is used as the
+#' terminal values of the preceding episode. This can be done by specifying a
+#' vector of horizons (one horizon for each episode) and then lists with
+#' transitions matrices, observation matrices, and rewards. If the horizon
+#' vector has names, then the lists also need to be named, otherwise they have
+#' to be in the same order (the numeric index is used). Only the time-varying
+#' matrices need to be specified. An example can be found in Example 4 in the
+#' Examples section. The procedure can also be done by calling the solver
+#' multiple times (see Example 5).
+#' 
+#' \bold{Note:} The parser for POMDP files is experimental. Please report
+#' problems here: \url{https://github.com/farzad/pomdp/issues}.
+#' 
+#' @aliases solve_POMDP solve_POMDP_parameter
+#' @param model a POMDP problem specification created with \code{\link{POMDP}}.
+#' Alternatively, a POMDP file or the URL for a POMDP file can be specified.
+#' @param method string; one of the following solution methods: \code{"grid"},
+#' \code{"enum"}, \code{"twopass"}, \code{"witness"}, or \code{"incprune"}.
+#' The default is \code{"grid"} implementing the finite grid method.
+#' @param horizon an integer with the number of epochs for problems with a
+#' finite planning horizon. If set to \code{Inf}, the algorithm continues
+#' running iterations till it converges to the infinite horizon solution. If
+#' \code{NULL}, then the horizon specified in \code{model} will be used.  For
+#' time-dependent POMDPs a vector of horizons can be specified (see Details
+#' section).
+#' @param discount discount factor in range [0, 1]. If \code{NULL}, then the
+#' discount factor specified in \code{model} will be used.
+#' @param terminal_values a vector with the terminal values for each state or a
+#' matrix specifying the terminal rewards via a terminal value function (e.g.,
+#' the alpha component produced by \code{solve_POMDP}).  If \code{NULL}, then
+#' the terminal values specified in \code{model} will be used.
+#' @param digits precision used when writing POMDP files (see
+#' \code{\link{write_POMDP}}).
+#' @param parameter a list with parameters passed on to the pomdp-solve
+#' program.
+#' @param verbose logical, if set to \code{TRUE}, the function provides the
+#' output of the pomdp solver in the R console.
+#' @return The solver returns an object of class POMDP which is a list with the
+#' model specifications (\code{model}), the solution (\code{solution}), and the
+#' solver output (\code{solver_output}).
+#' @author Hossein Kamalzadeh, Michael Hahsler
+#' @references Cassandra, A. (2015). pomdp-solve: POMDP Solver Software,
+#' \url{http://www.pomdp.org}.
+#' 
+#' Sondik, E. (1971). The Optimal Control of Partially Observable Markov
+#' Processes. Ph.D. Dissertation, Stanford University.
+#' 
+#' Cassandra, A., Littman M.L., Zhang L. (1997). Incremental Pruning: A Simple,
+#' Fast, Exact Algorithm for Partially Observable Markov Decision Processes.
+#' UAI'97: Proceedings of the Thirteenth conference on Uncertainty in
+#' artificial intelligence, August 1997, pp. 54-61.
+#' 
+#' Monahan, G. E. (1982). A survey of partially observable Markov decision
+#' processes: Theory, models, and algorithms. Management Science 28(1):1-16.
+#' 
+#' Littman, M. L.; Cassandra, A. R.; and Kaelbling, L. P. (1996). Efficient
+#' dynamic-programming updates in partially observable Markov decision
+#' processes. Technical Report CS-95-19, Brown University, Providence, RI.
+#' 
+#' Zhang, N. L., and Liu, W. (1996). Planning in stochastic domains: Problem
+#' characteristics and approximation. Technical Report HKUST-CS96-31,
+#' Department of Computer Science, Hong Kong University of Science and
+#' Technology.
+#' 
+#' Pineau J., Geoffrey J Gordon G.J., Thrun S.B. (2003). Point-based value
+#' iteration: an anytime algorithm for POMDPs. IJCAI'03: Proceedings of the
+#' 18th international joint conference on Artificial Intelligence. Pages
+#' 1025-1030.
+#' @examples
+#' 
+#' ################################################################
+#' # Example 1: Solving the simple infinite-horizon Tiger problem
+#' data("Tiger")
+#' Tiger
+#' 
+#' sol <- solve_POMDP(model = Tiger)
+#' sol
+#' 
+#' # look at the model
+#' sol$model
+#' 
+#' # look at solver output
+#' sol$solver_output
+#' 
+#' # look at the solution
+#' sol$solution
+#' 
+#' # policy (value function (alpha vectors), optimal action and observation dependent transitions)
+#' policy(sol)
+#' 
+#' # plot the policy graph of the infinite-horizon POMDP
+#' plot(sol)
+#' 
+#' # value function
+#' plot_value_function(sol, ylim = c(0,20))
+#' 
+#' # display available solver options which can be passed on to the solver as parameter.
+#' solve_POMDP_parameter()
+#' 
+#' ################################################################
+#' # Example 2: Solve a problem specified as a POMDP file
+#' #            using a grid of size 10
+#' sol <- solve_POMDP("http://www.pomdp.org/examples/cheese.95.POMDP", 
+#'   method = "grid", parameter = list(fg_points = 10))
+#' sol
+#' 
+#' policy(sol)
+#' plot(sol)
+#' 
+#' # Example 3: Solving a finite-horizon POMDP using the incremental 
+#' #            pruning method (without discounting)
+#' sol <- solve_POMDP(model = Tiger, 
+#'   horizon = 3, discount = 1, method = "incprune")
+#' sol
+#' 
+#' # look at the policy tree
+#' policy(sol)
+#' # note: it does not make sense to open the door in epochs 1 or 2 if you only have 3 epochs.
+#' 
+#' reward(sol) # listen twice and then open the door or listen 3 times
+#' reward(sol, belief = c(1,0)) # listen twice (-2) and then open-left (10)
+#' reward(sol, belief = c(1,0), epoch = 3) # just open the right door (10)
+#' reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (95% chance)
+#' 
+#' ################################################################
+#' # Example 4: Using terminal values 
+#' #
+#' # Specify 1000 if the tiger is right after 3 (horizon) epochs
+#' sol <- solve_POMDP(model = Tiger, 
+#'   horizon = 3, discount = 1,  method = "incprune",
+#'   terminal_values = c(0, 1000))
+#' sol
+#' 
+#' policy(sol)
+#' # Note: the optimal strategy is never to open the left door, because we think the 
+#' # tiger is there then we better wait to get 1000 as the terminal value. If we think 
+#' # the Tiger is to the left then open the right door and have a 50/50 chance that the 
+#' # Tiger will go to the right door.
+#' 
+#' ################################################################
+#' # Example 4: Model time-dependent transition probabilities 
+#' 
+#' # The tiger reacts normally for 3 epochs (goes randomly two one
+#' # of the two doors when a door was opened). After 3 epochs he gets 
+#' # scared and when a door is opened then he always goes to the other door.
+#' 
+#' # specify the horizon for each of the two differnt episodes
+#' Tiger_time_dependent <- Tiger
+#' Tiger_time_dependent$model$name <- "Scared Tiger Problem"
+#' Tiger_time_dependent$model$horizon <- c(normal_tiger = 3, scared_tiger = 3)
+#' Tiger_time_dependent$model$transition_prob <- list(
+#'   normal_tiger = list(
+#'     "listen" = "identity", 
+#'     "open-left" = "uniform", 
+#'     "open-right" = "uniform"),
+#'   scared_tiger = list(
+#'     "listen" = "identity", 
+#'     "open-left" = rbind(c(0, 1), c(0, 1)), 
+#'     "open-right" = rbind(c(1, 0), c(1, 0))
+#'   )
+#' )
+#' 
+#' Tiger_time_dependent
+#' 
+#' sol <- solve_POMDP(model = Tiger_time_dependent, discount = 1,  method = "incprune")
+#' sol
+#' 
+#' policy(sol)
+#' 
+#' ################################################################
+#' # Example 5: Alternative method to solve time-dependent POMDPs
+#' 
+#' # 1) create the scared tiger model
+#' Tiger_scared <- Tiger
+#' Tiger_scared$model$transition_prob <- list(
+#'     "listen" = "identity", 
+#'     "open-left" = rbind(c(0, 1), c(0, 1)), 
+#'     "open-right" = rbind(c(1, 0), c(1, 0))
+#'   )
+#' 
+#' # 2) Solve in reverse order. Scared tiger without terminal values first.
+#' sol_scared <- solve_POMDP(model = Tiger_scared, 
+#'   horizon = 3, discount = 1,  method = "incprune")
+#' sol_scared
+#' policy(sol_scared)
+#' 
+#' # 3) Solve the regular tiger with the value function of the scared tiger as terminal values
+#' sol <- solve_POMDP(model = Tiger, 
+#'   horizon = 3, discount = 1, method = "incprune",
+#'   terminal_values = sol_scared$solution$alpha[[1]])
+#' sol
+#' policy(sol)
+#' # note: it is optimal to mostly listen till the Tiger gets in the scared mood. Only if we are 
+#' # extremely sure in the first epoch, then opening a door is optimal.
+#' 
+#' ################################################################
+#' # Example 5: PBVI with a custom grid
+#' custom_grid <- sample_belief_space(Tiger, n = 10, method = "regular")
+#' custom_grid
+#' 
+#' sol <- solve_POMDP(Tiger, method = "grid", parameter = list(grid = custom_grid))
+#' sol
+#' 
+#' # visualize used grid
+#' plot_belief_space(sol, sample = custom_grid)
+#' 
+#' @export
 solve_POMDP <- function(
   model,
   horizon = NULL,
@@ -204,7 +479,6 @@ solve_POMDP <- function(
    
   model
 }
-
 
 
 print.POMDP_solution <- function(x, ...) {

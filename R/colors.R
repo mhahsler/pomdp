@@ -1,4 +1,4 @@
-# library("RColorBrewer")
+# color helper
 
 .get_colors_descrete <- function(n, col = NULL) {
   

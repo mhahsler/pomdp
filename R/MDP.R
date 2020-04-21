@@ -1,6 +1,74 @@
-# Class POMDP is a list with model and solution.
-# Unsolved models have no solution element.
-
+#' Define an MDP Problem
+#' 
+#' Defines all the elements of a MDP problem and formulates them as a POMDP
+#' where all states are observable.
+#' 
+#' The MDP is formulated as a POMDP where all states are completely observable.
+#' This is achieved by defining one observation per state with identity
+#' observation probability matrices.
+#' 
+#' More details on specifying the parameters can be found in the documentation
+#' for \code{\link{POMDP}}.
+#' 
+#' @param states a character vector specifying the names of the states.
+#' @param actions a character vector specifying the names of the available
+#' actions.
+#' @param transition_prob Specifies the transition probabilities between
+#' states.
+#' @param reward Specifies the rewards dependent on action, states and
+#' observations.
+#' @param discount numeric; discount rate between 0 and 1.
+#' @param horizon numeric; Number of epochs. \code{Inf} specifies an infinite
+#' horizon.
+#' @param terminal_values a vector with the terminal values for each state.
+#' @param start Specifies in which state the MDP starts.
+#' @param max logical; is this a maximization problem (maximize reward) or a
+#' minimization (minimize cost specified in \code{reward})?
+#' @param name a string to identify the MDP problem.
+#' @return The function returns an object of class POMDP which is list with an
+#' element called \code{model} containing a list with the model specification.
+#' \code{solve_POMDP} reads the object and adds a list element called
+#' \code{solution}.
+#' @author Michael Hahsler
+#' @seealso \code{\link{POMDP}}, \code{\link{solve_POMDP}}.
+#' @examples
+#' 
+#' ## Michael's Sleepy Tiger Problem is a MDP with perfect observability
+#' 
+#' Tiger_MDP <- MDP(
+#'   name = "Michael's Sleepy Tiger Problem",
+#'   discount = 1,
+#'   
+#'   states = c("tiger-left" , "tiger-right"),
+#'   actions = c("open-left", "open-right", "do-nothing"),
+#'   start = "tiger-left",
+#'   
+#'   transition_prob = list(
+#'     "open-left" =  "uniform", 
+#'     "open-right" = "uniform",
+#'     "do-nothing" = "identity"),
+#' 
+#'   # the rew helper expects: action, start.state, end.state, observation, value
+#'   reward = rbind(
+#'     R_("open-left",  "tiger-left",  v = -100),
+#'     R_("open-left",  "tiger-right", v =   10),
+#'     R_("open-right", "tiger-left",  v =   10),
+#'     R_("open-right", "tiger-right", v = -100),
+#'     R_("do-nothing",                v =    0)
+#'   )
+#' )
+#'   
+#' Tiger_MDP
+#' 
+#' # do 5 epochs with no discounting
+#' s <- solve_POMDP(Tiger_MDP, method = "enum", horizon = 5)
+#' s
+#' 
+#' # value function and policy
+#' plot_value_function(s)
+#' policy(s)
+#' 
+#' @export
 MDP <- function(
   states,
   actions,
@@ -65,7 +133,6 @@ MDP <- function(
       ), class = "POMDP_model")
   ), class = c("MDP", "POMDP"))
 }
-
 
 print.MDP <- function(x, ...) {
   if(is.null(x$solution)) cat("Unsolved MDP model (formulated as a POMDP):", x$model$name, "\n")
