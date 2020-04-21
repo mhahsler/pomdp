@@ -1,14 +1,9 @@
+# Build pomdp-solve
 
 all: pomdp-solve/pomdp-solve 
-#dummylib
-
-# Makevars.win has to create a dll file!
-#dummylib:
-#	touch libpomdp.dll
 
 pomdp-solve/pomdp-solve:
 	(cd pomdp-solve && CXX="$(CXX)" CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS)" AR="$(AR)" RANLIB="$(RANLIB)" $(MAKE))
 
 clean:
-#	rm -f libpomdp.dll
 	$(MAKE) -C pomdp-solve clean
