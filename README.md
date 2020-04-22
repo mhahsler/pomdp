@@ -28,7 +28,7 @@ install.packages("pomdp")
 __Current development version:__ install from GitHub (needs devtools).
 ```R 
 library("devtools")
-install_github("mhahsler/pomdp")
+install_github("farzad/pomdp")
 ```
 
 ## Usage
@@ -85,5 +85,5 @@ Solved POMDP model: Tiger Problem
 ## Acknowledgements
 
 Development of this package was supported in part by 
-National Institute of Standards and TEchnology (NIST) under grant number 
+National Institute of Standards and Technology (NIST) under grant number 
 [60NANB17D180](https://www.nist.gov/ctl/pscr/safe-net-integrated-connected-vehicle-computing-platform).
