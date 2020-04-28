@@ -5,5 +5,7 @@ all: pomdp-solve/pomdp-solve
 pomdp-solve/pomdp-solve:
 	(cd pomdp-solve && CXX="$(CXX)" CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS)" AR="$(AR)" RANLIB="$(RANLIB)" $(MAKE))
 
+.PHONY: clean
+
 clean:
 	$(MAKE) -C pomdp-solve clean
