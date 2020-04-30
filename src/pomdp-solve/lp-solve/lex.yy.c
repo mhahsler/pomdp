@@ -476,10 +476,11 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "lex.l"
 #line 2 "lex.l"
-#include "lp.h"
+//#include "lp.c"
+//#include "y.tab.c"
+#include "y.tab.h"
 #include "lpkit.h"
 #include "lpglob.h"
-#include <string.h>
 
 /* These are defined in the parser lp.y. */
 extern char Last_var[];
@@ -491,9 +492,9 @@ extern int isign;
 extern int make_neg;
 extern int Within_int_decl;
 
-#line 495 "lex.yy.c"
+#line 496 "lex.yy.c"
 
-#line 497 "lex.yy.c"
+#line 498 "lex.yy.c"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -711,9 +712,9 @@ YY_DECL
 		}
 
 	{
-#line 30 "lex.l"
+#line 31 "lex.l"
 
-#line 717 "lex.yy.c"
+#line 718 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -772,62 +773,62 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 31 "lex.l"
+#line 32 "lex.l"
 {
   BEGIN COMMENT;
 } /* begin skip comment */
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 35 "lex.l"
+#line 36 "lex.l"
 {
   BEGIN INITIAL;
 } /* end skip comment */
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 39 "lex.l"
+#line 40 "lex.l"
 {
 }
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 42 "lex.l"
+#line 43 "lex.l"
 {
 }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 45 "lex.l"
+#line 46 "lex.l"
 {
 }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 48 "lex.l"
+#line 49 "lex.l"
 {
   return(COMMA);
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 52 "lex.l"
+#line 53 "lex.l"
 {
   return(MINIMISE);
 }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 56 "lex.l"
+#line 57 "lex.l"
 {
   return(MAXIMISE);
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 60 "lex.l"
+#line 61 "lex.l"
 {
   f = atof((char *)yytext);
   return(CONS);
@@ -836,7 +837,7 @@ YY_RULE_SETUP
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 65 "lex.l"
+#line 66 "lex.l"
 {
   Sign = 0;
   for(x = 0; x < yyleng; x++)
@@ -850,7 +851,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 76 "lex.l"
+#line 77 "lex.l"
 {
   Within_int_decl = TRUE;
   return(VAR);
@@ -858,7 +859,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 81 "lex.l"
+#line 82 "lex.l"
 {
   strcpy(Last_var, (char *)yytext);
   return(VAR);
@@ -866,28 +867,28 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 86 "lex.l"
+#line 87 "lex.l"
 {
   return (COLON);
 }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 90 "lex.l"
+#line 91 "lex.l"
 {
   return(AR_M_OP);
 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 94 "lex.l"
+#line 95 "lex.l"
 {
   return(RE_OP);
 }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 98 "lex.l"
+#line 99 "lex.l"
 {
   Within_int_decl = FALSE;
   return(END_C);
@@ -895,17 +896,17 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 103 "lex.l"
+#line 104 "lex.l"
 {
   fprintf(stderr,"LEX ERROR : %s lineno %d \n" ,yytext,yylineno);
 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 107 "lex.l"
+#line 108 "lex.l"
 ECHO;
 	YY_BREAK
-#line 909 "lex.yy.c"
+#line 910 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
 	yyterminate();
@@ -1911,6 +1912,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 107 "lex.l"
+#line 108 "lex.l"
 
 

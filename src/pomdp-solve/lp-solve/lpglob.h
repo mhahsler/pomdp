@@ -29,6 +29,10 @@ extern short      *relat;
 extern int        Verbose;
 extern int        yylineno;
 extern int        yyleng;
+
+// MFH
+extern int yylex (void);
+
 extern int        Lin_term_count;
 extern int        Sign;
 extern constraint_name *First_constraint_name;

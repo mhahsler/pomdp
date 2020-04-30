@@ -49,72 +49,33 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    INTTOK = 1,
-    FLOATTOK = 2,
-    COLONTOK = 3,
-    MINUSTOK = 4,
-    PLUSTOK = 5,
-    STRINGTOK = 6,
-    ASTERICKTOK = 7,
-    DISCOUNTTOK = 8,
-    VALUESTOK = 9,
-    STATETOK = 10,
-    ACTIONTOK = 11,
-    OBSTOK = 12,
-    TTOK = 13,
-    OTOK = 14,
-    RTOK = 15,
-    UNIFORMTOK = 16,
-    IDENTITYTOK = 17,
-    REWARDTOK = 18,
-    COSTTOK = 19,
-    RESETTOK = 20,
-    STARTTOK = 21,
-    INCLUDETOK = 22,
-    EXCLUDETOK = 23,
-    EOFTOK = 258
+    VAR = 258,
+    CONS = 259,
+    SIGN = 260,
+    AR_M_OP = 261,
+    RE_OP = 262,
+    END_C = 263,
+    COMMA = 264,
+    COLON = 265,
+    MINIMISE = 266,
+    MAXIMISE = 267
   };
 #endif
 /* Tokens.  */
-#define INTTOK 1
-#define FLOATTOK 2
-#define COLONTOK 3
-#define MINUSTOK 4
-#define PLUSTOK 5
-#define STRINGTOK 6
-#define ASTERICKTOK 7
-#define DISCOUNTTOK 8
-#define VALUESTOK 9
-#define STATETOK 10
-#define ACTIONTOK 11
-#define OBSTOK 12
-#define TTOK 13
-#define OTOK 14
-#define RTOK 15
-#define UNIFORMTOK 16
-#define IDENTITYTOK 17
-#define REWARDTOK 18
-#define COSTTOK 19
-#define RESETTOK 20
-#define STARTTOK 21
-#define INCLUDETOK 22
-#define EXCLUDETOK 23
-#define EOFTOK 258
+#define VAR 258
+#define CONS 259
+#define SIGN 260
+#define AR_M_OP 261
+#define RE_OP 262
+#define END_C 263
+#define COMMA 264
+#define COLON 265
+#define MINIMISE 266
+#define MAXIMISE 267
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-union YYSTYPE
-{
-#line 131 "parser.y"
-
-  Constant_Block *constBlk;
-  int i_num;
-  double f_num;
-
-#line 115 "y.tab.h"
-
-};
-typedef union YYSTYPE YYSTYPE;
+typedef int YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

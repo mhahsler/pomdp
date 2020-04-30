@@ -6,6 +6,8 @@ default: $(LIB)
 $(LIB): $(OBJ)
 	$(AR) -rcs $(LIB) $(OBJ)
 
+.PHONY: clean
+
 clean:
 	@-rm -rf .libs _libs $(LIB)
 	@-rm -f *.o

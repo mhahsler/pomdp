@@ -35,6 +35,8 @@
 #include "imm-reward.h"
 #include "sparse-matrix.h"
 #include "parser.h"
+extern int readMDPFile( FILE *file );
+
 
 #define MDP_C
 
@@ -76,9 +78,9 @@ int gNumObservations = 0;   /* remains zero for MDPs */
 
 /* Intermediate variables */
 
-I_Matrix *IP; /* Transition Probabilities */
+// I_Matrix *IP; /* Transition Probabilities */
 
-I_Matrix *IR; /* Observation Probabilities (POMDP only) */
+// I_Matrix *IR; /* Observation Probabilities (POMDP only) */
 
 I_Matrix IQ;  /* Immediate action-state pair values (both MDP and POMDP) */
 
