@@ -21,7 +21,7 @@ plot_value_function(
 
 \item{projection}{index or name of two states for the projection.}
 
-\item{epoch}{the value function of what epoch should be plotted? Ignorred
+\item{epoch}{the value function of what epoch should be plotted? Ignored
 for infinite-horizon solutions.}
 
 \item{ylim}{the y limits of the plot.}

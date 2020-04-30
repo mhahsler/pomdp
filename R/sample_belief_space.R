@@ -4,7 +4,7 @@
 #' belief space.
 #' 
 #' Method random samples uniformly sample from the projected belief space using
-#' the method described by Luc Deroye. Method regular samples points using a
+#' the method described by Luc Devroye. Method regular samples points using a
 #' regularly spaced grid. This method is only available for projections on 2 or
 #' 3 states.  Method vertices only samples from the vertices of the belief
 #' space.

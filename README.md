@@ -82,7 +82,7 @@ Solved POMDP model: Tiger Problem
 * Zhang, N. L., and Liu, W. (1996). Planning in stochastic domains: Problem characteristics and approximation. Technical Report HKUST-CS96-31, Department of Computer Science, Hong Kong University of Science and Technology.
 * Pineau J., Geoffrey J Gordon G.J., Thrun S.B. (2003). Point-based value iteration: an anytime algorithm for POMDPs. IJCAI'03: Proceedings of the 18th international joint conference on Artificial Intelligence. Pages 1025-1030.
 
-## Acknowledgements
+## Acknowledgments
 
 Development of this package was supported in part by 
 National Institute of Standards and Technology (NIST) under grant number 

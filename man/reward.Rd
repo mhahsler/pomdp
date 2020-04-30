@@ -22,7 +22,7 @@ in \code{belief}.} \item{pg_node}{the policy node that represents the belief
 state.} \item{action}{the optimal action.}
 }
 \description{
-This function calculates the expexted total reward for a POMDP solution
+This function calculates the expected total reward for a POMDP solution
 given a starting belief state.
 }
 \details{

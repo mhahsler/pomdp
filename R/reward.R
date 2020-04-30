@@ -1,6 +1,6 @@
 #' Calculate the Reward for a POMDP Solution
 #' 
-#' This function calculates the expexted total reward for a POMDP solution
+#' This function calculates the expected total reward for a POMDP solution
 #' given a starting belief state.
 #' 
 #' The value is calculated using the value function stored in the POMDP

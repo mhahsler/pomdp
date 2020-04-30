@@ -3,7 +3,7 @@
 #' The function plots the POMDP policy graph in a POMDP. It
 #' uses \code{plot} in \pkg{igraph} with appropriate plotting options.
 #' 
-#' The function currenly only plots converged policy graphs.
+#' The function currently only plots converged policy graphs.
 #' 
 #' The policy graph nodes represent segments in the value function. Each
 #' segment represents one or more believe states. The pie chart in each node

@@ -18,7 +18,7 @@
 #' Rounds a vector such that the sum of 1 is preserved. Rounds a matrix such
 #' that the rows still sum up to 1.
 #' 
-#' Rounds and adjusts one entry such that the rounding error is the smalles.
+#' Rounds and adjusts one entry such that the rounding error is the smallest.
 #' 
 #' @param x a stochastic vector or a row-stochastic matrix.
 #' @param digits number of digits for rounding.

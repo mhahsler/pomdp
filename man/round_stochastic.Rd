@@ -19,7 +19,7 @@ Rounds a vector such that the sum of 1 is preserved. Rounds a matrix such
 that the rows still sum up to 1.
 }
 \details{
-Rounds and adjusts one entry such that the rounding error is the smalles.
+Rounds and adjusts one entry such that the rounding error is the smallest.
 }
 \examples{
 

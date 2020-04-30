@@ -102,7 +102,7 @@ using points that are reachable from the initial belief (\code{start}) by
 following all combinations of actions and observations. The size of the grid
 can be set via \code{parameter = list(fg_points = 100)}. Alternatively,
 different strategies can be chosen using the parameter \code{fg_type}. In
-this implementation, the user can also specify manualy a grid of belief
+this implementation, the user can also specify manually a grid of belief
 states by providing a matrix with belief states as produced by
 \code{sample_belief_space} as the parameter \code{grid}.
 

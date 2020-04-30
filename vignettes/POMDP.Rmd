@@ -39,7 +39,7 @@ an interface to ['pomdp-solve'](http://www.pomdp.org/code/), a solver (written i
 
 In this document we will give a very brief introduction to the concept of POMDP, describe the features of the R package, and illustrate the usage with a toy example. 
 
-# Partially Observable markov Decision Processes
+# Partially Observable Markov Decision Processes
 
 A partially observable Markov decision process (POMDP) is a combination of an MDP 
 to model system dynamics with a hidden Markov model that connects unobservant system states to observations. The agent can perform actions which affect the system (i.e., may cause the system state to change) with the goal to maximize a reward that depends on the sequence of system state and the agent's actions. However, the agent
@@ -355,7 +355,7 @@ The solution contains the following elements:
 
 * **`belief_states`:** A data frame of all the belief states (rows) used while solving the problem. There is a column at the end that indicates which node in the policy graph is associated with the belief state. That is which segment in the value function (specified in **alpha** below) provides the best value for the given belief state. 
 
-* **`pg`:** A data frame containing the optimal policy graph. Rows are nodes in the graph are segements in the value function and each represents 
+* **`pg`:** A data frame containing the optimal policy graph. Rows are nodes in the graph are segments in the value function and each represents 
 one or more belief states.
 Column two indicates the optimal action for the node. Columns three and after represent the transitions to new nodes in the policy graph depending on the next observation.
 
@@ -372,7 +372,7 @@ plot_policy_graph(sol)
 
 The policy graph can be easily interpreted. Without prior information, the agent starts at the node marked with "initial." In this case the agent beliefs that there
 is a 50-50 chance that the tiger is behind ether door. The optimal action is displayed inside the state and in this case is to listen. The observations are labels on the arcs. Let us assume that the observation is "tiger-left", then the agent follows the appropriate arc and ends in a node representing a belief (one ore more belief states) that has a very high probability of the tiger being left. However, the optimal action is still to listen. If the agent again hears the tiger on the left then it ends up in a note that has
-a close to 100% belief that the tiger is to the ledt and 
+a close to 100% belief that the tiger is to the left and 
 `open-right` is the optimal action. 
 The are arcs back from the nodes with the open actions to the initial state reset the problem.
 
