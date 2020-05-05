@@ -63,7 +63,15 @@
 #define YYPULL 1
 
 
+/* Substitute the variable and function names.  */
+#define yyparse         yymdpparse
+#define yylex           yymdplex
+#define yyerror         yymdperror
+#define yydebug         yymdpdebug
+#define yynerrs         yymdpnerrs
 
+#define yylval          yymdplval
+#define yychar          yymdpchar
 
 /* First part of user prologue.  */
 #line 1 "parser.y"
@@ -187,7 +195,7 @@ int observationSpecDefined = 0;
 int gTooManyEntries = 0;
 
 
-#line 191 "y.tab.c"
+#line 199 "y.tab.c"
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
@@ -211,14 +219,14 @@ int gTooManyEntries = 0;
 
 /* Use api.header.include to #include this header
    instead of duplicating it here.  */
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
+#ifndef YY_YYMDP_Y_TAB_H_INCLUDED
+# define YY_YYMDP_Y_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
 #endif
 #if YYDEBUG
-extern int yydebug;
+extern int yymdpdebug;
 #endif
 
 /* Token type.  */
@@ -288,7 +296,7 @@ union YYSTYPE
   int i_num;
   double f_num;
 
-#line 292 "y.tab.c"
+#line 300 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -297,11 +305,11 @@ typedef union YYSTYPE YYSTYPE;
 #endif
 
 
-extern YYSTYPE yylval;
+extern YYSTYPE yymdplval;
 
-int yyparse (void);
+int yymdpparse (void);
 
-#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
+#endif /* !YY_YYMDP_Y_TAB_H_INCLUDED  */
 
 
 
@@ -1502,7 +1510,7 @@ yyreduce:
 
 		    allocateIntermediateMDP();  
 		  }
-#line 1506 "y.tab.c"
+#line 1514 "y.tab.c"
     break;
 
   case 3:
@@ -1521,7 +1529,7 @@ yyreduce:
 
 		    endStartStates(); 
 		  }
-#line 1525 "y.tab.c"
+#line 1533 "y.tab.c"
     break;
 
   case 4:
@@ -1541,7 +1549,7 @@ yyreduce:
                      checkProbs();
 		     YACCtrace("pomdp_file -> preamble params\n");
                   }
-#line 1545 "y.tab.c"
+#line 1553 "y.tab.c"
     break;
 
   case 5:
@@ -1549,7 +1557,7 @@ yyreduce:
     {
 		   YACCtrace("preamble -> preamble param_type\n");
 		}
-#line 1553 "y.tab.c"
+#line 1561 "y.tab.c"
     break;
 
   case 12:
@@ -1566,7 +1574,7 @@ yyreduce:
                    discountDefined = 1;
 		   YACCtrace("discount_param -> DISCOUNTTOK COLONTOK number\n");
 	        }
-#line 1570 "y.tab.c"
+#line 1578 "y.tab.c"
     break;
 
   case 13:
@@ -1575,7 +1583,7 @@ yyreduce:
                    valuesDefined = 1;
 		   YACCtrace("value_param -> VALUESTOK COLONTOK value_tail\n");
 	        }
-#line 1579 "y.tab.c"
+#line 1587 "y.tab.c"
     break;
 
   case 14:
@@ -1583,7 +1591,7 @@ yyreduce:
     {
                    gValueType = REWARD_value_type;
 		}
-#line 1587 "y.tab.c"
+#line 1595 "y.tab.c"
     break;
 
   case 15:
@@ -1591,7 +1599,7 @@ yyreduce:
     {
                    gValueType = COST_value_type;
 		}
-#line 1595 "y.tab.c"
+#line 1603 "y.tab.c"
     break;
 
   case 16:
@@ -1607,7 +1615,7 @@ yyreduce:
 		  curMnemonic = nt_state; 
 
 		}
-#line 1611 "y.tab.c"
+#line 1619 "y.tab.c"
     break;
 
   case 17:
@@ -1617,7 +1625,7 @@ yyreduce:
                    curMnemonic = nt_unknown;
 		   YACCtrace("state_param -> STATETOK COLONTOK state_tail\n");
 		}
-#line 1621 "y.tab.c"
+#line 1629 "y.tab.c"
     break;
 
   case 18:
@@ -1640,7 +1648,7 @@ yyreduce:
 
                    XFREE( (yyvsp[0].constBlk) );
 		}
-#line 1644 "y.tab.c"
+#line 1652 "y.tab.c"
     break;
 
   case 20:
@@ -1650,7 +1658,7 @@ yyreduce:
 
 		  curMnemonic = nt_action;  
 		}
-#line 1654 "y.tab.c"
+#line 1662 "y.tab.c"
     break;
 
   case 21:
@@ -1660,7 +1668,7 @@ yyreduce:
                    curMnemonic = nt_unknown;
 		   YACCtrace("action_param -> ACTIONTOK COLONTOK action_tail\n");
 		}
-#line 1664 "y.tab.c"
+#line 1672 "y.tab.c"
     break;
 
   case 22:
@@ -1683,7 +1691,7 @@ yyreduce:
 
                    XFREE( (yyvsp[0].constBlk) );
 		}
-#line 1687 "y.tab.c"
+#line 1695 "y.tab.c"
     break;
 
   case 24:
@@ -1693,7 +1701,7 @@ yyreduce:
 
 		  curMnemonic = nt_observation; 
 		}
-#line 1697 "y.tab.c"
+#line 1705 "y.tab.c"
     break;
 
   case 25:
@@ -1703,7 +1711,7 @@ yyreduce:
                    curMnemonic = nt_unknown;
 		   YACCtrace("obs_param -> OBSTOK COLONTOK obs_param_tail\n");
 		}
-#line 1707 "y.tab.c"
+#line 1715 "y.tab.c"
     break;
 
   case 26:
@@ -1726,7 +1734,7 @@ yyreduce:
 
                    XFREE( (yyvsp[0].constBlk) );
 		}
-#line 1730 "y.tab.c"
+#line 1738 "y.tab.c"
     break;
 
   case 28:
@@ -1745,7 +1753,7 @@ yyreduce:
 		  else
 		    setMatrixContext(mc_mdp_start, 0, 0, 0, 0); 
 		}
-#line 1749 "y.tab.c"
+#line 1757 "y.tab.c"
     break;
 
   case 30:
@@ -1768,7 +1776,7 @@ yyreduce:
 		   XFREE( (yyvsp[0].constBlk)->theValue.theString );
 		   XFREE( (yyvsp[0].constBlk) );
                 }
-#line 1772 "y.tab.c"
+#line 1780 "y.tab.c"
     break;
 
   case 31:
@@ -1776,7 +1784,7 @@ yyreduce:
     { 
 		  setMatrixContext(mc_start_include, 0, 0, 0, 0); 
 		}
-#line 1780 "y.tab.c"
+#line 1788 "y.tab.c"
     break;
 
   case 33:
@@ -1784,7 +1792,7 @@ yyreduce:
     { 
 		  setMatrixContext(mc_start_exclude, 0, 0, 0, 0); 
 		}
-#line 1788 "y.tab.c"
+#line 1796 "y.tab.c"
     break;
 
   case 35:
@@ -1792,7 +1800,7 @@ yyreduce:
     { 
 		  setStartStateUniform(); 
 		}
-#line 1796 "y.tab.c"
+#line 1804 "y.tab.c"
     break;
 
   case 36:
@@ -1800,7 +1808,7 @@ yyreduce:
     {
 		  enterStartState( (yyvsp[0].i_num) );
                 }
-#line 1804 "y.tab.c"
+#line 1812 "y.tab.c"
     break;
 
   case 37:
@@ -1808,7 +1816,7 @@ yyreduce:
     {
 		  enterStartState( (yyvsp[0].i_num) );
                 }
-#line 1812 "y.tab.c"
+#line 1820 "y.tab.c"
     break;
 
   case 41:
@@ -1838,7 +1846,7 @@ yyreduce:
 
 		      observationSpecDefined = 1;
 		  }
-#line 1842 "y.tab.c"
+#line 1850 "y.tab.c"
     break;
 
   case 43:
@@ -1846,13 +1854,13 @@ yyreduce:
     {
 		   YACCtrace("trans_prob_spec -> TTOK COLONTOK trans_spec_tail\n");
 		}
-#line 1850 "y.tab.c"
+#line 1858 "y.tab.c"
     break;
 
   case 44:
 #line 480 "parser.y"
     { setMatrixContext(mc_trans_single, (yyvsp[-4].i_num), (yyvsp[-2].i_num), (yyvsp[0].i_num), 0); }
-#line 1856 "y.tab.c"
+#line 1864 "y.tab.c"
     break;
 
   case 45:
@@ -1861,13 +1869,13 @@ yyreduce:
                    enterMatrix( (yyvsp[0].f_num) );
 		   YACCtrace("trans_spec_tail -> action COLONTOK state COLONTOK state prob \n");
 		}
-#line 1865 "y.tab.c"
+#line 1873 "y.tab.c"
     break;
 
   case 46:
 #line 486 "parser.y"
     { setMatrixContext(mc_trans_row, (yyvsp[-2].i_num), (yyvsp[0].i_num), 0, 0); }
-#line 1871 "y.tab.c"
+#line 1879 "y.tab.c"
     break;
 
   case 47:
@@ -1875,13 +1883,13 @@ yyreduce:
     {
 		   YACCtrace("trans_spec_tail -> action COLONTOK state ui_matrix \n");
 		}
-#line 1879 "y.tab.c"
+#line 1887 "y.tab.c"
     break;
 
   case 48:
 #line 490 "parser.y"
     { setMatrixContext(mc_trans_all, (yyvsp[0].i_num), 0, 0, 0); }
-#line 1885 "y.tab.c"
+#line 1893 "y.tab.c"
     break;
 
   case 49:
@@ -1889,7 +1897,7 @@ yyreduce:
     {
 		   YACCtrace("trans_spec_tail -> action ui_matrix\n");
 		}
-#line 1893 "y.tab.c"
+#line 1901 "y.tab.c"
     break;
 
   case 50:
@@ -1897,13 +1905,13 @@ yyreduce:
     {
 		   YACCtrace("obs_prob_spec -> OTOK COLONTOK  obs_spec_tail\n");
 		}
-#line 1901 "y.tab.c"
+#line 1909 "y.tab.c"
     break;
 
   case 51:
 #line 501 "parser.y"
     { setMatrixContext(mc_obs_single, (yyvsp[-4].i_num), 0, (yyvsp[-2].i_num), (yyvsp[0].i_num)); }
-#line 1907 "y.tab.c"
+#line 1915 "y.tab.c"
     break;
 
   case 52:
@@ -1912,13 +1920,13 @@ yyreduce:
                    enterMatrix( (yyvsp[0].f_num) );
 		   YACCtrace("obs_spec_tail -> action COLONTOK state COLONTOK obs prob \n");
 		}
-#line 1916 "y.tab.c"
+#line 1924 "y.tab.c"
     break;
 
   case 53:
 #line 507 "parser.y"
     { setMatrixContext(mc_obs_row, (yyvsp[-2].i_num), 0, (yyvsp[0].i_num), 0); }
-#line 1922 "y.tab.c"
+#line 1930 "y.tab.c"
     break;
 
   case 54:
@@ -1926,13 +1934,13 @@ yyreduce:
     {
 		   YACCtrace("obs_spec_tail -> action COLONTOK state COLONTOK u_matrix\n");
 		}
-#line 1930 "y.tab.c"
+#line 1938 "y.tab.c"
     break;
 
   case 55:
 #line 511 "parser.y"
     { setMatrixContext(mc_obs_all, (yyvsp[0].i_num), 0, 0, 0); }
-#line 1936 "y.tab.c"
+#line 1944 "y.tab.c"
     break;
 
   case 56:
@@ -1940,7 +1948,7 @@ yyreduce:
     {
 		   YACCtrace("obs_spec_tail -> action u_matrix\n");
 		}
-#line 1944 "y.tab.c"
+#line 1952 "y.tab.c"
     break;
 
   case 57:
@@ -1948,13 +1956,13 @@ yyreduce:
     {
 		   YACCtrace("reward_spec -> RTOK COLONTOK  reward_spec_tail\n");
 		}
-#line 1952 "y.tab.c"
+#line 1960 "y.tab.c"
     break;
 
   case 58:
 #line 524 "parser.y"
     { setMatrixContext(mc_reward_single, (yyvsp[-6].i_num), (yyvsp[-4].i_num), (yyvsp[-2].i_num), (yyvsp[0].i_num)); }
-#line 1958 "y.tab.c"
+#line 1966 "y.tab.c"
     break;
 
   case 59:
@@ -1966,13 +1974,13 @@ yyreduce:
 		   checkMatrix();  
 		   YACCtrace("reward_spec_tail -> action COLONTOK state COLONTOK state COLONTOK obs number\n");
 		}
-#line 1970 "y.tab.c"
+#line 1978 "y.tab.c"
     break;
 
   case 60:
 #line 533 "parser.y"
     { setMatrixContext(mc_reward_row, (yyvsp[-4].i_num), (yyvsp[-2].i_num), (yyvsp[0].i_num), 0); }
-#line 1976 "y.tab.c"
+#line 1984 "y.tab.c"
     break;
 
   case 61:
@@ -1981,13 +1989,13 @@ yyreduce:
                    checkMatrix();
 		   YACCtrace("reward_spec_tail -> action COLONTOK state COLONTOK state num_matrix\n");
 		 }
-#line 1985 "y.tab.c"
+#line 1993 "y.tab.c"
     break;
 
   case 62:
 #line 539 "parser.y"
     { setMatrixContext(mc_reward_all, (yyvsp[-2].i_num), (yyvsp[0].i_num), 0, 0); }
-#line 1991 "y.tab.c"
+#line 1999 "y.tab.c"
     break;
 
   case 63:
@@ -1996,13 +2004,13 @@ yyreduce:
                    checkMatrix();
 		   YACCtrace("reward_spec_tail -> action COLONTOK state num_matrix\n");
 		}
-#line 2000 "y.tab.c"
+#line 2008 "y.tab.c"
     break;
 
   case 64:
 #line 546 "parser.y"
     { setMatrixContext(mc_reward_mdp_only, (yyvsp[0].i_num), 0, 0, 0); }
-#line 2006 "y.tab.c"
+#line 2014 "y.tab.c"
     break;
 
   case 65:
@@ -2011,7 +2019,7 @@ yyreduce:
                    checkMatrix();
 		   YACCtrace("reward_spec_tail -> action num_matrix\n");
                 }
-#line 2015 "y.tab.c"
+#line 2023 "y.tab.c"
     break;
 
   case 66:
@@ -2019,7 +2027,7 @@ yyreduce:
     {
                    enterUniformMatrix();
                 }
-#line 2023 "y.tab.c"
+#line 2031 "y.tab.c"
     break;
 
   case 67:
@@ -2027,7 +2035,7 @@ yyreduce:
     {
                    enterIdentityMatrix();
                 }
-#line 2031 "y.tab.c"
+#line 2039 "y.tab.c"
     break;
 
   case 68:
@@ -2035,7 +2043,7 @@ yyreduce:
     {
                    checkMatrix();
                 }
-#line 2039 "y.tab.c"
+#line 2047 "y.tab.c"
     break;
 
   case 69:
@@ -2043,7 +2051,7 @@ yyreduce:
     {
                    enterUniformMatrix();
                 }
-#line 2047 "y.tab.c"
+#line 2055 "y.tab.c"
     break;
 
   case 70:
@@ -2051,7 +2059,7 @@ yyreduce:
     {
 		  enterResetMatrix();
 		}
-#line 2055 "y.tab.c"
+#line 2063 "y.tab.c"
     break;
 
   case 71:
@@ -2059,7 +2067,7 @@ yyreduce:
     {
                    checkMatrix();
                 }
-#line 2063 "y.tab.c"
+#line 2071 "y.tab.c"
     break;
 
   case 72:
@@ -2067,7 +2075,7 @@ yyreduce:
     {
                    enterMatrix( (yyvsp[0].f_num) );
                 }
-#line 2071 "y.tab.c"
+#line 2079 "y.tab.c"
     break;
 
   case 73:
@@ -2075,7 +2083,7 @@ yyreduce:
     {
                    enterMatrix( (yyvsp[0].f_num) );
                 }
-#line 2079 "y.tab.c"
+#line 2087 "y.tab.c"
     break;
 
   case 74:
@@ -2083,7 +2091,7 @@ yyreduce:
     {
                    enterMatrix( (yyvsp[0].f_num) );
                 }
-#line 2087 "y.tab.c"
+#line 2095 "y.tab.c"
     break;
 
   case 75:
@@ -2091,7 +2099,7 @@ yyreduce:
     {
                    enterMatrix( (yyvsp[0].f_num) );
                 }
-#line 2095 "y.tab.c"
+#line 2103 "y.tab.c"
     break;
 
   case 76:
@@ -2107,7 +2115,7 @@ yyreduce:
                       (yyval.i_num) = (yyvsp[0].constBlk)->theValue.theInt;
                    XFREE( (yyvsp[0].constBlk) );
                 }
-#line 2111 "y.tab.c"
+#line 2119 "y.tab.c"
     break;
 
   case 77:
@@ -2126,7 +2134,7 @@ yyreduce:
                    XFREE( (yyvsp[0].constBlk)->theValue.theString );
                    XFREE( (yyvsp[0].constBlk) );
                 }
-#line 2130 "y.tab.c"
+#line 2138 "y.tab.c"
     break;
 
   case 78:
@@ -2134,7 +2142,7 @@ yyreduce:
     {
                    (yyval.i_num) = WILDCARD_SPEC;
                 }
-#line 2138 "y.tab.c"
+#line 2146 "y.tab.c"
     break;
 
   case 79:
@@ -2151,7 +2159,7 @@ yyreduce:
                       (yyval.i_num) = (yyvsp[0].constBlk)->theValue.theInt;
                    XFREE( (yyvsp[0].constBlk) );
                 }
-#line 2155 "y.tab.c"
+#line 2163 "y.tab.c"
     break;
 
   case 80:
@@ -2170,7 +2178,7 @@ yyreduce:
                    XFREE( (yyvsp[0].constBlk)->theValue.theString );
                    XFREE( (yyvsp[0].constBlk) );
                 }
-#line 2174 "y.tab.c"
+#line 2182 "y.tab.c"
     break;
 
   case 81:
@@ -2178,7 +2186,7 @@ yyreduce:
     {
                    (yyval.i_num) = WILDCARD_SPEC;
                 }
-#line 2182 "y.tab.c"
+#line 2190 "y.tab.c"
     break;
 
   case 82:
@@ -2194,7 +2202,7 @@ yyreduce:
                       (yyval.i_num) = (yyvsp[0].constBlk)->theValue.theInt;
                    XFREE( (yyvsp[0].constBlk) );
                 }
-#line 2198 "y.tab.c"
+#line 2206 "y.tab.c"
     break;
 
   case 83:
@@ -2213,7 +2221,7 @@ yyreduce:
                    XFREE( (yyvsp[0].constBlk)->theValue.theString );
                    XFREE( (yyvsp[0].constBlk) );
                }
-#line 2217 "y.tab.c"
+#line 2225 "y.tab.c"
     break;
 
   case 84:
@@ -2221,7 +2229,7 @@ yyreduce:
     {
                    (yyval.i_num) = WILDCARD_SPEC;
                 }
-#line 2225 "y.tab.c"
+#line 2233 "y.tab.c"
     break;
 
   case 85:
@@ -2229,7 +2237,7 @@ yyreduce:
     {
                    enterString( (yyvsp[0].constBlk) );
                 }
-#line 2233 "y.tab.c"
+#line 2241 "y.tab.c"
     break;
 
   case 86:
@@ -2237,7 +2245,7 @@ yyreduce:
     {
                    enterString( (yyvsp[0].constBlk) );
                 }
-#line 2241 "y.tab.c"
+#line 2249 "y.tab.c"
     break;
 
   case 87:
@@ -2250,7 +2258,7 @@ yyreduce:
 				BAD_PROB_VAL, "");
 		  XFREE( (yyvsp[0].constBlk) );
 		}
-#line 2254 "y.tab.c"
+#line 2262 "y.tab.c"
     break;
 
   case 88:
@@ -2266,7 +2274,7 @@ yyreduce:
 					 BAD_PROB_VAL, "" );
 		  XFREE( (yyvsp[0].constBlk) );
 		}
-#line 2270 "y.tab.c"
+#line 2278 "y.tab.c"
     break;
 
   case 89:
@@ -2278,7 +2286,7 @@ yyreduce:
                       (yyval.f_num) = (yyvsp[0].constBlk)->theValue.theInt;
                    XFREE( (yyvsp[0].constBlk) );
                 }
-#line 2282 "y.tab.c"
+#line 2290 "y.tab.c"
     break;
 
   case 90:
@@ -2290,7 +2298,7 @@ yyreduce:
                       (yyval.f_num) = (yyvsp[0].constBlk)->theValue.theFloat;
                    XFREE( (yyvsp[0].constBlk) );
                 }
-#line 2294 "y.tab.c"
+#line 2302 "y.tab.c"
     break;
 
   case 91:
@@ -2298,7 +2306,7 @@ yyreduce:
     {
                    (yyval.i_num) = 0;
                 }
-#line 2302 "y.tab.c"
+#line 2310 "y.tab.c"
     break;
 
   case 92:
@@ -2306,7 +2314,7 @@ yyreduce:
     {
                    (yyval.i_num) = 1;
                 }
-#line 2310 "y.tab.c"
+#line 2318 "y.tab.c"
     break;
 
   case 93:
@@ -2314,11 +2322,11 @@ yyreduce:
     {
                    (yyval.i_num) = 0;
                 }
-#line 2318 "y.tab.c"
+#line 2326 "y.tab.c"
     break;
 
 
-#line 2322 "y.tab.c"
+#line 2330 "y.tab.c"
 
       default: break;
     }
@@ -3349,13 +3357,13 @@ initParser() {
 int 
 readMDPFile( FILE *file ) {
    int returnValue, dump_status;
-   extern FILE *yyin;
+   extern FILE *yymdpin;
 
    initParser();
 
    ERR_initialize();
    H_create();
-   yyin = file;
+   yymdpin = file;
 
    returnValue = yyparse();
 
@@ -3386,10 +3394,12 @@ readMDPFile( FILE *file ) {
 
    return( 1 );
 }  /* readPomdpFile */
+
 /************************************************************************/
-int 
-yywrap()
+int
+yymdpwrap()
 {
    return 1;
 }
 /************************************************************************/
+

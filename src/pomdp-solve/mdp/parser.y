@@ -1553,13 +1553,13 @@ initParser() {
 int 
 readMDPFile( FILE *file ) {
    int returnValue, dump_status;
-   extern FILE *yyin;
+   extern FILE *yymdpin;
 
    initParser();
 
    ERR_initialize();
    H_create();
-   yyin = file;
+   yymdpin = file;
 
    returnValue = yyparse();
 
@@ -1590,10 +1590,12 @@ readMDPFile( FILE *file ) {
 
    return( 1 );
 }  /* readPomdpFile */
+
 /************************************************************************/
-int 
-yywrap()
+int
+yymdpwrap()
 {
    return 1;
 }
 /************************************************************************/
+

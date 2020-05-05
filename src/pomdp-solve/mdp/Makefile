@@ -6,12 +6,12 @@ default: $(LIB)
 # don't check sources so Windows does not try to rebuild
 #scanner.c: scanner.l
 scanner.c:
-	lex scanner.l
-	mv lex.yy.c scanner.c
+	lex -P yymdp scanner.l
+	mv lex.yymdp.c scanner.c
 
 #parser.c parser.h: parser.y
 parser.c parser.h:
-	yacc -d parser.y
+	yacc -p yymdp -d parser.y
 	mv y.tab.c parser.c
 	mv y.tab.h parser.h
 

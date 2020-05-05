@@ -98,9 +98,9 @@ Constant_Block *aConst;
 
    aConst = (Constant_Block *) XMALLOC(sizeof(Constant_Block));
    aConst->theTag = CONST_INT;
-   aConst->theValue.theInt = atoi(yytext);
+   aConst->theValue.theInt = atoi(yymdptext);
 
-   yylval.constBlk = aConst;
+   yymdplval.constBlk = aConst;
 }
 /**********************************************************************/
 void 
@@ -110,9 +110,9 @@ Constant_Block *aConst;
 
    aConst = (Constant_Block *) XMALLOC(sizeof(Constant_Block));
    aConst->theTag = CONST_FLOAT;
-   aConst->theValue.theFloat = atof(yytext);
+   aConst->theValue.theFloat = atof(yymdptext);
 
-   yylval.constBlk = aConst;
+   yymdplval.constBlk = aConst;
 }
 /**********************************************************************/
 void 
@@ -125,10 +125,10 @@ yylval.
    char *tempString;
    int i;
 
-   tempString = (char *) XCALLOC(strlen(yytext)+1, sizeof(char));
+   tempString = (char *) XCALLOC(strlen(yymdptext)+1, sizeof(char));
 
-   for (i = 0; i < yyleng; i++)
-	    tempString[i] = yytext[i];
+   for (i = 0; i < yymdpleng; i++)
+	    tempString[i] = yymdptext[i];
 
    tempString[i] = '\0';   /* add null terminator */
 
@@ -136,7 +136,7 @@ yylval.
    aConst->theTag = CONST_STRING;
    aConst->theValue.theString = tempString;
 
-   yylval.constBlk = aConst;
+   yymdplval.constBlk = aConst;
 
 }  /*  */
 /**********************************************************************/
@@ -145,13 +145,14 @@ CheckReserved() {
   int i;
 
   for( i = 0; i < NUM_RESERVED_WORDS; i++ ) 
-     if( strcmp( reserved_str[i], yytext ) == 0 )
+     if( strcmp( reserved_str[i], yymdptext ) == 0 )
         return( reserved_token[ i ] );
   
   return( -1 );
 
 }  /* CheckReserved */
 /**********************************************************************/
+
 %}
 /************************* Character Classes  *******************************/
 
@@ -212,7 +213,7 @@ IntLiteral {Digit}+
 .				{ 
                                   
                                   ERR_enter("Scanner<yylex>",currentLineNumber,
-                                            ILL_CHAR_ERR, yytext);
+                                            ILL_CHAR_ERR, yymdptext);
                                 }
 
 

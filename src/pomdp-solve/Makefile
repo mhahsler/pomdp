@@ -24,13 +24,12 @@ laspack/liblaspack.a:
 pomdp-solve: $(OBJ) mdp/libmdp.a lp-solve/liblp-solve.a laspack/liblaspack.a 
 	$(CC) $(CFLAGS) $(INCLUDE) $(OBJ) -o pomdp-solve $(MY_LIBS)
 
-.PHONY: clean
-
 clean:
-	rm -f *.o
-	rm -f pomdp-solve
-	rm -f pomdp-solve.exe
+	@rm -f *.o
+	@rm -f pomdp-solve
+	@rm -f pomdp-solve.exe
 	for dir in $(SUBDIRS); do \
 	  $(MAKE) -C $${dir} clean; \
 	done
 
+.PHONY: clean
