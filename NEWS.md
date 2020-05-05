@@ -1,4 +1,4 @@
-# pomdp 0.99.0 (04/28/2020)
+# pomdp 0.99.0 (05/04/2020)
 
 ## Changes
 * Support finite-horizon POMDPs and store epochs.
