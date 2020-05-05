@@ -88,13 +88,19 @@ LPs. Overall precision can be changed using \code{parameter = list(epsilon =
 1e-3)}.
 
 \bold{Methods:} Several algorithms for dynamic-programming updates are
-available: \itemize{ \item Enumeration (Sondik 1971). \item Two pass (Sondik
-1971). %exhaustive (Monahan 1982), %linear support (Cheng 1988), and \item
-Witness (Littman, Cassandra, Kaelbling, 1996). \item Incremental pruning
-(Zhang and Liu, 1996, Cassandra et al 1997). \item Grid implements a
-variation of point-based value iteration to solve larger POMDPs (PBVI; see
-Pineau 2003) without dynamic belief set expansion. } Details can be found in
-(Cassandra, 2015).
+available: 
+\itemize{ 
+\item Enumeration (Sondik 1971). 
+\item Two pass (Sondik 1971). 
+%exhaustive (Monahan 1982), 
+%linear support (Cheng 1988), 
+\item
+Witness (Littman, Cassandra, Kaelbling, 1996). 
+\item Incremental pruning (Zhang and Liu, 1996, Cassandra et al 1997). 
+\item Grid implements a variation of point-based value iteration 
+  to solve larger POMDPs (PBVI; see Pineau 2003) without dynamic belief set expansion. 
+} 
+Details can be found in (Cassandra, 2015).
 
 \bold{Note on method grid:} The grid method implements a version of Point
 Based Value Iteration (PBVI). The used belief points are by default created
