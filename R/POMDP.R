@@ -236,9 +236,9 @@ POMDP <- function(
       name = name,
       discount = discount, 
       horizon = horizon,
-      states = factor(states), 
-      actions = factor(actions), 
-      observations = factor(observations),  
+      states = as.character(states), 
+      actions = as.character(actions), 
+      observations = as.character(observations),  
       transition_prob = transition_prob,
       observation_prob = observation_prob, 
       reward = reward,
@@ -320,15 +320,15 @@ print.POMDP_model <- function(x, ...) {
 #' @rdname POMDP
 #' @export
 O_ <- function(action = "*", end.state = "*", observation = "*", probability) 
-  data.frame(action = action, end.state = end.state, observation = observation, probability = probability)
+  data.frame(action = action, end.state = end.state, observation = observation, probability = probability, stringsAsFactors = FALSE)
 
 #' @rdname POMDP
 #' @export
 T_ <- function(action = "*", start.state = "*", end.state = "*", probability) 
-  data.frame(action = action, start.state = start.state, end.state= end.state, probability = probability)
+  data.frame(action = action, start.state = start.state, end.state= end.state, probability = probability, stringsAsFactors = FALSE)
 
 #' @rdname POMDP
 #' @export
 R_ <- function(action = "*", start.state = "*", end.state = "*", observation = "*", value) 
   data.frame(action = action, start.state = start.state, end.state = end.state, 
-    observation = observation, value = value)
+    observation = observation, value = value, stringsAsFactors = FALSE)

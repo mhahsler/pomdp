@@ -54,6 +54,11 @@ reward_matrix <- function(x, episode = 1)
 .df2matrix <- function(model, df, from = "states", to = "observations"){
   from <- model$model[[from]]
   to <- model$model[[to]]
+  
+  ### make sure we have character in from/to (pre R 4.0)
+  df[,1] <- as.character(df[,1])
+  df[,2] <- as.character(df[,2])
+  
   m <- matrix(0, nrow = length(from), ncol = length(to), 
     dimnames = list(from, to))
   

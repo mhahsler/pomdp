@@ -1,3 +1,8 @@
+# pomdp 0.99.0-1 (xx/xx/2020)
+
+## Bugfix
+* Resolved issues with factors for pre R 4.0.
+
 # pomdp 0.99.0 (05/04/2020)
 
 ## Changes

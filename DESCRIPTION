@@ -1,7 +1,7 @@
 Package: pomdp
 Title: Solver for Partially Observable Markov Decision Processes (POMDP)
-Version: 0.99.0
-Date: 2020-05-04
+Version: 0.99.0-1
+Date: 2020-xx-xx
 Authors@R: 
     c(person(given = "Hossein",
              family = "Kamalzadeh",
