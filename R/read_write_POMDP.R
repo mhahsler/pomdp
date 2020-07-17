@@ -7,7 +7,7 @@ format_fixed <- function(x, digits = 7) {
 
 #' Read and write a POMDP Model to a File in POMDP Format
 #' 
-#' Reads and write a POMDP file suitable for the pomdp-solve program.
+#' Reads and write a POMDP file suitable for the pomdp-solve program. Note: read POMDP files are intended to be used in solve_POMDP() and do not support all auxiliary functions. Fields like the transition matrix, the observation matrix and the reward structure are not parsed.
 #' 
 #' 
 #' @aliases write_POMDP read_POMDP
@@ -72,7 +72,7 @@ write_POMDP <- function(model, file, digits = 7) {
     } else if(is.character(start))
       ## if the starting beliefs are given by a uniform distribution over all states
       if (length(start) == 1 && start[1] == "uniform") {
-        code <- paste0(c(code,"start:", start, "\n"), collapse = " ")
+        code <- paste0(code,"start: ", paste(start, collapse = " "), "\n")
         
       } else if (start[1] != "-")  
         code <- paste0(code, "start include: ", paste(start, collapse = " "), "\n")
@@ -228,7 +228,7 @@ read_POMDP <- function(file) {
       ind <- grep(paste0(var,":"), problem)
       if(length(ind) == 0) return(NULL)
       
-      vals <- strsplit(problem[[ind]], "\\s+")[[1]][-1]
+      vals <- strsplit(trimws(problem[[ind]]), "\\s+")[[1]][-1]
       
       # the data may be in the next line
       if(length(vals) == 0) vals <- strsplit(problem[[ind+1]], "\\s+")[[1]]
@@ -242,14 +242,15 @@ read_POMDP <- function(file) {
     vals
     }
     
-    structure(list(
+    model <- structure(list(
       name = file,
       states = get_vals("states", number = TRUE),
       observations = get_vals("observations", number = TRUE),
       actions = get_vals("actions", number = TRUE),
       start = get_vals("start"),
       discount = get_vals("discount"),
-      problem = structure(problem, class = "text")),
-      class = "POMDP_model"
-    )
+      problem = structure(problem, class = "text")
+    ), class = "POMDP_model")
+    
+    structure(list(model = model), class = "POMDP")
 }    
