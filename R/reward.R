@@ -56,7 +56,7 @@ reward <- function(x, belief = NULL, epoch = 1) {
     belief = belief,
     reward = vs$reward, 
     pg_node = vs$pg_node,
-    action = pg$action[vs$pg_node]
+    action = factor(pg$action[vs$pg_node], levels = x$model$actions)
   )
 }
 
