@@ -320,7 +320,7 @@ solve_POMDP <- function(
   
   # do we have a model POMDP file?
   if(is.character(model)) 
-    model <- structure(list(model = read_POMDP(model)), class = "POMDP")
+    model <- read_POMDP(model)
   
   if(is.null(horizon)) horizon <- model$model$horizon
   
