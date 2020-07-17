@@ -52,12 +52,13 @@ reward_matrix <- function(x, episode = 1)
 
 # df needs to have 3 columns: from, to, and val
 .df2matrix <- function(model, df, from = "states", to = "observations"){
-  from <- model$model[[from]]
-  to <- model$model[[to]]
+  from <- as.character(model$model[[from]])
+  to <- as.character(model$model[[to]])
   
   ### make sure we have character in from/to (pre R 4.0)
-  df[,1] <- as.character(df[,1])
-  df[,2] <- as.character(df[,2])
+  
+  df[,1] <- .get_names(df[,1], from)
+  df[,2] <- .get_names(df[,2], to)
   
   m <- matrix(0, nrow = length(from), ncol = length(to), 
     dimnames = list(from, to))
@@ -77,6 +78,11 @@ reward_matrix <- function(x, episode = 1)
 }
 
 ### helpers
+.get_names <- function(x, names) { 
+    if(!is.numeric(x)) as.character(x)
+    else as.character(factor(x, labels = names))
+  }
+
 .translate_probabilities <- function(model, 
   field = "transition_prob", from = "states", to = "states", episode = 1) {
   
@@ -85,14 +91,15 @@ reward_matrix <- function(x, episode = 1)
   ## episodes are for time-dependent POMDPs 
   if(.timedependent_POMDP(model)) {
     episode <- as.integer(episode)
-    if(episode < 1L || episode > length(model$model$horizon)) stop("Requested episode does not exit.")
+    if(episode < 1L || episode > length(model$model$horizon)) stop("Requested episode does not exit in horizon specification.")
     
-    if(.is_timedependent(model, field)) prob <- model$model[[field]][[episode]]
-    else prob <-  model$model[[field]]
-    
+    if(.is_timedependent(model, field)) {
+      prob <- model$model[[field]][[episode]]
+      if(is.null(prob)) stop("Inconsistent POMDP definition. Requested episode does not exit in field ", field,".")
+    } else prob <-  model$model[[field]]
   } else  prob <-  model$model[[field]]
   
-  if(is.null(prob)) stop("Inconsistent POMDP definition. Requested episode does not exit.")
+  if(is.null(prob)) stop("Field ", field," is not available. Parsing some fields is not implemented for models read with read_POMDP!")
   
   ## translate dataframes
   if(is.data.frame(prob)) {
@@ -119,6 +126,8 @@ reward_matrix <- function(x, episode = 1)
       
       if(!is.matrix(tr)) stop("Probabilities cannot be converted to matrix.")
       if(is.null(dimnames(tr))) dimnames(tr) <- list(from, to)
+  
+  if(is.null(prob)) stop("Field ", field," is not available. Parsing some fields is not implemented for models read with read_POMDP!")
       else tr <- tr[from, to]
       
       tr
@@ -131,6 +140,7 @@ reward_matrix <- function(x, episode = 1)
   
   actions <- as.character(model$model$actions)
   states <- as.character(model$model$states)
+  observations <- as.character(model$model$observations)
 
   field <- "reward"
   ## episodes are for time-dependent POMDPs 
@@ -147,17 +157,20 @@ reward_matrix <- function(x, episode = 1)
     prob <-  model$model[[field]]
   }
     
-  if(is.null(prob)) stop("Inconsistent POMDP definition. Requested episode does not exit.")
+  if(is.null(prob)) stop("Field ", field," is not available. Parsing some fields is not implemented for models read with read_POMDP!")
   
   reward <- prob
   
-  # no reward avaiable (e.g., for reading POMDP files)
+  # no reward available (e.g., for reading POMDP files)
   if(is.null(reward)) {
     warning("Reward is not specified in the model description (e.g., when a POMDP model file is read).")
     return (NULL)
   }
   
-  for(i in 1:4) reward[[i]] <- as.character(reward[[i]])
+  reward[[1]] <- .get_names(reward[[1]], actions)
+  reward[[2]] <- .get_names(reward[[2]], states)
+  reward[[3]] <- .get_names(reward[[3]], states)
+  reward[[4]] <- .get_names(reward[[4]], observations)
   
   if(is.data.frame(reward)) {
     reward <- sapply(actions, FUN = function(a) 
