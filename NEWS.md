@@ -1,7 +1,11 @@
 # pomdp 0.99.0-1 (xx/xx/2020)
 
+## Changes
+* Improved error messages when accessing fields not parsed by read_POMDP.
+
 ## Bugfix
-* Resolved issues with factors for pre R 4.0.
+* Resolved issues with factors for R 4.0. We now mostly use character instead of factors.
+* States and actions as numbers are now handled correctly (reported by meeheal).
 
 # pomdp 0.99.0 (05/04/2020)
 
