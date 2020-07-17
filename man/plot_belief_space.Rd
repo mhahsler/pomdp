@@ -33,7 +33,7 @@ specifying the \code{method} used for \code{sample_belief_space}.}
 
 \item{what}{what to plot.}
 
-\item{legend}{logical; add a legend? If the legend covers the plot then you
+\item{legend}{logical; add a legend? If the legend is covered by the plot then you
 need to increase the plotting region of the plotting device.}
 
 \item{pch}{plotting symbols.}

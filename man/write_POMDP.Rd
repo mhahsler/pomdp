@@ -21,7 +21,7 @@ point).}
 \code{read_POMDP} returns a POMDP object.
 }
 \description{
-Reads and write a POMDP file suitable for the pomdp-solve program.
+Reads and write a POMDP file suitable for the pomdp-solve program. Note: read POMDP files are intended to be used in solve_POMDP() and do not support all auxiliary functions. Fields like the transition matrix, the observation matrix and the reward structure are not parsed.
 }
 \references{
 POMDP solver website: \url{http://www.pomdp.org}
