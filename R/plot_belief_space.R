@@ -17,7 +17,7 @@
 #' specifying the \code{method} used for \code{sample_belief_space}.
 #' @param n number of points sampled.
 #' @param what what to plot.
-#' @param legend logical; add a legend? If the legend covers the plot then you
+#' @param legend logical; add a legend? If the legend is covered by the plot then you
 #' need to increase the plotting region of the plotting device.
 #' @param pch plotting symbols.
 #' @param col plotting colors.
@@ -85,7 +85,7 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, sample = "reg
    
   # col ... palette used for legend
   # cols ... colors for all points
-  if(is.factor(val)) {
+  if(is.factor(val)) { # actions and pg_node are factor
     col <- .get_colors_descrete(length(levels(val)), col)
     cols <- col[as.integer(val)]
   } else {
@@ -141,7 +141,8 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, sample = "reg
         pch = pch, 
         col = col, 
         bty = "n", 
-        title = what)     
+        title = what,
+        xpd = FALSE) # no clipping     
   else{
     legend("topright",
       legend = round(c(max(val), rep(NA, 9), min(val)), 2),
@@ -149,7 +150,8 @@ plot_belief_space <- function(model, projection = NULL, epoch = 1, sample = "reg
       border = NA,
       y.intersp = .5,
       bty = "n", 
-      title = what) 
+      title = what, 
+      xpd = FALSE) # no clipping     
   }
  
   invisible(list(belief = sample, val = val)) 
