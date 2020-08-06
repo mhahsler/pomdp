@@ -33,7 +33,7 @@
 #' @seealso \code{\link{POMDP}}, \code{\link{solve_POMDP}}.
 #' @examples
 #' 
-#' ## Michael's Sleepy Tiger Problem is a MDP with perfect observability
+#' ## Michael's Sleepy Tiger Problem is an MDP with perfect observability
 #' 
 #' Tiger_MDP <- MDP(
 #'   name = "Michael's Sleepy Tiger Problem",
@@ -83,7 +83,7 @@ MDP <- function(
   
   ### FIXME: Check the values!
   
-  # discount shuold be a number in [0,1]
+  # discount should be a number in [0,1]
   # states should be a vector of strings
   # actions should be a vector of strings
   # observations should be a vector of strings

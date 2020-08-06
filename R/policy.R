@@ -1,6 +1,6 @@
 #' Extract the Policy from a POMDP/MDP
 #' 
-#' Extracts the policy from a solves POMDP/MDP.
+#' Extracts the policy from a solved POMDP/MDP.
 #' 
 #' A list (one entry per epoch) with the optimal policy. The policy is a data
 #' frame consisting of three parts.

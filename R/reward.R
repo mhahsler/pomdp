@@ -25,7 +25,7 @@
 #' # if no start is specified, a uniform belief is used.
 #' reward(sol)
 #' 
-#' # we have additional information that makes us belief that the tiger 
+#' # we have additional information that makes us believe that the tiger 
 #' # is more likely to the left.
 #' reward(sol, belief = c(0.85, 0.15))
 #' 
@@ -34,7 +34,7 @@
 #' 
 #' # Note that in this case, the total discounted expected reward is greater 
 #' # than 10 since the tiger problem resets and another game staring with 
-#' # a uniform belief is played which produces addional reward.
+#' # a uniform belief is played which produces additional reward.
 #' 
 #' @export
 reward <- function(x, belief = NULL, epoch = 1) {
