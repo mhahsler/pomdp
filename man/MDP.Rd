@@ -63,7 +63,7 @@ for \code{\link{POMDP}}.
 }
 \examples{
 
-## Michael's Sleepy Tiger Problem is a MDP with perfect observability
+## Michael's Sleepy Tiger Problem is an MDP with perfect observability
 
 Tiger_MDP <- MDP(
   name = "Michael's Sleepy Tiger Problem",
