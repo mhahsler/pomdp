@@ -2,7 +2,7 @@
 
 [![CRAN version](https://www.r-pkg.org/badges/version/pomdp)](https://cran.r-project.org/package=pomdp)
 [![Rdoc](https://www.rdocumentation.org/badges/version/pomdp)](https://www.rdocumentation.org/packages/pomdp)
-[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/grand-total/pomdp)](https://cran.r-project.org/package=pomdp)
+[![R build status](https://github.com/farzad/pomdp/workflows/R-CMD-check/badge.svg)](https://github.com/farzad/pomdp/actions)
 [![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/pomdp)](https://cran.r-project.org/package=pomdp)
 
 Provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Processes (POMDP) models. The package includes [pomdp-solve](http://www.pomdp.org/code) (Cassandra, 2015) to solve POMDPs using
