@@ -2,7 +2,7 @@
 % Please edit documentation in R/update_belief.R
 \name{simulate_POMDP}
 \alias{simulate_POMDP}
-\title{# Simulate belief points}
+\title{Simulate Trajectories in a POMDP}
 \usage{
 simulate_POMDP(
   model,
@@ -43,10 +43,6 @@ A matrix with belief points as rows. Attributes containing action
 counts, and rewards may be available.
 }
 \description{
-If we have a solution, the policy is followed. Otherwise, a random action is chosen. 
-Simulate Trajectories in a POMDP
-}
-\details{
 Simulate several trajectories through a POMDP. The start state for each
 trajectory is randomly chosen using the specified belief. For solved POMDPs
 the optimal actions will be chosen, for unsolved POMDPs random actions will

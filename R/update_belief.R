@@ -62,11 +62,6 @@ update_belief <- function(model, belief = NULL, action = NULL, observation = NUL
   b
 }
 
-#' # Simulate belief points
-#' 
-#' If we have a solution, the policy is followed. Otherwise, a random action is chosen. 
-
-
 
 #' Simulate Trajectories in a POMDP
 #' 
