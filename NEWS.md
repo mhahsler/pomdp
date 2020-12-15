@@ -6,6 +6,7 @@
 ## Bugfix
 * Resolved issues with factors for R 4.0. We now mostly use character instead of factors.
 * States and actions as numbers are now handled correctly (reported by meeheal).
+* Added spelling fixes by brianrice2. 
 
 # pomdp 0.99.0 (05/04/2020)
 

@@ -50,7 +50,7 @@ Returns invisibly the sampled points.
 Plots the optimal action, the node in the policy graph or the reward for a
 given set of belief points on a line (2D) or on a ternary plot (3D). If no
 points are given, points are sampled using a regular arrangement or randomly
-form the (projected) belief space.
+from the (projected) belief space.
 }
 \examples{
 

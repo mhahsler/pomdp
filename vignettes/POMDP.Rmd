@@ -48,7 +48,7 @@ cannot directly observe the system state, but at each discrete point in time, th
 The POMDP framework is general enough to model a variety of real-world sequential decision-making problems. Applications include robot navigation problems, machine maintenance, and planning under uncertainty in general. The general framework of Markov decision processes with incomplete information was described by Karl Johan Åström [@Astrom1965] in the case of a discrete state space, and it was further studied in the operations research community where the acronym POMDP was coined. It was later adapted for problems in artificial intelligence and automated planning by Leslie P. Kaelbling and Michael L. Littman [@Kaelbling1998].
 
 A discrete-time POMDP can formally be described as a 7-tuple 
-$$\mathcal{P} = (S, A, T, R, \Omega , O, \lambda),$$ 
+$$\mathcal{P} = (S, A, T, R, \Omega , O, \gamma),$$ 
 where
 
 * $S  = \{s_1, s_2, \dots, s_n\}$ is a set of states,

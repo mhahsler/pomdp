@@ -15,7 +15,7 @@ returned %% If it is a LIST, use %% \item{comp1 }{Description of 'comp1'} %%
 \item{comp2 }{Description of 'comp2'} %% ...
 }
 \description{
-Extracts the policy from a solves POMDP/MDP.
+Extracts the policy from a solved POMDP/MDP.
 }
 \details{
 A list (one entry per epoch) with the optimal policy. The policy is a data

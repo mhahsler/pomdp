@@ -81,7 +81,7 @@ solve_POMDP_parameter <- function() {
 #' 
 #' To guarantee convergence in point-based (finite grid) value iteration, the
 #' initial value function must be a lower bound on the optimal value function.
-#' If all rewards are strictly non-negative, a initial value function with an
+#' If all rewards are strictly non-negative, an initial value function with an
 #' all zero vector can be used and results will be similar to other methods.
 #' However, if there are negative rewards, lower bounds can be guaranteed by
 #' setting a single vector with the values \eqn{min(reward)/(1 - discount)}.
@@ -93,12 +93,12 @@ solve_POMDP_parameter <- function() {
 #' observation probabilities and reward structure can be modeled by considering
 #' a set of episodes representing epoch with the same settings. In the scared
 #' tiger example (see Examples section), the tiger has the normal behavior for
-#' the first three epochs (episode 1) and then become scared with different
+#' the first three epochs (episode 1) and then becomes scared with different
 #' transition probabilities for the next three epochs (episode 2). The episodes
 #' can be solved in reverse order where the value function is used as the
 #' terminal values of the preceding episode. This can be done by specifying a
 #' vector of horizons (one horizon for each episode) and then lists with
-#' transitions matrices, observation matrices, and rewards. If the horizon
+#' transition matrices, observation matrices, and rewards. If the horizon
 #' vector has names, then the lists also need to be named, otherwise they have
 #' to be in the same order (the numeric index is used). Only the time-varying
 #' matrices need to be specified. An example can be found in Example 4 in the
@@ -191,7 +191,7 @@ solve_POMDP_parameter <- function() {
 #' # value function
 #' plot_value_function(sol, ylim = c(0,20))
 #' 
-#' # display available solver options which can be passed on to the solver as parameter.
+#' # display available solver options which can be passed on to the solver as parameters.
 #' solve_POMDP_parameter()
 #' 
 #' ################################################################
@@ -493,7 +493,7 @@ print.POMDP_solution <- function(x, ...) {
 }
 
 
-# is a field time dependent? For time-dependence we have a list of 
+# is a field time-dependent? For time-dependence we have a list of 
 # matrices/data.frames or for observation_prob we have a list of a list
 .is_timedependent <- function(x, field) {
   m <- x$model[[field]]
@@ -523,7 +523,7 @@ print.POMDP_solution <- function(x, ...) {
   if(n < 2) return(solve_POMDP(model, horizon, ..., 
     terminal_values = terminal_values, verbose = verbose))
   
-  # check what is time dependent
+  # check what is time-dependent
   do_trans <- .is_timedependent(model, "transition_prob")
   do_obs <- .is_timedependent(model, "observation_prob")
   do_reward <- .is_timedependent(model, "reward")
