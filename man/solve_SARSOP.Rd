@@ -78,7 +78,7 @@ Carl Boettiger, Jeroen Ooms and Milad Memarzadeh (2020). sarsop:
 Approximate POMDP Planning Software. R package version 0.6.6.
 https://CRAN.R-project.org/package=sarsop
 
-H. Kurniawati, D. Hsu, and W.S. Lee (2008). SARSOP: Efficient point-based POMDP planning by approximating optimally reachable belief spaces. . In Proc. Robotics: Science and Systems.
+H. Kurniawati, D. Hsu, and W.S. Lee (2008). SARSOP: Efficient point-based POMDP planning by approximating optimally reachable belief spaces. In Proc. Robotics: Science and Systems.
 }
 \author{
 Michael Hahsler
