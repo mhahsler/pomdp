@@ -1,6 +1,7 @@
 # pomdp 0.99.0-1 (xx/xx/2020)
 
 ## Changes
+* Added support for the SARSOP solver.
 * Improved error messages when accessing fields not parsed by read_POMDP.
 
 ## Bugfix

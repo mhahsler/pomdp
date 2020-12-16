@@ -3,7 +3,7 @@
 \name{solve_POMDP}
 \alias{solve_POMDP}
 \alias{solve_POMDP_parameter}
-\title{Solve a POMDP Problem}
+\title{Solve a POMDP Problem using pomdp-solvei}
 \usage{
 solve_POMDP(
   model,

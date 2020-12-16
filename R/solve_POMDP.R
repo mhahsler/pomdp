@@ -20,7 +20,7 @@ solve_POMDP_parameter <- function() {
 }
 
 
-#' Solve a POMDP Problem
+#' Solve a POMDP Problem using pomdp-solvei
 #' 
 #' This function utilizes the C implementation of 'pomdp-solve' by Cassandra
 #' (2015) to solve problems that are formulated as partially observable Markov

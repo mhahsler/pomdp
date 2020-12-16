@@ -42,7 +42,7 @@ policy <- function(x) {
   
   for(i in 1:length(pg)) {  
     pg[[i]] <- cbind(alpha[[i]],
-      pg[[i]][,-1])
+      pg[[i]][,-1, drop = FALSE])
   }
   
   pg
