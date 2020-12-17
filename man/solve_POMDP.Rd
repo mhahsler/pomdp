@@ -180,7 +180,6 @@ sol <- solve_POMDP("http://www.pomdp.org/examples/cheese.95.POMDP",
 sol
 
 policy(sol)
-plot_policy_graph(sol)
 
 # Example 3: Solving a finite-horizon POMDP using the incremental 
 #            pruning method (without discounting)

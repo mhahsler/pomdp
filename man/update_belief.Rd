@@ -15,10 +15,11 @@ update_belief(
 )
 }
 \arguments{
-\item{model}{a POMDP model. Defaults to the start belief state specified in
-the model or "uniform".}
+\item{model}{a POMDP model.}
 
-\item{belief}{the current belief state.}
+\item{belief}{the current belief state.
+Defaults to the start belief state specified in
+the model or "uniform".}
 
 \item{action}{the taken action.}
 

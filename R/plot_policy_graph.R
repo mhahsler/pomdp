@@ -23,8 +23,7 @@
 #' 
 #' @aliases plot_policy_graph plot
 #' @param x object of class POMDP containing a solved POMDP problem.
-#' @param belief logical; display belief proportions as a pie chart in each
-#' node.
+#' @param belief logical; display belief proportions as a pie chart in each node. This requires belief space sampling and may be slow.
 #' @param legend logical; display a legend for colors used belief proportions?
 #' @param engine The plotting engine to be used.
 #' @param col colors used for the states.

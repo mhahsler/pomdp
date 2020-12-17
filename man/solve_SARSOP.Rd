@@ -6,7 +6,7 @@
 \usage{
 solve_SARSOP(
   model,
-  horizon = NULL,
+  horizon = Inf,
   discount = NULL,
   terminal_values = NULL,
   method = "sarsop",
@@ -68,8 +68,15 @@ policy(sol)
 # value function
 plot_value_function(sol, ylim = c(0,20))
 
+# plot the policy graph
+plot_policy_graph(sol)
+  
 # reward of the optimal policy
 reward(sol)
+
+# Solve a problem specified as a POMDP file
+sol <- solve_SARSOP("http://www.pomdp.org/examples/cheese.95.POMDP")
+sol
 }
 
 }

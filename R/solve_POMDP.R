@@ -202,7 +202,6 @@ solve_POMDP_parameter <- function() {
 #' sol
 #' 
 #' policy(sol)
-#' plot_policy_graph(sol)
 #' 
 #' # Example 3: Solving a finite-horizon POMDP using the incremental 
 #' #            pruning method (without discounting)
@@ -449,7 +448,7 @@ solve_POMDP <- function(
     if(method == "grid" && 
         !converged && 
         any(unlist(reward_matrix(model))<0)) 
-      warning("The grid method for finite horizon did not converge. The value function and the calculated reward values may not be valid with negative reward in the reward matrix.")
+      warning("The grid method for finite horizon did not converge. The value function and the calculated reward values may not be valid with negative reward in the reward matrix. Use method 'incprune' instead.")
     
     alpha <- rev(alpha)
     pg <- rev(pg)

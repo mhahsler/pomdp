@@ -3,6 +3,7 @@
 ## Changes
 * Added support for the SARSOP solver.
 * Improved error messages when accessing fields not parsed by read_POMDP.
+* policy() no longer returns the graph, but just alphas and the optimal action.
 
 ## Bugfix
 * Resolved issues with factors for R 4.0. We now mostly use character instead of factors.

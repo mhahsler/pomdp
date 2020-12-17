@@ -16,9 +16,10 @@
 #' Update the belief given a taken action and observation.
 #' 
 #' 
-#' @param model a POMDP model. Defaults to the start belief state specified in
-#' the model or "uniform".
+#' @param model a POMDP model. 
 #' @param belief the current belief state.
+#' Defaults to the start belief state specified in
+#' the model or "uniform".
 #' @param action the taken action.
 #' @param observation the received observation.
 #' @param episode Use transition and observation matrices for the given episode
@@ -75,6 +76,8 @@ update_belief <- function(model, belief = NULL, action = NULL, observation = NUL
 #' @param n number of trajectories.
 #' @param belief probability distribution over the states for choosing the
 #' starting states for the trajectories.
+#' Defaults to the start belief state specified in
+#' the model or "uniform".
 #' @param horizon number of epochs for the simulation. If \code{NULL} then the
 #' horizon for the model is used.
 #' @param visited_beliefs logical; Should all belief points visited on the

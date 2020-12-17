@@ -1,4 +1,6 @@
 # FIXME: we should use pomdp:::round_stochastic here!
+# TODO: Improve read_POMDP to read probability matrices.
+
 format_fixed <- function(x, digits = 7) {
   if(is.vector(x)) paste(sprintf(paste0("%.",digits,"f"), x), collapse = " ")
   else if(is.matrix(x)) paste(apply(x, MARGIN = 1, format_fixed, digits = digits), collapse = "\n")

@@ -21,7 +21,9 @@ simulate_POMDP(
 \item{n}{number of trajectories.}
 
 \item{belief}{probability distribution over the states for choosing the
-starting states for the trajectories.}
+starting states for the trajectories.
+Defaults to the start belief state specified in
+the model or "uniform".}
 
 \item{horizon}{number of epochs for the simulation. If \code{NULL} then the
 horizon for the model is used.}

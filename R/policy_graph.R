@@ -28,7 +28,21 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
  
   .solved_POMDP(x) 
   
+  # create policy graph and belief proportions (average belief for each alpha vector)
   pg <- x$solution$pg[[1]]
+  
+  if(ncol(pg) < 3 || belief) {
+    # FIXME: for pomdp-solve, we could seed with x$solution$belief_states
+    bp <- .estimate_alpha_belief(x, 
+      n = if(is.numeric(belief)) belief else 100)
+    
+    # missing belief points?
+    missing_bp <- which(apply(is.na(bp), MARGIN = 1, any))
+    if(length(missing_bp) > 0) stop("No belief points for policy graph node(s): ", 
+      paste(missing_bp, collapse = ", "), ". Increase the number for parameter belief.")
+    
+    pg <- .calculate_pg(x, bp)
+  }
   
   ## FIXME: try to make a graph from a not converged policy
   if(!x$solution$converged){ 
@@ -41,7 +55,8 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
   # producing a list containing arcs
   l <- list()
   list_of_arcs <- NULL
-  observations <- colnames(pg)[-c(1,2)]
+  #observations <- colnames(pg)[-c(1,2)]
+  observations <- x$model$observations
   number_of_observations <- length(observations)
   l <- lapply(1:number_of_observations, FUN = function(i)
     data.frame(from = pg$node, to = pg[[observations[i]]], label = observations[i]))
@@ -62,19 +77,6 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
   
   # add belief proportions
   if(belief) {
-    if(!is.null(x$solution$belief_states) && !is.numeric(belief)) 
-      rew <- reward(x, belief = x$solution$belief_states)
-    else 
-      # simulate reachable belief states instead
-      #rew <- reward(x, sample_belief_space(x, n = if(is.numeric(belief)) belief else 1000))
-      rew <- reward(x, simulate_POMDP(x, n = if(is.numeric(belief)) belief else 100, visited_beliefs = TRUE))
-    
-    bp <- as.matrix(aggregate(rew$belief, by = list(rew$pg_node), mean, drop = FALSE)[, -1]) 
-    
-    # missing belief points?
-    missing_bp <- which(apply(is.na(bp), MARGIN = 1, any))
-    if(length(missing_bp) > 0) warning("No belief points for policy graph node(s): ", 
-      paste(missing_bp, collapse = ", "), ". Increase the number for parameter belief.")
      
     pie_values <- lapply(1:nrow(bp), FUN = function(i) 
       if(any(is.na(bp[i,]))) structure(rep(1/ncol(bp), times = ncol(bp)), names = colnames(bp)) else bp[i,]) 
@@ -95,3 +97,44 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
 }
 
 
+# use alpha_belief to create a policy graph 
+# (for converged infinite horizon)
+.calculate_pg <- function(x, alpha_belief) {
+  
+  #.solved_POMDP(x) 
+  
+  alpha <- x$solution$alpha[[1]]
+  action <- x$solution$pg[[1]]$action
+  
+  ## FIXME: try to make a graph from a not converged policy
+  if(!x$solution$converged || !is.infinite(x$solution$horizon)) 
+    stop("Graphs can currently only be created for converged solutions for infinite-horizon problems.")
+  
+  pg <- t(sapply(1:nrow(alpha), FUN = function(i) {
+    new_belief <- update_belief(x, 
+      belief = alpha_belief[i,], action = action[i])
+    
+    structure(reward(x, belief = new_belief)$pg_node, 
+      names = x$model$observations)
+  }))
+  
+  cbind(data.frame(node = 1:nrow(alpha), action = action), pg)
+} 
+
+# estimate central beliefs for each alpha vector (infinite horizon)
+# TODO: finite horizon
+.estimate_alpha_belief <- function(x, n = 1000, simulate = FALSE, sim_horizon = n/10){
+  
+  alpha <- x$solution$alpha[[1]]
+  
+  if(!simulate)
+    r <- reward(x, belief = sample_belief_space(x, n = n))
+  else
+    r <- reward(x, 
+      simulate_POMDP(x, n = n/sim_horizon, 
+        horizon = sim_horizon, visited_beliefs = TRUE), )
+  
+  belief <- t(sapply(1:nrow(alpha), FUN = function(i) 
+    colMeans(r$belief[r$pg_node==i,, drop = FALSE])))
+  belief
+}

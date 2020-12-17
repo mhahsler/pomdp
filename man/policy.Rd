@@ -10,24 +10,21 @@ policy(x)
 \item{x}{A solved POMDP object.}
 }
 \value{
-A list with the policy for each epoch. %% ~Describe the value
-returned %% If it is a LIST, use %% \item{comp1 }{Description of 'comp1'} %%
-\item{comp2 }{Description of 'comp2'} %% ...
+A list with the policy for each epoch.
 }
 \description{
 Extracts the policy from a solved POMDP/MDP.
 }
 \details{
-A list (one entry per epoch) with the optimal policy. The policy is a data
-frame consisting of three parts.
+A list (one entry per epoch) with the optimal policy. 
+For converged, infinite-horizon problems solutions, a list with only the converged solution is produced.
+The policy is a data
+frame consisting o:
 
 Part 1: The value function with one column per state. (For MDPs this is just
 one column with the state).
 
 Part 2: One column with the optimal action.
-
-Part 3: One column per observation with the index of the row representing
-the policy node in the next epoch.
 }
 \examples{
 

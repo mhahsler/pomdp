@@ -17,8 +17,7 @@ plot_policy_graph(
 \arguments{
 \item{x}{object of class POMDP containing a solved POMDP problem.}
 
-\item{belief}{logical; display belief proportions as a pie chart in each
-node.}
+\item{belief}{logical; display belief proportions as a pie chart in each node. This requires belief space sampling and may be slow.}
 
 \item{legend}{logical; display a legend for colors used belief proportions?}
 

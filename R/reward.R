@@ -69,6 +69,6 @@ reward <- function(x, belief = NULL, epoch = 1) {
   })
   r <- as.data.frame(t(r))
   colnames(r) <- c("reward", "pg_node")
-  r$pg_node <- factor(r$pg_node, levels = 1:nrow(alpha))
+  #r$pg_node <- factor(r$pg_node, levels = 1:nrow(alpha))
   r
 }

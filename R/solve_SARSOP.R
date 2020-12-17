@@ -49,15 +49,22 @@
 #' 
 #' # value function
 #' plot_value_function(sol, ylim = c(0,20))
-#' 
+#'
+#' # plot the policy graph
+#' plot_policy_graph(sol)
+#'   
 #' # reward of the optimal policy
 #' reward(sol)
+#' 
+#' # Solve a problem specified as a POMDP file
+#' sol <- solve_SARSOP("http://www.pomdp.org/examples/cheese.95.POMDP")
+#' sol
 #' }
 #' 
 #' @export
 solve_SARSOP <- function(
   model,
-  horizon = NULL,
+  horizon = Inf,
   discount = NULL,
   terminal_values = NULL,
   method = "sarsop",
@@ -72,7 +79,21 @@ solve_SARSOP <- function(
   # check parameters
   if(!is.null(terminal_values)) stop("the SARSOP solver does not support terminal values.")
   
+  # do we have a model POMDP file?
+  if(is.character(model)) 
+    model <- read_POMDP(model)
+  
+  if(!is.null(model$model$horizon) && 
+      !is.infinite(model$model$horizon))
+    warning("Replacing the horizon specified in the model (", model$model$horizon, ") with infinity. SARSOP only solves infinite-horizon problems.") 
+ 
+   model$model$horizon <- horizon
+  
+  if(!is.infinite(model$model$horizon)) stop("SARSOP only solves infinite-horizon problems.")
+    
   if(!is.null(horizon)) model$model$horizon <- horizon
+  
+  
   if(!is.infinite(model$model$horizon)) stop("the SARSOP solver only supports infinite time horizon problems.")
   
   if(!is.null(discount)) model$model$discount <- discount
@@ -85,8 +106,14 @@ solve_SARSOP <- function(
   policy_file <- paste0(tmpf, '.policyx')
   log_file <- paste0(tmpf, '.log')
   
+  # write model POMDP file
+  if(!is.null(model$model$problem)) 
+    writeLines(model$model$problem, con = model_file)
+  else
+    write_POMDP(model, model_file, digits = digits)
+  
+  
   # call SARSOP
-  write_POMDP(model, file = model_file, digits = digits)
   res <- do.call(sarsop::pomdpsol, c(
     list(model = model_file, output = policy_file, 
     stdout = log_file, stderr = log_file), parameter))

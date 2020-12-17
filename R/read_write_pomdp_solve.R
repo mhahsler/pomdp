@@ -8,7 +8,9 @@
   
   if(is.null(belief)) belief <- model$model$start
   if(is.null(belief)) belief <- "uniform"
- 
+
+  if(any(is.na(belief))) return(belief)
+   
   if(is.matrix(belief)) {
     if(ncol(belief) != length(states)) stop("Number of column is not the number if states.")
     colnames(belief) <- states
