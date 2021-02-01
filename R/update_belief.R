@@ -1,7 +1,6 @@
 # Updating the belief state: update for a single belief vector, one action, and one observation.
 # $$b'(s') = \eta O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)$$
 # $$\eta = 1/ \sum_{s' \in S}[ O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)]$$
-
 .update_belief <- function(belief, action, observation, Tr, Ob, digits = 7) {
     belief <- Ob[[action]][, observation, drop = FALSE] * crossprod(Tr[[action]], cbind(belief))
     belief <- belief/sum(belief)
@@ -14,6 +13,14 @@
 #' Belief Update
 #' 
 #' Update the belief given a taken action and observation.
+#' 
+#' @details 
+#' Update the belief state \eqn{b} (\code{belief}) with an action \eqn{a} and observation \eqn{o}. The new 
+#' belief state \eqn{b'} is:
+#' 
+#' \deqn{b'(s') = \eta O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)}
+#' 
+#' where \eqn{\eta = 1/ \sum_{s' \in S}[ O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)]} normalizes the new belief state so the probabilities add up to one.
 #' 
 #' 
 #' @param model a POMDP model. 
@@ -28,7 +35,8 @@
 #' @param drop logical; drop the result to a vector if only a single belief
 #' state is returned.
 #' @author Michael Hahsler
-#' @seealso \code{\link{POMDP}}
+#' @seealso [POMDP()], [simulate_POMDP()]
+#' @md
 #' @examples
 #' 
 #' data(Tiger)
@@ -91,7 +99,8 @@ update_belief <- function(model, belief = NULL, action = NULL, observation = NUL
 #' @return A matrix with belief points as rows. Attributes containing action
 #' counts, and rewards may be available.
 #' @author Michael Hahsler
-#' @seealso \code{\link{POMDP}}
+#' @seealso [POMDP()]
+#' @md
 #' @examples
 #' 
 #' data(Tiger)

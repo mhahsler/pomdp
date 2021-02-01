@@ -87,7 +87,7 @@ lines(density(sim[,1], bw = .05)); axis(2); title(ylab = "Density")
 
 }
 \seealso{
-\code{\link{POMDP}}
+\code{\link[=POMDP]{POMDP()}}
 }
 \author{
 Michael Hahsler

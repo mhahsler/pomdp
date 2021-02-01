@@ -36,6 +36,14 @@ state is returned.}
 \description{
 Update the belief given a taken action and observation.
 }
+\details{
+Update the belief state \eqn{b} (\code{belief}) with an action \eqn{a} and observation \eqn{o}. The new
+belief state \eqn{b'} is:
+
+\deqn{b'(s') = \eta O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)}
+
+where \eqn{\eta = 1/ \sum_{s' \in S}[ O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)]} normalizes the new belief state so the probabilities add up to one.
+}
 \examples{
 
 data(Tiger)
@@ -46,7 +54,7 @@ update_belief(c(.15,.85), action = "listen", observation = "tiger-right", model 
 
 }
 \seealso{
-\code{\link{POMDP}}
+\code{\link[=POMDP]{POMDP()}}, \code{\link[=simulate_POMDP]{simulate_POMDP()}}
 }
 \author{
 Michael Hahsler
