@@ -499,9 +499,6 @@ print.POMDP_solution <- function(x, ...) {
   
   if(is.null(m)) stop("Field ", field, " does not exist.")
   
-  # for observation_prob
-  if(field == "observation_prob") m <- m[[1]]
-  
   if(!is.list(m) || is.data.frame(m)) return(FALSE)
   
   if(length(m) != length(x$model$horizon))
