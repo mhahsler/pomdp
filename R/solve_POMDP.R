@@ -501,6 +501,9 @@ print.POMDP_solution <- function(x, ...) {
   
   if(!is.list(m) || is.data.frame(m)) return(FALSE)
   
+  # it is a list. time dependent is a list (episodes) of lists
+  if(!is.list(m[[1]])) return(FALSE)
+  
   if(length(m) != length(x$model$horizon))
     stop("Inconsistent POMDP specification. Field ", field,
       " does not contain data for the appropriate number of episodes.")
