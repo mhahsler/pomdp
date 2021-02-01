@@ -1,5 +1,6 @@
 #' Solve a POMDP Problem using SARSOP
 #' 
+#' Note: The R package sarsop may not be available, but you may be able to install a version from the CRAN archive.
 #' This function uses the C++ implementation of the SARSOP algorithm 
 #' by Kurniawati, Hsu and Lee (2008) interfaced in 
 #' package \pkg{sarsop}
@@ -72,8 +73,6 @@ solve_SARSOP <- function(
   parameter = NULL,
   verbose = FALSE) {
 
-  if(!.installed("sarsop")) stop("Required package 'sarsop' is not installed.")
-  
   if(method != "sarsop") stop("Only available method: 'sarsop'")
   
   # check parameters
