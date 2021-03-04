@@ -32,10 +32,9 @@ export(
   "sample_belief_space",
   "plot_belief_space",
   
-  "round_stochastic"
+  "round_stochastic",
   
-  # sarsop. Note: sarsop was removed from CRAN. sarsop code is now in Work/sarsop
-  #"solve_SARSOP"
+  "solve_SARSOP"
   )
 
 S3method("print", "POMDP")

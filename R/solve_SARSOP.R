@@ -1,6 +1,5 @@
 #' Solve a POMDP Problem using SARSOP
 #' 
-#' Note: The R package sarsop may not be available, but you may be able to install a version from the CRAN archive.
 #' This function uses the C++ implementation of the SARSOP algorithm 
 #' by Kurniawati, Hsu and Lee (2008) interfaced in 
 #' package \pkg{sarsop}
@@ -35,7 +34,8 @@
 #' 
 #' @examples
 #' \dontrun{
-#' # Solving the simple infinite-horizon Tiger problem
+#' # Solving the simple infinite-horizon Tiger problem with SARSOP
+#' # You need to install package "sarsop"
 #' data("Tiger")
 #' Tiger
 #' 
@@ -73,11 +73,16 @@ solve_SARSOP <- function(
   parameter = NULL,
   verbose = FALSE) {
 
+  if (!requireNamespace("sarsop", quietly = TRUE)) {
+    stop("Package \"sarsop\" needed for this function to work. Please install it.",
+      call. = FALSE)
+  }
+  
   if(method != "sarsop") stop("Only available method: 'sarsop'")
   
   # check parameters
   if(!is.null(terminal_values)) stop("the SARSOP solver does not support terminal values.")
-  
+
   # do we have a model POMDP file?
   if(is.character(model)) 
     model <- read_POMDP(model)
