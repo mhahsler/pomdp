@@ -82,7 +82,7 @@
 #define MAX_OPT_STRING_LEN         1024
 #define MAX_OPT_ARGS                256
 
-/* Various return condition codce when looking for options in data
+/* Various return condition codes when looking for options in data
    structure. 
 */
 #define PO_OPT_INTERNAL_ERROR       -2
