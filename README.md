@@ -1,7 +1,6 @@
 # R package pomdp: Partially Observable Markov Decision Processes
 
 [![CRAN version](https://www.r-pkg.org/badges/version/pomdp)](https://cran.r-project.org/package=pomdp)
-[![Rdoc](https://www.rdocumentation.org/badges/version/pomdp)](https://www.rdocumentation.org/packages/pomdp)
 [![R build status](https://github.com/farzad/pomdp/workflows/R-CMD-check/badge.svg)](https://github.com/farzad/pomdp/actions)
 [![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/pomdp)](https://cran.r-project.org/package=pomdp)
 
