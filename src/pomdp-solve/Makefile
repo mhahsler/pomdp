@@ -10,6 +10,8 @@ OBJ = alpha.o belief.o cmd-line.o common.o cross-sum.o enumeration.o \
 
 SUBDIRS = mdp lp-solve laspack
 
+.PHONY: clean
+
 all: pomdp-solve
 
 mdp/libmdp.a:
@@ -32,4 +34,3 @@ clean:
 	  $(MAKE) -C $${dir} clean; \
 	done
 
-.PHONY: clean

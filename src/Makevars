@@ -1,9 +1,11 @@
 # Build pomdp-solve
 
-all:
+.PHONY: all clean
+
+all: clean
 	(cd pomdp-solve && CXX="$(CXX)" CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS)" CXXFLAGS="$(CXXFLAGS)" AR="$(AR)" RANLIB="$(RANLIB)" $(MAKE))
 
 clean:
-	$(MAKE) -C pomdp-solve clean
+	(cd pomdp-solve && CXX="$(CXX)" CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS)" CXXFLAGS="$(CXXFLAGS)" AR="$(AR)" RANLIB="$(RANLIB)" $(MAKE) clean)
 
-.PHONY: all clean
+
