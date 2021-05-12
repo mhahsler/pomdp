@@ -3,7 +3,7 @@
 \name{solve_POMDP}
 \alias{solve_POMDP}
 \alias{solve_POMDP_parameter}
-\title{Solve a POMDP Problem using pomdp-solvei}
+\title{Solve a POMDP Problem using pomdp-solver}
 \usage{
 solve_POMDP(
   model,
@@ -197,7 +197,7 @@ reward(sol, belief = c(1,0), epoch = 3) # just open the right door (10)
 reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (95\% chance)
 
 ################################################################
-# Example 4: Using terminal values 
+# Example 3: Using terminal values 
 #
 # Specify 1000 if the tiger is right after 3 (horizon) epochs
 sol <- solve_POMDP(model = Tiger, 
@@ -268,15 +268,20 @@ policy(sol)
 # extremely sure in the first epoch, then opening a door is optimal.
 
 ################################################################
-# Example 5: PBVI with a custom grid
+# Example 6: PBVI with a custom grid
+
+# Create a search grid by sampling from the belief space in 
+#   10 regular intervals
 custom_grid <- sample_belief_space(Tiger, n = 10, method = "regular")
 custom_grid
 
+# Visualize the search grid
+plot_belief_space(sol, sample = custom_grid)
+
+# Solve the POMDP using the grid for approximation 
 sol <- solve_POMDP(Tiger, method = "grid", parameter = list(grid = custom_grid))
 sol
 
-# visualize used grid
-plot_belief_space(sol, sample = custom_grid)
 
 }
 \references{
