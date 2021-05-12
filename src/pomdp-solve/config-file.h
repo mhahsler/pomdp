@@ -60,7 +60,7 @@
 /* Private Data */
 /*******************************************************/
 
-#define MAX_CFG_FILE_STRING_LEN     100
+#define MAX_CFG_FILE_STRING_LEN     1024
 #define MAX_CFG_FILE_PARAMS         256
 
 /* Parse sates for parsing configuration file. See CF_fscanf(). */
