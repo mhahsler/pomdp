@@ -22,6 +22,7 @@ Imports: igraph,
   Ternary,
   visNetwork 
 Suggests: knitr,
+  rmarkdown,
   sarsop,
   testthat 
 VignetteBuilder: knitr
