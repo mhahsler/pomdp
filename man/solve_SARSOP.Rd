@@ -24,7 +24,7 @@ Alternatively, a POMDP file or the URL for a POMDP file can be specified.}
 \item{discount}{discount factor in range [0, 1]. If \code{NULL}, then the
 discount factor specified in \code{model} will be used.}
 
-\item{terminal_values}{needs to ne \code{NULL}. SARSOP does not use terminal values.}
+\item{terminal_values}{needs to be \code{NULL}. SARSOP does not use terminal values.}
 
 \item{method}{string; there is only one method available called \code{"sarsop"}.}
 
