@@ -22,7 +22,8 @@
 #' pg <- policy_graph(sol)
 #' 
 #' plot(pg)
-#' 
+#'
+#' @import igraph
 #' @export
 policy_graph <- function(x, belief = TRUE, col = NULL) {
  

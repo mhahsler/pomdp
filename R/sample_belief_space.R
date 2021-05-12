@@ -50,7 +50,7 @@ sample_belief_space <- function(model, projection = NULL, n = 1000, method = "ra
       # uniformly sample from a simplex.
       # https://cs.stackexchange.com/questions/3227/uniform-sampling-from-a-simplex)
       # Luc Devroye, Non-Uniform Random Variate Generation, Springer Verlag, 1986. 
-      m <- cbind(0, matrix(runif(n*(d-1)), ncol = d-1), 1)
+      m <- cbind(0, matrix(stats::runif(n*(d-1)), ncol = d-1), 1)
       belief_states[,projection] <- t(apply(m, MARGIN = 1, FUN = function(x) diff(sort(x))))
     },
     

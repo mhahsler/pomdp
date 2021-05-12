@@ -134,6 +134,7 @@ MDP <- function(
   ), class = c("MDP", "POMDP"))
 }
 
+#' @export
 print.MDP <- function(x, ...) {
   if(is.null(x$solution)) cat("Unsolved MDP model (formulated as a POMDP):", x$model$name, "\n")
   else cat(

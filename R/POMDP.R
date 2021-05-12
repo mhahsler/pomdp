@@ -249,6 +249,7 @@ POMDP <- function(
   ), class = "POMDP")
 }
 
+#' @export
 print.POMDP <- function(x, ...) {
   if(is.null(x$solution)) cat(
     "Unsolved POMDP model:", x$model$name, "\n",
@@ -266,6 +267,7 @@ print.POMDP <- function(x, ...) {
   )
 }
 
+#' @export
 print.POMDP_model <- function(x, ...) {
  cat("POMDP model:", x$name, "\n\n")
  if(!is.null(x$problem)) { 

@@ -5,7 +5,6 @@
 #' Rewards are converted into a list (actions) of lists (start states) of
 #' matrices.
 #' 
-#' 
 #' @aliases transition_matrix observation_matrix reward_matrix
 #' @param x A POMDP object.
 #' @param episode Episode used for time-dependent POMDPs (see
@@ -40,10 +39,14 @@ transition_matrix <- function(x, episode = 1)
   .translate_probabilities(x, field = "transition_prob", from = "states", to = "states", 
     episode = episode)
 
+#' @rdname transition_matrix
+#' @export
 observation_matrix <- function(x, episode = 1) 
   .translate_probabilities(x, field = "observation_prob", from = "states", to = "observations", 
     episode = episode)
 
+#' @rdname transition_matrix
+#' @export
 reward_matrix <- function(x, episode = 1) 
   .translate_reward(x, episode = episode)
 

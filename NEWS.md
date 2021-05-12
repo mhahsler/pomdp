@@ -1,4 +1,4 @@
-# pomdp 0.99.1 (05/11/2021)
+# pomdp 0.99.1 (05/12/2021)
 
 ## New Features
 * Added a wrapper for the sarsop library.
@@ -6,11 +6,13 @@
 ## Changes
 * Improved error messages when accessing fields not parsed by read_POMDP.
 * policy() no longer returns the graph, but just alphas and the optimal action.
+* The maintainer is now mhahsler.
 
 ## Bugfix
 * Resolved issues with factors for R 4.0. We now mostly use character instead of factors.
 * States and actions as numbers are now handled correctly (reported by meeheal).
-* Added spelling fixes by brianrice2. 
+* Added spelling fixes by brianrice2.
+* Fixed buffer overflow for filename parameters in pomdpsolve.
 
 # pomdp 0.99.0 (05/04/2020)
 

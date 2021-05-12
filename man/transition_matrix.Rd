@@ -7,6 +7,10 @@
 \title{Extract the Transition, Observation or Reward Matrices from a POMDP}
 \usage{
 transition_matrix(x, episode = 1)
+
+observation_matrix(x, episode = 1)
+
+reward_matrix(x, episode = 1)
 }
 \arguments{
 \item{x}{A POMDP object.}

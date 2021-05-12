@@ -136,6 +136,7 @@ update_belief <- function(model, belief = NULL, action = NULL, observation = NUL
 #' plot_belief_space(sol, sample = sim, ylim = c(0,6))
 #' lines(density(sim[,1], bw = .05)); axis(2); title(ylab = "Density")
 #' 
+#' @export
 simulate_POMDP <- function(model, n = 100, belief = NULL, horizon = NULL, 
   visited_beliefs = FALSE, random_actions = FALSE, digits = 7, verbose = FALSE) {
   

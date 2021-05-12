@@ -6,7 +6,9 @@ find_pomdpsolve <- function() {
   if(exec == "") stop("pomdp-solve executable not found. Reinstall package pomdp.")
   exec
 }
-  
+
+#' @rdname solve_POMDP
+#' @export  
 solve_POMDP_parameter <- function() {
   solver_output <- system2(find_pomdpsolve(), 
     args = c("-h"),
@@ -303,8 +305,6 @@ solve_POMDP_parameter <- function() {
 #' # Solve the POMDP using the grid for approximation 
 #' sol <- solve_POMDP(Tiger, method = "grid", parameter = list(grid = custom_grid))
 #' sol
-#' 
-
 #' 
 #' @export
 solve_POMDP <- function(
