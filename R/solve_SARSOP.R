@@ -13,7 +13,7 @@
 #' @param horizon need to be \code{Inf}.
 #' @param discount discount factor in range [0, 1]. If \code{NULL}, then the
 #' discount factor specified in \code{model} will be used.
-#' @param terminal_values needs to ne \code{NULL}. SARSOP does not use terminal values.
+#' @param terminal_values needs to be \code{NULL}. SARSOP does not use terminal values.
 #' @param digits precision used when writing POMDP files (see
 #' \code{\link{write_POMDP}}).
 #' @param parameter a list with parameters passed on to 

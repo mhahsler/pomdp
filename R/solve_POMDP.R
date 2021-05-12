@@ -346,7 +346,7 @@ solve_POMDP <- function(
   if(is.null(discount)) {
     warning("No discount rate specified. Using .9!")
     discount <- .9
-  }
+  }i
   
   ### temp file names
   file_prefix <- tempfile(pattern = "pomdp_")
@@ -394,7 +394,7 @@ solve_POMDP <- function(
     ifelse(is.finite(horizon), paste("-horizon", horizon, "-save_all true"), ""),
     ifelse(!is.null(discount), paste("-discount", discount), ""),
     ifelse(!is.null(terminal_values), paste("-terminal_values", terminal_values_filename), ""),
-    paras, 
+    paras, i
     "-fg_save true")
  
   if(verbose) cat("Calling pomdp-solve with the following arguments:", 
