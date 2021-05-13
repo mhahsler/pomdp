@@ -1,4 +1,4 @@
-# pomdp 0.99.1 (05/12/2021)
+# pomdp 0.99.1 (05/13/2021)
 
 ## New Features
 * Added a wrapper for the sarsop library.

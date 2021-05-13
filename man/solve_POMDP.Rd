@@ -141,7 +141,7 @@ Examples section. The procedure can also be done by calling the solver
 multiple times (see Example 5).
 
 \bold{Note:} The parser for POMDP files is experimental. Please report
-problems here: \url{https://github.com/farzad/pomdp/issues}.
+problems here: \url{https://github.com/mhahsler/pomdp/issues}.
 }
 \examples{
 
