@@ -108,7 +108,7 @@ solve_POMDP_parameter <- function() {
 #' multiple times (see Example 5).
 #' 
 #' \bold{Note:} The parser for POMDP files is experimental. Please report
-#' problems here: \url{https://github.com/farzad/pomdp/issues}.
+#' problems here: \url{https://github.com/mhahsler/pomdp/issues}.
 #' 
 #' @aliases solve_POMDP solve_POMDP_parameter
 #' @param model a POMDP problem specification created with \code{\link{POMDP}}.
