@@ -21,7 +21,7 @@ Tiger <- POMDP(
     "open-left" =  "uniform",
     "open-right" = "uniform"),
   
-  # the rew helper expects: action, start.state, end.state, observation, value
+  # the reward helper expects: action, start.state, end.state, observation, value
   reward = rbind(
     R_("listen",     "*",           "*", "*", -1  ),
     R_("open-left",  "tiger-left",  "*", "*", -100),
