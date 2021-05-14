@@ -1,3 +1,8 @@
+# pomdp 0.99.2 (05/14/2021)
+
+## Bugfix
+* Removed nonportable flag -C from Makefile.
+
 # pomdp 0.99.1 (05/13/2021)
 
 ## New Features

@@ -18,11 +18,11 @@ parser.c parser.h:
 $(LIB): $(OBJ)
 	$(AR) -rcs $(LIB) $(OBJ)
 
-.PHONY: clean deepclean
-
 clean:
 	@-rm -rf .libs _libs $(LIB)
 	@-rm -f *.o
 
 deepclean: clean
 	@-rm -f scanner.c parser.c parser.h
+
+.PHONY: clean deepclean

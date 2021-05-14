@@ -9,28 +9,24 @@ OBJ = alpha.o belief.o cmd-line.o common.o cross-sum.o enumeration.o \
       associative-array.o command-line.o config-file.o program-options.o main.o
 
 SUBDIRS = mdp lp-solve laspack
-
-.PHONY: clean
+SUBLIBS = $(SUBDIRS:=.a)
 
 all: pomdp-solve
 
-mdp/libmdp.a:
-	(cd mdp && CXX="$(CXX)" CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS)" AR="$(AR)" RANLIB="$(RANLIB)" $(MAKE))
-
-lp-solve/liblp-solve.a:
-	(cd lp-solve && CXX="$(CXX)" CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS)" AR="$(AR)" RANLIB="$(RANLIB)" $(MAKE))
-  
-laspack/liblaspack.a:
-	(cd laspack && CXX="$(CXX)" CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS)" AR="$(AR)" RANLIB="$(RANLIB)" $(MAKE))
-
-pomdp-solve: $(OBJ) mdp/libmdp.a lp-solve/liblp-solve.a laspack/liblaspack.a 
+pomdp-solve: sublibs $(OBJ)
 	$(CC) $(CFLAGS) $(INCLUDE) $(OBJ) -o pomdp-solve $(MY_LIBS)
 
-clean:
+sublibs:
+	@for d in $(SUBDIRS); do \
+		(cd $${d} && CXX="$(CXX)" CC="$(CC)" CFLAGS="$(CFLAGS) $(CPICFLAGS)" AR="$(AR)" RANLIB="$(RANLIB)" $(MAKE)) || exit 1; \
+	done
+
+clean: subclean
 	@rm -f *.o
 	@rm -f pomdp-solve
 	@rm -f pomdp-solve.exe
-	for dir in $(SUBDIRS); do \
-	  $(MAKE) -C $${dir} clean; \
-	done
 
+subclean:
+	@for d in $(SUBDIRS); do \
+	  (cd $${d} && $(MAKE) clean) || exit 1; \
+	done

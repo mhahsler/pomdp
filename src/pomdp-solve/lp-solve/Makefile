@@ -15,11 +15,11 @@ y.tab.c:
 $(LIB): $(OBJ)
 	$(AR) -rcs $(LIB) $(OBJ)
 
-.PHONY: clean deepclean
-
 clean:
 	@-rm -rf .libs _libs $(LIB)
 	@-rm -f *.o
 
 deepclean: clean
 	@-rm -f y.tab.c lex.yy.c
+
+.PHONY: clean deepclean
