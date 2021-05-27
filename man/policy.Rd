@@ -16,7 +16,7 @@ A list with the policy for each epoch.
 Extracts the policy from a solved POMDP/MDP.
 }
 \details{
-A list (one entry per epoch) with the optimal policy. 
+A list (one entry per epoch) with the optimal policy.
 For converged, infinite-horizon problems solutions, a list with only the converged solution is produced.
 The policy is a data
 frame consisting o:

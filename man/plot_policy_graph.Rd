@@ -75,20 +75,20 @@ plot_policy_graph(sol, edge.label = NA, vertex.label = NA, legend = FALSE)
 plot_policy_graph(sol, main = sol$model$name)
 
 ## custom larger vertex labels (A, B, ...)
-plot_policy_graph(sol, 
-  vertex.label = LETTERS[1:nrow(policy(sol)[[1]])], 
+plot_policy_graph(sol,
+  vertex.label = LETTERS[1:nrow(policy(sol)[[1]])],
   vertex.label.cex = 2,
   vertex.label.color = "white")
 
-## plotting using the graph object 
+## plotting using the graph object
 ## (e.g., using the graph in the layout and to change the edge curvature)
 pg <- policy_graph(sol)
-plot(pg, 
+plot(pg,
   layout = layout_as_tree(pg, root = 3, mode = "out"),
   edge.curved = curve_multiple(pg, .2))
 
 ## changes labels
-plot(pg, 
+plot(pg,
   edge.label = abbreviate(E(pg)$label),
   vertex.label = sol$solution$pg$action,
   vertex.size = 10)

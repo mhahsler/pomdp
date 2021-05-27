@@ -104,7 +104,7 @@ Transition probability to transition to state \eqn{s'} from \eqn{s} given
 action \eqn{a} is \eqn{T(s' | s, a)}. The transition probabilities can be
 specified in the following ways:
 
-\itemize{ 
+\itemize{
 \item A data frame with 4 columns, where the columns specify
 action \eqn{a}, start.state \eqn{s}, end.state \eqn{s'} and the transition
 probability \eqn{T(s' | s, a)}, respectively. The first 3 columns can be
@@ -114,7 +114,7 @@ frame.
 
 \item A named list of \eqn{|A|} matrices.  Each matrix is square of size
 \eqn{|S| \times |S|}{|S| x |S|}. Instead of a matrix, also the strings
-\code{"identity"} or \code{"uniform"} can be specified.  
+\code{"identity"} or \code{"uniform"} can be specified.
 }
 
 \bold{Specification of observation probabilities}
@@ -142,7 +142,7 @@ specified.}
 The reward function \eqn{R(s, s', o, a)} can be specified in the following
 ways:
 
-\itemize{ 
+\itemize{
 \item a data frame with 5 columns, where the columns specify
 action \eqn{a}, start.state \eqn{s}, end.state \eqn{s'}, observation \eqn{o}
 and the associated reward \eqn{R(s, s', a)}, respectively. The first 4
@@ -154,7 +154,7 @@ function \code{R_()} to create this data frame.
 \item a named list of \eqn{|A|} lists. Each list contains \eqn{|S|} named
 matrices representing the start states \eqn{s}. Each matrix is of size
 \eqn{|S| \times |\Omega|}{|S| x |\Omega|}, representing the end states
-\eqn{s'} and observations.  
+\eqn{s'} and observations.
 }
 
 \bold{Start Belief}
@@ -192,26 +192,26 @@ more details and an example.
 
 Tiger <- POMDP(
   name = "Tiger Problem",
-  
+
   discount = 0.75,
-  
+
   states = c("tiger-left" , "tiger-right"),
   actions = c("listen", "open-left", "open-right"),
   observations = c("tiger-left", "tiger-right"),
-  
+
   start = "uniform",
-  
+
   transition_prob = list(
-    "listen" =     "identity", 
-    "open-left" =  "uniform", 
+    "listen" =     "identity",
+    "open-left" =  "uniform",
     "open-right" = "uniform"),
 
   observation_prob = list(
-    "listen" = rbind(c(0.85, 0.15), 
+    "listen" = rbind(c(0.85, 0.15),
                      c(0.15, 0.85)),
     "open-left" =  "uniform",
     "open-right" = "uniform"),
-  
+
   # the reward helper expects: action, start.state, end.state, observation, value
   reward = rbind(
     R_("listen",                    v =   -1),
@@ -221,7 +221,7 @@ Tiger <- POMDP(
     R_("open-right", "tiger-right", v = -100)
   )
 )
-  
+
 Tiger
 
 Tiger$model

@@ -70,7 +70,7 @@ plot_belief_space(sol, what = "pg_node")
 plot_belief_space(sol, what = "reward")
 
 # three-state POMDP
-# Note: If the plotting region is too small then the legend might run into the plot 
+# Note: If the plotting region is too small then the legend might run into the plot
 data("Three_doors")
 sol <- solve_POMDP(Three_doors)
 sol
@@ -83,8 +83,8 @@ plot_belief_space(sol, what = "reward")
 # plot the belief points used by the grid-based solver
 plot_belief_space(sol, sample = sol$solution$belief_states)
 
-# plot the belief points obtained using simulated trajectories (we use n = 50 to save time). 
-plot_belief_space(sol, sample = simulate_POMDP(Three_doors, n = 50, horizon = 100, 
+# plot the belief points obtained using simulated trajectories (we use n = 50 to save time).
+plot_belief_space(sol, sample = simulate_POMDP(Three_doors, n = 50, horizon = 100,
   random_actions = TRUE, visited_beliefs = TRUE))
 
 }

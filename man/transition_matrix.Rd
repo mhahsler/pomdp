@@ -37,7 +37,7 @@ transition_matrix(Tiger)
 # observation matrices for each action in the from states x observations
 observation_matrix(Tiger)
 
-# reward matrices for each matrix and (start) state in 
+# reward matrices for each matrix and (start) state in
 # the form (end) state x observation
 reward_matrix(Tiger)
 

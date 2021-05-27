@@ -1,7 +1,7 @@
 ---
 title: "POMDP: Introduction to Partially Observable Markov Decision Processes"
-author: "Hossein Kamalzadeh, Michael Hahsler"
-date: "December 8, 2019"
+author: "Michael Hahsler and Hossein Kamalzadeh"
+date: "May 20, 2021"
 bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{POMDP: Introduction to Partially Observable Markov Decision Processes}
@@ -31,11 +31,11 @@ The package provides the following algorithms:
 
 * Approximate value iteration
   - __Finite grid algorithm__ [@Cassandra2015], a variation of point-based value iteration to solve larger POMDPs (__PBVI__; see [@Pineau2003]) without dynamic belief set expansion.
+  - __SARSOP__ [[@Kurniawati2008]], a point-based algorithm that approximates optimally reachable belief spaces for infinite-horizon problems (via package __sarsop__). 
   
   
-  
-
-an interface to ['pomdp-solve'](http://www.pomdp.org/code/), a solver (written in C) for Partially Observable Markov Decision Processes (POMDP). The package enables the user to simply define all components of a POMDP model and solve the problem using several methods. The package also contains functions to analyze and visualize the POMDP solutions (e.g., the optimal policy). 
+The package includes a distrubution of
+interface to ['pomdp-solve'](http://www.pomdp.org/code/), a solver (written in C) for Partially Observable Markov Decision Processes (POMDP). The package enables the user to simply define all components of a POMDP model and solve the problem using several methods. The package also contains functions to analyze and visualize the POMDP solutions (e.g., the optimal policy). 
 
 In this document we will give a very brief introduction to the concept of POMDP, describe the features of the R package, and illustrate the usage with a toy example. 
 

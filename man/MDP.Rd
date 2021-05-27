@@ -68,13 +68,13 @@ for \code{\link{POMDP}}.
 Tiger_MDP <- MDP(
   name = "Michael's Sleepy Tiger Problem",
   discount = 1,
-  
+
   states = c("tiger-left" , "tiger-right"),
   actions = c("open-left", "open-right", "do-nothing"),
   start = "tiger-left",
-  
+
   transition_prob = list(
-    "open-left" =  "uniform", 
+    "open-left" =  "uniform",
     "open-right" = "uniform",
     "do-nothing" = "identity"),
 
@@ -87,7 +87,7 @@ Tiger_MDP <- MDP(
     R_("do-nothing",                v =    0)
   )
 )
-  
+
 Tiger_MDP
 
 # do 5 epochs with no discounting

@@ -31,7 +31,7 @@ discount factor specified in \code{model} will be used.}
 \item{digits}{precision used when writing POMDP files (see
 \code{\link{write_POMDP}}).}
 
-\item{parameter}{a list with parameters passed on to 
+\item{parameter}{a list with parameters passed on to
 the function \code{sarsop} in package \pkg{sarsop}.}
 
 \item{verbose}{logical, if set to \code{TRUE}, the function provides the
@@ -43,8 +43,8 @@ model specifications (\code{model}), the solution (\code{solution}), and the
 solver output (\code{solver_output}).
 }
 \description{
-This function uses the C++ implementation of the SARSOP algorithm 
-by Kurniawati, Hsu and Lee (2008) interfaced in 
+This function uses the C++ implementation of the SARSOP algorithm
+by Kurniawati, Hsu and Lee (2008) interfaced in
 package \pkg{sarsop}
 to solve infinite horizon problems that are formulated as partially observable Markov
 decision processes (POMDPs). The result is an optimal or approximately
@@ -71,7 +71,7 @@ plot_value_function(sol, ylim = c(0,20))
 
 # plot the policy graph
 plot_policy_graph(sol)
-  
+
 # reward of the optimal policy
 reward(sol)
 

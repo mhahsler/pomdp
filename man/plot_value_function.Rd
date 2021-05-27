@@ -50,7 +50,7 @@ sol
 plot_value_function(sol, ylim = c(0,20))
 
 ## finite-horizon
-sol <- solve_POMDP(model = Tiger, horizon = 3, discount = 1, 
+sol <- solve_POMDP(model = Tiger, horizon = 3, discount = 1,
   method = "enum")
 sol
 

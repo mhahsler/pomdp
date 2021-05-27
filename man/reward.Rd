@@ -37,15 +37,15 @@ sol <- solve_POMDP(model = Tiger)
 # if no start is specified, a uniform belief is used.
 reward(sol)
 
-# we have additional information that makes us believe that the tiger 
+# we have additional information that makes us believe that the tiger
 # is more likely to the left.
 reward(sol, belief = c(0.85, 0.15))
 
 # we start with strong evidence that the tiger is to the left.
 reward(sol, belief = "tiger-left")
 
-# Note that in this case, the total discounted expected reward is greater 
-# than 10 since the tiger problem resets and another game staring with 
+# Note that in this case, the total discounted expected reward is greater
+# than 10 since the tiger problem resets and another game staring with
 # a uniform belief is played which produces additional reward.
 
 }

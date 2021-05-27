@@ -1,7 +1,7 @@
 #' Tiger Problem POMDP Specification
-#' 
+#'
 #' The model for the Tiger Problem [1].
-#' 
+#'
 #' The original Tiger problem was published in [1]. A tiger is put with equal
 #' probability behind one of two doors represented by the states tiger-left and
 #' tiger-right, while treasure is put behind the other door. You are standing
@@ -16,12 +16,12 @@
 #' (actions open-left or open-right), you receive the appropriate reward and
 #' the problem is reset (i.e., the tiger is randomly assigned to a door and the
 #' belief is set to 50/50).
-#' 
+#'
 #' The three doors problem is an extension of the Tiger problem where the tiger
 #' is behind one of three doors represented by three states (tiger-left,
 #' tiger-center, and tiger-right) and treasure is behind the other two doors.
 #' There are also three observations for listening.
-#' 
+#'
 #' @name Tiger
 #' @aliases Tiger Three_doors
 #' @docType data
@@ -32,18 +32,16 @@
 #' Intelligence, pp. 1023-1028.
 #' @keywords datasets
 #' @examples
-#' 
+#'
 #' data("Tiger")
 #' Tiger
-#' 
+#'
 #' Tiger$model
-#' 
+#'
 #' data("Three_doors")
 #' Three_doors
-#' 
+#'
 #' Three_doors$model
 #'
+
 NULL
-
-
-

@@ -90,18 +90,18 @@ LPs. Overall precision can be changed using \code{parameter = list(epsilon =
 1e-3)}.
 
 \bold{Methods:} Several algorithms for dynamic-programming updates are
-available: 
-\itemize{ 
-\item Enumeration (Sondik 1971). 
-\item Two pass (Sondik 1971). 
-%exhaustive (Monahan 1982), 
-%linear support (Cheng 1988), 
+available:
+\itemize{
+\item Enumeration (Sondik 1971).
+\item Two pass (Sondik 1971).
+%exhaustive (Monahan 1982),
+%linear support (Cheng 1988),
 \item
-Witness (Littman, Cassandra, Kaelbling, 1996). 
-\item Incremental pruning (Zhang and Liu, 1996, Cassandra et al 1997). 
-\item Grid implements a variation of point-based value iteration 
-  to solve larger POMDPs (PBVI; see Pineau 2003) without dynamic belief set expansion. 
-} 
+Witness (Littman, Cassandra, Kaelbling, 1996).
+\item Incremental pruning (Zhang and Liu, 1996, Cassandra et al 1997).
+\item Grid implements a variation of point-based value iteration
+  to solve larger POMDPs (PBVI; see Pineau 2003) without dynamic belief set expansion.
+}
 Details can be found in (Cassandra, 2015).
 
 \bold{Note on method grid:} The grid method implements a version of Point
@@ -177,15 +177,15 @@ solve_POMDP_parameter()
 ################################################################
 # Example 2: Solve a problem specified as a POMDP file
 #            using a grid of size 10
-sol <- solve_POMDP("http://www.pomdp.org/examples/cheese.95.POMDP", 
+sol <- solve_POMDP("http://www.pomdp.org/examples/cheese.95.POMDP",
   method = "grid", parameter = list(fg_points = 10))
 sol
 
 policy(sol)
 
-# Example 3: Solving a finite-horizon POMDP using the incremental 
+# Example 3: Solving a finite-horizon POMDP using the incremental
 #            pruning method (without discounting)
-sol <- solve_POMDP(model = Tiger, 
+sol <- solve_POMDP(model = Tiger,
   horizon = 3, discount = 1, method = "incprune")
 sol
 
@@ -199,25 +199,25 @@ reward(sol, belief = c(1,0), epoch = 3) # just open the right door (10)
 reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (95\% chance)
 
 ################################################################
-# Example 3: Using terminal values 
+# Example 3: Using terminal values
 #
 # Specify 1000 if the tiger is right after 3 (horizon) epochs
-sol <- solve_POMDP(model = Tiger, 
+sol <- solve_POMDP(model = Tiger,
   horizon = 3, discount = 1,  method = "incprune",
   terminal_values = c(0, 1000))
 sol
 
 policy(sol)
-# Note: the optimal strategy is never to open the left door, because we think the 
-# tiger is there then we better wait to get 1000 as the terminal value. If we think 
-# the Tiger is to the left then open the right door and have a 50/50 chance that the 
+# Note: the optimal strategy is never to open the left door, because we think the
+# tiger is there then we better wait to get 1000 as the terminal value. If we think
+# the Tiger is to the left then open the right door and have a 50/50 chance that the
 # Tiger will go to the right door.
 
 ################################################################
-# Example 4: Model time-dependent transition probabilities 
+# Example 4: Model time-dependent transition probabilities
 
 # The tiger reacts normally for 3 epochs (goes randomly two one
-# of the two doors when a door was opened). After 3 epochs he gets 
+# of the two doors when a door was opened). After 3 epochs he gets
 # scared and when a door is opened then he always goes to the other door.
 
 # specify the horizon for each of the two differnt episodes
@@ -226,12 +226,12 @@ Tiger_time_dependent$model$name <- "Scared Tiger Problem"
 Tiger_time_dependent$model$horizon <- c(normal_tiger = 3, scared_tiger = 3)
 Tiger_time_dependent$model$transition_prob <- list(
   normal_tiger = list(
-    "listen" = "identity", 
-    "open-left" = "uniform", 
+    "listen" = "identity",
+    "open-left" = "uniform",
     "open-right" = "uniform"),
   scared_tiger = list(
-    "listen" = "identity", 
-    "open-left" = rbind(c(0, 1), c(0, 1)), 
+    "listen" = "identity",
+    "open-left" = rbind(c(0, 1), c(0, 1)),
     "open-right" = rbind(c(1, 0), c(1, 0))
   )
 )
@@ -249,30 +249,30 @@ policy(sol)
 # 1) create the scared tiger model
 Tiger_scared <- Tiger
 Tiger_scared$model$transition_prob <- list(
-    "listen" = "identity", 
-    "open-left" = rbind(c(0, 1), c(0, 1)), 
+    "listen" = "identity",
+    "open-left" = rbind(c(0, 1), c(0, 1)),
     "open-right" = rbind(c(1, 0), c(1, 0))
   )
 
 # 2) Solve in reverse order. Scared tiger without terminal values first.
-sol_scared <- solve_POMDP(model = Tiger_scared, 
+sol_scared <- solve_POMDP(model = Tiger_scared,
   horizon = 3, discount = 1,  method = "incprune")
 sol_scared
 policy(sol_scared)
 
 # 3) Solve the regular tiger with the value function of the scared tiger as terminal values
-sol <- solve_POMDP(model = Tiger, 
+sol <- solve_POMDP(model = Tiger,
   horizon = 3, discount = 1, method = "incprune",
   terminal_values = sol_scared$solution$alpha[[1]])
 sol
 policy(sol)
-# note: it is optimal to mostly listen till the Tiger gets in the scared mood. Only if we are 
+# note: it is optimal to mostly listen till the Tiger gets in the scared mood. Only if we are
 # extremely sure in the first epoch, then opening a door is optimal.
 
 ################################################################
 # Example 6: PBVI with a custom grid
 
-# Create a search grid by sampling from the belief space in 
+# Create a search grid by sampling from the belief space in
 #   10 regular intervals
 custom_grid <- sample_belief_space(Tiger, n = 10, method = "regular")
 custom_grid
@@ -280,7 +280,7 @@ custom_grid
 # Visualize the search grid
 plot_belief_space(sol, sample = custom_grid)
 
-# Solve the POMDP using the grid for approximation 
+# Solve the POMDP using the grid for approximation
 sol <- solve_POMDP(Tiger, method = "grid", parameter = list(grid = custom_grid))
 sol
 
