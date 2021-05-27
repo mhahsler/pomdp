@@ -34,7 +34,7 @@ The package provides the following algorithms:
   - __SARSOP__ [[@Kurniawati2008]], a point-based algorithm that approximates optimally reachable belief spaces for infinite-horizon problems (via package __sarsop__). 
   
   
-The package includes a distrubution of
+The package includes a distribution of
 interface to ['pomdp-solve'](http://www.pomdp.org/code/), a solver (written in C) for Partially Observable Markov Decision Processes (POMDP). The package enables the user to simply define all components of a POMDP model and solve the problem using several methods. The package also contains functions to analyze and visualize the POMDP solutions (e.g., the optimal policy). 
 
 In this document we will give a very brief introduction to the concept of POMDP, describe the features of the R package, and illustrate the usage with a toy example. 
