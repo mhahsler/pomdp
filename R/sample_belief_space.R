@@ -73,6 +73,9 @@ sample_belief_space <-
           b <- seq(0, 1, length.out = n)
           belief_states[, projection] <- cbind(b, 1 - b)
         } else if (d == 3) {
+          
+          check_installed("Ternary")
+          
           ### Note: the number of points might not be exactly n!
           triangleCentres <-
             Ternary::TriangleCentres(round(n ^ .5), direction = 1)
