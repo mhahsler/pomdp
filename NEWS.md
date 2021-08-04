@@ -1,6 +1,7 @@
 # pomdp 0.99.2.1 (xx/xx/2021)
 
 * moved Ternary and visNetwork to SUGGESTED.
+* removed clang warning for lex scanners.
 
 # pomdp 0.99.2 (05/14/2021)
 

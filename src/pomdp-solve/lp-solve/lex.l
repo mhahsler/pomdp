@@ -1,3 +1,7 @@
+
+%option noinput
+%option nounput
+
 %{
 //#include "lp.c"
 //#include "y.tab.c"

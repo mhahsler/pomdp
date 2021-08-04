@@ -1,3 +1,7 @@
+
+%option noinput
+%option nounput
+
 %{
 /*  scanner.l
 
@@ -26,6 +30,7 @@
   This module contains the patterns and actions needed by the scanner
   generator "LEX".  
 */
+
 
 #include <stdio.h>
 #include <ctype.h>
