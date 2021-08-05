@@ -556,7 +556,7 @@ void add_constraint(lprec *lp, REAL *row, short constr_type, REAL rh)
   lp->orig_lowbo[lp->rows] = 0;
 
   if(constr_type == GE && rh != 0)
-    lp->orig_rh[lp->rows] =- rh;
+    lp->orig_rh[lp->rows] = -rh;
   else
     lp->orig_rh[lp->rows] = rh;  
 
