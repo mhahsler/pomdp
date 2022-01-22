@@ -7,7 +7,7 @@
 sample_belief_space(model, projection = NULL, n = 1000, method = "random")
 }
 \arguments{
-\item{model}{a unsolved or solved POMDP.}
+\item{model}{a unsolved or solved \link{POMDP}.}
 
 \item{projection}{Sample in a projected belief space. All states not
 included in the projection are held at a belief of 0. \code{NULL} means no
@@ -26,14 +26,17 @@ Sample randomly (uniform) or regularly spaced points from the projected
 belief space.
 }
 \details{
-Method random samples uniformly sample from the projected belief space using
-the method described by Luc Devroye. Method regular samples points using a
+Several sampling methods are implemented:
+\itemize{
+\item \code{'random'} samples uniformly sample from the projected belief space using
+the method described by Luc Devroye (1986).
+\item \code{'regular'} samples points using a
 regularly spaced grid. This method is only available for projections on 2 or
-3 states.  Method vertices only samples from the vertices of the belief
-space.
+3 states.
+\item \code{'vertices'} only samples from the vertices of the belief space.
+}
 }
 \examples{
-
 data("Tiger")
 
 sample_belief_space(Tiger, n = 5)
@@ -42,7 +45,6 @@ sample_belief_space(Tiger, n = 5, method = "regular")
 # sample and calculate the reward for a solve POMDP
 sol <- solve_POMDP(Tiger)
 reward(sol, belief = sample_belief_space(sol, n = 5, method = "regular"))
-
 }
 \references{
 Luc Devroye, Non-Uniform Random Variate Generation, Springer

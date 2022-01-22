@@ -7,19 +7,23 @@
 reward(x, belief = NULL, epoch = 1)
 }
 \arguments{
-\item{x}{a POMDP solution (object of class POMDP).}
+\item{x}{a solved \link{POMDP} object.}
 
 \item{belief}{specification of the current belief state (see argument start
-in \code{\link{POMDP}} for details). By default the belief state defined in
+in \link{POMDP} for details). By default the belief state defined in
 the model as start is used.}
 
 \item{epoch}{return reward for this epoch. Default is the first epoch.}
 }
 \value{
-A list with the components \item{reward}{the total expected reward
-given a belief and epoch. } \item{belief_state}{the belief state specified
-in \code{belief}.} \item{pg_node}{the policy node that represents the belief
-state.} \item{action}{the optimal action.}
+A list with the components
+\item{reward}{the total expected reward
+given a belief and epoch. }
+\item{belief_state}{the belief state specified
+in \code{belief}.}
+\item{pg_node}{the policy node that represents the belief
+state.}
+\item{action}{the optimal action.}
 }
 \description{
 This function calculates the expected total reward for a POMDP solution
@@ -30,7 +34,6 @@ The value is calculated using the value function stored in the POMDP
 solution.
 }
 \examples{
-
 data("Tiger")
 sol <- solve_POMDP(model = Tiger)
 
@@ -47,10 +50,6 @@ reward(sol, belief = "tiger-left")
 # Note that in this case, the total discounted expected reward is greater
 # than 10 since the tiger problem resets and another game staring with
 # a uniform belief is played which produces additional reward.
-
-}
-\seealso{
-\code{\link{POMDP}}, \code{\link{solve_POMDP}}
 }
 \author{
 Michael Hahsler

@@ -17,7 +17,7 @@ plot_value_function(
 )
 }
 \arguments{
-\item{model}{a solved POMDP.}
+\item{model}{a solved \link{POMDP}.}
 
 \item{projection}{index or name of two states for the projection.}
 
@@ -34,7 +34,7 @@ for infinite-horizon solutions.}
 
 \item{lty}{line type.}
 
-\item{...}{additional arguments are passed on to \code{line}.}
+\item{...}{additional arguments are passed on to \code{\link[stats:line]{stats::line()}}`.}
 }
 \description{
 Plots the value function of a POMDP solution as a line plot. The solution is
@@ -42,7 +42,6 @@ projected on two states (i.e., the belief for the other states is held
 constant at zero).
 }
 \examples{
-
 data("Tiger")
 sol <- solve_POMDP(model = Tiger)
 sol

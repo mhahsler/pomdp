@@ -1,3 +1,8 @@
+# pomdp 0.99.3.1 (xx/xx/2021)
+
+* transition probability, observation probabilities and rewards can now
+  be specified as a function.
+
 # pomdp 0.99.3 (08/05/2021)
 
 * moved Ternary and visNetwork to SUGGESTED.

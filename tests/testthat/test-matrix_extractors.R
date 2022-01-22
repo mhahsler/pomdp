@@ -4,41 +4,7 @@ library("pomdp")
 context("matrix extractors")
 
 # make sure extractors reorder according to actions and observations...
-
-Tiger <- POMDP(
-  name = "Tiger Problem",
-  
-  discount = 0.75,
-  
-  states = c("tiger-left", "tiger-right"),
-  actions = c("listen", "open-left", "open-right"),
-  observations = c("tiger-left", "tiger-right"),
-  
-  start = "uniform",
-
-  # this is of order
-  transition_prob = list(
-    "open-left" =  "uniform", 
-    "listen" =     "identity", 
-    "open-right" = rbind(c(.5, .5), c(.5, .5))),
-  
-  observation_prob = list(
-    "open-right" = "uniform",
-    "listen" = rbind(c(0.85, 0.15), 
-      c(0.15, 0.85)),
-    "open-left" =  "uniform"),
-  
-  # the reward helper expects: action, start.state, end.state, observation, value
-  reward = rbind(
-    R_("listen",                    v =   -1),
-    R_("open-left",  "tiger-left",  v = -100),
-    R_("open-left",  "tiger-right", v =   10),
-    R_("open-right", "tiger-left",  v =   10),
-    R_("open-right", "tiger-right", v = -100)
-  )
-)
-
-Tiger
+data(Tiger)
 
 tm <- transition_matrix(Tiger)
 expect_equal(names(tm), as.character(Tiger$model$actions))
@@ -84,19 +50,58 @@ Tiger <- POMDP(
   )
 )
 
-Tiger
+# Check functions
+trans_f <- function(action, start.state, end.state) {
+  ## listen has an identity matrix
+  if(action == 'listen')
+    if(end.state == start.state) return(1)
+  else return(0)
+  
+  # other actions have a uniform distribution
+  return(1/2)
+}
 
-tm <- transition_matrix(Tiger)
-expect_equal(names(tm), as.character(Tiger$model$actions))
+obs_f <- function(action, end.state, observation) {
+  if(action == 'listen')
+    if(end.state == observation) return(0.85)
+    else return(0.15)
+  
+  return(1/2)
+}
 
-om <- observation_matrix(Tiger)
-expect_equal(names(om), as.character(Tiger$model$actions))
+rew_f <- function(action, start.state, end.state, observation) {
+  if(action == 'listen') return(-1)
+  if(action == 'open-left' && start.state == 'tiger-left') return(-100)
+  if(action == 'open-left' && start.state == 'tiger-right') return(10)
+  if(action == 'open-right' && start.state == 'tiger-left') return(10)
+  if(action == 'open-right' && start.state == 'tiger-right') return(-100)
+  stop('Not possible')
+}
 
-rew <- reward_matrix(Tiger)
-expect_equal(names(rew), as.character(Tiger$model$actions))
-expect_equal(names(rew[[1]]), as.character(Tiger$model$states))
+Tiger_func <- POMDP(
+  name = "Tiger Problem",
+  discount = 0.75,
+  states = c("tiger-left" , "tiger-right"),
+  actions = c("listen", "open-left", "open-right"),
+  observations = c("tiger-left", "tiger-right"),
+  start = "uniform",
+  
+  transition_prob = trans_f,
+  observation_prob = obs_f,
+  reward = rew_f
+)
 
-# check for factor translation in data.frames (pre R 4.0)
+tm_func <- transition_matrix(Tiger_func)
+expect_equal(tm_func, tm)
+
+om_func <- observation_matrix(Tiger_func)
+expect_equal(om_func, om)
+
+rew_func <- reward_matrix(Tiger_func)
+expect_equal(rew_func, rew)
+
+
+## check for factor translation in data.frames (pre R 4.0)
 objPOMDP <- POMDP(
   name = "Displays a possible bug",
   discount = 0.8, 

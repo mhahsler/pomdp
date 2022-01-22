@@ -1,8 +1,9 @@
 #' Tiger Problem POMDP Specification
 #'
-#' The model for the Tiger Problem [1].
+#' The model for the Tiger Problem introduces in Cassandra et al (1994).
 #'
-#' The original Tiger problem was published in [1]. A tiger is put with equal
+#' The original Tiger problem was published in Cassandra et al (1994). 
+#' A tiger is put with equal
 #' probability behind one of two doors represented by the states tiger-left and
 #' tiger-right, while treasure is put behind the other door. You are standing
 #' in front of the two closed doors and need to decide which one to open. If
@@ -25,8 +26,8 @@
 #' @name Tiger
 #' @aliases Tiger Three_doors
 #' @docType data
-#' @format An object of class POMDP.
-#' @references [1] Anthony R. Cassandra, Leslie P Kaelbling, and Michael L.
+#' @format An object of class [POMDP].
+#' @references Anthony R. Cassandra, Leslie P Kaelbling, and Michael L.
 #' Littman (1994). Acting Optimally in Partially Observable Stochastic Domains.
 #' In Proceedings of the Twelfth National Conference on Artificial
 #' Intelligence, pp. 1023-1028.

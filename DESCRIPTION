@@ -1,7 +1,7 @@
 Package: pomdp
 Title: Solver for Partially Observable Markov Decision Processes (POMDP)
-Version: 0.99.3
-Date: 2021-08-05
+Version: 0.99.3.1
+Date: 2021-xx-xx
 Authors@R: 
       c(person(given = "Michael",
              family = "Hahsler",
@@ -33,4 +33,5 @@ Copyright: pomdp-solve is Copyright (C) Anthony R. Cassandra;
   LASPack is Copyright (C) Tomas Skalicky; 
   lp-solve is Copyright (C) Michel Berkelaar, Kjell Eikland, Peter Notebaert; 
   all other code is Copyright (C) Hossein Kamalzadeh and Michael Hahsler.
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2.9000
+Roxygen: list(markdown = TRUE)

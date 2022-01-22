@@ -18,7 +18,7 @@ plot_belief_space(
 )
 }
 \arguments{
-\item{model}{a solved POMDP.}
+\item{model}{a solved \link{POMDP}.}
 
 \item{projection}{a vector with state IDs or names to project on. Allowed
 are projections on two or three states. \code{NULL} uses the first two or
@@ -53,7 +53,6 @@ points are given, points are sampled using a regular arrangement or randomly
 from the (projected) belief space.
 }
 \examples{
-
 # two-state POMDP
 data("Tiger")
 sol <- solve_POMDP(Tiger)
@@ -89,7 +88,7 @@ plot_belief_space(sol, sample = simulate_POMDP(Three_doors, n = 50, horizon = 10
 
 }
 \seealso{
-\code{\link{sample_belief_space}}
+\code{\link[=sample_belief_space]{sample_belief_space()}}
 }
 \author{
 Michael Hahsler

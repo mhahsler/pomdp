@@ -15,7 +15,7 @@ update_belief(
 )
 }
 \arguments{
-\item{model}{a POMDP model.}
+\item{model}{a \link{POMDP} object.}
 
 \item{belief}{the current belief state.
 Defaults to the start belief state specified in
@@ -26,7 +26,7 @@ the model or "uniform".}
 \item{observation}{the received observation.}
 
 \item{episode}{Use transition and observation matrices for the given episode
-for time-dependent POMDPs (see \code{\link{POMDP}}).}
+for time-dependent POMDPs (see \link{POMDP}).}
 
 \item{digits}{round decimals.}
 
@@ -45,7 +45,6 @@ belief state \eqn{b'} is:
 where \eqn{\eta = 1/ \sum_{s' \in S}[ O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)]} normalizes the new belief state so the probabilities add up to one.
 }
 \examples{
-
 data(Tiger)
 
 update_belief(c(.5,.5), model = Tiger)

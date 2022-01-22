@@ -3,25 +3,29 @@
 #' Sample randomly (uniform) or regularly spaced points from the projected
 #' belief space.
 #'
-#' Method random samples uniformly sample from the projected belief space using
-#' the method described by Luc Devroye. Method regular samples points using a
+#' Several sampling methods are implemented:
+#' 
+#' * `'random'` samples uniformly sample from the projected belief space using
+#' the method described by Luc Devroye (1986). 
+#' 
+#' * `'regular'` samples points using a
 #' regularly spaced grid. This method is only available for projections on 2 or
-#' 3 states.  Method vertices only samples from the vertices of the belief
-#' space.
+#' 3 states.  
+#' 
+#' * `'vertices'` only samples from the vertices of the belief space.
 #'
-#' @param model a unsolved or solved POMDP.
+#' @param model a unsolved or solved [POMDP].
 #' @param projection Sample in a projected belief space. All states not
-#' included in the projection are held at a belief of 0. \code{NULL} means no
+#' included in the projection are held at a belief of 0. `NULL` means no
 #' projection.
 #' @param n size of the sample.
 #' @param method character string specifying the sampling strategy. Available
-#' are \code{"random"}, \code{"regular"}, and \code{"vertices"}.
+#' are `"random"`, `"regular"`, and `"vertices"`.
 #' @return Returns a matrix. Each row is a sample from the belief space.
 #' @author Michael Hahsler
 #' @references Luc Devroye, Non-Uniform Random Variate Generation, Springer
 #' Verlag, 1986.
 #' @examples
-#'
 #' data("Tiger")
 #'
 #' sample_belief_space(Tiger, n = 5)
@@ -30,7 +34,6 @@
 #' # sample and calculate the reward for a solve POMDP
 #' sol <- solve_POMDP(Tiger)
 #' reward(sol, belief = sample_belief_space(sol, n = 5, method = "regular"))
-#'
 #' @export
 sample_belief_space <-
   function(model,
@@ -58,7 +61,8 @@ sample_belief_space <-
         # uniformly sample from a simplex.
         # https://cs.stackexchange.com/questions/3227/uniform-sampling-from-a-simplex)
         # Luc Devroye, Non-Uniform Random Variate Generation, Springer Verlag, 1986.
-        m <- cbind(0, matrix(stats::runif(n * (d - 1)), ncol = d - 1), 1)
+        m <-
+          cbind(0, matrix(stats::runif(n * (d - 1)), ncol = d - 1), 1)
         belief_states[, projection] <-
           t(apply(
             m,
@@ -73,7 +77,6 @@ sample_belief_space <-
           b <- seq(0, 1, length.out = n)
           belief_states[, projection] <- cbind(b, 1 - b)
         } else if (d == 3) {
-          
           check_installed("Ternary")
           
           ### Note: the number of points might not be exactly n!
@@ -95,7 +98,7 @@ sample_belief_space <-
           }
           
           belief_states[, projection] <-
-            t(Ternary::XYToTernary(triangleCentres["x",], triangleCentres["y",],
+            t(Ternary::XYToTernary(triangleCentres["x", ], triangleCentres["y", ],
               direction = 1))
           attr(belief_states, "TernaryTriangleCenters") <-
             triangleCentres
@@ -104,10 +107,10 @@ sample_belief_space <-
       },
       
       vertices = {
-        belief_states <- belief_states[rep(1, d), ]
+        belief_states <- belief_states[rep(1, d),]
         belief_states[cbind(projection, projection)] <- 1
         belief_states <-
-          belief_states[sample(d, size = n, replace = TRUE), ]
+          belief_states[sample(d, size = n, replace = TRUE),]
       })
     
     belief_states

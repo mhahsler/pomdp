@@ -1,7 +1,7 @@
 #' Visualize a POMDP Policy Graph
 #'
 #' The function plots the POMDP policy graph in a POMDP. It
-#' uses \code{plot} in \pkg{igraph} with appropriate plotting options.
+#' uses `plot` in \pkg{igraph} with appropriate plotting options.
 #'
 #' The function currently only plots converged policy graphs.
 #'
@@ -11,33 +11,26 @@
 #' belonging to the node/segment.
 #'
 #' The built in plotting engines are \pkg{igraph} and \pkg{visNetwork}. The
-#' additional arguments specified in \code{...} are passed on to the engine
+#' additional arguments specified in `...` are passed on to the engine
 #' plotting function.  For \pkg{igraph} this is
-#' \code{\link[igraph]{plot.igraph}} (see \code{\link[igraph]{plot.common}} for
-#' available options). For \pkg{visNetwork} this is
-#' \code{\link[visNetwork]{visIgraph}}.
+#' [igraph::plot.igraph()]. For \pkg{visNetwork} this is
+#' [visNetwork::visIgraph()].
 #'
 #' Other plotting libraries can be used by creating a policy graph (as an
-#' igraph object) using \code{\link{policy_graph}} and converting it into a
+#' igraph object) using [policy_graph()] and converting it into a
 #' suitable representation for that library.
 #'
 #' @aliases plot_policy_graph plot
-#' @param x object of class POMDP containing a solved POMDP problem.
+#' @param x object of class [POMDP] containing a solved POMDP problem.
 #' @param belief logical; display belief proportions as a pie chart in each node. This requires belief space sampling and may be slow.
 #' @param legend logical; display a legend for colors used belief proportions?
 #' @param engine The plotting engine to be used.
 #' @param col colors used for the states.
 #' @param \dots plotting options passed on to the plotting engine (see Details
 #' section).
-#' @seealso \code{\link{solve_POMDP}}, \code{\link{policy_graph}}.
-#'
-#' From: \pkg{igraph} \code{\link[igraph]{plot.igraph}},
-#' \code{\link[igraph]{igraph_options}}, \code{\link[igraph]{plot.common}}.
-#'
-#' From \pkg{visNetwork}: \code{\link[visNetwork]{visIgraph}}.
+#' @seealso [solve_POMDP()], [policy_graph()].
 #' @keywords hplot
 #' @examples
-#'
 #' data("Tiger")
 #' sol <- solve_POMDP(model = Tiger)
 #' sol
@@ -127,7 +120,7 @@ plot_policy_graph <- function(x,
 ### fix the broken curve_multiple for directed graphs (igraph_1.2.2)
 .curve_multiple_directed <- function(graph, start = 0.3) {
   el <-  as_edgelist(graph, names = FALSE)
-  o <- apply(el, 1, order)[1, ]
+  o <- apply(el, 1, order)[1,]
   el <-
     apply(
       el,

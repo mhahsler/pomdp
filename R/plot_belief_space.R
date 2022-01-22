@@ -7,28 +7,26 @@
 #' points are given, points are sampled using a regular arrangement or randomly
 #' from the (projected) belief space.
 #'
-#'
-#' @param model a solved POMDP.
+#' @param model a solved [POMDP].
 #' @param projection a vector with state IDs or names to project on. Allowed
-#' are projections on two or three states. \code{NULL} uses the first two or
+#' are projections on two or three states. `NULL` uses the first two or
 #' three states.
 #' @param epoch display this epoch.
 #' @param sample a matrix with belief points as rows or a character string
-#' specifying the \code{method} used for \code{sample_belief_space}.
+#' specifying the `method` used for `sample_belief_space`.
 #' @param n number of points sampled.
 #' @param what what to plot.
 #' @param legend logical; add a legend? If the legend is covered by the plot then you
 #' need to increase the plotting region of the plotting device.
 #' @param pch plotting symbols.
 #' @param col plotting colors.
-#' @param ...  additional arguments are passed on to \code{plot} for 2D or
-#' \code{TerneryPlot} for 3D.
+#' @param ...  additional arguments are passed on to `plot` for 2D or
+#' `TerneryPlot` for 3D.
 #' @return Returns invisibly the sampled points.
 #' @author Michael Hahsler
-#' @seealso \code{\link{sample_belief_space}}
+#' @seealso [sample_belief_space()]
 #' @keywords hplot
 #' @examples
-#'
 #' # two-state POMDP
 #' data("Tiger")
 #' sol <- solve_POMDP(Tiger)
@@ -88,7 +86,7 @@ plot_belief_space <-
         method = sample)
     else {
       # a given sample needs to be projected
-      sample[, -projection] <- 0
+      sample[,-projection] <- 0
       sample <- sample[rowSums(sample) > 0, , drop = FALSE]
       sample <-
         sweep(sample,
@@ -112,7 +110,7 @@ plot_belief_space <-
     
     sample <- sample[, projection]
     ### remove points that have only 0 in the projection
-    sample <- sample[rowSums(sample) != 0, ]
+    sample <- sample[rowSums(sample) != 0,]
     
     if (length(projection) == 3) {
       check_installed("Ternary")

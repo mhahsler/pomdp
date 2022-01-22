@@ -15,17 +15,15 @@ format_fixed <- function(x, digits = 7, debug = "unknown") {
 
 #' Read and write a POMDP Model to a File in POMDP Format
 #'
-#' Reads and write a POMDP file suitable for the pomdp-solve program. Note: read POMDP files are intended to be used in solve_POMDP() and do not support all auxiliary functions. Fields like the transition matrix, the observation matrix and the reward structure are not parsed.
-#'
+#' Reads and write a POMDP file suitable for the `pomdp-solve` program. _Note:_ read POMDP files are intended to be used in [solve_POMDP()] and do not support all auxiliary functions. Fields like the transition matrix, the observation matrix and the reward structure are not parsed.
 #'
 #' @aliases write_POMDP read_POMDP
-#' @param model an object of class POMDP_model.
+#' @param model an object of class [POMDP].
 #' @param digits precision for writing numbers (digits after the decimal
 #' point).
 #' @param file a file name.
-#' @return \code{read_POMDP} returns a POMDP object.
+#' @return `read_POMDP()` returns a [POMDP] object.
 #' @author Hossein Kamalzadeh, Michael Hahsler
-#' @seealso \code{\link{POMDP}}
 #' @references POMDP solver website: \url{http://www.pomdp.org}
 #' @keywords IO
 #' @export
@@ -33,26 +31,34 @@ write_POMDP <- function(model, file, digits = 7) {
   if (!inherits(model, "POMDP"))
     stop("model needs to be a POMDP model use POMDP()!")
   
-  model <- model$model
+  discount      <- model$model$discount
+  states        <- model$model$states
+  actions       <- model$model$actions
+  observations  <- model$model$observations
+  start         <- model$model$start
+  max           <- model$model$max
+  model_name    <- model$model$name
   
-  discount    <- model$discount
-  states      <- model$states
-  number_of_states <- length(states)
-  actions     <- model$actions
-  number_of_actions <- length(actions)
-  observations <- model$observations
-  number_of_observations <- length(observations)
-  start       <- model$start
-  transition_prob <- model$transition_prob
-  observation_prob <- model$observation_prob
-  reward      <- model$reward
-  max         <- model$max
+  number_of_states        <- length(states)
+  number_of_observations  <- length(observations)
+  number_of_actions       <- length(actions)
   values <- ifelse(max, "reward", "cost")
+  
+  transition_prob   <- model$model$transition_prob
+  observation_prob  <- model$model$observation_prob
+  reward            <- model$model$reward
+  
+  if (is.function(transition_prob))
+    transition_prob <- transition_matrix(model)
+  if (is.function(observation_prob))
+    observation_prob <- observation_matrix(model)
+  if (is.function(reward))
+    reward <- reward_matrix(model)
   
   ### POMDP file
   code <-  paste0(
     "# POMDP File: ",
-    model$name,
+    model_name,
     "\n",
     "# Produced with R package pomdp\n",
     "\n",
@@ -127,11 +133,7 @@ write_POMDP <- function(model, file, digits = 7) {
   ## if the transition probabilities are given in the general form
   if (is.data.frame(transition_prob)) {
     # checking if the number of the columns of the given data frame is 4
-    if (ncol(transition_prob) != 4) {
-      stop(
-        "the given data frame for the transition probabilities needs to have 4 columns including 'action', 'start-state','end-state','probability'"
-      )
-    }
+    check_df(transition_prob, T_, "transition_prob")
     
     # writing the transition probability lines
     for (i in 1:nrow(transition_prob)) {
@@ -187,6 +189,7 @@ write_POMDP <- function(model, file, digits = 7) {
   
   ## if the observation probabilities are given in the general form
   if (is.data.frame(observation_prob)) {
+    check_df(observation_prob, O_, "observation_prob")
     # checking if the number of the columns of the given data frame is 4
     if (dim(observation_prob)[2] != 4) {
       stop(
@@ -257,12 +260,7 @@ write_POMDP <- function(model, file, digits = 7) {
   
   ## if the rewards are given in the general form
   if (is.data.frame(reward)) {
-    # checking if the number of the columns of the given data frame is 5
-    if (dim(reward)[2] != 5) {
-      stop(
-        "the given data frame for the Rewards needs to have 5 columns including 'action', 'start-state','end-state','observation', 'values'"
-      )
-    }
+    check_df(reward, R_, "reward")
     
     # writing the reward lines
     for (i in 1:nrow(reward)) {

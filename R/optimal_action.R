@@ -4,15 +4,13 @@
 #' at a given epoch.
 #'
 #'
-#' @param model a solved POMDP model.
+#' @param model a solved [POMDP].
 #' @param belief The belief (probability distribution over the states) as a
 #' vector or a matrix with multiple belief states as rows.
 #' @param epoch what epoch of the policy should be used.
 #' @return The name of the optimal action.
 #' @author Michael Hahsler
-#' @seealso \code{\link{POMDP}}
 #' @examples
-#'
 #' data("Tiger")
 #' Tiger
 #'

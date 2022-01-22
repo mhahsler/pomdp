@@ -10,7 +10,7 @@ write_POMDP(model, file, digits = 7)
 read_POMDP(file)
 }
 \arguments{
-\item{model}{an object of class POMDP_model.}
+\item{model}{an object of class \link{POMDP}.}
 
 \item{file}{a file name.}
 
@@ -18,16 +18,13 @@ read_POMDP(file)
 point).}
 }
 \value{
-\code{read_POMDP} returns a POMDP object.
+\code{read_POMDP()} returns a \link{POMDP} object.
 }
 \description{
-Reads and write a POMDP file suitable for the pomdp-solve program. Note: read POMDP files are intended to be used in solve_POMDP() and do not support all auxiliary functions. Fields like the transition matrix, the observation matrix and the reward structure are not parsed.
+Reads and write a POMDP file suitable for the \code{pomdp-solve} program. \emph{Note:} read POMDP files are intended to be used in \code{\link[=solve_POMDP]{solve_POMDP()}} and do not support all auxiliary functions. Fields like the transition matrix, the observation matrix and the reward structure are not parsed.
 }
 \references{
 POMDP solver website: \url{http://www.pomdp.org}
-}
-\seealso{
-\code{\link{POMDP}}
 }
 \author{
 Hossein Kamalzadeh, Michael Hahsler

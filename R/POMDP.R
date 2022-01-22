@@ -4,11 +4,13 @@
 #' set of states, the set of actions, the set of observations, the transition
 #' probabilities, the observation probabilities, and rewards.
 #'
-#' POMDP problems can be solved using \code{\link{solve_POMDP}}.  More details
-#' about the available specifications can be found in [1].
+#' POMDP problems can be solved using [solve_POMDP()].
 #'
-#' In the following we use the following notation. The POMDP is a 7-duple
-#' \eqn{(S,A,T,R, \Omega ,O, \gamma)}.  \eqn{S} is the set of states; \eqn{A}
+#' In the following we use the following notation. The POMDP is a 7-duple:
+#' 
+#' \eqn{(S,A,T,R, \Omega ,O, \gamma)}.  
+#' 
+#' \eqn{S} is the set of states; \eqn{A}
 #' is the set of actions; \eqn{T} are the conditional transition probabilities
 #' between states; \eqn{R} is the reward function; \eqn{\Omega} is the set of
 #' observations; \eqn{O} are the conditional observation probabilities; and
@@ -17,95 +19,121 @@
 #' the size of a set we will use cardinality, e.g., the number of actions is
 #' \eqn{|A|}.
 #'
-#' \bold{Specification of transition probabilities}
+#' **Names used for mathematical symbols in code**
+#' 
+#' * \eqn{S, s, s'}: `'states', start.state', 'end.state'` 
+#' * \eqn{A, a}: `'actions', 'action'`
+#' * \eqn{\Omega, o}: `'observations', 'observation'`
 #'
-#' Transition probability to transition to state \eqn{s'} from \eqn{s} given
-#' action \eqn{a} is \eqn{T(s' | s, a)}. The transition probabilities can be
+#' State names, actions and observations can be specified as strings or index numbers 
+#' (e.g., `start.state` can be specified as the index of the state in `states`). 
+#' For the specification as data.frames below, `'*'` can be used to mean
+#' any  `start.state`, `end.state`, `action` or `observation`.
+#'
+#' The specification below map to the format used by pomdp-solve 
+#' (see \url{http://www.pomdp.org}).
+#' 
+#' **Specification of transition probabilities: \eqn{T(s' | s, a)}**
+#'
+#' Transition probability to transition to state \eqn{s'} from given state \eqn{s} 
+#' and action \eqn{a}. The transition probabilities can be
 #' specified in the following ways:
 #'
-#' \itemize{
-#' \item A data frame with 4 columns, where the columns specify
-#' action \eqn{a}, start.state \eqn{s}, end.state \eqn{s'} and the transition
-#' probability \eqn{T(s' | s, a)}, respectively. The first 3 columns can be
-#' either character (the name of the action or state) or integer indices.  You
-#' can use \code{rbind()} with helper function \code{T_()} to create this data
-#' frame.
+#' * A data.frame with 4 columns named:
+#' 
+#'   `'action'`, `'start.state'`, `'end.state'`, `'probability'`.
+#'   
+#'   You can use `rbind()` with helper function `T_()` to create this data
+#'   frame.
 #'
-#' \item A named list of \eqn{|A|} matrices.  Each matrix is square of size
-#' \eqn{|S| \times |S|}{|S| x |S|}. Instead of a matrix, also the strings
-#' \code{"identity"} or \code{"uniform"} can be specified.
-#' }
+#' * A named list of matrices, one for each action. Each matrix is square with 
+#'   rows representing start states \eqn{s} and columns representing end states \eqn{s'}. 
+#'   Instead of a matrix, also the strings `'identity'` or `'uniform'` can be specified.
 #'
-#' \bold{Specification of observation probabilities}
+#' * A function with the signature 
+#' 
+#'   `P(action, state.end, state.start)` 
+#'   
+#'   that returns the transition probability.
+#'
+#' **Specification of observation probabilities: \eqn{O(o | s', a)}**
 #'
 #' The POMDP specifies the probability for each observation \eqn{o} given an
-#' action \eqn{a} and that the system transitioned to a specific state
-#' \eqn{s'}, \eqn{O(o | s', a)}. These probabilities can be specified in the
+#' action \eqn{a} and that the system transitioned to the end state
+#' \eqn{s'}. These probabilities can be specified in the
 #' following ways:
 #'
-#' \itemize{ \item A data frame with 4 columns, where the columns specify the
-#' action \eqn{a}, the end.state \eqn{s'}, the observation \eqn{o} and the
-#' probability \eqn{O(o | s', a)}, respectively. The first 3 columns could be
-#' either character (the name of the action, state, or observation), integer
-#' indices, or they can be \code{"*"} to indicate that the observation
-#' probability applies to all actions or states.  You can use \code{rbind()}
-#' with helper function \code{O_()} to create this data frame.
+#' * A data frame with 4 columns named:
+#' 
+#'   `'action'`, `'end.state'`, `'observation'`, `'probability'`.
+#'   
+#'   You can use `rbind()`
+#'   with helper function `O_()` to create this data frame.
 #'
-#' \item A named list of \eqn{|A|} matrices. Each matrix is of size \eqn{|S|
-#' \times |\Omega|}{|S| x |\Omega|}.  The name of each matrix is the action it
-#' applies to.  Instead of a matrix, also the string \code{"uniform"} can be
-#' specified.}
+#' * A named list of matrices, one for each action. Each matrix has 
+#'   rows representing end states \eqn{s'} and columns representing an observation \eqn{o}. 
+#'   Instead of a matrix, also the strings `'identity'` or `'uniform'` can be specified.
 #'
-#' \bold{Specification of the reward function}
+#' * A function with the signature 
+#' 
+#'   `O(action, end.state, observation)` 
+#'   
+#'   that returns the observation probability.
 #'
-#' The reward function \eqn{R(s, s', o, a)} can be specified in the following
+#' **Specification of the reward function: \eqn{R(s, s', o, a)}**
+#'
+#' The reward function can be specified in the following
 #' ways:
 #'
-#' \itemize{
-#' \item a data frame with 5 columns, where the columns specify
-#' action \eqn{a}, start.state \eqn{s}, end.state \eqn{s'}, observation \eqn{o}
-#' and the associated reward \eqn{R(s, s', a)}, respectively. The first 4
-#' columns could be either character (names of the action, states, or
-#' observation), integer indices, or they can be \code{"*"} to indicate that
-#' the reward applies to all transitions.  Use \code{rbind()} with helper
-#' function \code{R_()} to create this data frame.
+#' * A data frame with 5 columns named:
+#' 
+#'   `'action'`, `'start.state', `'end.state'`, `'observation'`, `'value'`.
+#'   
+#'   You can use `rbind()`
+#'   with helper function `R_()` to create this data frame.
+#'   
+#' * A list of lists. The list levels are action and start.state. The list elements
+#'   are matrices with 
+#'   rows representing end states \eqn{s'} and columns representing an observation \eqn{o}.
+#' 
+#' * A function with the signature 
+#'   
+#'   `R(action, start.state, end.state, observation)` 
+#'   
+#'   that returns the reward.
 #'
-#' \item a named list of \eqn{|A|} lists. Each list contains \eqn{|S|} named
-#' matrices representing the start states \eqn{s}. Each matrix is of size
-#' \eqn{|S| \times |\Omega|}{|S| x |\Omega|}, representing the end states
-#' \eqn{s'} and observations.
-#' }
-#'
-#' \bold{Start Belief}
+#' **Start Belief**
 #'
 #' This belief is used to calculate the total expected cumulative reward
-#' printed with the solved model.  The function \code{\link{reward}} can be
+#' printed with the solved model.  The function [reward()] can be
 #' used to calculate rewards for any belief.
 #'
 #' Some methods use this belief to decide which belief states to explore (e.g.,
 #' the finite grid method).  The default initial belief is a uniform
 #' distribution over all states. No initial belief state can be used by setting
-#' \code{start = NULL}.
+#' `start = NULL`.
 #'
-#' Options to specify the start belief state are: \itemize{ \item a probability
-#' distribution over the states. That is, a vector of \eqn{|S|} probabilities,
-#' that add up to \eqn{1}.  \item the string \code{"uniform"} for a uniform
-#' distribution over all states.  \item an integer in the range \eqn{1} to
-#' \eqn{n} to specify the index of a single starting state.  \item a string
-#' specifying the name of a single starting state.  }
+#' Options to specify the start belief state are: 
+#' 
+#' * A probability distribution over the states. That is, a vector 
+#'   of \eqn{|S|} probabilities, that add up to \eqn{1}.
+#'   
+#'* The string `"uniform"` for a uniform
+#'   distribution over all states.  
+#'* An integer in the range \eqn{1} to \eqn{n} to specify the index of a single starting state.  
+#'* a string specifying the name of a single starting state.
 #'
-#' \bold{Time-dependent POMDPs}
+#' **Time-dependent POMDPs**
 #'
 #' Time dependence of transition probabilities, observation probabilities and
 #' reward structure can be modeled by considering a set of episodes
 #' representing epoch with the same settings. The length of each episode is
-#' specified as a vector for \code{horizon}, where the length is the number of
+#' specified as a vector for `horizon`, where the length is the number of
 #' episodes and each value is the length of the episode in epochs. Transition
 #' probabilities, observation probabilities and/or reward structure can contain
-#' a list with the values for each episode. See \code{\link{solve_POMDP}} for
+#' a list with the values for each episode. See [solve_POMDP()] for
 #' more details and an example.
 #'
-#' @aliases POMDP O_ R_ T_
 #' @param states a character vector specifying the names of the states.
 #' @param actions a character vector specifying the names of the available
 #' actions.
@@ -118,36 +146,36 @@
 #' @param reward Specifies the rewards structure dependent on action, states
 #' and observations.  See Details section.
 #' @param discount numeric; discount factor between 0 and 1.
-#' @param horizon numeric; Number of epochs. \code{Inf} specifies an infinite
+#' @param horizon numeric; Number of epochs. `Inf` specifies an infinite
 #' horizon.
 #' @param terminal_values a vector with the terminal values for each state or a
 #' matrix specifying the terminal rewards via a terminal value function (e.g.,
 #' the alpha component produced by solve_POMDP).  A single 0 specifies that all
 #' terminal values are zero.
 #' @param start Specifies the initial probabilities for each state (i.e., the
-#' initial belief), typically as a vector or the string \code{"uniform"}
+#' initial belief), typically as a vector or the string `'uniform'`
 #' (default).  This belief is used to calculate the total expected cumulative
 #' reward. It is also used by some solvers. See Details section for more
 #' information.
 #' @param max logical; is this a maximization problem (maximize reward) or a
-#' minimization (minimize cost specified in \code{reward})?
+#' minimization (minimize cost specified in `reward`)?
 #' @param name a string to identify the POMDP problem.
 #' @param action,start.state,end.state,observation,probability,value Values
-#' used in the helper functions \code{O_()}, \code{R_()}, and \code{T_()} to
-#' create an entry for \code{observation_prob}, \code{reward}, or
-#' \code{transistion_prob} above, respectively. The default value \code{"*"}
+#' used in the helper functions `O_()`, `R_()`, and `T_()` to
+#' create an entry for `observation_prob`, `reward`, or
+#' `transistion_prob` above, respectively. The default value `'*"'`
 #' matches any action/state/observation.
+#' 
 #' @return The function returns an object of class POMDP which is list with an
-#' element called \code{model} containing a list with the model specification.
-#' \code{solve_POMDP} reads the object and adds a list element called
-#' \code{solution}.
+#' element called `'model'` containing a list with the model specification.
+#' [solve_POMDP()] reads the object and adds a list element named
+#' `'solution'`.
 #' @author Hossein Kamalzadeh, Michael Hahsler
-#' @seealso \code{\link{solve_POMDP}}
-#' @references [1] For further details on how the POMDP solver utilized in this
-#' R package works check the following website: \url{http://www.pomdp.org}
+#' @seealso [solve_POMDP()]
+#' @references 
+#' pomdp-solve website: \url{http://www.pomdp.org}
 #' @examples
-#'
-#' ## The Tiger Problem
+#' ## Defining the Tiger Problem
 #'
 #' Tiger <- POMDP(
 #'   name = "Tiger Problem",
@@ -163,13 +191,15 @@
 #'   transition_prob = list(
 #'     "listen" =     "identity",
 #'     "open-left" =  "uniform",
-#'     "open-right" = "uniform"),
+#'     "open-right" = "uniform"
+#'   ),
 #'
 #'   observation_prob = list(
 #'     "listen" = rbind(c(0.85, 0.15),
 #'                      c(0.15, 0.85)),
 #'     "open-left" =  "uniform",
-#'     "open-right" = "uniform"),
+#'     "open-right" = "uniform"
+#'   ),
 #'
 #'   # the reward helper expects: action, start.state, end.state, observation, value
 #'   reward = rbind(
@@ -182,9 +212,49 @@
 #' )
 #'
 #' Tiger
-#'
+#' 
 #' Tiger$model
-#'
+#' 
+#' # Defining the Tiger problem using functions
+#' 
+#' trans_f <- function(action, start.state, end.state) {
+#'   if(action == 'listen')
+#'     if(end.state == start.state) return(1)
+#'     else return(0)
+#'   
+#'   return(1/2) ### all other actions have a uniform distribution
+#' }
+#' 
+#' obs_f <- function(action, end.state, observation) {
+#'   if(action == 'listen')
+#'     if(end.state == observation) return(0.85)
+#'   else return(0.15)
+#'   
+#'   return(1/2)
+#' }
+#' 
+#' rew_f <- function(action, start.state, end.state, observation) {
+#'   if(action == 'listen') return(-1)
+#'   if(action == 'open-left' && start.state == 'tiger-left') return(-100)
+#'   if(action == 'open-left' && start.state == 'tiger-right') return(10)
+#'   if(action == 'open-right' && start.state == 'tiger-left') return(10)
+#'   if(action == 'open-right' && start.state == 'tiger-right') return(-100)
+#'   stop('Not possible')
+#' }
+#' 
+#' Tiger_func <- POMDP(
+#'   name = "Tiger Problem",
+#'   discount = 0.75,
+#'   states = c("tiger-left" , "tiger-right"),
+#'   actions = c("listen", "open-left", "open-right"),
+#'   observations = c("tiger-left", "tiger-right"),
+#'   start = "uniform",
+#'   transition_prob = trans_f,
+#'   observation_prob = obs_f,
+#'   reward = rew_f
+#' )
+#' 
+#' Tiger_func$model
 #' @export
 POMDP <- function(states,
   actions,
@@ -200,36 +270,85 @@ POMDP <- function(states,
   name = NA) {
   ### FIXME: Check the values!
   
-  # discount should be a number in [0,1]
-  # states should be a vector of strings
-  # actions should be a vector of strings
-  # observations should be a vector of strings
-  # start should be either a vector of n numbers each in [0,1] that add up to 1 where n is the number of states
-  # or the word "uniform", or a single number in 1 to n, or the name of a single state, or the names of a subset of states
+  states <- as.character(states)
+  actions <- as.character(actions)
+  observations <- as.character(observations)
   
-  ### add names to start
+  discount <- as.numeric(discount)
+  if(length(discount) != 1 || discount < 0 || discount > 1)
+    stop("discount has to be a single value in the range [0,1].")
+  
+  horizon <- as.numeric(horizon)
+  
+  ## FIXME: check terminal_values
+   
+  # start
   if (is.numeric(start) && length(start) == length(states)) {
+    if(sum(start) != 1)
+      stop("The start probability vector does not add up to 1.")
     if (is.null(names(start)))
       names(start) <- states
     else
       start <- start[states]
   }
   
-  # transition_prob is either a list consisting of m matrices where m is the number of actions
-  # or a data frame with 4 columns
+  if(any(is.na(start)))
+    stop("start containes undefined start states.")
   
-  ### add names to transition probabilities
+  if (is.character(start)) {
+    if (!(identical(start, "uniform") || all(start %in% states)))
+      stop(
+        "when using characters for start, then it needs to be the keyword 'uniform' or a set of start states."
+      )
+  } 
+ 
+  check_func(transition_prob, T_, "transition_prob")
+  check_func(observation_prob, O_, "observation_prob")
+  check_func(reward, R_, "reward")
+  
+  check_df(transition_prob, T_, "transition_prob")
+  check_df(observation_prob, O_, "observation_prob")
+  check_df(reward, R_, "reward")
+   
+  ## FIXME: check that a is actions!
+  
+  # check matrices and add names
   for (a in names(transition_prob)) {
-    if (is.matrix(transition_prob[[a]]))
+    if (is.matrix(transition_prob[[a]])){
+      if(!identical(dim(transition_prob[[a]]), c(length(states), length(states))))
+        stop("transition_prob matrix for action ", a, ": has not the right dimensions!")
+      if(!all(rowSums(transition_prob[[a]]) == 1))
+        stop("transition_prob matrix for action ", a, ": rows do not add up to 1!")
       dimnames(transition_prob[[a]]) <- list(states, states)
+    }
   }
   
+  for (a in names(observation_prob)) {
+    if (is.matrix(observation_prob[[a]])){
+      if(!identical(dim(observation_prob[[a]]), c(length(states), length(observations))))
+        stop("observation_prob matrix for action ", a, ": has not the right dimensions!")
+      if(!all(rowSums(observation_prob[[a]]) == 1))
+        stop("observation_prob matrix for action ", a, ": rows do not add up to 1!")
+      dimnames(observation_prob[[a]]) <- list(states, observations)
+    }
+  }
   
-  # observation_prob is either a list consisting of m matrices where m is the number of actions
-  # or a data frame with 4 columns
-  # reward should be either a matrix of size mxn where n is the number of states or
-  # a data frame with 5 columns
-  # grid_size is an integer
+  for (a in names(reward)) {
+    for (s in names(reward[[a]])) {
+      if (is.matrix(reward[[a]][[s]])) {
+        if (!identical(dim(reward[[a]][[s]]), c(length(states), length(observations))))
+          stop(
+            "reward matrix for action ",
+            a,
+            " and start.state ",
+            s,
+            ": has not the right dimensions!"
+          )
+        dimnames(reward[[a]][[s]]) <-
+          list(states, observations)
+      }
+    }
+  }
   
   ### unsolved pomdp model
   structure(list(model = structure(
@@ -237,9 +356,9 @@ POMDP <- function(states,
       name = name,
       discount = discount,
       horizon = horizon,
-      states = as.character(states),
-      actions = as.character(actions),
-      observations = as.character(observations),
+      states = states,
+      actions = actions,
+      observations = observations,
       transition_prob = transition_prob,
       observation_prob = observation_prob,
       reward = reward,
@@ -250,44 +369,62 @@ POMDP <- function(states,
     class = "POMDP_model"
   )), class = "POMDP")
 }
+  
+check_func <- function(x, func, name) {
+  if (is.function(x)) {
+    req_formals <- head(names(formals(func)), -1)
+    if (!identical(names(formals(x)), req_formals))
+      stop(name,
+        " function needs formal arguments: ",
+        paste(sQuote(req_formals), collapse = ", "))
+  }
+}
+  
+check_df <- function(x, func, name) {
+  if (is.data.frame(x)) {
+    req_columns <- names(formals(func))
+    if (!identical(colnames(x), req_columns))
+      stop("The ",
+        name,
+        " data.frame needs columns named: ",
+        paste(sQuote(req_columns), collapse = ", "))
+  }
+}
+
+ 
 
 #' @export
 print.POMDP <- function(x, ...) {
-  if (is.null(x$solution))
     cat(
-      "Unsolved POMDP model:",
+      "POMDP:",
       x$model$name,
-      "\n",
-      "\thorizon:",
-      paste(x$model$horizon, collapse = "+"),
-      "\n",
-      if (!is.null(x$model$horizon) &&
-          length(x$model$horizon) > 1)
-        paste("\ttime-dependent:", length(x$model$horizon), "episodes\n")
-    )
-  else
-    cat(
-      "Solved POMDP model:",
-      x$model$name,
-      "\n",
-      "\tsolution method:",
-      x$solution$method,
-      "\n",
-      "\thorizon:",
-      x$solution$horizon,
-      "\n",
-      if (!is.null(x$model$horizon) &&
-          length(x$model$horizon) > 1)
-        paste("\ttime-dependent:", length(x$model$horizon), "episodes\n")
-      else
-        "",
-      "\tconverged:",
-      x$solution$converged,
-      "\n",
-      "\ttotal expected reward (for start probabilities):",
-      x$solution$total_expected_reward,
       "\n"
     )
+    
+    cat(
+      "  Horizon:",
+      paste(x$model$horizon, collapse = "+"),
+      "\n"
+    )
+    
+    if (!is.null(x$model$horizon) &&
+        length(x$model$horizon) > 1)
+      cat("time-dependent:", length(x$model$horizon), "episodes","\n")
+    
+    if (!is.null(x$solution))
+      cat(
+        "  Solution converged:",
+        x$solution$converged,
+        "\n",
+        " Total expected reward (for start probabilities):",
+        x$solution$total_expected_reward,
+        "\n"
+      )
+  
+    cat(
+      "  List components:", paste(sQuote(names(x)), collapse = ", "), 
+      "\n"
+  )    
 }
 
 #' @export

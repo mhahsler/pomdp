@@ -16,12 +16,12 @@ solve_SARSOP(
 )
 }
 \arguments{
-\item{model}{a POMDP problem specification created with \code{\link{POMDP}}.
+\item{model}{a POMDP problem specification created with \code{\link[=POMDP]{POMDP()}}.
 Alternatively, a POMDP file or the URL for a POMDP file can be specified.}
 
 \item{horizon}{need to be \code{Inf}.}
 
-\item{discount}{discount factor in range [0, 1]. If \code{NULL}, then the
+\item{discount}{discount factor in range \eqn{[0, 1]}. If \code{NULL}, then the
 discount factor specified in \code{model} will be used.}
 
 \item{terminal_values}{needs to be \code{NULL}. SARSOP does not use terminal values.}
@@ -29,7 +29,7 @@ discount factor specified in \code{model} will be used.}
 \item{method}{string; there is only one method available called \code{"sarsop"}.}
 
 \item{digits}{precision used when writing POMDP files (see
-\code{\link{write_POMDP}}).}
+\code{\link[=write_POMDP]{write_POMDP()}}).}
 
 \item{parameter}{a list with parameters passed on to
 the function \code{sarsop} in package \pkg{sarsop}.}
@@ -39,8 +39,8 @@ output of the solver in the R console.}
 }
 \value{
 The solver returns an object of class POMDP which is a list with the
-model specifications (\code{model}), the solution (\code{solution}), and the
-solver output (\code{solver_output}).
+model specifications (\code{'model'}), the solution (\code{'solution'}), and the
+solver output (\code{'solver_output'}).
 }
 \description{
 This function uses the C++ implementation of the SARSOP algorithm

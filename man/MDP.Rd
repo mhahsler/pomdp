@@ -45,9 +45,9 @@ minimization (minimize cost specified in \code{reward})?}
 }
 \value{
 The function returns an object of class POMDP which is list with an
-element called \code{model} containing a list with the model specification.
-\code{solve_POMDP} reads the object and adds a list element called
-\code{solution}.
+element called \code{'model'} containing a list with the model specification.
+\code{\link[=solve_POMDP]{solve_POMDP()}} reads the object and adds a list element called
+\code{'solution'}.
 }
 \description{
 Defines all the elements of a MDP problem and formulates them as a POMDP
@@ -59,7 +59,7 @@ This is achieved by defining one observation per state with identity
 observation probability matrices.
 
 More details on specifying the parameters can be found in the documentation
-for \code{\link{POMDP}}.
+for \link{POMDP}.
 }
 \examples{
 
@@ -98,9 +98,6 @@ s
 plot_value_function(s)
 policy(s)
 
-}
-\seealso{
-\code{\link{POMDP}}, \code{\link{solve_POMDP}}.
 }
 \author{
 Michael Hahsler

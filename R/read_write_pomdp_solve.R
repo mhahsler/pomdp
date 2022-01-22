@@ -116,7 +116,7 @@
   for (i in seq(nrow(alpha)))
     cat(
       "0",
-      paste0(format_fixed(alpha[i,], digits = digits), collapse = " "),
+      paste0(format_fixed(alpha[i, ], digits = digits), collapse = " "),
       "",
       file = filename,
       sep = "\n",

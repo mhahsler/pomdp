@@ -7,7 +7,7 @@
 policy(x)
 }
 \arguments{
-\item{x}{A solved POMDP object.}
+\item{x}{A solved \link{POMDP} object.}
 }
 \value{
 A list with the policy for each epoch.
@@ -17,24 +17,22 @@ Extracts the policy from a solved POMDP/MDP.
 }
 \details{
 A list (one entry per epoch) with the optimal policy.
-For converged, infinite-horizon problems solutions, a list with only the converged solution is produced.
-The policy is a data
-frame consisting o:
-
-Part 1: The value function with one column per state. (For MDPs this is just
+For converged, infinite-horizon problems solutions, a list with only the
+converged solution is produced.
+The policy is a data.frame consisting o:
+\itemize{
+\item Part 1: The value function with one column per state. (For MDPs this is just
 one column with the state).
-
-Part 2: One column with the optimal action.
+\item Part 2: One column with the optimal action.
+}
 }
 \examples{
-
 data("Tiger")
 sol <- solve_POMDP(model = Tiger)
 sol
 
 # policy with value function, optimal action and transitions for observations.
 policy(sol)
-
 }
 \author{
 Michael Hahsler

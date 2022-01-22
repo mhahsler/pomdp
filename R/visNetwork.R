@@ -8,7 +8,6 @@
     col = NULL,
     smooth = list(type = "continuous"),
     ...) {
-    
     check_installed("visNetwork")
     
     pg <- policy_graph(x, belief = belief, col = col)

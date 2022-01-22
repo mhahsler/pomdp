@@ -2,8 +2,7 @@
 #'
 #' Convert the policy graph in a POMDP solution object into an igraph object.
 #'
-#'
-#' @param x A POMDP object.
+#' @param x A [POMDP] object.
 #' @param belief logical; add belief proportions as a pie chart in each node of
 #' the graph? If belief points are provided by the solver, then these are used.
 #' If a number is specified, then a random sample of that size is used instead
@@ -11,10 +10,9 @@
 #' @param col colors used for the states in the belief proportions.
 #' @return An object of class igraph containing a directed graph.
 #' @author Hossein Kamalzadeh, Michael Hahsler
-#' @seealso \code{\link{solve_POMDP}}
+#' @seealso [solve_POMDP()]
 #' @keywords graphs
 #' @examples
-#'
 #' data("Tiger")
 #' sol <- solve_POMDP(model = Tiger)
 #' sol
@@ -27,6 +25,19 @@
 #' @export
 policy_graph <- function(x, belief = TRUE, col = NULL) {
   .solved_POMDP(x)
+  
+  ## FIXME: try to make a graph from a not converged policy
+  if (!x$solution$converged) {
+    if (nrow(x$solution$pg[[1]]) != nrow(x$solution$pg[[2]]))
+      stop("Number of nodes the of last two epochs does not agree! Cannot create a policy graph!")
+    
+    warning(
+      "The POMDP policy has not converged. The last epoch in the policy tree may not form a graph! Use with caution!"
+    )
+    
+    ### FIXME: MAybe we need to construct a policy for not converged policies (needs bp from below).
+    #pg <- .calculate_pg(x, bp)
+  }
   
   # create policy graph and belief proportions (average belief for each alpha vector)
   pg <- x$solution$pg[[1]]
@@ -42,23 +53,11 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
     # missing belief points?
     missing_bp <- which(apply(is.na(bp), MARGIN = 1, any))
     if (length(missing_bp) > 0)
-      stop(
+      warning(
         "No belief points for policy graph node(s): ",
         paste(missing_bp, collapse = ", "),
         ". Increase the number for parameter belief."
       )
-    
-    pg <- .calculate_pg(x, bp)
-  }
-  
-  ## FIXME: try to make a graph from a not converged policy
-  if (!x$solution$converged) {
-    if (nrow(x$solution$pg[[1]]) != nrow(x$solution$pg[[2]]))
-      stop("Number of nodes the of last two epochs does not agree! Cannot create graph!")
-    
-    warning(
-      "POMDP has not converged. The last epoch in the policy tree may not form a graph! Use with caution!"
-    )
   }
   
   # producing a list containing arcs
@@ -78,7 +77,7 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
   )
   
   l <- do.call(rbind, l)
-  l <- l[!is.na(l$to), ] # remove links to nowhere ('-' in pg)
+  l <- l[!is.na(l$to),] # remove links to nowhere ('-' in pg)
   
   # creating the initial graph
   policy_graph <- graph.edgelist(as.matrix(l[, 1:2]))
@@ -92,15 +91,17 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
   V(policy_graph)$label <- paste0(pg$node, init, "\n", pg$action)
   
   # add belief proportions
+  ### FIXME: Add gray for missing points instead of a uniform distribution
   if (belief) {
-    pie_values <- lapply(
-      1:nrow(bp),
-      FUN = function(i)
-        if (any(is.na(bp[i, ])))
-          structure(rep(1 / ncol(bp), times = ncol(bp)), names = colnames(bp))
-      else
-        bp[i, ]
-    )
+    pie_values <-
+      lapply(
+        seq_len(nrow(bp)),
+        FUN = function(i)
+          if (any(is.na(bp[i,])))
+            structure(rep(1 / ncol(bp), times = ncol(bp)), names = colnames(bp))
+        else
+          bp[i,]
+      )
     
     ### Set1 from Colorbrewer
     number_of_states <- length(x$model$states)
@@ -136,7 +137,7 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
     1:nrow(alpha),
     FUN = function(i) {
       new_belief <- update_belief(x,
-        belief = alpha_belief[i, ], action = action[i])
+        belief = alpha_belief[i,], action = action[i])
       
       structure(reward(x, belief = new_belief)$pg_node,
         names = x$model$observations)

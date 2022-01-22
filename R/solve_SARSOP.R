@@ -7,25 +7,24 @@
 #' decision processes (POMDPs). The result is an optimal or approximately
 #' optimal policy.
 #'
-#' @param model a POMDP problem specification created with \code{\link{POMDP}}.
+#' @param model a POMDP problem specification created with [POMDP()].
 #' Alternatively, a POMDP file or the URL for a POMDP file can be specified.
-#' @param method string; there is only one method available called \code{"sarsop"}.
-#' @param horizon need to be \code{Inf}.
-#' @param discount discount factor in range [0, 1]. If \code{NULL}, then the
-#' discount factor specified in \code{model} will be used.
-#' @param terminal_values needs to be \code{NULL}. SARSOP does not use terminal values.
+#' @param method string; there is only one method available called `"sarsop"`.
+#' @param horizon need to be `Inf`.
+#' @param discount discount factor in range \eqn{[0, 1]}. If `NULL`, then the
+#' discount factor specified in `model` will be used.
+#' @param terminal_values needs to be `NULL`. SARSOP does not use terminal values.
 #' @param digits precision used when writing POMDP files (see
-#' \code{\link{write_POMDP}}).
+#' [write_POMDP()]).
 #' @param parameter a list with parameters passed on to
-#' the function \code{sarsop} in package \pkg{sarsop}.
-#' @param verbose logical, if set to \code{TRUE}, the function provides the
+#' the function `sarsop` in package \pkg{sarsop}.
+#' @param verbose logical, if set to `TRUE`, the function provides the
 #' output of the solver in the R console.
 #' @return The solver returns an object of class POMDP which is a list with the
-#' model specifications (\code{model}), the solution (\code{solution}), and the
-#' solver output (\code{solver_output}).
+#' model specifications (`'model'`), the solution (`'solution'`), and the
+#' solver output (`'solver_output'`).
 #' @author Michael Hahsler
 #' @references
-#'
 #' Carl Boettiger, Jeroen Ooms and Milad Memarzadeh (2020). sarsop:
 #' Approximate POMDP Planning Software. R package version 0.6.6.
 #' https://CRAN.R-project.org/package=sarsop
@@ -71,7 +70,6 @@ solve_SARSOP <- function(model,
   digits = 7,
   parameter = NULL,
   verbose = FALSE) {
-  
   check_installed("sarsop")
   
   #if (!requireNamespace("sarsop", quietly = TRUE)) {

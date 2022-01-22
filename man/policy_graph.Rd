@@ -7,7 +7,7 @@
 policy_graph(x, belief = TRUE, col = NULL)
 }
 \arguments{
-\item{x}{A POMDP object.}
+\item{x}{A \link{POMDP} object.}
 
 \item{belief}{logical; add belief proportions as a pie chart in each node of
 the graph? If belief points are provided by the solver, then these are used.
@@ -23,7 +23,6 @@ An object of class igraph containing a directed graph.
 Convert the policy graph in a POMDP solution object into an igraph object.
 }
 \examples{
-
 data("Tiger")
 sol <- solve_POMDP(model = Tiger)
 sol
@@ -34,7 +33,7 @@ plot(pg)
 
 }
 \seealso{
-\code{\link{solve_POMDP}}
+\code{\link[=solve_POMDP]{solve_POMDP()}}
 }
 \author{
 Hossein Kamalzadeh, Michael Hahsler

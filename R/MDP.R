@@ -8,7 +8,7 @@
 #' observation probability matrices.
 #'
 #' More details on specifying the parameters can be found in the documentation
-#' for \code{\link{POMDP}}.
+#' for [POMDP].
 #'
 #' @param states a character vector specifying the names of the states.
 #' @param actions a character vector specifying the names of the available
@@ -18,19 +18,18 @@
 #' @param reward Specifies the rewards dependent on action, states and
 #' observations.
 #' @param discount numeric; discount rate between 0 and 1.
-#' @param horizon numeric; Number of epochs. \code{Inf} specifies an infinite
+#' @param horizon numeric; Number of epochs. `Inf` specifies an infinite
 #' horizon.
 #' @param terminal_values a vector with the terminal values for each state.
 #' @param start Specifies in which state the MDP starts.
 #' @param max logical; is this a maximization problem (maximize reward) or a
-#' minimization (minimize cost specified in \code{reward})?
+#' minimization (minimize cost specified in `reward`)?
 #' @param name a string to identify the MDP problem.
 #' @return The function returns an object of class POMDP which is list with an
-#' element called \code{model} containing a list with the model specification.
-#' \code{solve_POMDP} reads the object and adds a list element called
-#' \code{solution}.
+#' element called `'model'` containing a list with the model specification.
+#' [solve_POMDP()] reads the object and adds a list element called
+#' `'solution'`.
 #' @author Michael Hahsler
-#' @seealso \code{\link{POMDP}}, \code{\link{solve_POMDP}}.
 #' @examples
 #'
 #' ## Michael's Sleepy Tiger Problem is an MDP with perfect observability

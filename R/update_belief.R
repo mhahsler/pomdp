@@ -22,7 +22,7 @@
 #' Update the belief given a taken action and observation.
 #'
 #' @details
-#' Update the belief state \eqn{b} (\code{belief}) with an action \eqn{a} and observation \eqn{o}. The new
+#' Update the belief state \eqn{b} (`belief`) with an action \eqn{a} and observation \eqn{o}. The new
 #' belief state \eqn{b'} is:
 #'
 #' \deqn{b'(s') = \eta O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)}
@@ -30,22 +30,20 @@
 #' where \eqn{\eta = 1/ \sum_{s' \in S}[ O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)]} normalizes the new belief state so the probabilities add up to one.
 #'
 #'
-#' @param model a POMDP model.
+#' @param model a [POMDP] object.
 #' @param belief the current belief state.
 #' Defaults to the start belief state specified in
 #' the model or "uniform".
 #' @param action the taken action.
 #' @param observation the received observation.
 #' @param episode Use transition and observation matrices for the given episode
-#' for time-dependent POMDPs (see \code{\link{POMDP}}).
+#' for time-dependent POMDPs (see [POMDP]).
 #' @param digits round decimals.
 #' @param drop logical; drop the result to a vector if only a single belief
 #' state is returned.
 #' @author Michael Hahsler
 #' @seealso [POMDP()], [simulate_POMDP()]
-#' @md
 #' @examples
-#'
 #' data(Tiger)
 #'
 #' update_belief(c(.5,.5), model = Tiger)
@@ -107,10 +105,10 @@ update_belief <-
 #' starting states for the trajectories.
 #' Defaults to the start belief state specified in
 #' the model or "uniform".
-#' @param horizon number of epochs for the simulation. If \code{NULL} then the
+#' @param horizon number of epochs for the simulation. If `NULL` then the
 #' horizon for the model is used.
 #' @param visited_beliefs logical; Should all belief points visited on the
-#' trajectories be returned? If \code{FALSE} then only the belief at the final
+#' trajectories be returned? If `FALSE` then only the belief at the final
 #' epoch is returned.
 #' @param random_actions logical; should randomized actions be used instead of
 #' the policy of the solved POMDP? Randomized actions can be used for unsolved
@@ -209,7 +207,7 @@ simulate_POMDP <-
     dt <- .timedependent_POMDP(model)
     if (dt) {
       dt_horizon <- model$model$horizon
-      dt_episodes <- cumsum(c(1, head(model$model$horizon,-1)))
+      dt_episodes <- cumsum(c(1, head(model$model$horizon, -1)))
       dt_trans_m <-
         lapply(
           1:length(dt_horizon),
@@ -294,8 +292,8 @@ simulate_POMDP <-
         state_cnt[s] <- state_cnt[s] + 1L
         
         s_prev <- s
-        s <- sample(states, 1, prob = trans_m[[a]][s, ])
-        o <- sample(obs, 1, prob = obs_m[[a]][s, ])
+        s <- sample(states, 1, prob = trans_m[[a]][s,])
+        o <- sample(obs, 1, prob = obs_m[[a]][s,])
         
         rew <- rew + rew_m[[a]][[s_prev]][s, o] * disc ^ (j - 1L)
         
@@ -305,7 +303,7 @@ simulate_POMDP <-
         # update belief
         b <- .update_belief(b, a, o, trans_m, obs_m, digits)
         if (visited_beliefs)
-          b_all[j,] <- b
+          b_all[j, ] <- b
       }
       
       if (!visited_beliefs)

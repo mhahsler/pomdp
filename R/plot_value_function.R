@@ -4,8 +4,7 @@
 #' projected on two states (i.e., the belief for the other states is held
 #' constant at zero).
 #'
-#'
-#' @param model a solved POMDP.
+#' @param model a solved [POMDP].
 #' @param projection index or name of two states for the projection.
 #' @param epoch the value function of what epoch should be plotted? Ignored
 #' for infinite-horizon solutions.
@@ -14,11 +13,10 @@
 #' @param col potting colors.
 #' @param lwd line width.
 #' @param lty line type.
-#' @param ... additional arguments are passed on to \code{line}.
+#' @param ... additional arguments are passed on to [stats::line()]`.
 #' @author Michael Hahsler
 #' @keywords hplot
 #' @examples
-#'
 #' data("Tiger")
 #' sol <- solve_POMDP(model = Tiger)
 #' sol

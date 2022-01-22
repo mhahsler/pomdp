@@ -41,57 +41,54 @@ solve_POMDP_parameter <- function() {
 #' decision processes (POMDPs). The result is an optimal or approximately
 #' optimal policy.
 #'
-#' \code{solve_POMDP_parameter()} displays available solver parameter options.
+#' `solve_POMDP_parameter()` displays available solver parameter options.
 #'
-#' \bold{Horizon:} Infinite-horizon POMDPs (\code{horizon = Inf}) converge to a
+#' **Horizon:** Infinite-horizon POMDPs (`horizon = Inf`) converge to a
 #' single policy graph. Finite-horizon POMDPs result in a policy tree of a
 #' depth equal to the smaller of the horizon or the number of epochs to
 #' convergence.  The policy (and the associated value function) are stored in a
 #' list by epoch. The policy for the first epoch is stored as the first
 #' element.
 #'
-#' \bold{Policy:} Each policy is a data frame where each row representing a
+#' **Policy:** Each policy is a data frame where each row representing a
 #' policy graph node with an associated optimal action and a list of node IDs
 #' to go to depending on the observation (specified as the column names). For
 #' the finite-horizon case, the observation specific node IDs refer to nodes in
 #' the next epoch creating a policy tree.  Impossible observations have a
-#' \code{NA} as the next state.
+#' `NA` as the next state.
 #'
-#' \bold{Value function:} The value function is stored as a matrix. Each row is
+#' **Value function:** The value function is stored as a matrix. Each row is
 #' associated with a node (row) in the policy graph and represents the
 #' coefficients (alpha vector) of a hyperplane. An alpha vector contains one
 #' value per state and is the value for the belief state that has a probability
 #' of 1 for that state and 0s for all others.
 #'
-#' \bold{Precision:} The POMDP solver uses various epsilon values to control
+#' *Precision:** The POMDP solver uses various epsilon values to control
 #' precision for comparing alpha vectors to check for convergence, and solving
-#' LPs. Overall precision can be changed using \code{parameter = list(epsilon =
-#' 1e-3)}.
+#' LPs. Overall precision can be changed using
+#' `parameter = list(epsilon = 1e-3)`.
 #'
-#' \bold{Methods:} Several algorithms for dynamic-programming updates are
+#' **Methods:** Several algorithms for dynamic-programming updates are
 #' available:
-#' \itemize{
-#' \item Enumeration (Sondik 1971).
-#' \item Two pass (Sondik 1971).
-#' %exhaustive (Monahan 1982),
-#' %linear support (Cheng 1988),
-#' \item
-#' Witness (Littman, Cassandra, Kaelbling, 1996).
-#' \item Incremental pruning (Zhang and Liu, 1996, Cassandra et al 1997).
-#' \item Grid implements a variation of point-based value iteration
+#'
+#' * Enumeration (Sondik 1971).
+#' * Two pass (Sondik 1971).
+#' * Witness (Littman, Cassandra, Kaelbling, 1996).
+#' * Incremental pruning (Zhang and Liu, 1996, Cassandra et al 1997).
+#' * Grid implements a variation of point-based value iteration
 #'   to solve larger POMDPs (PBVI; see Pineau 2003) without dynamic belief set expansion.
-#' }
+#'
 #' Details can be found in (Cassandra, 2015).
 #'
-#' \bold{Note on method grid:} The grid method implements a version of Point
+#' **Note on method grid:** The grid method implements a version of Point
 #' Based Value Iteration (PBVI). The used belief points are by default created
-#' using points that are reachable from the initial belief (\code{start}) by
+#' using points that are reachable from the initial belief (`start`) by
 #' following all combinations of actions and observations. The size of the grid
-#' can be set via \code{parameter = list(fg_points = 100)}. Alternatively,
-#' different strategies can be chosen using the parameter \code{fg_type}. In
+#' can be set via `parameter = list(fg_points = 100)`. Alternatively,
+#' different strategies can be chosen using the parameter `fg_type`. In
 #' this implementation, the user can also specify manually a grid of belief
 #' states by providing a matrix with belief states as produced by
-#' \code{sample_belief_space} as the parameter \code{grid}.
+#' [sample_belief_space()] as the parameter `grid`.
 #'
 #' To guarantee convergence in point-based (finite grid) value iteration, the
 #' initial value function must be a lower bound on the optimal value function.
@@ -100,10 +97,10 @@ solve_POMDP_parameter <- function() {
 #' However, if there are negative rewards, lower bounds can be guaranteed by
 #' setting a single vector with the values \eqn{min(reward)/(1 - discount)}.
 #' The value function is guaranteed to converge to the true value function, but
-#' finite-horizon value functions will not be as expected. \code{solve_POMDP}
+#' finite-horizon value functions will not be as expected. [solve_POMDP()]
 #' produces a warning in this case.
 #'
-#' \bold{Time-dependent POMDPs:} Time dependence of transition probabilities,
+#' **Time-dependent POMDPs:** Time dependence of transition probabilities,
 #' observation probabilities and reward structure can be modeled by considering
 #' a set of episodes representing epoch with the same settings. In the scared
 #' tiger example (see Examples section), the tiger has the normal behavior for
@@ -119,38 +116,39 @@ solve_POMDP_parameter <- function() {
 #' Examples section. The procedure can also be done by calling the solver
 #' multiple times (see Example 5).
 #'
-#' \bold{Note:} The parser for POMDP files is experimental. Please report
+#' **Note:** The parser for POMDP files is experimental. Please report
 #' problems here: \url{https://github.com/mhahsler/pomdp/issues}.
 #'
 #' @aliases solve_POMDP solve_POMDP_parameter
-#' @param model a POMDP problem specification created with \code{\link{POMDP}}.
+#' @param model a POMDP problem specification created with [POMDP()].
 #' Alternatively, a POMDP file or the URL for a POMDP file can be specified.
-#' @param method string; one of the following solution methods: \code{"grid"},
-#' \code{"enum"}, \code{"twopass"}, \code{"witness"}, or \code{"incprune"}.
-#' The default is \code{"grid"} implementing the finite grid method.
+#' @param method string; one of the following solution methods: `"grid"`,
+#' `"enum"`, `"twopass"`, `"witness"`, or `"incprune"`.
+#' The default is `"grid"` implementing the finite grid method.
 #' @param horizon an integer with the number of epochs for problems with a
-#' finite planning horizon. If set to \code{Inf}, the algorithm continues
+#' finite planning horizon. If set to `Inf`, the algorithm continues
 #' running iterations till it converges to the infinite horizon solution. If
-#' \code{NULL}, then the horizon specified in \code{model} will be used.  For
+#' `NULL`, then the horizon specified in `model` will be used.  For
 #' time-dependent POMDPs a vector of horizons can be specified (see Details
 #' section).
-#' @param discount discount factor in range [0, 1]. If \code{NULL}, then the
-#' discount factor specified in \code{model} will be used.
+#' @param discount discount factor in range \eqn{[0, 1]}. If `NULL`, then the
+#' discount factor specified in `model` will be used.
 #' @param terminal_values a vector with the terminal values for each state or a
 #' matrix specifying the terminal rewards via a terminal value function (e.g.,
-#' the alpha component produced by \code{solve_POMDP}).  If \code{NULL}, then
-#' the terminal values specified in \code{model} will be used.
+#' the alpha component produced by [solve_POMDP()]).  If `NULL`, then
+#' the terminal values specified in `model` will be used.
 #' @param digits precision used when writing POMDP files (see
-#' \code{\link{write_POMDP}}).
+#' [write_POMDP()]).
 #' @param parameter a list with parameters passed on to the pomdp-solve
 #' program.
-#' @param verbose logical, if set to \code{TRUE}, the function provides the
+#' @param verbose logical, if set to `TRUE`, the function provides the
 #' output of the pomdp solver in the R console.
 #' @return The solver returns an object of class POMDP which is a list with the
-#' model specifications (\code{model}), the solution (\code{solution}), and the
-#' solver output (\code{solver_output}).
+#' model specifications (`model`), the solution (`solution`), and the
+#' solver output (`solver_output`).
 #' @author Hossein Kamalzadeh, Michael Hahsler
-#' @references Cassandra, A. (2015). pomdp-solve: POMDP Solver Software,
+#' @references
+#' Cassandra, A. (2015). pomdp-solve: POMDP Solver Software,
 #' \url{http://www.pomdp.org}.
 #'
 #' Sondik, E. (1971). The Optimal Control of Partially Observable Markov
@@ -178,7 +176,6 @@ solve_POMDP_parameter <- function() {
 #' 18th international joint conference on Artificial Intelligence. Pages
 #' 1025-1030.
 #' @examples
-#'
 #' ################################################################
 #' # Example 1: Solving the simple infinite-horizon Tiger problem
 #' data("Tiger")
@@ -503,8 +500,7 @@ solve_POMDP <- function(model,
       r <- suppressWarnings(try({
         alpha[[i]] <- .get_alpha_file(file_prefix, model, i)
         pg[[i]] <- .get_pg_file(file_prefix, model, i)
-      }, silent = TRUE)
-      )
+      }, silent = TRUE))
       if (inherits(r, "try-error"))
       {
         if (verbose)
@@ -670,9 +666,11 @@ print.POMDP_solution <- function(x, ...) {
       
       
       if (do_trans)
-        m$model$transition_prob <- model$model$transition_prob[[take]]
+        m$model$transition_prob <-
+        model$model$transition_prob[[take]]
       if (do_obs)
-        m$model$observation_prob <- model$model$observation_prob[[take]]
+        m$model$observation_prob <-
+        model$model$observation_prob[[take]]
       if (do_reward)
         m$model$reward <- model$model$reward[[take]]
       
