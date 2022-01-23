@@ -5,12 +5,12 @@
 \alias{read_POMDP}
 \title{Read and write a POMDP Model to a File in POMDP Format}
 \usage{
-write_POMDP(model, file, digits = 7)
+write_POMDP(x, file, digits = 7)
 
 read_POMDP(file)
 }
 \arguments{
-\item{model}{an object of class \link{POMDP}.}
+\item{x}{an object of class \link{POMDP}.}
 
 \item{file}{a file name.}
 
@@ -24,7 +24,7 @@ point).}
 Reads and write a POMDP file suitable for the \code{pomdp-solve} program. \emph{Note:} read POMDP files are intended to be used in \code{\link[=solve_POMDP]{solve_POMDP()}} and do not support all auxiliary functions. Fields like the transition matrix, the observation matrix and the reward structure are not parsed.
 }
 \references{
-POMDP solver website: \url{http://www.pomdp.org}
+POMDP solver website: http://www.pomdp.org
 }
 \author{
 Hossein Kamalzadeh, Michael Hahsler

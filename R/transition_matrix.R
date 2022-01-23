@@ -149,7 +149,8 @@ reward_matrix <- function(x, episode = 1)
     stop(
       "Field ",
       field,
-      " is not available. Parsing some fields is not implemented for models read with read_POMDP!"
+      " is not available. ",
+      "Note: Parsing some fields is not implemented for models read with read_POMDP!"
     )
   
   

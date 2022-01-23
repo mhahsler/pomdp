@@ -1,7 +1,8 @@
-# pomdp 0.99.3.1 (xx/xx/2021)
+# pomdp 0.99.3.1 (xx/xx/2022)
 
 * transition probability, observation probabilities and rewards can now
   be specified as a function.
+* Improved POMDP file writer.
 
 # pomdp 0.99.3 (08/05/2021)
 

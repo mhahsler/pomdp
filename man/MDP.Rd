@@ -2,6 +2,7 @@
 % Please edit documentation in R/MDP.R
 \name{MDP}
 \alias{MDP}
+\alias{MDP2POMDP}
 \title{Define an MDP Problem}
 \usage{
 MDP(
@@ -16,6 +17,8 @@ MDP(
   max = TRUE,
   name = NA
 )
+
+MDP2POMDP(x)
 }
 \arguments{
 \item{states}{a character vector specifying the names of the states.}
@@ -42,6 +45,8 @@ horizon.}
 minimization (minimize cost specified in \code{reward})?}
 
 \item{name}{a string to identify the MDP problem.}
+
+\item{x}{a \code{MDP} object.}
 }
 \value{
 The function returns an object of class POMDP which is list with an
@@ -65,7 +70,7 @@ for \link{POMDP}.
 
 ## Michael's Sleepy Tiger Problem is an MDP with perfect observability
 
-Tiger_MDP <- MDP(
+STiger <- MDP(
   name = "Michael's Sleepy Tiger Problem",
   discount = 1,
 
@@ -88,16 +93,21 @@ Tiger_MDP <- MDP(
   )
 )
 
-Tiger_MDP
+STiger
+
+STiger$model
+
+# convert the MDP into a POMDP
+STiger_POMDP <- MDP2POMDP(STiger)
+STiger_POMDP
 
 # do 5 epochs with no discounting
-s <- solve_POMDP(Tiger_MDP, method = "enum", horizon = 5)
+s <- solve_POMDP(STiger_POMDP, method = "enum", horizon = 5)
 s
 
 # value function and policy
 plot_value_function(s)
 policy(s)
-
 }
 \author{
 Michael Hahsler

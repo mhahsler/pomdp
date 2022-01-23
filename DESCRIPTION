@@ -1,7 +1,7 @@
 Package: pomdp
 Title: Solver for Partially Observable Markov Decision Processes (POMDP)
 Version: 0.99.3.1
-Date: 2021-xx-xx
+Date: 2022-xx-xx
 Authors@R: 
       c(person(given = "Michael",
              family = "Hahsler",
@@ -35,3 +35,27 @@ Copyright: pomdp-solve is Copyright (C) Anthony R. Cassandra;
   all other code is Copyright (C) Hossein Kamalzadeh and Michael Hahsler.
 RoxygenNote: 7.1.2.9000
 Roxygen: list(markdown = TRUE)
+Collate: 
+    'AAAdatasets.R'
+    'AAAimports.R'
+    'POMDP.R'
+    'MDP.R'
+    'check_installed.R'
+    'colors.R'
+    'optimal_action.R'
+    'plot_belief_space.R'
+    'plot_policy_graph.R'
+    'plot_value_function.R'
+    'policy.R'
+    'policy_graph.R'
+    'print.text.R'
+    'read_write_POMDP.R'
+    'read_write_pomdp_solve.R'
+    'reward.R'
+    'round_stochchastic.R'
+    'sample_belief_space.R'
+    'solve_POMDP.R'
+    'solve_SARSOP.R'
+    'transition_matrix.R'
+    'update_belief.R'
+    'visNetwork.R'

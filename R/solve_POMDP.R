@@ -9,7 +9,7 @@ find_pomdpsolve <- function() {
       c("pomdp-solve", "pomdp-solve.exe")
     ), package = "pomdp")[1]
   if (exec == "")
-    stop("pomdp-solve executable not found. Reinstall package pomdp.")
+    stop("pomdp-solve executable not found. Reinstall package 'pomdp'.")
   exec
 }
 
@@ -460,8 +460,8 @@ solve_POMDP <- function(model,
     if (!verbose)
       cat(paste(solver_output, "\n\n"))
     
-    cat(
-      "Note that the action and state index reported by the solver starts with 0 and not with 1:\n"
+    message(
+      "Note: The action and state index reported by the solver above starts with 0 and not with 1:\n"
     )
     
     m <- max(
@@ -480,7 +480,7 @@ solve_POMDP <- function(model,
     )
     
     cat("\n")
-    
+    message("The used POMDP definition file can be found at: ", pomdp_filename)
     stop("POMDP solver returned an error (see above).")
   }
   

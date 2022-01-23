@@ -7,9 +7,9 @@
 #' POMDP problems can be solved using [solve_POMDP()].
 #'
 #' In the following we use the following notation. The POMDP is a 7-duple:
-#' 
-#' \eqn{(S,A,T,R, \Omega ,O, \gamma)}.  
-#' 
+#'
+#' \eqn{(S,A,T,R, \Omega ,O, \gamma)}.
+#'
 #' \eqn{S} is the set of states; \eqn{A}
 #' is the set of actions; \eqn{T} are the conditional transition probabilities
 #' between states; \eqn{R} is the reward function; \eqn{\Omega} is the set of
@@ -20,40 +20,40 @@
 #' \eqn{|A|}.
 #'
 #' **Names used for mathematical symbols in code**
-#' 
-#' * \eqn{S, s, s'}: `'states', start.state', 'end.state'` 
+#'
+#' * \eqn{S, s, s'}: `'states', start.state', 'end.state'`
 #' * \eqn{A, a}: `'actions', 'action'`
 #' * \eqn{\Omega, o}: `'observations', 'observation'`
 #'
-#' State names, actions and observations can be specified as strings or index numbers 
-#' (e.g., `start.state` can be specified as the index of the state in `states`). 
+#' State names, actions and observations can be specified as strings or index numbers
+#' (e.g., `start.state` can be specified as the index of the state in `states`).
 #' For the specification as data.frames below, `'*'` can be used to mean
 #' any  `start.state`, `end.state`, `action` or `observation`.
 #'
-#' The specification below map to the format used by pomdp-solve 
+#' The specification below map to the format used by pomdp-solve
 #' (see \url{http://www.pomdp.org}).
-#' 
+#'
 #' **Specification of transition probabilities: \eqn{T(s' | s, a)}**
 #'
-#' Transition probability to transition to state \eqn{s'} from given state \eqn{s} 
+#' Transition probability to transition to state \eqn{s'} from given state \eqn{s}
 #' and action \eqn{a}. The transition probabilities can be
 #' specified in the following ways:
 #'
 #' * A data.frame with 4 columns named:
-#' 
+#'
 #'   `'action'`, `'start.state'`, `'end.state'`, `'probability'`.
-#'   
+#'
 #'   You can use `rbind()` with helper function `T_()` to create this data
 #'   frame.
 #'
-#' * A named list of matrices, one for each action. Each matrix is square with 
-#'   rows representing start states \eqn{s} and columns representing end states \eqn{s'}. 
+#' * A named list of matrices, one for each action. Each matrix is square with
+#'   rows representing start states \eqn{s} and columns representing end states \eqn{s'}.
 #'   Instead of a matrix, also the strings `'identity'` or `'uniform'` can be specified.
 #'
-#' * A function with the signature 
-#' 
-#'   `P(action, state.end, state.start)` 
-#'   
+#' * A function with the signature
+#'
+#'   `P(action, state.end, state.start)`
+#'
 #'   that returns the transition probability.
 #'
 #' **Specification of observation probabilities: \eqn{O(o | s', a)}**
@@ -64,20 +64,20 @@
 #' following ways:
 #'
 #' * A data frame with 4 columns named:
-#' 
+#'
 #'   `'action'`, `'end.state'`, `'observation'`, `'probability'`.
-#'   
+#'
 #'   You can use `rbind()`
 #'   with helper function `O_()` to create this data frame.
 #'
-#' * A named list of matrices, one for each action. Each matrix has 
-#'   rows representing end states \eqn{s'} and columns representing an observation \eqn{o}. 
+#' * A named list of matrices, one for each action. Each matrix has
+#'   rows representing end states \eqn{s'} and columns representing an observation \eqn{o}.
 #'   Instead of a matrix, also the strings `'identity'` or `'uniform'` can be specified.
 #'
-#' * A function with the signature 
-#' 
-#'   `O(action, end.state, observation)` 
-#'   
+#' * A function with the signature
+#'
+#'   `O(action, end.state, observation)`
+#'
 #'   that returns the observation probability.
 #'
 #' **Specification of the reward function: \eqn{R(s, s', o, a)}**
@@ -86,20 +86,20 @@
 #' ways:
 #'
 #' * A data frame with 5 columns named:
-#' 
+#'
 #'   `'action'`, `'start.state', `'end.state'`, `'observation'`, `'value'`.
-#'   
+#'
 #'   You can use `rbind()`
 #'   with helper function `R_()` to create this data frame.
-#'   
+#'
 #' * A list of lists. The list levels are action and start.state. The list elements
-#'   are matrices with 
+#'   are matrices with
 #'   rows representing end states \eqn{s'} and columns representing an observation \eqn{o}.
-#' 
-#' * A function with the signature 
-#'   
-#'   `R(action, start.state, end.state, observation)` 
-#'   
+#'
+#' * A function with the signature
+#'
+#'   `R(action, start.state, end.state, observation)`
+#'
 #'   that returns the reward.
 #'
 #' **Start Belief**
@@ -113,14 +113,14 @@
 #' distribution over all states. No initial belief state can be used by setting
 #' `start = NULL`.
 #'
-#' Options to specify the start belief state are: 
-#' 
-#' * A probability distribution over the states. That is, a vector 
+#' Options to specify the start belief state are:
+#'
+#' * A probability distribution over the states. That is, a vector
 #'   of \eqn{|S|} probabilities, that add up to \eqn{1}.
-#'   
+#'
 #'* The string `"uniform"` for a uniform
-#'   distribution over all states.  
-#'* An integer in the range \eqn{1} to \eqn{n} to specify the index of a single starting state.  
+#'   distribution over all states.
+#'* An integer in the range \eqn{1} to \eqn{n} to specify the index of a single starting state.
 #'* a string specifying the name of a single starting state.
 #'
 #' **Time-dependent POMDPs**
@@ -165,14 +165,14 @@
 #' create an entry for `observation_prob`, `reward`, or
 #' `transistion_prob` above, respectively. The default value `'*"'`
 #' matches any action/state/observation.
-#' 
+#'
 #' @return The function returns an object of class POMDP which is list with an
 #' element called `'model'` containing a list with the model specification.
 #' [solve_POMDP()] reads the object and adds a list element named
 #' `'solution'`.
 #' @author Hossein Kamalzadeh, Michael Hahsler
 #' @seealso [solve_POMDP()]
-#' @references 
+#' @references
 #' pomdp-solve website: \url{http://www.pomdp.org}
 #' @examples
 #' ## Defining the Tiger Problem
@@ -212,27 +212,27 @@
 #' )
 #'
 #' Tiger
-#' 
+#'
 #' Tiger$model
-#' 
+#'
 #' # Defining the Tiger problem using functions
-#' 
+#'
 #' trans_f <- function(action, start.state, end.state) {
 #'   if(action == 'listen')
 #'     if(end.state == start.state) return(1)
 #'     else return(0)
-#'   
+#'
 #'   return(1/2) ### all other actions have a uniform distribution
 #' }
-#' 
+#'
 #' obs_f <- function(action, end.state, observation) {
 #'   if(action == 'listen')
 #'     if(end.state == observation) return(0.85)
 #'   else return(0.15)
-#'   
+#'
 #'   return(1/2)
 #' }
-#' 
+#'
 #' rew_f <- function(action, start.state, end.state, observation) {
 #'   if(action == 'listen') return(-1)
 #'   if(action == 'open-left' && start.state == 'tiger-left') return(-100)
@@ -241,7 +241,7 @@
 #'   if(action == 'open-right' && start.state == 'tiger-right') return(-100)
 #'   stop('Not possible')
 #' }
-#' 
+#'
 #' Tiger_func <- POMDP(
 #'   name = "Tiger Problem",
 #'   discount = 0.75,
@@ -253,7 +253,7 @@
 #'   observation_prob = obs_f,
 #'   reward = rew_f
 #' )
-#' 
+#'
 #' Tiger_func$model
 #' @export
 POMDP <- function(states,
@@ -268,91 +268,9 @@ POMDP <- function(states,
   start = "uniform",
   max = TRUE,
   name = NA) {
-  ### FIXME: Check the values!
-  
-  states <- as.character(states)
-  actions <- as.character(actions)
-  observations <- as.character(observations)
-  
-  discount <- as.numeric(discount)
-  if(length(discount) != 1 || discount < 0 || discount > 1)
-    stop("discount has to be a single value in the range [0,1].")
-  
-  horizon <- as.numeric(horizon)
-  
-  ## FIXME: check terminal_values
-   
-  # start
-  if (is.numeric(start) && length(start) == length(states)) {
-    if(sum(start) != 1)
-      stop("The start probability vector does not add up to 1.")
-    if (is.null(names(start)))
-      names(start) <- states
-    else
-      start <- start[states]
-  }
-  
-  if(any(is.na(start)))
-    stop("start containes undefined start states.")
-  
-  if (is.character(start)) {
-    if (!(identical(start, "uniform") || all(start %in% states)))
-      stop(
-        "when using characters for start, then it needs to be the keyword 'uniform' or a set of start states."
-      )
-  } 
- 
-  check_func(transition_prob, T_, "transition_prob")
-  check_func(observation_prob, O_, "observation_prob")
-  check_func(reward, R_, "reward")
-  
-  check_df(transition_prob, T_, "transition_prob")
-  check_df(observation_prob, O_, "observation_prob")
-  check_df(reward, R_, "reward")
-   
-  ## FIXME: check that a is actions!
-  
-  # check matrices and add names
-  for (a in names(transition_prob)) {
-    if (is.matrix(transition_prob[[a]])){
-      if(!identical(dim(transition_prob[[a]]), c(length(states), length(states))))
-        stop("transition_prob matrix for action ", a, ": has not the right dimensions!")
-      if(!all(rowSums(transition_prob[[a]]) == 1))
-        stop("transition_prob matrix for action ", a, ": rows do not add up to 1!")
-      dimnames(transition_prob[[a]]) <- list(states, states)
-    }
-  }
-  
-  for (a in names(observation_prob)) {
-    if (is.matrix(observation_prob[[a]])){
-      if(!identical(dim(observation_prob[[a]]), c(length(states), length(observations))))
-        stop("observation_prob matrix for action ", a, ": has not the right dimensions!")
-      if(!all(rowSums(observation_prob[[a]]) == 1))
-        stop("observation_prob matrix for action ", a, ": rows do not add up to 1!")
-      dimnames(observation_prob[[a]]) <- list(states, observations)
-    }
-  }
-  
-  for (a in names(reward)) {
-    for (s in names(reward[[a]])) {
-      if (is.matrix(reward[[a]][[s]])) {
-        if (!identical(dim(reward[[a]][[s]]), c(length(states), length(observations))))
-          stop(
-            "reward matrix for action ",
-            a,
-            " and start.state ",
-            s,
-            ": has not the right dimensions!"
-          )
-        dimnames(reward[[a]][[s]]) <-
-          list(states, observations)
-      }
-    }
-  }
-  
   ### unsolved pomdp model
-  structure(list(model = structure(
-    list(
+  x <- list(
+    model = list(
       name = name,
       discount = discount,
       horizon = horizon,
@@ -365,21 +283,23 @@ POMDP <- function(states,
       start = start,
       terminal_values = terminal_values,
       max = max
-    ),
-    class = "POMDP_model"
-  )), class = "POMDP")
-}
+    )
+  )
   
+  class(x) <- "POMDP"
+  check_and_fix_MDP(x)
+}
+
 check_func <- function(x, func, name) {
   if (is.function(x)) {
-    req_formals <- head(names(formals(func)), -1)
+    req_formals <- head(names(formals(func)),-1)
     if (!identical(names(formals(x)), req_formals))
       stop(name,
         " function needs formal arguments: ",
         paste(sQuote(req_formals), collapse = ", "))
   }
 }
-  
+
 check_df <- function(x, func, name) {
   if (is.data.frame(x)) {
     req_columns <- names(formals(func))
@@ -391,53 +311,155 @@ check_df <- function(x, func, name) {
   }
 }
 
- 
+check_and_fix_MDP <- function(x) {
+  x$model <- within(x$model, {
+    if (is.numeric(states) &&
+        length(states) == 1)
+      states <- seq_len(states)
+    states <- as.character(states)
+    
+    if (is.numeric(actions) &&
+        length(actions) == 1)
+      actions <- seq_len(actions)
+    actions <- as.character(actions)
+    
+    if (inherits(x, "POMDP")) {
+      if (is.numeric(observations) &&
+          length(observations) == 1)
+        observations <- seq_len(observations)
+      observations <- as.character(observations)
+    }
+    
+    discount <- as.numeric(discount)
+    if (length(discount) != 1 || discount < 0 || discount > 1)
+      stop("discount has to be a single value in the range [0,1].")
+    
+    if (!exists("horizon"))
+      horizon <- Inf
+    horizon <- as.numeric(horizon)
+    
+    ## FIXME: check terminal_values
+    
+    # start
+    if (is.numeric(start) && length(start) == length(states)) {
+      if (sum(start) != 1)
+        stop("The start probability vector does not add up to 1.")
+      if (is.null(names(start)))
+        names(start) <- states
+      else
+        start <- start[states]
+    }
+    if (any(is.na(start)))
+      stop("start containes undefined start states.")
+    if (is.character(start)) {
+      if (!(identical(start, "uniform") || all(start %in% states)))
+        stop(
+          "when using characters for start, then it needs to be the keyword 'uniform' or a set of start states."
+        )
+    }
+    
+    ## read_POMDP does not parse these!
+    if (!exists("problem")) {
+      check_func(transition_prob, T_, "transition_prob")
+      check_func(reward, R_, "reward")
+      if (inherits(x, "POMDP"))
+        check_func(observation_prob, O_, "observation_prob")
+      
+      check_df(transition_prob, T_, "transition_prob")
+      check_df(reward, R_, "reward")
+      if (inherits(x, "POMDP"))
+        check_df(observation_prob, O_, "observation_prob")
+      
+      ## FIXME: check that a is actions!
+      
+      # if we have matrices then chck and add names
+      for (a in names(transition_prob)) {
+        if (is.matrix(transition_prob[[a]])) {
+          if (!identical(dim(transition_prob[[a]]), c(length(states), length(states))))
+            stop("transition_prob matrix for action ",
+              a,
+              ": has not the right dimensions!")
+          if (!all(rowSums(transition_prob[[a]]) == 1))
+            stop("transition_prob matrix for action ",
+              a,
+              ": rows do not add up to 1!")
+          dimnames(transition_prob[[a]]) <- list(states, states)
+        }
+      }
+      
+      
+      for (a in names(reward)) {
+        for (s in names(reward[[a]])) {
+          if (is.matrix(reward[[a]][[s]])) {
+            if (!identical(dim(reward[[a]][[s]]), c(length(states), length(observations))))
+              stop(
+                "reward matrix for action ",
+                a,
+                " and start.state ",
+                s,
+                ": has not the right dimensions!"
+              )
+            dimnames(reward[[a]][[s]]) <-
+              list(states, observations)
+          }
+        }
+      }
+      
+      if (inherits(x, "POMDP")) {
+        for (a in names(observation_prob)) {
+          if (is.matrix(observation_prob[[a]])) {
+            if (!identical(dim(observation_prob[[a]]), c(length(states), length(observations))))
+              stop("observation_prob matrix for action ",
+                a,
+                ": has not the right dimensions!")
+            if (!all(rowSums(observation_prob[[a]]) == 1))
+              stop("observation_prob matrix for action ",
+                a,
+                ": rows do not add up to 1!")
+            dimnames(observation_prob[[a]]) <-
+              list(states, observations)
+          }
+        }
+      }
+    }
+  })
+  
+  x
+}
+
+
+
 
 #' @export
 print.POMDP <- function(x, ...) {
-    cat(
-      "POMDP:",
-      x$model$name,
-      "\n"
-    )
-    
-    cat(
-      "  Horizon:",
-      paste(x$model$horizon, collapse = "+"),
-      "\n"
-    )
-    
-    if (!is.null(x$model$horizon) &&
-        length(x$model$horizon) > 1)
-      cat("time-dependent:", length(x$model$horizon), "episodes","\n")
-    
-    if (!is.null(x$solution))
-      cat(
-        "  Solution converged:",
-        x$solution$converged,
-        "\n",
-        " Total expected reward (for start probabilities):",
-        x$solution$total_expected_reward,
-        "\n"
-      )
+  cat(paste(class(x), collapse = ", "),
+    "-",
+    x$model$name,
+    "\n")
   
+  cat("  Horizon:",
+    paste(x$model$horizon, collapse = "+"),
+    "\n")
+  
+  if (!is.null(x$model$horizon) &&
+      length(x$model$horizon) > 1)
+    cat("time-dependent:",
+      length(x$model$horizon),
+      "episodes",
+      "\n")
+  
+  if (!is.null(x$solution))
     cat(
-      "  List components:", paste(sQuote(names(x)), collapse = ", "), 
+      "  Solution converged:",
+      x$solution$converged,
+      "\n",
+      " Total expected reward (for start probabilities):",
+      x$solution$total_expected_reward,
       "\n"
-  )    
-}
-
-#' @export
-print.POMDP_model <- function(x, ...) {
-  cat("POMDP model:", x$name, "\n\n")
-  if (!is.null(x$problem)) {
-    cat("Model specification from POMDP file\n\n")
-    cat("--------------- Start ---------------\n")
-    cat(x$problem, sep = "\n")
-    cat("---------------- End ----------------\n\n")
-    x$problem <- NULL
-  }
-  print(unclass(x))
+    )
+  
+  cat("  List components:", paste(sQuote(names(x)), collapse = ", "),
+    "\n")
 }
 
 

@@ -260,7 +260,7 @@ trans_f <- function(action, start.state, end.state) {
   if(action == 'listen')
     if(end.state == start.state) return(1)
     else return(0)
-  
+
   return(1/2) ### all other actions have a uniform distribution
 }
 
@@ -268,7 +268,7 @@ obs_f <- function(action, end.state, observation) {
   if(action == 'listen')
     if(end.state == observation) return(0.85)
   else return(0.15)
-  
+
   return(1/2)
 }
 

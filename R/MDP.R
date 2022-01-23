@@ -10,6 +10,7 @@
 #' More details on specifying the parameters can be found in the documentation
 #' for [POMDP].
 #'
+#' @include POMDP.R
 #' @param states a character vector specifying the names of the states.
 #' @param actions a character vector specifying the names of the available
 #' actions.
@@ -25,6 +26,8 @@
 #' @param max logical; is this a maximization problem (maximize reward) or a
 #' minimization (minimize cost specified in `reward`)?
 #' @param name a string to identify the MDP problem.
+#' @param x a `MDP` object.
+#' 
 #' @return The function returns an object of class POMDP which is list with an
 #' element called `'model'` containing a list with the model specification.
 #' [solve_POMDP()] reads the object and adds a list element called
@@ -34,7 +37,7 @@
 #'
 #' ## Michael's Sleepy Tiger Problem is an MDP with perfect observability
 #'
-#' Tiger_MDP <- MDP(
+#' STiger <- MDP(
 #'   name = "Michael's Sleepy Tiger Problem",
 #'   discount = 1,
 #'
@@ -57,16 +60,21 @@
 #'   )
 #' )
 #'
-#' Tiger_MDP
+#' STiger
 #'
+#' STiger$model
+#' 
+#' # convert the MDP into a POMDP
+#' STiger_POMDP <- MDP2POMDP(STiger)
+#' STiger_POMDP
+#' 
 #' # do 5 epochs with no discounting
-#' s <- solve_POMDP(Tiger_MDP, method = "enum", horizon = 5)
+#' s <- solve_POMDP(STiger_POMDP, method = "enum", horizon = 5)
 #' s
 #'
 #' # value function and policy
 #' plot_value_function(s)
 #' policy(s)
-#'
 #' @export
 MDP <- function(states,
   actions,
@@ -78,91 +86,40 @@ MDP <- function(states,
   start = "uniform",
   max = TRUE,
   name = NA) {
-  ### FIXME: Check the values!
-  
-  # discount should be a number in [0,1]
-  # states should be a vector of strings
-  # actions should be a vector of strings
-  # observations should be a vector of strings
-  # start should be either a vector of n numbers each in [0,1] that add up to 1 where n is the number of states
-  # or the word "uniform", or a single number in 1 to n, or the name of a single state, or the names of a subset of states
-  
-  ### add names to start
-  if (is.numeric(start) && length(start) == length(states)) {
-    if (is.null(names(start)))
-      names(start) <- states
-    else
-      start <- start[states]
-  }
-  
-  # transition_prob is either a list consisting of m matrices where m is the number of actions
-  # or a data frame with 4 columns
-  
-  ### add names to transition probabilities
-  for (a in names(transition_prob)) {
-    if (is.matrix(transition_prob[[a]]))
-      dimnames(transition_prob[[a]]) <- list(states, states)
-  }
-  
-  # Define a MDP using a POMDP
-  observations <- states
-  identity_matrix <-
-    diag(1, nrow = length(observations), ncol = length(states))
-  observation_prob <-
-    sapply(
-      actions,
-      FUN = function(a)
-        identity_matrix,
-      simplify = FALSE
-    )
-  
-  # observation_prob is either a list consisting of m matrices where m is the number of actions
-  # or a data frame with 4 columns
-  # reward should be either a matrix of size mxn where n is the number of states or
-  # a data frame with 5 columns
-  # grid_size is an integer
   
   ### unsolved pomdp model
-  structure(list(model = structure(
-    list(
+  x <- list(
+    model = list(
       name = name,
       discount = discount,
       horizon = horizon,
-      states = factor(states),
-      actions = factor(actions),
-      observations = factor(observations),
+      states = states,
+      actions = actions,
       transition_prob = transition_prob,
-      observation_prob = observation_prob,
       reward = reward,
       start = start,
       terminal_values = terminal_values,
       max = max
-    ),
-    class = "POMDP_model"
-  )), class = c("MDP", "POMDP"))
+    )
+  )
+  
+  class(x) <- "MDP"
+  check_and_fix_MDP(x)
 }
 
 #' @export
-print.MDP <- function(x, ...) {
-  if (is.null(x$solution))
-    cat("Unsolved MDP model (formulated as a POMDP):",
-      x$model$name,
-      "\n")
-  else
-    cat(
-      "Solved MDP model (formulated as a POMDP):",
-      x$model$name,
-      "\n",
-      "\tsolution method:",
-      x$solution$method,
-      "\n",
-      "\thorizon:",
-      x$solution$horizon,
-      paste0("(converged: ", x$solution$converged, ")"),
-      "\n",
-      "\ttotal expected reward (for start probabilities):",
-      x$solution$total_expected_reward,
-      "\n"
-    )
-  cat("\n")
+print.MDP <- print.POMDP
+
+#' @rdname MDP
+#' @export
+MDP2POMDP <- function(x) {
+  # add an observation for each state and identity observation_probability for all actions ('*') 
+  # (note: pomdp-solve does not support "identity" for observation_probs)
+  x$model$observations <- x$model$states
+  ident_matrix <- diag(length(x$model$states))
+  dimnames(ident_matrix) <- list(x$model$states, x$model$observations)
+  
+  x$model$observation_prob <- list('*' = ident_matrix)
+  class(x) <- c("MDP", "POMDP")
+  x
 }
