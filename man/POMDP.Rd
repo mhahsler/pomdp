@@ -29,13 +29,14 @@ T_(action = "*", start.state = "*", end.state = "*", probability)
 R_(action = "*", start.state = "*", end.state = "*", observation = "*", value)
 }
 \arguments{
-\item{states}{a character vector specifying the names of the states.}
+\item{states}{a character vector specifying the names of the states. Note that
+state names have to start with a letter.}
 
-\item{actions}{a character vector specifying the names of the available
-actions.}
+\item{actions}{a character vector specifying the names of the available actions.
+Note that action names have to start with a letter.}
 
 \item{observations}{a character vector specifying the names of the
-observations.}
+observations. Note that observation names have to start with a letter.}
 
 \item{transition_prob}{Specifies action-dependent transition probabilities
 between states.  See Details section.}
@@ -121,19 +122,13 @@ Transition probability to transition to state \eqn{s'} from given state \eqn{s}
 and action \eqn{a}. The transition probabilities can be
 specified in the following ways:
 \itemize{
-\item A data.frame with 4 columns named:
-
-\code{'action'}, \code{'start.state'}, \code{'end.state'}, \code{'probability'}.
-
+\item A data.frame with columns exactly like the arguments of \code{T_()}.
 You can use \code{rbind()} with helper function \code{T_()} to create this data
 frame.
 \item A named list of matrices, one for each action. Each matrix is square with
 rows representing start states \eqn{s} and columns representing end states \eqn{s'}.
 Instead of a matrix, also the strings \code{'identity'} or \code{'uniform'} can be specified.
-\item A function with the signature
-
-\code{P(action, state.end, state.start)}
-
+\item A function with the same arguments are \code{T_()}, but no default values
 that returns the transition probability.
 }
 
@@ -144,19 +139,13 @@ action \eqn{a} and that the system transitioned to the end state
 \eqn{s'}. These probabilities can be specified in the
 following ways:
 \itemize{
-\item A data frame with 4 columns named:
-
-\code{'action'}, \code{'end.state'}, \code{'observation'}, \code{'probability'}.
-
+\item A data frame with columns named exactly like the arguments of \code{O_()}.
 You can use \code{rbind()}
 with helper function \code{O_()} to create this data frame.
 \item A named list of matrices, one for each action. Each matrix has
 rows representing end states \eqn{s'} and columns representing an observation \eqn{o}.
 Instead of a matrix, also the strings \code{'identity'} or \code{'uniform'} can be specified.
-\item A function with the signature
-
-\code{O(action, end.state, observation)}
-
+\item A function with the same arguments are \code{O_()}, but no default values
 that returns the observation probability.
 }
 
@@ -165,19 +154,13 @@ that returns the observation probability.
 The reward function can be specified in the following
 ways:
 \itemize{
-\item A data frame with 5 columns named:
-
-\code{'action'}, \verb{'start.state', }'end.state'\verb{, }'observation'\verb{, }'value'`.
-
+\item A data frame with columns named exactly like the arguments of \code{R_()}.
 You can use \code{rbind()}
 with helper function \code{R_()} to create this data frame.
-\item A list of lists. The list levels are action and start.state. The list elements
+\item A list of lists. The list levels are \code{'action'} and \code{'start.state'}. The list elements
 are matrices with
 rows representing end states \eqn{s'} and columns representing an observation \eqn{o}.
-\item A function with the signature
-
-\code{R(action, start.state, end.state, observation)}
-
+\item A function with the same arguments are \code{R_()}, but no default values
 that returns the reward.
 }
 
@@ -214,17 +197,14 @@ a list with the values for each episode. See \code{\link[=solve_POMDP]{solve_POM
 more details and an example.
 }
 \examples{
-## Defining the Tiger Problem
+## Defining the Tiger Problem (it is also avilable via data(Tiger))
 
 Tiger <- POMDP(
   name = "Tiger Problem",
-
   discount = 0.75,
-
   states = c("tiger-left" , "tiger-right"),
   actions = c("listen", "open-left", "open-right"),
   observations = c("tiger-left", "tiger-right"),
-
   start = "uniform",
 
   transition_prob = list(
@@ -241,6 +221,7 @@ Tiger <- POMDP(
   ),
 
   # the reward helper expects: action, start.state, end.state, observation, value
+  # missing arguments default to '*' matching any value.
   reward = rbind(
     R_("listen",                    v =   -1),
     R_("open-left",  "tiger-left",  v = -100),

@@ -26,6 +26,11 @@ format_fixed <- function(x, digits = 7, debug = "unknown") {
 #' @author Hossein Kamalzadeh, Michael Hahsler
 #' @references POMDP solver website: http://www.pomdp.org
 #' @keywords IO
+#' @examples 
+#' data(Tiger)
+#' 
+#' ## show the POMDP file that would be written.
+#' write_POMDP(Tiger, file = stdout())
 #' @export
 write_POMDP <- function(x, file, digits = 7) {
   if (!inherits(x, "POMDP"))
@@ -211,16 +216,16 @@ write_POMDP <- function(x, file, digits = 7) {
         code <-
           paste0(code, format_POMDP_df(reward, "R", digits))
       } else {
-        if (!identical(names(rewards), '*') &&
-            !setequal(names(rewards), actions))
+        if (!identical(names(reward), '*') &&
+            !setequal(names(reward), actions))
           stop("names of the rewards list do not match the actions!")
         
-        for (a in names(rewards)) {
-          if (!identical(names(rewards[[a]]), '*') &&
-              !setequal(names(rewards[[a]]), states))
+        for (a in names(reward)) {
+          if (!identical(names(reward[[a]]), '*') &&
+              !setequal(names(reward[[a]]), states))
             stop("names of the second level of the rewards list do not match the states!")
           
-          for (s in names(rewards[[a]])) {
+          for (s in names(reward[[a]])) {
             code <- paste0(code, "R: ", a, ":" , s, "\n")
             code <-
               paste0(code,

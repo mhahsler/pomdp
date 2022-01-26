@@ -23,6 +23,12 @@ point).}
 \description{
 Reads and write a POMDP file suitable for the \code{pomdp-solve} program. \emph{Note:} read POMDP files are intended to be used in \code{\link[=solve_POMDP]{solve_POMDP()}} and do not support all auxiliary functions. Fields like the transition matrix, the observation matrix and the reward structure are not parsed.
 }
+\examples{
+data(Tiger)
+
+## show the POMDP file that would be written.
+write_POMDP(Tiger, file = stdout())
+}
 \references{
 POMDP solver website: http://www.pomdp.org
 }

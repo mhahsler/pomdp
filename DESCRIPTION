@@ -36,10 +36,11 @@ Copyright: pomdp-solve is Copyright (C) Anthony R. Cassandra;
 RoxygenNote: 7.1.2.9000
 Roxygen: list(markdown = TRUE)
 Collate: 
-    'AAAdatasets.R'
     'AAAimports.R'
     'POMDP.R'
     'MDP.R'
+    'Maze.R'
+    'Tiger.R'
     'check_installed.R'
     'colors.R'
     'optimal_action.R'
@@ -54,6 +55,7 @@ Collate:
     'reward.R'
     'round_stochchastic.R'
     'sample_belief_space.R'
+    'solve_MDP.R'
     'solve_POMDP.R'
     'solve_SARSOP.R'
     'transition_matrix.R'

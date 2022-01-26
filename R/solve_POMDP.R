@@ -365,7 +365,7 @@ solve_POMDP <- function(model,
   if (is.null(discount))
     discount <- model$model$discount
   if (is.null(discount)) {
-    warning("No discount rate specified. Using .9!")
+    message("No discount rate specified. Using .9!")
     discount <- .9
   }
   
@@ -460,27 +460,29 @@ solve_POMDP <- function(model,
     if (!verbose)
       cat(paste(solver_output, "\n\n"))
     
-    message(
-      "Note: The action and state index reported by the solver above starts with 0 and not with 1:\n"
-    )
+    # message(
+    #   "Note: The action and state index reported by the solver above starts with 0 and not with 1:\n"
+    # )
+    # 
+    # m <- max(
+    #   length(model$model$states),
+    #   length(model$model$actions),
+    #   length(model$model$observations)
+    # )
+    # 
+    # print(
+    #   data.frame(
+    #     index = (1:m) - 1,
+    #     action = model$model$actions[1:m],
+    #     state = model$model$states[1:m],
+    #     observation = model$model$observations[1:m]
+    #   )
+    # )
+    # cat("\n")
     
-    m <- max(
-      length(model$model$states),
-      length(model$model$actions),
-      length(model$model$observations)
-    )
+    message("Debugging info: The used POMDP definition file can be found at: ", pomdp_filename,
+      "\n  use file.show('", pomdp_filename, "') to see the POMDP file.")
     
-    print(
-      data.frame(
-        index = (1:m) - 1,
-        action = model$model$actions[1:m],
-        state = model$model$states[1:m],
-        observation = model$model$observations[1:m]
-      )
-    )
-    
-    cat("\n")
-    message("The used POMDP definition file can be found at: ", pomdp_filename)
     stop("POMDP solver returned an error (see above).")
   }
   
@@ -528,6 +530,12 @@ solve_POMDP <- function(model,
   # read belief states if available (method: grid)
   belief <- .get_belief_file(file_prefix, model)
   
+  policy <- pg
+  for (i in 1:length(policy)) {
+    policy[[i]] <- cbind(alpha[[i]],
+      policy[[i]][, "action", drop = FALSE])
+  }
+  
   # add solution to model
   model$solution <- structure(
     list(
@@ -545,7 +553,8 @@ solve_POMDP <- function(model,
         0,
       belief_states = belief,
       pg = pg,
-      alpha = alpha
+      alpha = alpha,
+      policy = policy
     ),
     class = "POMDP_solution"
   )
@@ -557,7 +566,10 @@ solve_POMDP <- function(model,
   model$solution$initial_pg_node <- rew$pg_node
   
   model$solver_output <- structure(solver_output, class = "text")
-  
+ 
+  if(inherits(model, "MDP")) 
+    model$solution$policy <- .policy_MDP_from_POMDP(model)
+   
   model
 }
 

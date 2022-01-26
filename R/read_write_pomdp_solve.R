@@ -16,7 +16,7 @@
   
   if (is.matrix(belief)) {
     if (ncol(belief) != length(states))
-      stop("Number of column is not the number if states.")
+      stop("Number of column is not the number of states.")
     colnames(belief) <- states
     return(belief)
   }

@@ -43,6 +43,4 @@
 #' Three_doors
 #'
 #' Three_doors$model
-#'
-
 NULL

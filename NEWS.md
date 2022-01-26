@@ -1,7 +1,9 @@
 # pomdp 0.99.3.1 (xx/xx/2022)
 
+* added solve_MDP().
 * transition probability, observation probabilities and rewards can now
   be specified as a function.
+* transition_matrix et al now can also return a function.
 * Improved POMDP file writer.
 
 # pomdp 0.99.3 (08/05/2021)

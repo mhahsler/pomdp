@@ -39,10 +39,7 @@
 #' and action \eqn{a}. The transition probabilities can be
 #' specified in the following ways:
 #'
-#' * A data.frame with 4 columns named:
-#'
-#'   `'action'`, `'start.state'`, `'end.state'`, `'probability'`.
-#'
+#' * A data.frame with columns exactly like the arguments of `T_()`.
 #'   You can use `rbind()` with helper function `T_()` to create this data
 #'   frame.
 #'
@@ -50,10 +47,7 @@
 #'   rows representing start states \eqn{s} and columns representing end states \eqn{s'}.
 #'   Instead of a matrix, also the strings `'identity'` or `'uniform'` can be specified.
 #'
-#' * A function with the signature
-#'
-#'   `P(action, state.end, state.start)`
-#'
+#' * A function with the same arguments are `T_()`, but no default values
 #'   that returns the transition probability.
 #'
 #' **Specification of observation probabilities: \eqn{O(o | s', a)}**
@@ -63,10 +57,7 @@
 #' \eqn{s'}. These probabilities can be specified in the
 #' following ways:
 #'
-#' * A data frame with 4 columns named:
-#'
-#'   `'action'`, `'end.state'`, `'observation'`, `'probability'`.
-#'
+#' * A data frame with columns named exactly like the arguments of `O_()`.
 #'   You can use `rbind()`
 #'   with helper function `O_()` to create this data frame.
 #'
@@ -74,10 +65,7 @@
 #'   rows representing end states \eqn{s'} and columns representing an observation \eqn{o}.
 #'   Instead of a matrix, also the strings `'identity'` or `'uniform'` can be specified.
 #'
-#' * A function with the signature
-#'
-#'   `O(action, end.state, observation)`
-#'
+#' * A function with the same arguments are `O_()`, but no default values
 #'   that returns the observation probability.
 #'
 #' **Specification of the reward function: \eqn{R(s, s', o, a)}**
@@ -85,21 +73,15 @@
 #' The reward function can be specified in the following
 #' ways:
 #'
-#' * A data frame with 5 columns named:
-#'
-#'   `'action'`, `'start.state', `'end.state'`, `'observation'`, `'value'`.
-#'
+#' * A data frame with columns named exactly like the arguments of `R_()`.
 #'   You can use `rbind()`
 #'   with helper function `R_()` to create this data frame.
 #'
-#' * A list of lists. The list levels are action and start.state. The list elements
+#' * A list of lists. The list levels are `'action'` and `'start.state'`. The list elements
 #'   are matrices with
 #'   rows representing end states \eqn{s'} and columns representing an observation \eqn{o}.
 #'
-#' * A function with the signature
-#'
-#'   `R(action, start.state, end.state, observation)`
-#'
+#' * A function with the same arguments are `R_()`, but no default values
 #'   that returns the reward.
 #'
 #' **Start Belief**
@@ -134,11 +116,12 @@
 #' a list with the values for each episode. See [solve_POMDP()] for
 #' more details and an example.
 #'
-#' @param states a character vector specifying the names of the states.
-#' @param actions a character vector specifying the names of the available
-#' actions.
+#' @param states a character vector specifying the names of the states. Note that 
+#' state names have to start with a letter.
+#' @param actions a character vector specifying the names of the available actions.
+#' Note that action names have to start with a letter.
 #' @param observations a character vector specifying the names of the
-#' observations.
+#' observations. Note that observation names have to start with a letter.
 #' @param transition_prob Specifies action-dependent transition probabilities
 #' between states.  See Details section.
 #' @param observation_prob Specifies the probability that an action/state
@@ -175,17 +158,14 @@
 #' @references
 #' pomdp-solve website: \url{http://www.pomdp.org}
 #' @examples
-#' ## Defining the Tiger Problem
+#' ## Defining the Tiger Problem (it is also avilable via data(Tiger))
 #'
 #' Tiger <- POMDP(
 #'   name = "Tiger Problem",
-#'
 #'   discount = 0.75,
-#'
 #'   states = c("tiger-left" , "tiger-right"),
 #'   actions = c("listen", "open-left", "open-right"),
 #'   observations = c("tiger-left", "tiger-right"),
-#'
 #'   start = "uniform",
 #'
 #'   transition_prob = list(
@@ -202,6 +182,7 @@
 #'   ),
 #'
 #'   # the reward helper expects: action, start.state, end.state, observation, value
+#'   # missing arguments default to '*' matching any value.
 #'   reward = rbind(
 #'     R_("listen",                    v =   -1),
 #'     R_("open-left",  "tiger-left",  v = -100),
@@ -359,11 +340,18 @@ check_and_fix_MDP <- function(x) {
     }
     
     ## read_POMDP does not parse these!
+    ## For now, we expand functions into matrices
     if (!exists("problem")) {
-      check_func(transition_prob, T_, "transition_prob")
-      check_func(reward, R_, "reward")
+      #check_func(transition_prob, T_, "transition_prob")
+      if(is.function(transition_prob))
+        transition_prob <- transition_matrix(x) 
+      #check_func(reward, R_, "reward")
+      if(is.function(reward))
+        reward <- reward_matrix(x) 
       if (inherits(x, "POMDP"))
-        check_func(observation_prob, O_, "observation_prob")
+        #check_func(observation_prob, O_, "observation_prob")
+        if(is.function(observation_prob))
+          observation_prob <- observation_matrix(x) 
       
       check_df(transition_prob, T_, "transition_prob")
       check_df(reward, R_, "reward")
@@ -372,7 +360,7 @@ check_and_fix_MDP <- function(x) {
       
       ## FIXME: check that a is actions!
       
-      # if we have matrices then chck and add names
+      # if we have matrices then check and add names
       for (a in names(transition_prob)) {
         if (is.matrix(transition_prob[[a]])) {
           if (!identical(dim(transition_prob[[a]]), c(length(states), length(states))))

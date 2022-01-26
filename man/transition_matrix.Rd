@@ -4,25 +4,27 @@
 \alias{transition_matrix}
 \alias{observation_matrix}
 \alias{reward_matrix}
-\title{Extract the Transition, Observation or Reward Matrices from a POMDP}
+\title{Extract the Transition, Observation or Reward Information from a POMDP}
 \usage{
-transition_matrix(x, episode = 1)
+transition_matrix(x, episode = 1, type = "matrix")
 
-observation_matrix(x, episode = 1)
+observation_matrix(x, episode = 1, type = "matrix")
 
-reward_matrix(x, episode = 1)
+reward_matrix(x, episode = 1, type = "matrix")
 }
 \arguments{
 \item{x}{A \link{POMDP} object.}
 
 \item{episode}{Episode used for time-dependent POMDPs (\link{POMDP}).}
+
+\item{type}{\code{'matrix'} or \code{'function'} to get a list of matrices or a function.}
 }
 \value{
 A list or a list of lists of matrices.
 }
 \description{
 Converts the description of transition probabilities and observation
-probabilities in a POMDP into a list of matrices.
+probabilities in a POMDP into a list of matrices or a function.
 }
 \details{
 See Details section in \link{POMDP} for details.
@@ -33,6 +35,11 @@ data("Tiger")
 # List of |A| transition matrices. One per action in the from states x states
 Tiger$model$transition_prob
 transition_matrix(Tiger)
+
+f <- transition_matrix(Tiger, type = "function")
+args(f)
+## listening does not change the tiger's position.
+f("listen", "tiger-left", "tiger-left")
 
 # List of |A| observation matrices. One per action in the from states x observations
 Tiger$model$observation_prob

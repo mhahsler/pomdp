@@ -1,13 +1,10 @@
 library(pomdp)
 Tiger <- POMDP(
   name = "Tiger Problem",
-  
   discount = 0.75,
-  
   states = c("tiger-left" , "tiger-right"),
   actions = c("listen", "open-left", "open-right"),
   observations = c("tiger-left", "tiger-right"),
-  
   start = "uniform",
   
   transition_prob = list(
@@ -17,7 +14,7 @@ Tiger <- POMDP(
   
   observation_prob = list(
     "listen" = rbind(c(0.85, 0.15), 
-      c(0.15, 0.85)),
+                     c(0.15, 0.85)),
     "open-left" =  "uniform",
     "open-right" = "uniform"),
   

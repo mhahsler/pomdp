@@ -81,7 +81,7 @@ solve_SARSOP <- function(model,
     stop("Only available method: 'sarsop'")
   
   # check parameters
-  if (!is.null(terminal_values))
+if (!is.null(terminal_values))
     stop("the SARSOP solver does not support terminal values.")
   
   # do we have a model POMDP file?
@@ -150,6 +150,8 @@ solve_SARSOP <- function(model,
   alpha <- t(policy$vectors)
   colnames(alpha) = model$model$states
   
+  policy <- data.frame(alpha, action = pg$action)
+  
   model$solution <- structure(
     list(
       method = "sarsop",
@@ -163,7 +165,8 @@ solve_SARSOP <- function(model,
       #  terminal_values = if(!is.null(terminal_values)) terminal_values else 0,
       #belief_states = belief,
       pg = list(pg),
-      alpha = list(alpha)
+      alpha = list(alpha),
+      policy = list(policy)
     ),
     class = "POMDP_solution"
   )

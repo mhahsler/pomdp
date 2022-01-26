@@ -51,7 +51,6 @@ the optimal actions will be chosen, for unsolved POMDPs random actions will
 be used.
 }
 \examples{
-
 data(Tiger)
 
 # solve the POMDP for 5 epochs and no discounting
@@ -84,7 +83,6 @@ lines(density(sim[,1], bw = .05)); axis(2); title(ylab = "Density")
 sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, random_actions = TRUE, visited_beliefs = TRUE)
 plot_belief_space(sol, sample = sim, ylim = c(0,6))
 lines(density(sim[,1], bw = .05)); axis(2); title(ylab = "Density")
-
 }
 \seealso{
 \code{\link[=POMDP]{POMDP()}}

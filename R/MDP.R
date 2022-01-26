@@ -1,15 +1,18 @@
 #' Define an MDP Problem
 #'
-#' Defines all the elements of a MDP problem and formulates them as a POMDP
-#' where all states are observable.
-#'
-#' The MDP is formulated as a POMDP where all states are completely observable.
-#' This is achieved by defining one observation per state with identity
-#' observation probability matrices.
+#' Defines all the elements of a MDP problem.
+#' 
+#' MDPs are similar to POMDPs, however, observations are not used and 
+#' the state information is observable. The model can defined similar to 
+#' [POMDP] models, but observations are not specified and the `'observations'`
+#' column in the the reward specification is always `'*'`. 
+#' 
+#' `MDP2POMDP` reformulates the MDP as a POMDP with one observation per state that 
+#' reveals the current state. 
+#' This is achieved by defining identity observation probability matrices.
 #'
 #' More details on specifying the parameters can be found in the documentation
 #' for [POMDP].
-#'
 #' @include POMDP.R
 #' @param states a character vector specifying the names of the states.
 #' @param actions a character vector specifying the names of the available
@@ -21,7 +24,6 @@
 #' @param discount numeric; discount rate between 0 and 1.
 #' @param horizon numeric; Number of epochs. `Inf` specifies an infinite
 #' horizon.
-#' @param terminal_values a vector with the terminal values for each state.
 #' @param start Specifies in which state the MDP starts.
 #' @param max logical; is this a maximization problem (maximize reward) or a
 #' minimization (minimize cost specified in `reward`)?
@@ -34,12 +36,11 @@
 #' `'solution'`.
 #' @author Michael Hahsler
 #' @examples
-#'
 #' ## Michael's Sleepy Tiger Problem is an MDP with perfect observability
 #'
 #' STiger <- MDP(
 #'   name = "Michael's Sleepy Tiger Problem",
-#'   discount = 1,
+#'   discount = .9,
 #'
 #'   states = c("tiger-left" , "tiger-right"),
 #'   actions = c("open-left", "open-right", "do-nothing"),
@@ -63,6 +64,9 @@
 #' STiger
 #'
 #' STiger$model
+#'
+#' sol <- solve_MDP(STiger, e = 1e-7)
+#' policy(sol)
 #' 
 #' # convert the MDP into a POMDP
 #' STiger_POMDP <- MDP2POMDP(STiger)
@@ -82,7 +86,6 @@ MDP <- function(states,
   reward,
   discount = .9,
   horizon = Inf,
-  terminal_values = 0,
   start = "uniform",
   max = TRUE,
   name = NA) {
@@ -98,7 +101,6 @@ MDP <- function(states,
       transition_prob = transition_prob,
       reward = reward,
       start = start,
-      terminal_values = terminal_values,
       max = max
     )
   )
@@ -122,4 +124,11 @@ MDP2POMDP <- function(x) {
   x$model$observation_prob <- list('*' = ident_matrix)
   class(x) <- c("MDP", "POMDP")
   x
+}
+
+.solved_MDP <- function(x) {
+  if (!inherits(x, "MDP"))
+    stop("x needs to be a POMDP object!")
+  if (is.null(x$solution))
+    stop("x needs to be a solved MDP. Use solve_MDP() first.")
 }

@@ -12,7 +12,6 @@ MDP(
   reward,
   discount = 0.9,
   horizon = Inf,
-  terminal_values = 0,
   start = "uniform",
   max = TRUE,
   name = NA
@@ -37,8 +36,6 @@ observations.}
 \item{horizon}{numeric; Number of epochs. \code{Inf} specifies an infinite
 horizon.}
 
-\item{terminal_values}{a vector with the terminal values for each state.}
-
 \item{start}{Specifies in which state the MDP starts.}
 
 \item{max}{logical; is this a maximization problem (maximize reward) or a
@@ -55,24 +52,27 @@ element called \code{'model'} containing a list with the model specification.
 \code{'solution'}.
 }
 \description{
-Defines all the elements of a MDP problem and formulates them as a POMDP
-where all states are observable.
+Defines all the elements of a MDP problem.
 }
 \details{
-The MDP is formulated as a POMDP where all states are completely observable.
-This is achieved by defining one observation per state with identity
-observation probability matrices.
+MDPs are similar to POMDPs, however, observations are not used and
+the state information is observable. The model can defined similar to
+\link{POMDP} models, but observations are not specified and the \code{'observations'}
+column in the the reward specification is always \code{'*'}.
+
+\code{MDP2POMDP} reformulates the MDP as a POMDP with one observation per state that
+reveals the current state.
+This is achieved by defining identity observation probability matrices.
 
 More details on specifying the parameters can be found in the documentation
 for \link{POMDP}.
 }
 \examples{
-
 ## Michael's Sleepy Tiger Problem is an MDP with perfect observability
 
 STiger <- MDP(
   name = "Michael's Sleepy Tiger Problem",
-  discount = 1,
+  discount = .9,
 
   states = c("tiger-left" , "tiger-right"),
   actions = c("open-left", "open-right", "do-nothing"),
@@ -96,6 +96,9 @@ STiger <- MDP(
 STiger
 
 STiger$model
+
+sol <- solve_MDP(STiger, e = 1e-7)
+policy(sol)
 
 # convert the MDP into a POMDP
 STiger_POMDP <- MDP2POMDP(STiger)

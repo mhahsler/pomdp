@@ -15,7 +15,12 @@
     drop(belief)
   }
 
-
+.update_belief_vec <- Vectorize(
+  .update_belief,
+  vectorize.args = c("action", "observation"),
+  SIMPLIFY = TRUE
+)
+  
 
 #' Belief Update
 #'
@@ -72,16 +77,9 @@ update_belief <-
     if (is.null(observation))
       observation <- as.character(model$model$observations)
     
-    .update_vec <-
-      Vectorize(
-        .update_belief,
-        vectorize.args = c("action", "observation"),
-        SIMPLIFY = TRUE
-      )
-    
     g <- expand.grid(action, observation, stringsAsFactors = FALSE)
     
-    b <- t(.update_vec(belief, g[, 1], g[, 2], Tr, Ob, digits))
+    b <- t(.update_belief_vec(belief, g[, 1], g[, 2], Tr, Ob, digits))
     rownames(b) <- apply(g, MARGIN = 1, paste, collapse = "+")
     colnames(b) <- as.character(model$model$states)
     
@@ -121,7 +119,6 @@ update_belief <-
 #' @seealso [POMDP()]
 #' @md
 #' @examples
-#'
 #' data(Tiger)
 #'
 #' # solve the POMDP for 5 epochs and no discounting
@@ -154,7 +151,6 @@ update_belief <-
 #' sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, random_actions = TRUE, visited_beliefs = TRUE)
 #' plot_belief_space(sol, sample = sim, ylim = c(0,6))
 #' lines(density(sim[,1], bw = .05)); axis(2); title(ylab = "Density")
-#'
 #' @export
 simulate_POMDP <-
   function(model,
