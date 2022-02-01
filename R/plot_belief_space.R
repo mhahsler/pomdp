@@ -50,9 +50,9 @@
 #' sol
 #'
 #' plot_belief_space(sol)
-#' plot_belief_space(sol, sample = "random")
+#' plot_belief_space(sol, sample = "random", n = 1000)
 #' plot_belief_space(sol, what = "pg_node")
-#' plot_belief_space(sol, what = "reward")
+#' plot_belief_space(sol, what = "reward", sample = "random", n = 1000)
 #'
 #' # plot the belief points used by the grid-based solver
 #' plot_belief_space(sol, sample = sol$solution$belief_states)
@@ -60,7 +60,7 @@
 #' # plot the belief points obtained using simulated trajectories (we use n = 50 to save time).
 #' plot_belief_space(sol, sample = simulate_POMDP(Three_doors, n = 50, horizon = 100,
 #'   random_actions = TRUE, visited_beliefs = TRUE))
-#'
+#' @import graphics
 #' @export
 plot_belief_space <-
   function(model,
@@ -98,6 +98,8 @@ plot_belief_space <-
     }
     
     val <- reward(model, belief = sample, epoch = epoch)[[what]]
+    if (what %in% c("action", "pg_node")) val <- factor(val)
+    
     
     # col ... palette used for legend
     # cols ... colors for all points
