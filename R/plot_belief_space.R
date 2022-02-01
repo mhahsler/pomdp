@@ -20,6 +20,7 @@
 #' need to increase the plotting region of the plotting device.
 #' @param pch plotting symbols.
 #' @param col plotting colors.
+#' @param jitter_factor y jitter for 2D belief spaces.
 #' @param ...  additional arguments are passed on to `plot` for 2D or
 #' `TerneryPlot` for 3D.
 #' @return Returns invisibly the sampled points.
@@ -71,6 +72,7 @@ plot_belief_space <-
     legend = TRUE,
     pch = 20,
     col = NULL,
+    jitter_factor = 0,
     ...) {
     # sample: a matrix with belief points or a character string passed on to sample_belief_space as method.
     # E.g., "regular", "random", ...
@@ -161,7 +163,7 @@ plot_belief_space <-
         )
       
       points(sample[, 1],
-        rep(0, times = nrow(sample)),
+        jitter(rep(0, times = nrow(sample)), factor = jitter_factor),
         col = cols,
         pch = pch)
       
