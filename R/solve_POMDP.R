@@ -1,39 +1,3 @@
-# Class POMDP is a list with model and solution.
-# solve_POMDP uses the model and adds the solution to the list.
-
-find_pomdpsolve <- function() {
-  exec <-
-    system.file(file.path(
-      "bin",
-      .Platform$r_arch,
-      c("pomdp-solve", "pomdp-solve.exe")
-    ), package = "pomdp")[1]
-  if (exec == "")
-    stop("pomdp-solve executable not found. Reinstall package 'pomdp'.")
-  exec
-}
-
-#' @rdname solve_POMDP
-#' @export
-solve_POMDP_parameter <- function() {
-  solver_output <- system2(
-    find_pomdpsolve(),
-    args = c("-h"),
-    stdout = TRUE,
-    stderr = TRUE,
-    wait = TRUE
-  )
-  
-  cat(solver_output, sep = "\n")
-  cat(
-    "\nUse the parameter options in solve_POMDP without the leading '-' in the form:",
-    "\tparameter = list(fg_points = 100)",
-    "Note: Not all parameter options are available (e.g., resource limitations, -pomdp, -horizon).",
-    sep = "\n"
-  )
-}
-
-
 #' Solve a POMDP Problem using pomdp-solver
 #'
 #' This function utilizes the C implementation of 'pomdp-solve' by Cassandra
@@ -314,7 +278,7 @@ solve_POMDP_parameter <- function() {
 #' # Solve the POMDP using the grid for approximation
 #' sol <- solve_POMDP(Tiger, method = "grid", parameter = list(grid = custom_grid))
 #' sol
-#'
+#' @import pomdpSolve
 #' @export
 solve_POMDP <- function(model,
   horizon = NULL,
@@ -448,7 +412,7 @@ solve_POMDP <- function(model,
     )
   
   solver_output <- system2(
-    find_pomdpsolve(),
+    pomdpSolve::find_pomdp_solve(),
     args = pomdp_args,
     stdout = ifelse(verbose, "", TRUE),
     stderr = ifelse(verbose, "", TRUE),
@@ -725,3 +689,23 @@ print.POMDP_solution <- function(x, ...) {
     
     m
   }
+
+#' @rdname solve_POMDP
+#' @export
+solve_POMDP_parameter <- function() {
+  solver_output <- system2(
+    pomdpSolve::find_pomdp_solve(),
+    args = c("-h"),
+    stdout = TRUE,
+    stderr = TRUE,
+    wait = TRUE
+  )
+  
+  cat(solver_output, sep = "\n")
+  cat(
+    "\nUse the parameter options in solve_POMDP without the leading '-' in the form:",
+    "\tparameter = list(fg_points = 100)",
+    "Note: Not all parameter options are available (e.g., resource limitations, -pomdp, -horizon).",
+    sep = "\n"
+  )
+}

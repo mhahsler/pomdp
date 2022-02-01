@@ -1,5 +1,6 @@
 # pomdp 0.99.3.1 (xx/xx/2022)
 
+* moved pomdp-solve to package pomdpSolve.
 * added solve_MDP().
 * transition probability, observation probabilities and rewards can now
   be specified as a function.

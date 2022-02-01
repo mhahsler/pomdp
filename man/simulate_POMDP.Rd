@@ -76,13 +76,14 @@ sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), visited_beliefs = TRUE)
 
 # plot with added density
 plot_belief_space(sol, sample = sim, ylim = c(0,3))
-lines(density(sim[,1], bw = .05)); axis(2); title(ylab = "Density")
+lines(density(sim[, 1], bw = .05)); axis(2); title(ylab = "Density")
 
 
 ## Example 3: simulate trajectories for an unsolved POMDP using randomized actions
-sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, random_actions = TRUE, visited_beliefs = TRUE)
+sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, 
+  random_actions = TRUE, visited_beliefs = TRUE)
 plot_belief_space(sol, sample = sim, ylim = c(0,6))
-lines(density(sim[,1], bw = .05)); axis(2); title(ylab = "Density")
+lines(density(sim[, 1], bw = .05)); axis(2); title(ylab = "Density")
 }
 \seealso{
 \code{\link[=POMDP]{POMDP()}}

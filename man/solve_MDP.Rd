@@ -2,6 +2,7 @@
 % Please edit documentation in R/solve_MDP.R
 \name{solve_MDP}
 \alias{solve_MDP}
+\alias{random_policy}
 \title{Solve an MDP Problem}
 \usage{
 solve_MDP(
@@ -10,9 +11,12 @@ solve_MDP(
   horizon = NULL,
   discount = NULL,
   max_iterations = 1000,
+  policy_eval_n = 10,
   method = "value",
   verbose = FALSE
 )
+
+random_policy(model, prob = NULL)
 }
 \arguments{
 \item{model}{a POMDP problem specification created with \code{\link[=POMDP]{POMDP()}}.
@@ -35,11 +39,15 @@ discount factor specified in \code{model} will be used.}
 maximum is reached then the non-converged solution is returned with a
 warning.}
 
-\item{method}{string; one of the following solution methods: \code{"value"},
-\code{"policy"}.}
+\item{policy_eval_n}{number of iterations used for the approximate policy evaluation in method \code{'policy'} iteration.}
+
+\item{method}{string; one of the following solution methods: \code{'value'},
+\code{'policy'}.}
 
 \item{verbose}{logical, if set to \code{TRUE}, the function provides the
 output of the pomdp solver in the R console.}
+
+\item{prob}{probability vector for actions.}
 }
 \value{
 The solver returns an object of class POMDP which is a list with the
@@ -49,10 +57,16 @@ model specifications (\code{model}), the solution (\code{solution}).
 A simple implementation of value iteration and modified policy iteration.
 }
 \examples{
-data(Maze) 
+data(Maze)
 Maze
 
+# use value iteration
 maze_solved <- solve_MDP(Maze, method = "value")
+policy(maze_solved)
+
+plot_value_function(maze_solved)
+
+maze_solved <- solve_MDP(Maze, method = "policy")
 policy(maze_solved)
 }
 \author{
