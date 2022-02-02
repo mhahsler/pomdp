@@ -7,12 +7,13 @@
 \usage{
 solve_MDP(
   model,
-  eps = 0.01,
   horizon = NULL,
   discount = NULL,
-  max_iterations = 1000,
-  policy_eval_n = 10,
+  terminal_values = NULL,
   method = "value",
+  eps = 0.01,
+  max_iterations = 1000,
+  k_backups = 10,
   verbose = FALSE
 )
 
@@ -21,9 +22,6 @@ random_policy(model, prob = NULL)
 \arguments{
 \item{model}{a POMDP problem specification created with \code{\link[=POMDP]{POMDP()}}.
 Alternatively, a POMDP file or the URL for a POMDP file can be specified.}
-
-\item{eps}{maximum error allowed in the utility of any state
-(i.e., the maximum policy loss).}
 
 \item{horizon}{an integer with the number of epochs for problems with a
 finite planning horizon. If set to \code{Inf}, the algorithm continues
@@ -35,19 +33,26 @@ section).}
 \item{discount}{discount factor in range \eqn{[0, 1]}. If \code{NULL}, then the
 discount factor specified in \code{model} will be used.}
 
-\item{max_iterations}{maximum number of iterations to converge. If the
-maximum is reached then the non-converged solution is returned with a
-warning.}
-
-\item{policy_eval_n}{number of iterations used for the approximate policy evaluation in method \code{'policy'} iteration.}
+\item{terminal_values}{a vector with terminal utilities for each state. If
+\code{NULL}, then a vector of all 0s is used.}
 
 \item{method}{string; one of the following solution methods: \code{'value'},
 \code{'policy'}.}
+
+\item{eps}{maximum error allowed in the utility of any state
+(i.e., the maximum policy loss).}
+
+\item{max_iterations}{maximum number of iterations allowed to converge. If the
+maximum is reached then the non-converged solution is returned with a
+warning.}
 
 \item{verbose}{logical, if set to \code{TRUE}, the function provides the
 output of the pomdp solver in the R console.}
 
 \item{prob}{probability vector for actions.}
+
+\item{k_backup}{number of look ahead steps used for approximate policy evaluation
+used by method \code{'policy'}.}
 }
 \value{
 The solver returns an object of class POMDP which is a list with the
@@ -66,8 +71,14 @@ policy(maze_solved)
 
 plot_value_function(maze_solved)
 
+# use modified policy iteration
 maze_solved <- solve_MDP(Maze, method = "policy")
 policy(maze_solved)
+
+# finite horizon
+maze_solved <- solve_MDP(Maze, method = "value", horizon = 3)
+policy(maze_solved)
+
 }
 \author{
 Michael Hahsler

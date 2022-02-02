@@ -98,6 +98,7 @@ R <- rbind(
 Maze <- MDP(
  name = "Stuart Russell's 3x4 Maze",
  discount = 1,
+ horizon = Inf,
  states = S,
  actions = A,
  transition_prob = T,

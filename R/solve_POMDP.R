@@ -97,10 +97,10 @@
 #' section).
 #' @param discount discount factor in range \eqn{[0, 1]}. If `NULL`, then the
 #' discount factor specified in `model` will be used.
-#' @param terminal_values a vector with the terminal values for each state or a
+#' @param terminal_values a vector with the terminal utility values for each state or a
 #' matrix specifying the terminal rewards via a terminal value function (e.g.,
-#' the alpha component produced by [solve_POMDP()]).  If `NULL`, then
-#' the terminal values specified in `model` will be used.
+#' the alpha component produced by [solve_POMDP()]).  If `NULL`, then, if available,
+#' the terminal values specified in `model` will be used or a vector with all 0s otherwise. 
 #' @param digits precision used when writing POMDP files (see
 #' [write_POMDP()]).
 #' @param parameter a list with parameters passed on to the pomdp-solve
