@@ -37,10 +37,10 @@
 #' data("Tiger")
 #' Tiger
 #'
-#' Tiger$model
+#' Tiger
 #'
 #' data("Three_doors")
 #' Three_doors
 #'
-#' Three_doors$model
+#' Three_doors
 NULL

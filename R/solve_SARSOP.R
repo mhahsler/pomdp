@@ -88,28 +88,28 @@ if (!is.null(terminal_values))
   if (is.character(model))
     model <- read_POMDP(model)
   
-  if (!is.null(model$model$horizon) &&
-      !is.infinite(model$model$horizon))
+  if (!is.null(model$horizon) &&
+      !is.infinite(model$horizon))
     warning(
       "Replacing the horizon specified in the model (",
-      model$model$horizon,
+      model$horizon,
       ") with infinity. SARSOP only solves infinite-horizon problems."
     )
   
-  model$model$horizon <- horizon
+  model$horizon <- horizon
   
-  if (!is.infinite(model$model$horizon))
+  if (!is.infinite(model$horizon))
     stop("SARSOP only solves infinite-horizon problems.")
   
   if (!is.null(horizon))
-    model$model$horizon <- horizon
+    model$horizon <- horizon
   
   
-  if (!is.infinite(model$model$horizon))
+  if (!is.infinite(model$horizon))
     stop("the SARSOP solver only supports infinite time horizon problems.")
   
   if (!is.null(discount))
-    model$model$discount <- discount
+    model$discount <- discount
   
   if (.timedependent_POMDP(model))
     stop("the SARSOP solver does not support time dependent models.")
@@ -121,8 +121,8 @@ if (!is.null(terminal_values))
   log_file <- paste0(tmpf, '.log')
   
   # write model POMDP file
-  if (!is.null(model$model$problem))
-    writeLines(model$model$problem, con = model_file)
+  if (!is.null(model$problem))
+    writeLines(model$problem, con = model_file)
   else
     write_POMDP(model, model_file, digits = digits)
   
@@ -146,9 +146,9 @@ if (!is.null(terminal_values))
   # package solution
   policy <- sarsop::read_policyx(policy_file)
   pg <- data.frame(node = 1:length(policy$action),
-    action = model$model$actions[policy$action])
+    action = model$actions[policy$action])
   alpha <- t(policy$vectors)
-  colnames(alpha) = model$model$states
+  colnames(alpha) = model$states
   
   policy <- data.frame(alpha, action = pg$action)
   
@@ -156,8 +156,8 @@ if (!is.null(terminal_values))
     list(
       method = "sarsop",
       parameter = parameter,
-      horizon = model$model$horizon,
-      discount = model$model$discount,
+      horizon = model$horizon,
+      discount = model$discount,
       converged = length(grep("precision reached", res$end_condition)) == 1,
       total_expected_reward = NA,
       initial_belief = NA,
@@ -171,7 +171,7 @@ if (!is.null(terminal_values))
     class = "POMDP_solution"
   )
   
-  model$solution$total_expected_reward = reward(model, model$model$start)$reward
+  model$solution$total_expected_reward = reward(model, model$start)$reward
   
   model
 }

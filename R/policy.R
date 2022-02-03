@@ -18,17 +18,27 @@
 #' @keywords graphs
 #' @examples
 #' data("Tiger")
+#' 
+#' # Infinite horizon
 #' sol <- solve_POMDP(model = Tiger)
 #' sol
 #'
 #' # policy with value function, optimal action and transitions for observations.
 #' policy(sol)
+#' plot_value_function(sol)
+#' 
+#' # Finite horizon (we use incremental pruning because grid does not converge)
+#' sol <- solve_POMDP(model = Tiger, method = "incprune", horizon = 3, discount = 1)
+#' sol
+#'
+#' policy(sol)
+#' # Note: We see that it is initially better to listen till we make a decision in the final epoch. 
 #' @export
 policy <- function(x) x$solution$policy
 
 .policy_MDP_from_POMDP <- function(x) {
   pg <- x$solution$pg
-  bs <- x$model$observation_prob[['*']]
+  bs <- x$observation_prob[['*']]
   
   # create a list ith epochs
   lapply(

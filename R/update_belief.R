@@ -73,15 +73,15 @@ update_belief <-
     Tr <- transition_matrix(model, episode = episode)
     
     if (is.null(action))
-      action <- as.character(model$model$actions)
+      action <- as.character(model$actions)
     if (is.null(observation))
-      observation <- as.character(model$model$observations)
+      observation <- as.character(model$observations)
     
     g <- expand.grid(action, observation, stringsAsFactors = FALSE)
     
     b <- t(.update_belief_vec(belief, g[, 1], g[, 2], Tr, Ob, digits))
     rownames(b) <- apply(g, MARGIN = 1, paste, collapse = "+")
-    colnames(b) <- as.character(model$model$states)
+    colnames(b) <- as.character(model$states)
     
     if (drop)
       b <- drop(b)
@@ -168,7 +168,7 @@ simulate_POMDP <-
     if (is.null(horizon))
       horizon <- model$solution$horizon
     if (is.null(horizon))
-      horizon <- model$model$horizon
+      horizon <- model$horizon
     if (is.null(horizon))
       stop("The horizon (number of epochs) has to be specified!")
     if (is.infinite(horizon))
@@ -186,15 +186,15 @@ simulate_POMDP <-
       if (solved)
         model$solution$discount
     else
-      model$model$discount
+      model$discount
     if (is.null(disc))
       disc <- 1
     
-    states <- as.character(model$model$states)
+    states <- as.character(model$states)
     n_states <- length(states)
-    obs <- as.character(model$model$observations)
+    obs <- as.character(model$observations)
     n_obs <- length(obs)
-    actions <- as.character(model$model$actions)
+    actions <- as.character(model$actions)
     
     trans_m <- transition_matrix(model)
     obs_m <- observation_matrix(model)
@@ -203,8 +203,8 @@ simulate_POMDP <-
     # precompute matrix lists for time-dependent POMDPs
     dt <- .timedependent_POMDP(model)
     if (dt) {
-      dt_horizon <- model$model$horizon
-      dt_episodes <- cumsum(c(1, head(model$model$horizon, -1)))
+      dt_horizon <- model$horizon
+      dt_episodes <- cumsum(c(1, head(model$horizon, -1)))
       dt_trans_m <-
         lapply(
           1:length(dt_horizon),

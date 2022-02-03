@@ -28,9 +28,9 @@
 #'   method = "enum")
 #' sol
 #'
-#' plot_value_function(sol, epoch =1, ylim = c(-5, 25))
-#' plot_value_function(sol, epoch =2, ylim = c(-5, 25))
-#' plot_value_function(sol, epoch =3, ylim = c(-5, 25))
+#' plot_value_function(sol, epoch = 1, ylim = c(-5, 25))
+#' plot_value_function(sol, epoch = 2, ylim = c(-5, 25))
+#' plot_value_function(sol, epoch = 3, ylim = c(-5, 25))
 #' @import graphics
 #' @export
 plot_value_function <-
@@ -51,7 +51,7 @@ plot_value_function <-
       barplot(
         policy$U,
         ylab = "Reward",
-        names.arg = paste(model$model$states, "\n", policy$action),
+        names.arg = paste(model$states, "\n", policy$action),
         ...
       )
       mtext(
@@ -72,7 +72,7 @@ plot_value_function <-
       .solved_POMDP(model)
       
       if (is.character(projection))
-        projection <- pmatch(projection, model$model$states)
+        projection <- pmatch(projection, model$states)
       if (length(projection) != 2)
         stop("Value function needs to be projected onto two states for plotting.")
       
@@ -99,7 +99,7 @@ plot_value_function <-
         ylim = ylim,
         xlab = paste0("Belief space",
           ifelse(
-            length(projection) < length(model$model$states),
+            length(projection) < length(model$states),
             " (projected)",
             ""
           )),
@@ -107,7 +107,7 @@ plot_value_function <-
         axes = FALSE
       )
       axis(2)
-      axis(1, at = c(0, 1), labels = model$model$states[projection])
+      axis(1, at = c(0, 1), labels = model$states[projection])
       axis(1, at = .5, .5)
       box()
       

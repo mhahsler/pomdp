@@ -79,7 +79,7 @@ plot_belief_space <-
     
     what <- match.arg(what)
     if (is.null(projection))
-      projection <- 1:min(length(model$model$states), 3)
+      projection <- 1:min(length(model$states), 3)
     
     if (is.character(sample))
       sample <-  sample_belief_space(model,

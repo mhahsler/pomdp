@@ -145,11 +145,14 @@
 #' data("Tiger")
 #' Tiger
 #'
+#' # look at the model as a list
+#' unclass(Tiger)
+#'
+#' # inspect an individual field of the model (e.g., the reward)
+#' Tiger$reward
+#'
 #' sol <- solve_POMDP(model = Tiger)
 #' sol
-#'
-#' # look at the model
-#' sol$model
 #'
 #' # look at solver output
 #' sol$solver_output
@@ -194,7 +197,7 @@
 #' reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (95% chance)
 #'
 #' ################################################################
-#' # Example 3: Using terminal values
+#' # Example 3: Using terminal values (state-dependent utilities after the final epoch)
 #' #
 #' # Specify 1000 if the tiger is right after 3 (horizon) epochs
 #' sol <- solve_POMDP(model = Tiger,
@@ -203,10 +206,12 @@
 #' sol
 #'
 #' policy(sol)
-#' # Note: the optimal strategy is never to open the left door, because we think the
-#' # tiger is there then we better wait to get 1000 as the terminal value. If we think
-#' # the Tiger is to the left then open the right door and have a 50/50 chance that the
-#' # Tiger will go to the right door.
+#' # Note: The optimal strategy is to never open the left door. If we think the
+#' #  Tiger is behind the right door, then we just wait for the final payout. If
+#' #  we think the tiger might be behind the left door, then we open the right
+#' #  door, are likely to get a small reward and the tiger has a chance of 50\% to
+#' #  move behind the right door. The second episode is used to gather more
+#' #  information for the more important #  final action.
 #'
 #' ################################################################
 #' # Example 4: Model time-dependent transition probabilities
@@ -215,11 +220,11 @@
 #' # of the two doors when a door was opened). After 3 epochs he gets
 #' # scared and when a door is opened then he always goes to the other door.
 #'
-#' # specify the horizon for each of the two differnt episodes
+#' # specify the horizon for each of the two different episodes
 #' Tiger_time_dependent <- Tiger
-#' Tiger_time_dependent$model$name <- "Scared Tiger Problem"
-#' Tiger_time_dependent$model$horizon <- c(normal_tiger = 3, scared_tiger = 3)
-#' Tiger_time_dependent$model$transition_prob <- list(
+#' Tiger_time_dependent$name <- "Scared Tiger Problem"
+#' Tiger_time_dependent$horizon <- c(normal_tiger = 3, scared_tiger = 3)
+#' Tiger_time_dependent$transition_prob <- list(
 #'   normal_tiger = list(
 #'     "listen" = "identity",
 #'     "open-left" = "uniform",
@@ -231,9 +236,10 @@
 #'   )
 #' )
 #'
-#' Tiger_time_dependent
+#' # Tiger_time_dependent (a higher value for verbose will show more messages)
 #'
-#' sol <- solve_POMDP(model = Tiger_time_dependent, discount = 1,  method = "incprune")
+#' sol <- solve_POMDP(model = Tiger_time_dependent, discount = 1,  
+#'   method = "incprune", verbose = 1)
 #' sol
 #'
 #' policy(sol)
@@ -243,7 +249,7 @@
 #'
 #' # 1) create the scared tiger model
 #' Tiger_scared <- Tiger
-#' Tiger_scared$model$transition_prob <- list(
+#' Tiger_scared$transition_prob <- list(
 #'     "listen" = "identity",
 #'     "open-left" = rbind(c(0, 1), c(0, 1)),
 #'     "open-right" = rbind(c(1, 0), c(1, 0))
@@ -261,8 +267,8 @@
 #'   terminal_values = sol_scared$solution$alpha[[1]])
 #' sol
 #' policy(sol)
-#' # note: it is optimal to mostly listen till the Tiger gets in the scared mood. Only if we are
-#' # extremely sure in the first epoch, then opening a door is optimal.
+#' # Note: it is optimal to mostly listen till the Tiger gets in the scared mood. Only if 
+#' #  we are extremely sure in the first epoch, then opening a door is optimal.
 #'
 #' ################################################################
 #' # Example 6: PBVI with a custom grid
@@ -277,7 +283,7 @@
 #'
 #' # Solve the POMDP using the grid for approximation
 #' sol <- solve_POMDP(Tiger, method = "grid", parameter = list(grid = custom_grid))
-#' sol
+#' policy(sol)
 #' @import pomdpSolve
 #' @export
 solve_POMDP <- function(model,
@@ -299,9 +305,12 @@ solve_POMDP <- function(model,
     model <- read_POMDP(model)
   
   if (is.null(horizon))
-    horizon <- model$model$horizon
+    horizon <- model$horizon
+  if (is.null(horizon))
+    horizon <- Inf
+  model$horizon <- horizon
   
-  # time-dependent POMDP?
+  # time-dependent POMDP? (horizon is a vector of length >1)
   if (.timedependent_POMDP(model))
     return(
       .solve_POMDP_time_dependent(
@@ -314,32 +323,37 @@ solve_POMDP <- function(model,
         verbose = verbose
       )
     )
-  if (is.null(horizon) || horizon < 1)
+  
+  # horizon should now be length 1
+  if (horizon < 1)
     horizon <- Inf
   else
-    horizon <- floor(horizon)
+    if (horizon != floor(horizon))
+      stop("'horizon' needs to be an integer.")
   
   if (is.null(terminal_values))
-    terminal_values <- model$model$terminal_values
+    terminal_values <- model$terminal_values
   if (!is.null(terminal_values) &&
       length(terminal_values) == 1 &&
       terminal_values == 0)
     terminal_values <- NULL
-  
+  model$terminal_values <- terminal_values
+    
   if (is.null(discount))
-    discount <- model$model$discount
+    discount <- model$discount
   if (is.null(discount)) {
     message("No discount rate specified. Using .9!")
     discount <- .9
   }
+  model$discount <- discount
   
   ### temp file names
   file_prefix <- tempfile(pattern = "pomdp_")
   pomdp_filename <- paste0(file_prefix, ".POMDP")
   
   # write model POMDP file
-  if (!is.null(model$model$problem))
-    writeLines(model$model$problem, con = pomdp_filename)
+  if (!is.null(model$problem))
+    writeLines(model$problem, con = pomdp_filename)
   else
     write_POMDP(model, pomdp_filename, digits = digits)
   
@@ -347,9 +361,9 @@ solve_POMDP <- function(model,
   if (!is.null(terminal_values)) {
     if (!is.matrix(terminal_values))
       terminal_values <- rbind(terminal_values)
-    if (ncol(terminal_values) != length(model$model$states))
+    if (ncol(terminal_values) != length(model$states))
       stop("number of terminal values does not match the number of states.")
-    colnames(terminal_values) <- as.character(model$model$states)
+    colnames(terminal_values) <- as.character(model$states)
     
     terminal_values_filename <-
       .write_alpha_file(file_prefix, terminal_values)
@@ -429,17 +443,17 @@ solve_POMDP <- function(model,
     # )
     # 
     # m <- max(
-    #   length(model$model$states),
-    #   length(model$model$actions),
-    #   length(model$model$observations)
+    #   length(model$states),
+    #   length(model$actions),
+    #   length(model$observations)
     # )
     # 
     # print(
     #   data.frame(
     #     index = (1:m) - 1,
-    #     action = model$model$actions[1:m],
-    #     state = model$model$states[1:m],
-    #     observation = model$model$observations[1:m]
+    #     action = model$actions[1:m],
+    #     state = model$states[1:m],
+    #     observation = model$observations[1:m]
     #   )
     # )
     # cat("\n")
@@ -505,16 +519,10 @@ solve_POMDP <- function(model,
     list(
       method = method,
       parameter = parameter,
-      horizon = horizon,
-      discount = discount,
       converged = converged,
       total_expected_reward = NA,
       initial_belief = NA,
       initial_pg_node = NA,
-      terminal_values = if (!is.null(terminal_values))
-        terminal_values
-      else
-        0,
       belief_states = belief,
       pg = pg,
       alpha = alpha,
@@ -524,7 +532,7 @@ solve_POMDP <- function(model,
   )
   
   ## add initial node and reward
-  rew <- reward(model, belief = model$model$start)
+  rew <- reward(model, belief = model$start)
   model$solution$initial_belief <- rew$belief
   model$solution$total_expected_reward <- rew$reward
   model$solution$initial_pg_node <- rew$pg_node
@@ -546,8 +554,11 @@ print.POMDP_solution <- function(x, ...) {
 
 # is a field time-dependent? For time-dependence we have a list of
 # matrices/data.frames or for observation_prob we have a list of a list
-.is_timedependent <- function(x, field) {
-  m <- x$model[[field]]
+.is_timedependent <- function(x, field = NULL) {
+  if (is.null(field))
+    field <- "horizon"
+  
+  m <- x[[field]]
   
   if (is.null(m))
     stop("Field ", field, " does not exist.")
@@ -559,7 +570,7 @@ print.POMDP_solution <- function(x, ...) {
   if (!is.list(m[[1]]))
     return(FALSE)
   
-  if (length(m) != length(x$model$horizon))
+  if (length(m) != length(x$horizon))
     stop(
       "Inconsistent POMDP specification. Field ",
       field,
@@ -581,18 +592,8 @@ print.POMDP_solution <- function(x, ...) {
       cat("\n+++++++++ time-dependent POMDP +++++++++\n", sep = "")
     
     if (is.null(horizon))
-      horizon <- model$model$horizon
+      horizon <- model$horizon
     n <- length(horizon)
-    if (n < 2)
-      return(
-        solve_POMDP(
-          model,
-          horizon,
-          ...,
-          terminal_values = terminal_values,
-          verbose = verbose
-        )
-      )
     
     # check what is time-dependent
     do_trans <- .is_timedependent(model, "transition_prob")
@@ -612,18 +613,18 @@ print.POMDP_solution <- function(x, ...) {
     s <- list()
     m <- model
     if (!is.null(terminal_values))
-      m$model$terminal_values <- terminal_values
+      m$terminal_values <- terminal_values
     
-    for (i in n:1) {
+    for (i in seq(n, 1)) {
       if (i < n)
-        m$model$terminal_values <- prev_alpha
-      m$model$horizon <- model$model$horizon[i]
+        m$terminal_values <- prev_alpha
+      m$horizon <- model$horizon[i]
       
       # match names instead of index?
-      if (is.null(names(m$model$horizon)))
+      if (is.null(names(m$horizon)))
         take <- i
       else
-        take <- names(m$model$horizon)
+        take <- names(m$horizon)
       
       if (verbose)
         cat(
@@ -635,59 +636,64 @@ print.POMDP_solution <- function(x, ...) {
           " (",
           take,
           ") with horizon ",
-          m$model$horizon,
+          m$horizon,
           "\n",
           sep = ""
         )
       
       
       if (do_trans)
-        m$model$transition_prob <-
-        model$model$transition_prob[[take]]
+        m$transition_prob <-
+        model$transition_prob[[take]]
       if (do_obs)
-        m$model$observation_prob <-
-        model$model$observation_prob[[take]]
+        m$observation_prob <-
+        model$observation_prob[[take]]
       if (do_reward)
-        m$model$reward <- model$model$reward[[take]]
+        m$reward <- model$reward[[take]]
       
-      if (verbose) {
+      if (verbose > 1) {
         if (do_trans) {
           cat("Using transition probabilities:\n")
-          print(m$model$transition_prob)
+          print(m$transition_prob)
         }
       }
       
-      s[[i]] <- solve_POMDP(m, ..., verbose = verbose)
+      s[[i]] <- solve_POMDP(m, ..., verbose = verbose > 2)
       prev_alpha <- s[[i]]$solution$alpha[[1]]
     }
     
     # combine the results
-    pgs <-
+    model$solution <- s[[1]]$solution
+    
+    model$solution$pg <-
       unlist(lapply(
         s,
         FUN = function(x)
           x$solution$pg
       ), recursive = FALSE)
-    alphas <-
+    
+    model$solution$alpha <-
       unlist(lapply(
         s,
         FUN = function(x)
           x$solution$alpha
       ), recursive = FALSE)
-    reward <-
+    
+    model$solution$policy <-
+      unlist(lapply(
+        s,
+        FUN = function(x)
+          x$solution$policy
+      ), recursive = FALSE)
+    
+    model$solution$total_expected_reward <-
       sum(sapply(
         s,
         FUN = function(x)
           x$solution$total_expected_reward
       ))
     
-    m <-
-      structure(list(model = model$model, solution = s[[1]]$solution), class = "POMDP")
-    m$solution$pg <- pgs
-    m$solution$alpha <- alphas
-    m$solution$horizon <- sum(model$model$horizon)
-    
-    m
+    model
   }
 
 #' @rdname solve_POMDP

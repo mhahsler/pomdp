@@ -99,13 +99,12 @@
 #'  transition_prob = T,
 #'  reward = R
 #' ) 
+#'
+#' Maze
+#' str(Maze) 
 #' 
 #' maze_solved <- solve_MDP(Maze, method = "value")
 #' policy(maze_solved)
-#' 
-#' maze_POMDP <- MDP2POMDP(Maze)
-#' maze_POMDP_solved <- solve_POMDP(maze_POMDP)
-#' policy(maze_POMDP_solved) 
 NULL
 
 ## save(Maze, file = "data/Maze.rda")

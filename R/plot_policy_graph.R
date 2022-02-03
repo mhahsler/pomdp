@@ -50,7 +50,7 @@
 #' plot_policy_graph(sol, edge.label = NA, vertex.label = NA, legend = FALSE)
 #'
 #' ## add a plot title
-#' plot_policy_graph(sol, main = sol$model$name)
+#' plot_policy_graph(sol, main = sol$name)
 #'
 #' ## custom larger vertex labels (A, B, ...)
 #' plot_policy_graph(sol,
@@ -107,7 +107,7 @@ plot_policy_graph <- function(x,
     if (legend && belief && !is.null(V(pg)$pie)) {
       legend(
         "topright",
-        legend = x$model$states,
+        legend = x$states,
         title = "Belief",
         #horiz = TRUE,
         bty = "n",

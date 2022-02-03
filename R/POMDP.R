@@ -116,7 +116,7 @@
 #' a list with the values for each episode. See [solve_POMDP()] for
 #' more details and an example.
 #'
-#' @param states a character vector specifying the names of the states. Note that 
+#' @param states a character vector specifying the names of the states. Note that
 #' state names have to start with a letter.
 #' @param actions a character vector specifying the names of the available actions.
 #' Note that action names have to start with a letter.
@@ -140,8 +140,6 @@
 #' (default).  This belief is used to calculate the total expected cumulative
 #' reward. It is also used by some solvers. See Details section for more
 #' information.
-#' @param max logical; is this a maximization problem (maximize reward) or a
-#' minimization (minimize cost specified in `reward`)?
 #' @param name a string to identify the POMDP problem.
 #' @param action,start.state,end.state,observation,probability,value Values
 #' used in the helper functions `O_()`, `R_()`, and `T_()` to
@@ -149,8 +147,7 @@
 #' `transistion_prob` above, respectively. The default value `'*"'`
 #' matches any action/state/observation.
 #'
-#' @return The function returns an object of class POMDP which is list with an
-#' element called `'model'` containing a list with the model specification.
+#' @return The function returns an object of class POMDP which is list of the model specification.
 #' [solve_POMDP()] reads the object and adds a list element named
 #' `'solution'`.
 #' @author Hossein Kamalzadeh, Michael Hahsler
@@ -158,7 +155,7 @@
 #' @references
 #' pomdp-solve website: \url{http://www.pomdp.org}
 #' @examples
-#' ## Defining the Tiger Problem (it is also avilable via data(Tiger))
+#' ## Defining the Tiger Problem (it is also available via data(Tiger))
 #'
 #' Tiger <- POMDP(
 #'   name = "Tiger Problem",
@@ -193,8 +190,6 @@
 #' )
 #'
 #' Tiger
-#'
-#' Tiger$model
 #'
 #' # Defining the Tiger problem using functions
 #'
@@ -235,7 +230,7 @@
 #'   reward = rew_f
 #' )
 #'
-#' Tiger_func$model
+#' Tiger_func
 #' @export
 POMDP <- function(states,
   actions,
@@ -245,35 +240,31 @@ POMDP <- function(states,
   reward,
   discount = .9,
   horizon = Inf,
-  terminal_values = 0,
+  terminal_values = NULL,
   start = "uniform",
-  max = TRUE,
   name = NA) {
   ### unsolved pomdp model
   x <- list(
-    model = list(
-      name = name,
-      discount = discount,
-      horizon = horizon,
-      states = states,
-      actions = actions,
-      observations = observations,
-      transition_prob = transition_prob,
-      observation_prob = observation_prob,
-      reward = reward,
-      start = start,
-      terminal_values = terminal_values,
-      max = max
-    )
+    name = name,
+    discount = discount,
+    horizon = horizon,
+    states = states,
+    actions = actions,
+    observations = observations,
+    transition_prob = transition_prob,
+    observation_prob = observation_prob,
+    reward = reward,
+    start = start,
+    terminal_values = terminal_values
   )
   
-  class(x) <- "POMDP"
+  class(x) <- c("POMDP", "list")
   check_and_fix_MDP(x)
 }
 
 check_func <- function(x, func, name) {
   if (is.function(x)) {
-    req_formals <- head(names(formals(func)),-1)
+    req_formals <- head(names(formals(func)), -1)
     if (!identical(names(formals(x)), req_formals))
       stop(name,
         " function needs formal arguments: ",
@@ -293,7 +284,7 @@ check_df <- function(x, func, name) {
 }
 
 check_and_fix_MDP <- function(x) {
-  x$model <- within(x$model, {
+  within(x, {
     if (is.numeric(states) &&
         length(states) == 1)
       states <- seq_len(states)
@@ -318,6 +309,8 @@ check_and_fix_MDP <- function(x) {
     if (!exists("horizon"))
       horizon <- Inf
     horizon <- as.numeric(horizon)
+    if (any(horizon != floor(horizon)))
+      stop("horizon needs to be an integer.")
     
     ## FIXME: check terminal_values
     
@@ -343,15 +336,15 @@ check_and_fix_MDP <- function(x) {
     ## For now, we expand functions into matrices
     if (!exists("problem")) {
       #check_func(transition_prob, T_, "transition_prob")
-      if(is.function(transition_prob))
-        transition_prob <- transition_matrix(x) 
+      if (is.function(transition_prob))
+        transition_prob <- transition_matrix(x)
       #check_func(reward, R_, "reward")
-      if(is.function(reward))
-        reward <- reward_matrix(x) 
+      if (is.function(reward))
+        reward <- reward_matrix(x)
       if (inherits(x, "POMDP"))
         #check_func(observation_prob, O_, "observation_prob")
-        if(is.function(observation_prob))
-          observation_prob <- observation_matrix(x) 
+        if (is.function(observation_prob))
+          observation_prob <- observation_matrix(x)
       
       check_df(transition_prob, T_, "transition_prob")
       check_df(reward, R_, "reward")
@@ -410,9 +403,12 @@ check_and_fix_MDP <- function(x) {
         }
       }
     }
+    # cleanup
+    if (exists("a", inherits = FALSE))
+      rm(a)
+    if (exists("s", inherits = FALSE))
+      rm(s)
   })
-  
-  x
 }
 
 
@@ -422,32 +418,31 @@ check_and_fix_MDP <- function(x) {
 print.POMDP <- function(x, ...) {
   cat(paste(class(x), collapse = ", "),
     "-",
-    x$model$name,
+    x$name,
     "\n")
   
-  cat("  Horizon:",
-    paste(x$model$horizon, collapse = "+"),
-    "\n")
-  
-  if (!is.null(x$model$horizon) &&
-      length(x$model$horizon) > 1)
-    cat("time-dependent:",
-      length(x$model$horizon),
-      "episodes",
+  if (!is.null(x$discount))
+    cat("  Discount factor:",
+      paste(x$discount, collapse = "+"),
       "\n")
   
-  if (!is.null(x$solution))
-    cat(
-      "  Solution converged:",
-      x$solution$converged,
-      "\n",
-      " Total expected reward (for start probabilities):",
-      x$solution$total_expected_reward,
-      "\n"
-    )
-  
-  cat("  List components:", paste(sQuote(names(x)), collapse = ", "),
-    "\n")
+  if (!is.null(x$horizon))
+    cat("  Horizon:",
+      paste(x$horizon, collapse = " + "),
+      "epochs\n")
+    
+    if (!is.null(x$solution))
+      cat(
+        "  Solved. Solution converged:",
+        x$solution$converged,
+        "\n",
+        " Total expected reward (for start probabilities):",
+        x$solution$total_expected_reward,
+        "\n"
+      )
+    
+    cat("  List components:", paste(sQuote(names(x)), collapse = ", "),
+      "\n")
 }
 
 
@@ -460,7 +455,7 @@ print.POMDP <- function(x, ...) {
 }
 
 .timedependent_POMDP <- function(x) {
-  !is.null(x$model$horizon) && length(x$model$horizon) > 1L
+  !is.null(x$horizon) && length(x$horizon) > 1L
 }
 
 # get pg and alpha for a epoch
@@ -470,7 +465,7 @@ print.POMDP <- function(x, ...) {
   if (epoch < 1)
     stop("Epoch has to be >= 1")
   
-  h <- model$solution$horizon
+  h <- model$horizon
   l <- length(model$solution$pg)
   
   if (epoch > h)

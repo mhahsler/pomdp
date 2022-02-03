@@ -28,7 +28,7 @@ Tiger
 sol <- solve_POMDP(model = Tiger)
 
 # these are the states
-sol$model$states
+sol$states
 
 # belief that tiger is to the left
 optimal_action(sol, c(1, 0))

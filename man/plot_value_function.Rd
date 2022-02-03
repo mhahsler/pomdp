@@ -53,9 +53,9 @@ sol <- solve_POMDP(model = Tiger, horizon = 3, discount = 1,
   method = "enum")
 sol
 
-plot_value_function(sol, epoch =1, ylim = c(-5, 25))
-plot_value_function(sol, epoch =2, ylim = c(-5, 25))
-plot_value_function(sol, epoch =3, ylim = c(-5, 25))
+plot_value_function(sol, epoch = 1, ylim = c(-5, 25))
+plot_value_function(sol, epoch = 2, ylim = c(-5, 25))
+plot_value_function(sol, epoch = 3, ylim = c(-5, 25))
 }
 \author{
 Michael Hahsler

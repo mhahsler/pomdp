@@ -43,7 +43,7 @@ reward <- function(x, belief = NULL, epoch = 1) {
   .solved_POMDP(x)
   
   if (is.null(belief))
-    belief <- x$model$start
+    belief <- x$start
   
   belief <- .translate_belief(belief, x)
   
@@ -59,7 +59,7 @@ reward <- function(x, belief = NULL, epoch = 1) {
     belief = belief,
     reward = vs$reward,
     pg_node = vs$pg_node,
-    action = factor(pg$action[vs$pg_node], levels = x$model$actions)
+    action = factor(pg$action[vs$pg_node], levels = x$actions)
   )
 }
 

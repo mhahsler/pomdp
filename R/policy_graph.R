@@ -64,7 +64,7 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
   l <- list()
   list_of_arcs <- NULL
   #observations <- colnames(pg)[-c(1,2)]
-  observations <- x$model$observations
+  observations <- x$observations
   number_of_observations <- length(observations)
   l <- lapply(
     1:number_of_observations,
@@ -104,7 +104,7 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
       )
     
     ### Set1 from Colorbrewer
-    number_of_states <- length(x$model$states)
+    number_of_states <- length(x$states)
     col <- .get_colors_descrete(number_of_states, col)
     
     V(policy_graph)$shape <- "pie"
@@ -128,7 +128,7 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
   action <- x$solution$pg[[1]]$action
   
   ## FIXME: try to make a graph from a not converged policy
-  if (!x$solution$converged || !is.infinite(x$solution$horizon))
+  if (!x$solution$converged || !is.infinite(x$horizon))
     stop(
       "Graphs can currently only be created for converged solutions for infinite-horizon problems."
     )
@@ -140,7 +140,7 @@ policy_graph <- function(x, belief = TRUE, col = NULL) {
         belief = alpha_belief[i,], action = action[i])
       
       structure(reward(x, belief = new_belief)$pg_node,
-        names = x$model$observations)
+        names = x$observations)
     }
   ))
   

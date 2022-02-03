@@ -66,18 +66,18 @@ solve_MDP <- function(model,
   
   ### default is infinite horizon
   if (!is.null(horizon))
-    model$model$horizon <- horizon
-  if (is.null(model$model$horizon))
-    model$model$horizon <- Inf
+    model$horizon <- horizon
+  if (is.null(model$horizon))
+    model$horizon <- Inf
   
   if (!is.null(discount))
-    model$model$discount <- discount
-  if (is.null(model$model$discount)) {
+    model$discount <- discount
+  if (is.null(model$discount)) {
     message("No discount rate specified. Using .9!")
-    model$model$discount <- .9
+    model$discount <- .9
   }
   
-  if (is.infinite(model$model$horizon))
+  if (is.infinite(model$horizon))
     switch(
       method,
       value = MDP_value_iteration_inf_horizon(model, eps, max_iterations,
@@ -96,7 +96,7 @@ solve_MDP <- function(model,
       method,
       value = MDP_value_iteration_finite_horizon(
         model,
-        horizon = model$model$horizon,
+        horizon = model$horizon,
         U = terminal_values,
         verbose = verbose
       ),
@@ -120,11 +120,11 @@ MDP_value_iteration_finite_horizon <-
     horizon,
     U = NULL,
     verbose = FALSE) {
-    S <- model$model$states
-    A <- model$model$actions
+    S <- model$states
+    A <- model$actions
     P <- transition_matrix(model)
     R <- reward_matrix(model)
-    GAMMA <- model$model$discount
+    GAMMA <- model$discount
     
     horizon <- as.integer(horizon)
     
@@ -163,11 +163,11 @@ MDP_value_iteration_inf_horizon <-
     max_iterations = 1000,
     U = NULL,
     verbose = FALSE) {
-    S <- model$model$states
-    A <- model$model$actions
+    S <- model$states
+    A <- model$actions
     P <- transition_matrix(model)
     R <- reward_matrix(model)
-    GAMMA <- model$model$discount
+    GAMMA <- model$discount
     
     if (is.null(U))
       U <- rep(0, times = length(S))
@@ -231,21 +231,21 @@ MDP_value_iteration_inf_horizon <-
 random_policy <-
   function(model, prob = NULL)
     data.frame(
-      state = model$model$states,
+      state = model$states,
       action = sample(
-        model$model$actions,
-        size = length(model$model$states),
+        model$actions,
+        size = length(model$states),
         replace = TRUE,
         prob = prob
       )
     )
 
 approx_policy_evaluation <- function(pi, model, U = NULL, k = 10) {
-  S <- model$model$states
-  A <- model$model$actions
+  S <- model$states
+  A <- model$actions
   P <- transition_matrix(model)
   R <- reward_matrix(model)
-  GAMMA <- model$model$discount
+  GAMMA <- model$discount
   
   if (is.data.frame(pi))
     pi <- pi$action
@@ -268,11 +268,11 @@ MDP_policy_iteration_inf_horizon <-
     k_backups = 10,
     U = NULL,
     verbose = FALSE) {
-    S <- model$model$states
-    A <- model$model$actions
+    S <- model$states
+    A <- model$actions
     P <- transition_matrix(model)
     R <- reward_matrix(model)
-    GAMMA <- model$model$discount
+    GAMMA <- model$discount
     
     if (is.null(U))
       U <- rep(0, times = length(S))

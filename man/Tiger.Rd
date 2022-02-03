@@ -38,12 +38,12 @@ There are also three observations for listening.
 data("Tiger")
 Tiger
 
-Tiger$model
+Tiger
 
 data("Three_doors")
 Three_doors
 
-Three_doors$model
+Three_doors
 }
 \references{
 Anthony R. Cassandra, Leslie P Kaelbling, and Michael L.

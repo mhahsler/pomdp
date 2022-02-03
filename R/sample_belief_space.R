@@ -44,17 +44,17 @@ sample_belief_space <-
       match.arg(method, choices = c("random", "regular", "vertices"))
     
     if (is.null(projection))
-      projection <- seq(length(model$model$states))
+      projection <- seq(length(model$states))
     if (is.character(projection))
-      projection <- pmatch(projection, model$model$states)
+      projection <- pmatch(projection, model$states)
     d <- length(projection)
     if (d < 2)
       stop("Projection needs to be on 2 or more states.")
     
     # empty belief states
     belief_states <-
-      matrix(0, nrow = n, ncol = length(model$model$states))
-    colnames(belief_states) <- model$model$states
+      matrix(0, nrow = n, ncol = length(model$states))
+    colnames(belief_states) <- model$states
     
     switch(method,
       random = {
@@ -93,8 +93,8 @@ sample_belief_space <-
             belief_states <-
               matrix(0,
                 nrow = ncol(triangleCentres),
-                ncol = length(model$model$states))
-            colnames(belief_states) <- model$model$states
+                ncol = length(model$states))
+            colnames(belief_states) <- model$states
           }
           
           belief_states[, projection] <-

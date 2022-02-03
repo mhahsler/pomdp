@@ -4,10 +4,10 @@
 .translate_belief <- function(belief = NULL, model) {
   ## producing the starting belief vector
   
-  states <- as.character(model$model$states)
+  states <- as.character(model$states)
   
   if (is.null(belief))
-    belief <- model$model$start
+    belief <- model$start
   if (is.null(belief))
     belief <- "uniform"
   
@@ -133,7 +133,7 @@
   alpha <-
     do.call(rbind, lapply(alpha, function(a)
       as.numeric(strsplit(a, " ")[[1]])))
-  colnames(alpha) <- model$model$states
+  colnames(alpha) <- model$states
   alpha
 }
 
@@ -156,8 +156,8 @@
   
   # renaming the columns and actions
   colnames(pg) <-
-    c("node", "action", as.character(model$model$observations))
-  pg[, 2] <- model$model$actions[pg[, 2]]
+    c("node", "action", as.character(model$observations))
+  pg[, 2] <- model$actions[pg[, 2]]
   pg
 }
 
@@ -168,7 +168,7 @@
     return(NULL)
   
   belief <- as.matrix(read.table(filename))
-  colnames(belief) <- as.character(model$model$states)
+  colnames(belief) <- as.character(model$states)
   belief
 }
 

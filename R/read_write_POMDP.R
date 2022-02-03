@@ -26,21 +26,23 @@ format_fixed <- function(x, digits = 7, debug = "unknown") {
 #' @author Hossein Kamalzadeh, Michael Hahsler
 #' @references POMDP solver website: http://www.pomdp.org
 #' @keywords IO
-#' @examples 
+#' @examples
 #' data(Tiger)
-#' 
+#'
 #' ## show the POMDP file that would be written.
 #' write_POMDP(Tiger, file = stdout())
 #' @export
 write_POMDP <- function(x, file, digits = 7) {
   if (!inherits(x, "POMDP"))
     stop("model needs to be a POMDP model use POMDP()!")
-  with(x$model,
+  with(x,
     {
       number_of_states        <- length(states)
       number_of_observations  <- length(observations)
       number_of_actions       <- length(actions)
-      values <- ifelse(max, "reward", "cost")
+      
+      # we only support rewards and not cost
+      values <- "reward"
       
       if (is.function(transition_prob))
         transition_prob <- transition_matrix(x)
@@ -265,18 +267,16 @@ read_POMDP <- function(file) {
   }
   
   x <- list(
-    model = list(
-      name = file,
-      states = get_vals("states", number = TRUE),
-      observations = get_vals("observations", number = TRUE),
-      actions = get_vals("actions", number = TRUE),
-      start = get_vals("start"),
-      discount = get_vals("discount"),
-      problem = structure(problem, class = "text")
-    )
+    name = file,
+    states = get_vals("states", number = TRUE),
+    observations = get_vals("observations", number = TRUE),
+    actions = get_vals("actions", number = TRUE),
+    start = get_vals("start"),
+    discount = get_vals("discount"),
+    problem = structure(problem, class = "text")
   )
   
-  class(x) <- "POMDP"
+  class(x) <- c("POMDP", "list")
   x <- check_and_fix_MDP(x)
   x
 }

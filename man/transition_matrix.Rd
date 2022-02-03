@@ -33,7 +33,7 @@ See Details section in \link{POMDP} for details.
 data("Tiger")
 
 # List of |A| transition matrices. One per action in the from states x states
-Tiger$model$transition_prob
+Tiger$transition_prob
 transition_matrix(Tiger)
 
 f <- transition_matrix(Tiger, type = "function")
@@ -42,12 +42,12 @@ args(f)
 f("listen", "tiger-left", "tiger-left")
 
 # List of |A| observation matrices. One per action in the from states x observations
-Tiger$model$observation_prob
+Tiger$observation_prob
 observation_matrix(Tiger)
 
 # List of list of reward matrices. 1st level is action and second level is the
 #  start state in the form end state x observation
-Tiger$model$reward
+Tiger$reward
 reward_matrix(Tiger)
 
 # Visualize transition matrix for action 'open-left'
@@ -69,7 +69,7 @@ trans <- function(end.state, start.state, action) {
   return(1/2)
 }
 
-Tiger$model$transition_prob <- trans
+Tiger$transition_prob <- trans
 transition_matrix(Tiger)
 }
 \seealso{

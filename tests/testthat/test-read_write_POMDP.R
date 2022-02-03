@@ -10,7 +10,7 @@ write_POMDP(Tiger, "Tiger.POMDP")
 Tiger2 <- read_POMDP("Tiger.POMDP")
 
 fields <- c("states", "observations", "actions", "start", "discount")
-expect_equal(Tiger$model[fields], Tiger2$model[fields])
+expect_equal(Tiger[fields], Tiger2[fields])
 
 # check that the solutions agree
 # Note: the POMDP format does not include horizon.

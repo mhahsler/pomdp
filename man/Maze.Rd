@@ -105,12 +105,11 @@ Maze <- MDP(
  reward = R
 ) 
 
+Maze
+str(Maze) 
+
 maze_solved <- solve_MDP(Maze, method = "value")
 policy(maze_solved)
-
-maze_POMDP <- MDP2POMDP(Maze)
-maze_POMDP_solved <- solve_POMDP(maze_POMDP)
-policy(maze_POMDP_solved) 
 }
 \references{
 Russell, S. J. and Norvig, P., & Davis, E. (2021). Artificial intelligence: a modern approach. 4rd ed.

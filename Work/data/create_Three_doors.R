@@ -40,6 +40,9 @@ Three_doors <- POMDP(
 )
 
 Three_doors
+save(Three_doors, file = "data/Three_doors.rda")
+
+
 sol <- solve_POMDP(Three_doors)
 
 plot(sol)
@@ -47,5 +50,4 @@ reward(sol)
 
 plot_belief_space(sol, projection = 1:3, n = 10000)
 
-save(Three_doors, file = "data/Three_doors.rda")
 

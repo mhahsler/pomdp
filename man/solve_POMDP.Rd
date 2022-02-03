@@ -147,11 +147,14 @@ problems here: \url{https://github.com/mhahsler/pomdp/issues}.
 data("Tiger")
 Tiger
 
+# look at the model as a list
+unclass(Tiger)
+
+# inspect an individual field of the model (e.g., the reward)
+Tiger$reward
+
 sol <- solve_POMDP(model = Tiger)
 sol
-
-# look at the model
-sol$model
 
 # look at solver output
 sol$solver_output
@@ -196,7 +199,7 @@ reward(sol, belief = c(1,0), epoch = 3) # just open the right door (10)
 reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (95\% chance)
 
 ################################################################
-# Example 3: Using terminal values
+# Example 3: Using terminal values (state-dependent utilities after the final epoch)
 #
 # Specify 1000 if the tiger is right after 3 (horizon) epochs
 sol <- solve_POMDP(model = Tiger,
@@ -205,10 +208,12 @@ sol <- solve_POMDP(model = Tiger,
 sol
 
 policy(sol)
-# Note: the optimal strategy is never to open the left door, because we think the
-# tiger is there then we better wait to get 1000 as the terminal value. If we think
-# the Tiger is to the left then open the right door and have a 50/50 chance that the
-# Tiger will go to the right door.
+# Note: The optimal strategy is to never open the left door. If we think the
+#  Tiger is behind the right door, then we just wait for the final payout. If
+#  we think the tiger might be behind the left door, then we open the right
+#  door, are likely to get a small reward and the tiger has a chance of 50\\% to
+#  move behind the right door. The second episode is used to gather more
+#  information for the more important #  final action.
 
 ################################################################
 # Example 4: Model time-dependent transition probabilities
@@ -217,11 +222,11 @@ policy(sol)
 # of the two doors when a door was opened). After 3 epochs he gets
 # scared and when a door is opened then he always goes to the other door.
 
-# specify the horizon for each of the two differnt episodes
+# specify the horizon for each of the two different episodes
 Tiger_time_dependent <- Tiger
-Tiger_time_dependent$model$name <- "Scared Tiger Problem"
-Tiger_time_dependent$model$horizon <- c(normal_tiger = 3, scared_tiger = 3)
-Tiger_time_dependent$model$transition_prob <- list(
+Tiger_time_dependent$name <- "Scared Tiger Problem"
+Tiger_time_dependent$horizon <- c(normal_tiger = 3, scared_tiger = 3)
+Tiger_time_dependent$transition_prob <- list(
   normal_tiger = list(
     "listen" = "identity",
     "open-left" = "uniform",
@@ -233,9 +238,10 @@ Tiger_time_dependent$model$transition_prob <- list(
   )
 )
 
-Tiger_time_dependent
+# Tiger_time_dependent (a higher value for verbose will show more messages)
 
-sol <- solve_POMDP(model = Tiger_time_dependent, discount = 1,  method = "incprune")
+sol <- solve_POMDP(model = Tiger_time_dependent, discount = 1,  
+  method = "incprune", verbose = 1)
 sol
 
 policy(sol)
@@ -245,7 +251,7 @@ policy(sol)
 
 # 1) create the scared tiger model
 Tiger_scared <- Tiger
-Tiger_scared$model$transition_prob <- list(
+Tiger_scared$transition_prob <- list(
     "listen" = "identity",
     "open-left" = rbind(c(0, 1), c(0, 1)),
     "open-right" = rbind(c(1, 0), c(1, 0))
@@ -263,8 +269,8 @@ sol <- solve_POMDP(model = Tiger,
   terminal_values = sol_scared$solution$alpha[[1]])
 sol
 policy(sol)
-# note: it is optimal to mostly listen till the Tiger gets in the scared mood. Only if we are
-# extremely sure in the first epoch, then opening a door is optimal.
+# Note: it is optimal to mostly listen till the Tiger gets in the scared mood. Only if 
+#  we are extremely sure in the first epoch, then opening a door is optimal.
 
 ################################################################
 # Example 6: PBVI with a custom grid
@@ -279,7 +285,7 @@ plot_belief_space(sol, sample = custom_grid)
 
 # Solve the POMDP using the grid for approximation
 sol <- solve_POMDP(Tiger, method = "grid", parameter = list(grid = custom_grid))
-sol
+policy(sol)
 }
 \references{
 Cassandra, A. (2015). pomdp-solve: POMDP Solver Software,

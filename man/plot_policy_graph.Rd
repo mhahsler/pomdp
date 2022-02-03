@@ -70,7 +70,7 @@ plot_policy_graph(sol, layout = rbind(c(1,1), c(1,-1), c(0,0), c(-1,-1), c(-1,1)
 plot_policy_graph(sol, edge.label = NA, vertex.label = NA, legend = FALSE)
 
 ## add a plot title
-plot_policy_graph(sol, main = sol$model$name)
+plot_policy_graph(sol, main = sol$name)
 
 ## custom larger vertex labels (A, B, ...)
 plot_policy_graph(sol,

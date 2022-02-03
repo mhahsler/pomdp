@@ -7,14 +7,14 @@ context("matrix extractors")
 data(Tiger)
 
 tm <- transition_matrix(Tiger)
-expect_equal(names(tm), as.character(Tiger$model$actions))
+expect_equal(names(tm), as.character(Tiger$actions))
 
 om <- observation_matrix(Tiger)
-expect_equal(names(om), as.character(Tiger$model$actions))
+expect_equal(names(om), as.character(Tiger$actions))
 
 rew <- reward_matrix(Tiger)
-expect_equal(names(rew), as.character(Tiger$model$actions))
-expect_equal(names(rew[[1]]), as.character(Tiger$model$states))
+expect_equal(names(rew), as.character(Tiger$actions))
+expect_equal(names(rew[[1]]), as.character(Tiger$states))
 
 
 Tiger <- POMDP(
@@ -179,7 +179,7 @@ objPOMDP <- POMDP(
 #compare this
 m_start <- transition_matrix(objPOMDP)$Start
 #with this
-df_start <- objPOMDP$model$transition_prob[objPOMDP$model$transition_prob$action == "Start",]
+df_start <- objPOMDP$transition_prob[objPOMDP$transition_prob$action == "Start",]
 
 for(i in 1:nrow(df_start)) {
   expect_equal(m_start[df_start[i,]$start.state, df_start[i,]$end.state], df_start[i,]$probability)

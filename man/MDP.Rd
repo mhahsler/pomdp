@@ -13,7 +13,6 @@ MDP(
   discount = 0.9,
   horizon = Inf,
   start = "uniform",
-  max = TRUE,
   name = NA
 )
 
@@ -37,9 +36,6 @@ observations.}
 horizon.}
 
 \item{start}{Specifies in which state the MDP starts.}
-
-\item{max}{logical; is this a maximization problem (maximize reward) or a
-minimization (minimize cost specified in \code{reward})?}
 
 \item{name}{a string to identify the MDP problem.}
 
@@ -83,7 +79,7 @@ STiger <- MDP(
     "open-right" = "uniform",
     "do-nothing" = "identity"),
 
-  # the rew helper expects: action, start.state, end.state, observation, value
+  # the reward helper R_() expects: action, start.state, end.state, observation, value
   reward = rbind(
     R_("open-left",  "tiger-left",  v = -100),
     R_("open-left",  "tiger-right", v =   10),
@@ -95,22 +91,19 @@ STiger <- MDP(
 
 STiger
 
-STiger$model
+sol <- solve_MDP(STiger, eps = 1e-7)
+sol
 
-sol <- solve_MDP(STiger, e = 1e-7)
 policy(sol)
+plot_value_function(sol)
 
-# convert the MDP into a POMDP
+# convert the MDP into a POMDP and solve
 STiger_POMDP <- MDP2POMDP(STiger)
-STiger_POMDP
+sol2 <- solve_POMDP(STiger_POMDP)
+sol2 
 
-# do 5 epochs with no discounting
-s <- solve_POMDP(STiger_POMDP, method = "enum", horizon = 5)
-s
-
-# value function and policy
-plot_value_function(s)
-policy(s)
+policy(sol2)
+plot_value_function(sol2)
 }
 \author{
 Michael Hahsler

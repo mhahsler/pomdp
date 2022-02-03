@@ -46,13 +46,13 @@ discount factor specified in \code{model} will be used.}
 maximum is reached then the non-converged solution is returned with a
 warning.}
 
+\item{k_backups}{number of look ahead steps used for approximate policy evaluation
+used by method \code{'policy'}.}
+
 \item{verbose}{logical, if set to \code{TRUE}, the function provides the
 output of the pomdp solver in the R console.}
 
 \item{prob}{probability vector for actions.}
-
-\item{k_backup}{number of look ahead steps used for approximate policy evaluation
-used by method \code{'policy'}.}
 }
 \value{
 The solver returns an object of class POMDP which is a list with the

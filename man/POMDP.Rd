@@ -16,9 +16,8 @@ POMDP(
   reward,
   discount = 0.9,
   horizon = Inf,
-  terminal_values = 0,
+  terminal_values = NULL,
   start = "uniform",
-  max = TRUE,
   name = NA
 )
 
@@ -63,9 +62,6 @@ initial belief), typically as a vector or the string \code{'uniform'}
 reward. It is also used by some solvers. See Details section for more
 information.}
 
-\item{max}{logical; is this a maximization problem (maximize reward) or a
-minimization (minimize cost specified in \code{reward})?}
-
 \item{name}{a string to identify the POMDP problem.}
 
 \item{action, start.state, end.state, observation, probability, value}{Values
@@ -75,8 +71,7 @@ create an entry for \code{observation_prob}, \code{reward}, or
 matches any action/state/observation.}
 }
 \value{
-The function returns an object of class POMDP which is list with an
-element called \code{'model'} containing a list with the model specification.
+The function returns an object of class POMDP which is list of the model specification.
 \code{\link[=solve_POMDP]{solve_POMDP()}} reads the object and adds a list element named
 \code{'solution'}.
 }
@@ -197,7 +192,7 @@ a list with the values for each episode. See \code{\link[=solve_POMDP]{solve_POM
 more details and an example.
 }
 \examples{
-## Defining the Tiger Problem (it is also avilable via data(Tiger))
+## Defining the Tiger Problem (it is also available via data(Tiger))
 
 Tiger <- POMDP(
   name = "Tiger Problem",
@@ -232,8 +227,6 @@ Tiger <- POMDP(
 )
 
 Tiger
-
-Tiger$model
 
 # Defining the Tiger problem using functions
 
@@ -274,7 +267,7 @@ Tiger_func <- POMDP(
   reward = rew_f
 )
 
-Tiger_func$model
+Tiger_func
 }
 \references{
 pomdp-solve website: \url{http://www.pomdp.org}

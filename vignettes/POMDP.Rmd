@@ -18,8 +18,10 @@ library("pomdp")
 
 # Introduction
 
-The R package __pomdp__ provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Processes (POMDP) models. The package includes [pomdp-solve](http://www.pomdp.org/code/) [@Cassandra2015] to solve POMDPs using
-a variety of algorithms.
+The R package __pomdp__ provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Processes (POMDP) models. The package is a companion to package __pomdpSolve__ which provides the
+executable for [pomdp-solve](http://www.pomdp.org/code/) [@Cassandra2015], a well-known fast C implementation of
+a variety of algorithms to solve POMDPs. __pomdp__ can also use package __sarsop__ [@Bottiger2021] which
+provides an implementation of the SARSOP (Successive Approximations of the Reachable Space under Optimal Policies) algorithm.
 
 The package provides the following algorithms:
 
@@ -31,11 +33,9 @@ The package provides the following algorithms:
 
 * Approximate value iteration
   - __Finite grid algorithm__ [@Cassandra2015], a variation of point-based value iteration to solve larger POMDPs (__PBVI__; see [@Pineau2003]) without dynamic belief set expansion.
-  - __SARSOP__ [[@Kurniawati2008]], a point-based algorithm that approximates optimally reachable belief spaces for infinite-horizon problems (via package __sarsop__). 
+  - __SARSOP__ [[@Kurniawati2008]], Successive Approximations of the Reachable Space under Optimal Policies, a point-based algorithm that approximates optimally reachable belief spaces for infinite-horizon problems (via package __sarsop__[@Bottiger2021]). 
   
-  
-The package includes a distribution of
-interface to ['pomdp-solve'](http://www.pomdp.org/code/), a solver (written in C) for Partially Observable Markov Decision Processes (POMDP). The package enables the user to simply define all components of a POMDP model and solve the problem using several methods. The package also contains functions to analyze and visualize the POMDP solutions (e.g., the optimal policy). 
+The package enables the user to simply define all components of a POMDP model and solve the problem using several methods. The package also contains functions to analyze and visualize the POMDP solutions (e.g., the optimal policy) and extends to reguar MDPs.
 
 In this document we will give a very brief introduction to the concept of POMDP, describe the features of the R package, and illustrate the usage with a toy example. 
 
@@ -88,8 +88,6 @@ str(args(POMDP))
 
 where 
 
-* `discount` is the  discount factor $\gamma$ in range $[0,1]$,
-
 * `states` defines the set of states $S$, 
 
 * `actions` defines the set of actions $A$,
@@ -102,6 +100,12 @@ where
 $O(o \mid s',a)$,
 
 * `reward` specifies the reward function $R$,
+
+* `discount` is the  discount factor $\gamma$ in range $[0,1]$,
+
+* `horizon` is the problem horizon as the number of periods to consider.
+
+* `terminal_values` is a vector of state utilities at the end of the horizon.
 
 * `start` is the initial probability distribution over the system states $S$,
 
