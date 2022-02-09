@@ -42,29 +42,30 @@ horizon.}
 \item{x}{a \code{MDP} object.}
 }
 \value{
-The function returns an object of class POMDP which is list with an
-element called \code{'model'} containing a list with the model specification.
-\code{\link[=solve_POMDP]{solve_POMDP()}} reads the object and adds a list element called
+The function returns an object of class MDP which is list with
+the model specification. \code{\link[=solve_MDP]{solve_MDP()}} reads the object and adds a list element called
 \code{'solution'}.
 }
 \description{
 Defines all the elements of a MDP problem.
 }
 \details{
-MDPs are similar to POMDPs, however, observations are not used and
-the state information is observable. The model can defined similar to
-\link{POMDP} models, but observations are not specified and the \code{'observations'}
-column in the the reward specification is always \code{'*'}.
+MDPs are similar to POMDPs, however, states are completely observable and
+observations are not necessary. The model is defined similar to \link{POMDP}
+models, but observations are not specified and the \code{'observations'} column in
+the the reward specification is always \code{'*'}.
 
-\code{MDP2POMDP} reformulates the MDP as a POMDP with one observation per state that
-reveals the current state.
-This is achieved by defining identity observation probability matrices.
+\code{MDP2POMDP()} reformulates a MDP as a POMDP with one observation per state
+that reveals the current state. This is achieved by defining identity
+observation probability matrices.
 
-More details on specifying the parameters can be found in the documentation
+More details on specifying the model components can be found in the documentation
 for \link{POMDP}.
 }
 \examples{
-## Michael's Sleepy Tiger Problem is an MDP with perfect observability
+# Michael's Sleepy Tiger Problem is like the POMDP Tiger problem, but
+# has completely observable states because the tiger is sleeping in front
+# of the door. This makes the problem an MDP.
 
 STiger <- MDP(
   name = "Michael's Sleepy Tiger Problem",
@@ -72,8 +73,9 @@ STiger <- MDP(
 
   states = c("tiger-left" , "tiger-right"),
   actions = c("open-left", "open-right", "do-nothing"),
-  start = "tiger-left",
+  start = "uniform",
 
+  # opening a door resets the problem
   transition_prob = list(
     "open-left" =  "uniform",
     "open-right" = "uniform",

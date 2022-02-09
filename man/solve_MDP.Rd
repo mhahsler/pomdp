@@ -2,7 +2,9 @@
 % Please edit documentation in R/solve_MDP.R
 \name{solve_MDP}
 \alias{solve_MDP}
-\alias{random_policy}
+\alias{q_values_MDP}
+\alias{random_MDP_policy}
+\alias{approx_MDP_policy_evaluation}
 \title{Solve an MDP Problem}
 \usage{
 solve_MDP(
@@ -17,7 +19,11 @@ solve_MDP(
   verbose = FALSE
 )
 
-random_policy(model, prob = NULL)
+q_values_MDP(model, U = NULL)
+
+random_MDP_policy(model, prob = NULL)
+
+approx_MDP_policy_evaluation(pi, model, U = NULL, k_backups = 10)
 }
 \arguments{
 \item{model}{a POMDP problem specification created with \code{\link[=POMDP]{POMDP()}}.
@@ -52,11 +58,23 @@ used by method \code{'policy'}.}
 \item{verbose}{logical, if set to \code{TRUE}, the function provides the
 output of the pomdp solver in the R console.}
 
+\item{U}{a vector with state utilities (expected sum of discounted rewards from that point on).}
+
 \item{prob}{probability vector for actions.}
+
+\item{pi}{a policy as a data.frame with columns state and action.}
 }
 \value{
-The solver returns an object of class POMDP which is a list with the
+\code{solve_MDP()} returns an object of class POMDP which is a list with the
 model specifications (\code{model}), the solution (\code{solution}).
+
+\code{q_values()} returns a state by action matrix specifying the Q-function,
+i.e., the utility value of executing each action in each state.
+
+\code{random_MDP_policy()} returns a data.frame with columns state and action to define a policy.
+
+\code{approx_MDP_policy_evaluation()} is used by the modified policy
+iteration algorithm and returns an approximate utility vector U estimated by evaluating policy \code{pi}.
 }
 \description{
 A simple implementation of value iteration and modified policy iteration.
@@ -69,7 +87,11 @@ Maze
 maze_solved <- solve_MDP(Maze, method = "value")
 policy(maze_solved)
 
+# value function (utility function U)
 plot_value_function(maze_solved)
+
+# Q-function (states times action)
+q_values(maze_solved)
 
 # use modified policy iteration
 maze_solved <- solve_MDP(Maze, method = "policy")
@@ -79,6 +101,22 @@ policy(maze_solved)
 maze_solved <- solve_MDP(Maze, method = "value", horizon = 3)
 policy(maze_solved)
 
+# create a random policy where action n is very likely and approximate 
+#  the value function. We change the discount factor to .9 for this.
+Maze_discounted <- Maze
+Maze_discounted$discount <- .9
+pi <- random_MDP_policy(Maze_discounted, prob = c(n = .7, e = .1, s = .1, w = 0.1))
+pi
+
+# compare the utility function for the random policy with the function for the optimal 
+#  policy found by the solver.
+maze_solved <- solve_MDP(Maze)
+
+approx_MDP_policy_evaluation(pi, Maze, k_backup = 100)
+approx_MDP_policy_evaluation(policy(maze_solved)[[1]], Maze, k_backup = 100)
+
+# Note that the solver already calculates the utility function and returns it with the policy
+policy(maze_solved)
 }
 \author{
 Michael Hahsler

@@ -2,16 +2,16 @@
 #'
 #' Defines all the elements of a MDP problem.
 #' 
-#' MDPs are similar to POMDPs, however, observations are not used and 
-#' the state information is observable. The model can defined similar to 
-#' [POMDP] models, but observations are not specified and the `'observations'`
-#' column in the the reward specification is always `'*'`. 
+#' MDPs are similar to POMDPs, however, states are completely observable and
+#' observations are not necessary. The model is defined similar to [POMDP]
+#' models, but observations are not specified and the `'observations'` column in
+#' the the reward specification is always `'*'`.
 #' 
-#' `MDP2POMDP` reformulates the MDP as a POMDP with one observation per state that 
-#' reveals the current state. 
-#' This is achieved by defining identity observation probability matrices.
+#' `MDP2POMDP()` reformulates a MDP as a POMDP with one observation per state
+#' that reveals the current state. This is achieved by defining identity
+#' observation probability matrices.
 #'
-#' More details on specifying the parameters can be found in the documentation
+#' More details on specifying the model components can be found in the documentation
 #' for [POMDP].
 #' @include POMDP.R
 #' @param states a character vector specifying the names of the states.
@@ -33,7 +33,9 @@
 #' `'solution'`.
 #' @author Michael Hahsler
 #' @examples
-#' ## Michael's Sleepy Tiger Problem is an MDP with perfect observability
+#' # Michael's Sleepy Tiger Problem is like the POMDP Tiger problem, but
+#' # has completely observable states because the tiger is sleeping in front
+#' # of the door. This makes the problem an MDP.
 #'
 #' STiger <- MDP(
 #'   name = "Michael's Sleepy Tiger Problem",
@@ -41,8 +43,9 @@
 #'
 #'   states = c("tiger-left" , "tiger-right"),
 #'   actions = c("open-left", "open-right", "do-nothing"),
-#'   start = "tiger-left",
+#'   start = "uniform",
 #'
+#'   # opening a door resets the problem
 #'   transition_prob = list(
 #'     "open-left" =  "uniform",
 #'     "open-right" = "uniform",
@@ -105,6 +108,9 @@ print.MDP <- print.POMDP
 #' @rdname MDP
 #' @export
 MDP2POMDP <- function(x) {
+  if (!inherits(x, "MDP"))
+    stop("'x' needs to be of class 'MDP'.")
+  
   # add an observation for each state and identity observation_probability for all actions ('*') 
   # (note: pomdp-solve does not support "identity" for observation_probs)
   x$observations <- x$states

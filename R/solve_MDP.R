@@ -29,7 +29,7 @@
 #' @param verbose logical, if set to `TRUE`, the function provides the
 #'   output of the pomdp solver in the R console.
 #'
-#' @return The solver returns an object of class POMDP which is a list with the
+#' @return `solve_MDP()` returns an object of class POMDP which is a list with the
 #'   model specifications (`model`), the solution (`solution`).
 #'
 #' @author Michael Hahsler
@@ -41,7 +41,11 @@
 #' maze_solved <- solve_MDP(Maze, method = "value")
 #' policy(maze_solved)
 #'
+#' # value function (utility function U)
 #' plot_value_function(maze_solved)
+#' 
+#' # Q-function (states times action)
+#' q_values(maze_solved)
 #'
 #' # use modified policy iteration
 #' maze_solved <- solve_MDP(Maze, method = "policy")
@@ -51,6 +55,22 @@
 #' maze_solved <- solve_MDP(Maze, method = "value", horizon = 3)
 #' policy(maze_solved)
 #'
+#' # create a random policy where action n is very likely and approximate 
+#' #  the value function. We change the discount factor to .9 for this.
+#' Maze_discounted <- Maze
+#' Maze_discounted$discount <- .9
+#' pi <- random_MDP_policy(Maze_discounted, prob = c(n = .7, e = .1, s = .1, w = 0.1))
+#' pi
+#' 
+#' # compare the utility function for the random policy with the function for the optimal 
+#' #  policy found by the solver.
+#' maze_solved <- solve_MDP(Maze)
+#' 
+#' approx_MDP_policy_evaluation(pi, Maze, k_backup = 100)
+#' approx_MDP_policy_evaluation(policy(maze_solved)[[1]], Maze, k_backup = 100)
+#' 
+#' # Note that the solver already calculates the utility function and returns it with the policy
+#' policy(maze_solved)
 #' @export
 solve_MDP <- function(model,
   horizon = NULL,
@@ -61,6 +81,9 @@ solve_MDP <- function(model,
   max_iterations = 1000,
   k_backups = 10,
   verbose = FALSE) {
+  if (!inherits(model, "MDP"))
+    stop("'model' needs to be of class 'MDP'.")
+  
   methods <- c("value", "policy")
   method <- match.arg(method, methods)
   
@@ -114,12 +137,42 @@ solve_MDP <- function(model,
 
 .QV_vec <- Vectorize(.QV, vectorize.args = c("s", "a"))
 
+#' @rdname solve_MDP
+#' @param U a vector with state utilities (expected sum of discounted rewards from that point on).
+#' @return `q_values()` returns a state by action matrix specifying the Q-function, 
+#'   i.e., the utility value of executing each action in each state.
+#' @export
+q_values_MDP <- function(model, U = NULL) {
+  if (!inherits(model, "MDP"))
+    stop("'model' needs to be of class 'MDP'.")
+  
+  S <- model$states
+  A <- model$actions
+  P <- transition_matrix(model)
+  R <- reward_matrix(model)
+  policy <- model$solution$policy[[1]]
+  GAMMA <- model$discount
+  
+  if (is.null(U)) 
+    if (!is.null(policy))
+      U <- policy$U
+    else
+      stop("'model' does not contain state utilities (it is unsolved). You need to specify U.")
+  
+  qs <- outer(S, A, .QV_vec, P, R, GAMMA, U)
+  dimnames(qs) <- list(S, A)
+  qs
+  }
+
 # TODO: we could check for convergence
 MDP_value_iteration_finite_horizon <-
   function(model,
     horizon,
     U = NULL,
     verbose = FALSE) {
+    if (!inherits(model, "MDP"))
+      stop("'model' needs to be of class 'MDP'.")
+    
     S <- model$states
     A <- model$actions
     P <- transition_matrix(model)
@@ -226,10 +279,14 @@ MDP_value_iteration_inf_horizon <-
 # Policy iteration with approximate policy evaluation
 
 #' @rdname solve_MDP
-#' @param prob probability vector for actions.
+#' @param prob probability vector for actions. 
+#' @return `random_MDP_policy()` returns a data.frame with columns state and action to define a policy.
 #' @export
-random_policy <-
-  function(model, prob = NULL)
+random_MDP_policy <-
+  function(model, prob = NULL) {
+    if (!inherits(model, "MDP"))
+      stop("'model' needs to be of class 'MDP'.")
+    
     data.frame(
       state = model$states,
       action = sample(
@@ -239,8 +296,17 @@ random_policy <-
         prob = prob
       )
     )
+  }
 
-approx_policy_evaluation <- function(pi, model, U = NULL, k = 10) {
+#' @rdname solve_MDP
+#' @param pi a policy as a data.frame with columns state and action.
+#' @return `approx_MDP_policy_evaluation()` is used by the modified policy 
+#'   iteration algorithm and returns an approximate utility vector U estimated by evaluating policy `pi`.
+#' @export
+approx_MDP_policy_evaluation <- function(pi, model, U = NULL, k_backups = 10) {
+  if (!inherits(model, "MDP"))
+    stop("'model' needs to be of class 'MDP'.")
+  
   S <- model$states
   A <- model$actions
   P <- transition_matrix(model)
@@ -255,7 +321,7 @@ approx_policy_evaluation <- function(pi, model, U = NULL, k = 10) {
   if (is.null(U))
     U <- rep(0, times = length(S))
   
-  for (i in seq_len(k))
+  for (i in seq_len(k_backups))
     U <- .QV_vec(S, pi, P, R, GAMMA, U)
   
   U
@@ -277,7 +343,7 @@ MDP_policy_iteration_inf_horizon <-
     if (is.null(U))
       U <- rep(0, times = length(S))
     
-    pi <- random_policy(model)$action
+    pi <- random_MDP_policy(model)$action
     names(pi) <- S
     
     converged <- FALSE
@@ -286,7 +352,7 @@ MDP_policy_iteration_inf_horizon <-
         cat("Iteration ", i, "\n")
       
       # evaluate to get U from pi
-      U <- approx_policy_evaluation(pi, model, U, k = k_backups)
+      U <- approx_MDP_policy_evaluation(pi, model, U, k_backups = k_backups)
       
       # get greedy policy for U
       Qs <- outer(S, A, .QV_vec, P, R, GAMMA, U)

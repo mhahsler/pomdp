@@ -4,8 +4,6 @@
 #' set of states, the set of actions, the set of observations, the transition
 #' probabilities, the observation probabilities, and rewards.
 #'
-#' POMDP problems can be solved using [solve_POMDP()].
-#'
 #' In the following we use the following notation. The POMDP is a 7-duple:
 #'
 #' \eqn{(S,A,T,R, \Omega ,O, \gamma)}.
@@ -155,7 +153,7 @@
 #' @references
 #' pomdp-solve website: \url{http://www.pomdp.org}
 #' @examples
-#' ## Defining the Tiger Problem (it is also available via data(Tiger))
+#' ## Defining the Tiger Problem (it is also available via data(Tiger), see ? Tiger)
 #'
 #' Tiger <- POMDP(
 #'   name = "Tiger Problem",
