@@ -68,7 +68,7 @@ output of the pomdp solver in the R console.}
 \code{solve_MDP()} returns an object of class POMDP which is a list with the
 model specifications (\code{model}), the solution (\code{solution}).
 
-\code{q_values()} returns a state by action matrix specifying the Q-function,
+\code{q_values_MDP()} returns a state by action matrix specifying the Q-function,
 i.e., the utility value of executing each action in each state.
 
 \code{random_MDP_policy()} returns a data.frame with columns state and action to define a policy.
@@ -91,7 +91,7 @@ policy(maze_solved)
 plot_value_function(maze_solved)
 
 # Q-function (states times action)
-q_values(maze_solved)
+q_values_MDP(maze_solved)
 
 # use modified policy iteration
 maze_solved <- solve_MDP(Maze, method = "policy")
