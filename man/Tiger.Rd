@@ -12,37 +12,33 @@ An object of class \link{POMDP}.
 The model for the Tiger Problem introduces in Cassandra et al (1994).
 }
 \details{
-The original Tiger problem was published in Cassandra et al (1994).
-A tiger is put with equal
-probability behind one of two doors represented by the states tiger-left and
-tiger-right, while treasure is put behind the other door. You are standing
-in front of the two closed doors and need to decide which one to open. If
-you open the door with the tiger, you will get hurt by the tiger (a negative
-reward of -100), but if you open the door with the treasure, you receive a
-positive reward of 10. Instead of opening a door right away, you also have
-the option to wait and listen for tiger noises producing an observation
-(tiger-left or tiger-right). But listening is neither free (reward of -1)
-nor entirely accurate. You might hear the tiger behind the left door while
-it is actually behind the right door and vice versa. Once you open a door
-(actions open-left or open-right), you receive the appropriate reward and
-the problem is reset (i.e., the tiger is randomly assigned to a door and the
-belief is set to 50/50).
+The original Tiger problem was published in Cassandra et al (1994) as
+follows:
+
+An agent is facing two closed doors and a tiger is put with equal
+probability behind one of the two doors represented by the states
+\code{tiger-left} and \code{tiger-right}, while treasure is put behind the other door.
+The possible actions are \code{listen} for tiger noises or opening a door (actions
+\code{open-left} and \code{open-right}). Listening is neither free (the action has a
+reward of -1)  nor is it entirely accurate. There is a 15\\% observation
+probability that the agent hears the tiger behind the left door while it is
+actually behind the right door and vice versa. If the agent opens  door with
+the tiger, it will get hurt (a negative reward of -100), but if it opens the
+door with the treasure, it will receive a positive reward of 10. After a door
+is opened, the problem is reset(i.e., the tiger is randomly assigned to a
+door with chance 50/50) and the the agent gets another try.
 
 The three doors problem is an extension of the Tiger problem where the tiger
-is behind one of three doors represented by three states (tiger-left,
-tiger-center, and tiger-right) and treasure is behind the other two doors.
-There are also three observations for listening.
+is behind one of three doors represented by three states (\code{tiger-left},
+\code{tiger-center}, and \code{tiger-right}) and treasure is behind the other two
+doors. There are also three open actions and three different observations for
+listening.
 }
 \examples{
-
 data("Tiger")
 Tiger
 
-Tiger
-
 data("Three_doors")
-Three_doors
-
 Three_doors
 }
 \references{
