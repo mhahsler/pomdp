@@ -57,7 +57,18 @@ plot_value_function(sol, epoch = 1, ylim = c(-5, 25))
 plot_value_function(sol, epoch = 2, ylim = c(-5, 25))
 plot_value_function(sol, epoch = 3, ylim = c(-5, 25))
 }
+\seealso{
+Other policy: 
+\code{\link{optimal_action}()},
+\code{\link{plot_policy_graph}()},
+\code{\link{policy_graph}()},
+\code{\link{policy}()},
+\code{\link{reward}()},
+\code{\link{solve_POMDP}()},
+\code{\link{solve_SARSOP}()}
+}
 \author{
 Michael Hahsler
 }
+\concept{policy}
 \keyword{hplot}

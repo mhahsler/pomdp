@@ -114,6 +114,8 @@
 #' a list with the values for each episode. See [solve_POMDP()] for
 #' more details and an example.
 #'
+#' @family POMDP
+#' 
 #' @param states a character vector specifying the names of the states. Note that
 #' state names have to start with a letter.
 #' @param actions a character vector specifying the names of the available actions.
@@ -149,7 +151,6 @@
 #' [solve_POMDP()] reads the object and adds a list element named
 #' `'solution'`.
 #' @author Hossein Kamalzadeh, Michael Hahsler
-#' @seealso [solve_POMDP()]
 #' @references
 #' pomdp-solve website: \url{http://www.pomdp.org}
 #' @examples

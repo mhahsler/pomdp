@@ -4,12 +4,12 @@
 \name{Maze}
 \alias{Maze}
 \alias{maze}
-\title{Steward Russell's 3x4 Maze MDP}
+\title{Steward Russell's 4x3 Maze MDP}
 \format{
 An object of class \link{MDP}.
 }
 \description{
-The 3x4 maze described in Chapter 17 of the the textbook: "Artificial Intelligence: A Modern Approach."
+The 4x3 maze described in Chapter 17 of the the textbook: "Artificial Intelligence: A Modern Approach" (AIMA).
 }
 \details{
 The simple maze has the following layout:
@@ -30,7 +30,7 @@ Rewards are associated with transitions. The default reward (penalty) is -0.04.
 Transitioning to + (state \code{s_12}) gives a reward of 1.0, transitioning to - (state \code{s_11})
 has a reward of -1.0. States \code{s_11} and \code{s_12} are terminal states.
 
-Actions are movements (\code{n}, \code{s}, \code{e}, \code{w}). The actions are unreliable with a .8 chance
+Actions are movements (\code{north}, \code{south}, \code{east}, \code{west}). The actions are unreliable with a .8 chance
 to move in the correct direction and a 0.1 chance to instead to move in a
 perpendicular direction leading to a stochastic transition model.
 
@@ -50,7 +50,7 @@ s2rc <- function(s) {
 }
 rc2s <- function(rc) S[rc[1] + 3 * (rc[2] - 1)]
 
-A <- c("n", "s", "e", "w")
+A <- c("north", "south", "east", "west")
 
 T <- function(action, start.state, end.state) {
   action <- match.arg(action, choices = A)
@@ -60,12 +60,12 @@ T <- function(action, start.state, end.state) {
     else return(0)
   }
 
-  if(action \%in\% c("n", "s")) error_direction <- c("e", "w")
-  else error_direction <- c("n", "s")
+  if(action \%in\% c("north", "south")) error_direction <- c("east", "west")
+  else error_direction <- c("north", "south")
   
   rc <- s2rc(start.state)
-  delta <- list(n = c(+1, 0), s = c(-1, 0), 
-                e = c(0, +1), w = c(0, -1))
+  delta <- list(north = c(+1, 0), south = c(-1, 0), 
+                east = c(0, +1), west = c(0, -1))
   P <- matrix(0, nrow = 3, ncol = 4)
   
   add_prob <- function(P, rc, a, value) {
@@ -110,6 +110,12 @@ str(Maze)
 
 maze_solved <- solve_MDP(Maze, method = "value")
 policy(maze_solved)
+
+# show the utilities and optimal actions organized in the maze layout (like in the AIMA textbook)
+matrix(policy(maze_solved)[[1]]$U, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
+matrix(policy(maze_solved)[[1]]$action, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
+
+# Note: the optimal actions for the states with a utility of 0 are artefacts and should be ignored. 
 }
 \references{
 Russell, S. J. and Norvig, P., & Davis, E. (2021). Artificial intelligence: a modern approach. 4rd ed.

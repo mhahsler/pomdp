@@ -9,6 +9,9 @@ vignette: >
 output:
   knitr:::html_vignette:
     toc: yes
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
@@ -18,291 +21,261 @@ library("pomdp")
 
 # Introduction
 
-The R package __pomdp__ provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Processes (POMDP) models. The package is a companion to package __pomdpSolve__ which provides the
-executable for [pomdp-solve](http://www.pomdp.org/code/) [@Cassandra2015], a well-known fast C implementation of
-a variety of algorithms to solve POMDPs. __pomdp__ can also use package __sarsop__ [@Bottiger2021] which
-provides an implementation of the SARSOP (Successive Approximations of the Reachable Space under Optimal Policies) algorithm.
+The R package **pomdp** provides the infrastructure to define and
+analyze the solutions of Partially Observable Markov Decision Processes
+(POMDP) models. The package is a companion to package **pomdpSolve**
+which provides the executable for
+'[pomdp-solve](http://www.pomdp.org/code/)' [@Cassandra2015], a
+well-known fast C implementation of a variety of algorithms to solve
+POMDPs. **pomdp** can also use package **sarsop** [@Bottiger2021] which
+provides an implementation of the SARSOP (Successive Approximations of
+the Reachable Space under Optimal Policies) algorithm.
 
 The package provides the following algorithms:
 
-* Exact value iteration
-  - __Enumeration algorithm__ [@Sondik1971].
-  - __Two pass algorithm__ [@Sondik1971].
-  - __Witness algorithm__ [@Littman1995].
-  - __Incremental pruning algorithm__ [@Zhang1996], [@Cassandra1997].
+-   Exact value iteration
 
-* Approximate value iteration
-  - __Finite grid algorithm__ [@Cassandra2015], a variation of point-based value iteration to solve larger POMDPs (__PBVI__; see [@Pineau2003]) without dynamic belief set expansion.
-  - __SARSOP__ [[@Kurniawati2008]], Successive Approximations of the Reachable Space under Optimal Policies, a point-based algorithm that approximates optimally reachable belief spaces for infinite-horizon problems (via package __sarsop__[@Bottiger2021]). 
-  
-The package enables the user to simply define all components of a POMDP model and solve the problem using several methods. The package also contains functions to analyze and visualize the POMDP solutions (e.g., the optimal policy) and extends to reguar MDPs.
+    -   **Enumeration algorithm** [@Sondik1971].
+    -   **Two pass algorithm** [@Sondik1971].
+    -   **Witness algorithm** [@Littman1995].
+    -   **Incremental pruning algorithm** [@Zhang1996],
+        [@Cassandra1997].
 
-In this document we will give a very brief introduction to the concept of POMDP, describe the features of the R package, and illustrate the usage with a toy example. 
+-   Approximate value iteration
+
+    -   **Finite grid algorithm** [@Cassandra2015], a variation of
+        point-based value iteration to solve larger POMDPs (**PBVI**;
+        see [@Pineau2003]) without dynamic belief set expansion.
+    -   **SARSOP** [@Kurniawati2008], Successive Approximations of the
+        Reachable Space under Optimal Policies, a point-based algorithm
+        that approximates optimally reachable belief spaces for
+        infinite-horizon problems (via package **sarsop**
+        [@Bottiger2021]).
+
+The package enables the user to simply define all components of a POMDP
+model and solve the problem using several methods. The package also
+contains functions to analyze and visualize the POMDP solutions (e.g.,
+the optimal policy) and extends to regular MDPs.
+
+In this document, we will give a very brief introduction to the concept
+of POMDPs, describe the features of the R package, and illustrate the
+usage with a toy example.
 
 # Partially Observable Markov Decision Processes
 
-A partially observable Markov decision process (POMDP) is a combination of an MDP 
-to model system dynamics with a hidden Markov model that connects unobservant system states to observations. The agent can perform actions which affect the system (i.e., may cause the system state to change) with the goal to maximize a reward that depends on the sequence of system state and the agent's actions. However, the agent
-cannot directly observe the system state, but at each discrete point in time, the agent makes observations that depend on the state. The agent uses these observations to form a belief of in what state the system currently is. This belief is called a belief state and is expressed as a probability distribution over the states. The solution of the POMDP is a policy prescribing which action is optimal for each belief state.     
+A partially observable Markov decision process (POMDP) is a combination
+of an regular Markov Decision Process to model system dynamics with a
+hidden Markov model that connects unobservable system states
+probabilistically to observations.
 
-The POMDP framework is general enough to model a variety of real-world sequential decision-making problems. Applications include robot navigation problems, machine maintenance, and planning under uncertainty in general. The general framework of Markov decision processes with incomplete information was described by Karl Johan Åström [@Astrom1965] in the case of a discrete state space, and it was further studied in the operations research community where the acronym POMDP was coined. It was later adapted for problems in artificial intelligence and automated planning by Leslie P. Kaelbling and Michael L. Littman [@Kaelbling1998].
+The agent can perform actions which affect the system (i.e., may cause
+the system state to change) with the goal to maximize the expected
+future rewards that depend on the sequence of system state and the
+agent's actions in the future. The goal is to find the optimal policy
+that guides the agent's actions. Different to MDPs, for POMDPs, the
+agent cannot directly observe the complete system state, but the agent
+makes observations that depend on the state. The agent uses these
+observations to form a belief about in what state the system currently
+is. This belief is called a belief state and is expressed as a
+probability distribution over all possible states. The solution of the
+POMDP is a policy prescribing which action to take in each belief state.
+Note that belief states are continuous resulting in an infinite state
+set which makes POMDPs much harder to solve compared to MDPs.
 
-A discrete-time POMDP can formally be described as a 7-tuple 
-$$\mathcal{P} = (S, A, T, R, \Omega , O, \gamma),$$ 
-where
+The POMDP framework is general enough to model a variety of real-world
+sequential decision-making problems. Applications include robot
+navigation problems, machine maintenance, and planning under uncertainty
+in general. The general framework of Markov decision processes with
+incomplete information was described by Karl Johan Åström [@Astrom1965]
+in the case of a discrete state space, and it was further studied in the
+operations research community where the acronym POMDP was coined. It was
+later adapted for problems in artificial intelligence and automated
+planning by Leslie P. Kaelbling and Michael L. Littman [@Kaelbling1998].
 
-* $S  = \{s_1, s_2, \dots, s_n\}$ is a set of states,
+A discrete-time POMDP can formally be described as a 7-tuple
+$$\mathcal{P} = (S, A, T, R, \Omega , O, \gamma),$$ where
 
-* $A  = \{a_1, a_2, \dots, a_m\}$ is a set of actions,
+-   $S = \{s_1, s_2, \dots, s_n\}$ is a set of partially observable
+    states,
 
-* $T$ is a set of conditional transition probabilities $T(s' \mid s,a)$ for the 
-state transition $s \rightarrow s'$. 
+-   $A = \{a_1, a_2, \dots, a_m\}$ is a set of actions,
 
-* $R: S \times A \rightarrow \mathbb{R}$ is the reward function,
+-   \$T\$\$ a set of conditional transition probabilities
+    $T(s' \mid s,a)$ for the state transition $s \rightarrow s'$
+    conditioned on the taken action.
 
-* $\Omega = \{o_1, o_2, \dots, o_k\}$ is a set of observations,
+-   $R: S \times A \rightarrow \mathbb{R}$ is the reward function,
 
-* $O$  is a set of conditional observation probabilities $O(o \mid s',a)$, and
+-   $\Omega = \{o_1, o_2, \dots, o_k\}$ is a set of observations,
 
-* $\gamma \in [0, 1]$ is the discount factor.
+-   $O$ is a set of observation probabilities $O(o \mid s',a)$
+    conditioned on the reached state and the taken action, and
 
-At each time period, the environment is in some state $s \in S$. The agent chooses an action $a \in A$, which causes the environment to transition to state $s' \in S$ with probability $T(s' \mid s,a)$. At the same time, the agent receives an observation $o \in \Omega$  which depends on the new state of the environment with probability $O(o \mid s',a)$. Finally, the agent receives a reward $R(s,a)$. Then the process repeats. The goal is for the agent to choose actions at each time step that maximizes its expected future discounted reward, i.e., she chooses the actions at each time $t$ that 
-$$\max E\left[\sum_{t=0}^{\infty} \gamma^t R(s_t, a_t)\right]$$.
+-   $\gamma \in [0, 1]$ is the discount factor.
 
-For a finite time horizon, only the expectation over the sum up to the time horizon is used.
+At each time period, the environment is in some unkown state $s \in S$.
+The agent chooses an action $a \in A$, which causes the environment to
+transition to state $s' \in S$ with probability $T(s' \mid s,a)$. At the
+same time, the agent receives an observation $o \in \Omega$ which
+depends on the new state of the environment with probability
+$O(o \mid s',a)$. Finally, the agent receives a reward $R(s,a)$. Then
+the process repeats. The goal is for the agent to choose actions that
+maximizes the expected sum of discounted future rewards, i.e., she
+chooses the actions at each time $t$ that
+$$\max E\left[\sum_{t=0}^{\infty} \gamma^t R(s_t, a_t)\right].$$
+
+For a finite time horizon, only the expectation over the sum up to the
+time horizon is used.
 
 # Package Functionality
 
-Solving a POMDP problem with the __pomdp__ package consists of two steps:
+Solving a POMDP problem with the **pomdp** package consists of two
+steps:
 
-1. Define a POMDP problem using the function `POMDP()`, and  
-2. solve the problem using `solve_POMDP()`.
+1.  Define a POMDP problem using the function `POMDP()`, and\
+2.  solve the problem using `solve_POMDP()`.
 
-## Defining a POMDP Problem 
-The `POMDP()` function has the following arguments, each corresponds to one of the 
-elements of a POMDP.
+## Defining a POMDP Problem
+
+The `POMDP()` function has the following arguments, each corresponds to
+one of the elements of a POMDP.
 
 ```{r}
 str(args(POMDP))
 ```
 
-where 
+where
 
-* `states` defines the set of states $S$, 
+-   `states` defines the set of states $S$,
 
-* `actions` defines the set of actions $A$,
+-   `actions` defines the set of actions $A$,
 
-* `observations` defines the set of observations $\Omega$,
+-   `observations` defines the set of observations $\Omega$,
 
-* `transition_prob` defines the conditional transition probabilities $T(s' \mid s,a)$,
+-   `transition_prob` defines the conditional transition probabilities
+    $T(s' \mid s,a)$,
 
-* `observation_prob`  specifies the conditional observation probabilities
-$O(o \mid s',a)$,
+-   `observation_prob` specifies the conditional observation
+    probabilities $O(o \mid s',a)$,
 
-* `reward` specifies the reward function $R$,
+-   `reward` specifies the reward function $R$,
 
-* `discount` is the  discount factor $\gamma$ in range $[0,1]$,
+-   `discount` is the discount factor $\gamma$ in range $[0,1]$,
 
-* `horizon` is the problem horizon as the number of periods to consider.
+-   `horizon` is the problem horizon as the number of periods to
+    consider.
 
-* `terminal_values` is a vector of state utilities at the end of the horizon.
+-   `terminal_values` is a vector of state utilities at the end of the
+    horizon.
 
-* `start` is the initial probability distribution over the system states $S$,
+-   `start` is the initial probability distribution over the system
+    states $S$,
 
-* `max` indicates whether the problem is 
-a maximization or a 
-minimization, and
+-   `max` indicates whether the problem is a maximization or a
+    minimization, and
 
-* `name` used to give the POMDP problem a name.
+-   `name` used to give the POMDP problem a name.
 
-While specifying the discount rate and the set of states, observations and actions is straight-forward. Some 
-arguments can be specified in different ways.
-The initial belief state `start` can be specified as
-    
-* A vector of $n$ probabilities in $[0,1]$, that add up to 1, where $n$ is 
-  the number of states.
-  ```{r, eval = FALSE}
-  start = c(0.5 , 0.3 , 0.2)
-  ```
+While specifying the discount rate and the set of states, observations
+and actions is straight-forward. Some arguments can be specified in
+different ways. The initial belief state `start` can be specified as
 
-* The string '"uniform"' for a uniform distribution over all states.
-  ```{r, eval = FALSE}
-  start = "uniform"
-  ```
-  
-* A vector of integer indices specifying a subset as start states. The initial probability 
-  is uniform over these states. For example, only state 3 or state 1 and 3:
-  ```{r, eval = FALSE}
-  start = 3
-  start = c(1, 3)
-  ```
-  
-* A vector of strings specifying a subset as start states.
-  ```{r, eval = FALSE}
-  start <- "state3"
-  start <- c("state1" , "state3") 
-  ```
+-   A vector of $n$ probabilities in $[0,1]$, that add up to 1, where
+    $n$ is the number of states.
 
-* A  vector of strings starting with `"-"` specifying which states to exclude
-  from the uniform initial probability distribution.
-  ```{r, eval = FALSE}
-  start = c("-" , "state2")
-  ```
+    ```{r, eval = FALSE}
+    start = c(0.5 , 0.3 , 0.2)
+    ```
 
-The transition probabilities, `transition_prob`, 
-depend on the `end.state` $s'$, the `start.state` $s$ and the
-`action` $a$. The set of conditional transition probabilities can be specified in several ways: 
-    
-* A data frame with 4 columns, where the columns specify `action`, `start.state`, 
-  `end.state` and the `probability`, respectively. Actions and states are either 
-  identified by their names or their index number.
-  An asterisk (`*`) can be used as a placeholder for all possible actions or states.
-  To make creating the data frame easier the helper function `T_()` is provides.
+-   The string '"uniform"' for a uniform distribution over all states.
 
-  ```{r , eval = FALSE}
-  transition_prob = rbind(
-    T_("action1", "state1", "state2", 0.1),
-    T_("action2", "state1", "state3", 0.9),
-    T_("*"      , "state2", "*",      1)
-  )
-  ```
-* A named list of $m$ matrices where each matrix represents one of the $m$ actions. 
-  Each matrix is square of size $n \times n$ where $n$ is the number of states.
-  Matrices can also be defined as `"identity"` or `"uniform"`.
-  ```{r, eval = FALSE}
-  transition_prob = list(
-    "action1" = matrix(c( 
-        0.1, 0.4, 0.5,
-        0,   0.7, 0.3, 
-        0.4, 0.4, 0.2), nrow = 3 , byrow = TRUE) ,
-    "action2" = matrix(c(
-        0,   0.6, 0.4,
-        0.1, 0.9, 0,
-        0.7, 0.3, 0), nrow = 3 , byrow = TRUE))
+    ```{r, eval = FALSE}
+    start = "uniform"
+    ```
 
-  transition_prob = list(
-     "action1" = matrix(c(
-        0.1, 0.4, 0.5,
-        0,   0.7, 0.3, 
-        0.4, 0.4, 0.2), nrow = 3 , byrow = TRUE) ,
-      "action2" = "uniform")
-  ```
+-   A vector of integer indices specifying a subset as start states. The
+    initial probability is uniform over these states. For example, only
+    state 3 or state 1 and 3:
 
-The observation probabilities, `observation_prob`, depend on the `action`, 
-the `end.state`, and the
-`observation`. The set of conditional observation probabilities can be specified in several ways:
+    ```{r, eval = FALSE}
+    start = 3
+    start = c(1, 3)
+    ```
 
-* A data frame with 4 columns, where the columns specify `action`, `end.state`, 
-  `observation` and the `probability`, respectively. The first 3 columns could be 
-  either the name or the index of the action, state, or observation. The special 
-  character `*`
-  can be used to indicate that the probability applies for all
-  actions, states or observations. The helper function `O_()` is provided to specify 
-  the data frame.
-  ```{r, eval = FALSE}
-  observation_prob = rbind(
-    O_("*", "state1", "obs1", 0.1),
-    O_("*", "state1", "obs2", 0.9),
-    O_("*", "state2", "obs1", 0.3),
-    O_("*", "state2", "obs2", 0.7),
-    O_("*", "state3", "obs1", 0.5),
-    O_("*", "state3", "obs2", 0.6)
-  )
-  ```
-* A named list of $m$ matrices, one for each actions. Each matrix is of size 
-  $n \times o$ where $n$ is the number of states and $o$ is the number of observations.
-  (each matrix should have a name in the list and the name should be one of the actions).
-  Matrices can also be defined as `"identity"` or `"uniform"`.
-  ```{r, eval = FALSE}
-  observation_prob = list(
-    "action1" = matrix(c(0.1, 0.9,
-                         0.3, 0.7, 
-                         0.4, 0.6), nrow = 3, byrow = TRUE) ,
-    "action2" = matrix(c(0.1, 0.9,
-                         0.3, 0.7,
-                         0.4, 0.6), nrow = 3, byrow = TRUE))
+-   A vector of strings specifying a subset as equally likely start
+    states.
 
+    ```{r, eval = FALSE}
+    start <- "state3"
+    start <- c("state1" , "state3") 
+    ```
 
-  observation_prob = list(
-   "action1" = "uniform",
-   "action2" = matrix(c(0.1, 0.9,
-                        0.3, 0.7,
-                        0.4, 0.6), nrow = 3, byrow = TRUE))
-  ```
-    
-<!--   As we see above, both observation probability matrices are the same and it indicates that the observation probabilities are independent of the action taken. Thus we can use the dataframe format using asterisks to make it more concise. Asterisks here indicates that the probabilities are independent of the actions. "*" could be used anytime where there is independence.
--->
+-   A vector of strings starting with `"-"` specifying which states to
+    exclude from the uniform initial probability distribution.
 
-The reward function, `reward`, depends on
-`action`, `start.state`, `end.state` and the `observation`. 
-The reward function can be specified several ways:
+    ```{r, eval = FALSE}
+    start = c("-" , "state2")
+    ```
 
-* A data frame with 5 columns, where the columns specify `action`, 
-  `start.state`, `end.state`, `observation` and the reward, respectively. 
-  The first 4 columns could be either the name or the index of the action, state, 
-  or observation. The special character `*` can be used to indicate that the same 
-  reward applies for all actions, states or observations. The helper function `R_()` 
-  is provided to specify the data frame.
-  ```{r, eval = FALSE}
-  reward = rbind(
-    R_("action1", "*", "state1", "*", 10000),
-    R_("action1", "*", "state2", "*", 2000),
-    R_("action2", "*", "state1", "*", 50),
-    R_("action2", "*", "state2", "*", 100)
-  )
-  ```
-* A named list of $m$ lists, where $m$ is the number of actions (names should be the
-  actions). Each list contains $n$ named matrices where each matrix is of size 
-  $n \times o$, in which $n$ is the number of states and $o$ is the number of 
-  observations. Names of these matrices should be the name of states.
-  ```{r, eval = FALSE}
-  reward = list(
-    "action1" = list(
-       "state1" = matrix(c(1, 2, 3, 4, 5, 6) , nrow = 3 , byrow = TRUE), 
-       "state2" = matrix(c(3, 4, 5, 2, 3, 7) , nrow = 3 , byrow = TRUE), 
-       "state3" = matrix(c(6, 4, 8, 2, 9, 4) , nrow = 3 , byrow = TRUE)), 
-    "action2" = list(
-       "state1" = matrix(c(3, 2, 4, 7, 4, 8) , nrow = 3 , byrow = TRUE), 
-       "state2" = matrix(c(0, 9, 8, 2, 5, 4) , nrow = 3 , byrow = TRUE), 
-       "state3" = matrix(c(4, 3, 4, 4, 5, 6) , nrow = 3 , byrow = TRUE)))
-  ```
+The transition probabilities (`transition_prob`), observation
+probabilities (`observation_prob`) and reward function (`reward`) can be
+specified in several ways:
+
+-   As a `data.frame` created using `rbind()` and the helper functions
+    `T_()`, `O_()` and `R_()`.
+-   A named list of matrices representing the transition probabilities
+    or rewards.
+-   A function with the same arguments `T_()`, `O_()` or `R_()` that
+    returns the probability or reward.
+
+More details can be found in the manual page for `POMDP()`.
 
 ## Solving a POMDP
 
-POMDP problems are solved with the function `solve_POMDP` with the following arguments. 
+POMDP problems are solved with the function `solve_POMDP()` with the
+following arguments.
 
 ```{r}
 str(args(solve_POMDP))
 ```
 
-The `model` argument is a POMDP problem created using the `POMDP()` function,
-but it can also be the name of a POMDP file using the format described in the 
-[file specification section of pomdp-solve](http://www.pomdp.org/code/pomdp-file-spec.html).
-The `horizon`
-argument specifies the finite time horizon (i.e, the number of time steps) considered in solving the problem. If the horizon is unspecified (i.e., `NULL`), then 
-the algorithm continues running iterations till it converges to the infinite horizon solution. 
-The `method` argument specifies what algorithm the solver should use.
-Available methods including `"grid"`, `"enum"`, `"twopass"`, `"witness"`, and `"incprune"`. Further solver parameters can be specified as a list as `parameters`.
-The list of available parameters can be obtained using the function `solve_POMDP_parameter()`.
-Finally, `verbose` is a logical that indicates whether the solver output should be shown in the R console or not. The output of this function is an object of class POMDP.
+The `model` argument is a POMDP problem created using the `POMDP()`
+function, but it can also be the name of a POMDP file using the format
+described in the [file specification section of
+'pomdp-solve](http://www.pomdp.org/code/pomdp-file-spec.html)'. The
+`horizon` argument specifies the finite time horizon (i.e, the number of
+time steps) considered in solving the problem. If the horizon is
+unspecified (i.e., `NULL`), then the algorithm continues running
+iterations till it converges to the infinite horizon solution. The
+`method` argument specifies what algorithm the solver should use.
+Available methods including `"grid"`, `"enum"`, `"twopass"`,
+`"witness"`, and `"incprune"`. Further solver parameters can be
+specified as a list in `parameters`. The list of available parameters
+can be obtained using the function `solve_POMDP_parameter()`. Details on
+the other arguments can be found in the manual page for
+\`solve_POMDP()\`.
 
 # The Tiger Problem Example
-We will demonstrate how to use the package with the Tiger Problem 
-[@Cassandra1994]. 
 
-A tiger is put with equal probability behind one of two doors, while treasure is put behind the other one. You are standing in front of the two closed doors and need to decide which one to open. If you open the door with the tiger, you will get hurt by the tiger (negative reward), but if you open the door with the treasure, you receive a positive reward. Instead of opening a door right away, you also have the option to wait and listen for tiger noises. But listening is neither free nor entirely accurate. You might hear the tiger behind the left door while it is actually behind the right door and vice versa.
+We will demonstrate how to use the package with the Tiger Problem
+[@Cassandra1994]. The problem is defined as:
 
-The states of the system are the tiger behind the left door (tiger-left) and the tiger behind the right door (tiger-right).
-
-Available actions are: open the left door (open-left), open the right door (open-right) or to listen (listen).
-
-Rewards associated with these actions depend on the resulting state: +10 for opening the correct door (the door with treasure), -100 for opening the door with the tiger. A reward of -1 is the cost of listening.
-
-As a result of listening, there are two observations: either you hear the tiger on the right (tiger-right), or you hear it on the left (tiger-left).
-
-The transition probability matrix for the action listening is identity, i.e., the position of the tiger does not change. Opening either door means that the game restarts by placing the tiger uniformly behind one of the doors.
+> An agent is facing two closed doors and a tiger is put with equal
+> probability behind one of the two doors represented by the states
+> `tiger-left` and `tiger-right`, while treasure is put behind the other
+> door. The possible actions are `listen` for tiger noises or opening a
+> door (actions `open-left` and `open-right`). Listening is neither free
+> (the action has a reward of -1) nor is it entirely accurate. There is
+> a 15% probability that the agent hears the tiger behind the left door
+> while it is actually behind the right door and vice versa. If the
+> agent opens door with the tiger, it will get hurt (a negative reward
+> of -100), but if it opens the door with the treasure, it will receive
+> a positive reward of 10. After a door is opened, the problem is
+> reset(i.e., the tiger is randomly assigned to a door with chance
+> 50/50) and the the agent gets another try.
 
 ## Specifying the Tiger Problem
+
 The problem can be specified using function `POMDP()` as follows.
 
 ```{r}
@@ -341,18 +314,24 @@ Tiger <- POMDP(
 Tiger
 ```
 
-Note that we use for each component the way that lets us specify them in the easiest way (i.e., for observations and transitions a list and for rewards a data frame created with the `R_()` function).
+Note that we use for each component the way that lets us specify the
+problem in the easiest way (i.e., for observations and transitions a
+list and for rewards a data frame created with the `R_()` function).
 
 ## Solving the Tiger Problem
-Now, we can solve the problem using the default algorithm. We use the finite grid method which 
-implements a form of point-based value iteration that can find approximate solutions also for difficult problems.
 
-``` {r}
+Now, we can solve the problem. We use the default method (finite grid)
+which implements a form of point-based value iteration that can find
+approximate solutions also for larger problems.
+
+```{r}
 sol <- solve_POMDP(Tiger)
 sol
 ```
 
-The output is an object of class POMDP which contains the solution.
+The output is an object of class POMDP which contains the solution as an
+additional list component. The solution can be accessed directly in the
+list.
 
 ```{r}
 sol$solution
@@ -360,34 +339,59 @@ sol$solution
 
 The solution contains the following elements:
 
-* **`total_expected_reward`:** The total expected reward of the optimal solution. 
+-   **`total_expected_reward`:** The total expected reward of the
+    optimal solution.
 
-* **`initial_belief_state	`:** The index of the node in the policy graph that represents the initial belief state. 
+-   **`initial_belief_state`:** The index of the node in the policy
+    graph that represents the initial belief state.
 
-* **`belief_states`:** A data frame of all the belief states (rows) used while solving the problem. There is a column at the end that indicates which node in the policy graph is associated with the belief state. That is which segment in the value function (specified in **alpha** below) provides the best value for the given belief state. 
+-   **`belief_states`:** A data frame of all the belief states (rows)
+    used while solving the problem. There is a column at the end that
+    indicates which node in the policy graph is associated with the
+    belief state. That is which segment in the value function (specified
+    in **alpha** below) provides the best value for the given belief
+    state.
 
-* **`pg`:** A data frame containing the optimal policy graph. Rows are nodes in the graph are segments in the value function and each represents 
-one or more belief states.
-Column two indicates the optimal action for the node. Columns three and after represent the transitions to new nodes in the policy graph depending on the next observation.
+-   **`pg`:** A data frame containing the optimal policy graph. Rows are
+    nodes in the graph are segments in the value function and each
+    represents one or more belief states. Column two indicates the
+    optimal action for the node. Columns three and after represent the
+    transitions to new nodes in the policy graph depending on the next
+    observation.
 
-* **`alpha`:** A data frame with the coefficients of the optimal hyperplanes for the value function. 
+-   **`alpha`:** A data frame with the coefficients of the optimal
+    hyperplanes for the value function.
 
-* **`belief_proportions`:** A data frame which summarized the belief states associated with a node in the policy graph by averaging the beliefs. 
+-   **`policy`:** A data frame that combines the ingormation from `pg`
+    and `alpha`. The first few columns specifying the belief state
+    (hyperplane from `alpha`) and the last column indicates the optimal
+    action (from `pg`).
 
 ## Visualization
-In this section, we will visualize the policy graph provided in the solution by the `solve_POMDP()` function. 
+
+In this section, we will visualize the policy graph provided in the
+solution by the `solve_POMDP()` function.
 
 ```{r fig.width = 10, fig.asp = .7}
 plot_policy_graph(sol)
 ```
 
-The policy graph can be easily interpreted. Without prior information, the agent starts at the node marked with "initial." In this case the agent beliefs that there
-is a 50-50 chance that the tiger is behind ether door. The optimal action is displayed inside the state and in this case is to listen. The observations are labels on the arcs. Let us assume that the observation is "tiger-left", then the agent follows the appropriate arc and ends in a node representing a belief (one ore more belief states) that has a very high probability of the tiger being left. However, the optimal action is still to listen. If the agent again hears the tiger on the left then it ends up in a note that has
-a close to 100% belief that the tiger is to the left and 
-`open-right` is the optimal action. 
-The are arcs back from the nodes with the open actions to the initial state reset the problem.
+The policy graph can be easily interpreted. Without prior information,
+the agent starts at the node marked with "initial belief." In this case
+the agent beliefs that there is a 50-50 chance that the tiger is behind
+ether door. The optimal action is displayed inside the state and in this
+case is to listen. The observations are labels on the arcs. Let us
+assume that the observation is "tiger-left", then the agent follows the
+appropriate arc and ends in a node representing a belief (one ore more
+belief states) that has a very high probability of the tiger being left.
+However, the optimal action is still to listen. If the agent again hears
+the tiger on the left then it ends up in a note that has a close to 100%
+belief that the tiger is to the left and `open-right` is the optimal
+action. The are arcs back from the nodes with the open actions to the
+initial state reset the problem.
 
-Since we only have two states, we can visualize the piecewise linear convex value function as a simple plot.
+Since we only have two states, we can visualize the piecewise linear
+convex value function as a simple plot.
 
 ```{r}
 alpha <- sol$solution$alpha
@@ -396,6 +400,7 @@ alpha
 plot_value_function(sol, ylim = c(0,20))
 ```
 
-The lines represent the nodes in the policy graph and the optimal actions are shown in the legend.
+The lines represent the nodes in the policy graph and the optimal
+actions are shown in the legend.
 
 # References

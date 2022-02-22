@@ -2,6 +2,8 @@
 #'
 #' Convert the policy graph in a POMDP solution object into an igraph object.
 #'
+#' @family policy
+#'
 #' @param x A [POMDP] object.
 #' @param belief logical; add belief proportions as a pie chart in each node of
 #' the graph? If belief points are provided by the solver, then these are used.
@@ -10,7 +12,6 @@
 #' @param col colors used for the states in the belief proportions.
 #' @return An object of class igraph containing a directed graph.
 #' @author Hossein Kamalzadeh, Michael Hahsler
-#' @seealso [solve_POMDP()]
 #' @keywords graphs
 #' @examples
 #' data("Tiger")

@@ -6,6 +6,8 @@
 #' The value is calculated using the value function stored in the POMDP
 #' solution.
 #'
+#' @family policy
+#' 
 #' @param x a solved [POMDP] object.
 #' @param belief specification of the current belief state (see argument start
 #' in [POMDP] for details). By default the belief state defined in

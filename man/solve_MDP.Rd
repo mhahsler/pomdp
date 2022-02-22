@@ -67,6 +67,13 @@ output of the pomdp solver in the R console.}
 \value{
 \code{solve_MDP()} returns an object of class POMDP which is a list with the
 model specifications (\code{model}), the solution (\code{solution}).
+The solution is a list with the elements:
+\itemize{
+\item \code{policy} a list representing the policy graph. The list only has one element for converged solutions.
+\item \code{converged} did the algorithm converge (\code{NA}) for finite-horizon problems.
+\item \code{delta} final delta (infinite-horizon only)
+\item \code{iterations} number of iterations to convergence (infinite-horizon only)
+}
 
 \code{q_values_MDP()} returns a state by action matrix specifying the Q-function,
 i.e., the utility value of executing each action in each state.
@@ -118,6 +125,12 @@ approx_MDP_policy_evaluation(policy(maze_solved)[[1]], Maze, k_backup = 100)
 # Note that the solver already calculates the utility function and returns it with the policy
 policy(maze_solved)
 }
+\seealso{
+Other solver: 
+\code{\link{solve_POMDP}()},
+\code{\link{solve_SARSOP}()}
+}
 \author{
 Michael Hahsler
 }
+\concept{solver}

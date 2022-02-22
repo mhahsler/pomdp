@@ -33,9 +33,17 @@ plot(pg)
 
 }
 \seealso{
-\code{\link[=solve_POMDP]{solve_POMDP()}}
+Other policy: 
+\code{\link{optimal_action}()},
+\code{\link{plot_policy_graph}()},
+\code{\link{plot_value_function}()},
+\code{\link{policy}()},
+\code{\link{reward}()},
+\code{\link{solve_POMDP}()},
+\code{\link{solve_SARSOP}()}
 }
 \author{
 Hossein Kamalzadeh, Michael Hahsler
 }
+\concept{policy}
 \keyword{graphs}

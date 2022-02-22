@@ -4,6 +4,8 @@
 #' projected on two states (i.e., the belief for the other states is held
 #' constant at zero).
 #'
+#' @family policy
+#'
 #' @param model a solved [POMDP].
 #' @param projection index or name of two states for the projection.
 #' @param epoch the value function of what epoch should be plotted? Ignored

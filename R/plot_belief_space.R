@@ -7,6 +7,8 @@
 #' points are given, points are sampled using a regular arrangement or randomly
 #' from the (projected) belief space.
 #'
+#' @family POMDP
+#'
 #' @param model a solved [POMDP].
 #' @param projection a vector with state IDs or names to project on. Allowed
 #' are projections on two or three states. `NULL` uses the first two or
@@ -25,7 +27,6 @@
 #' `TerneryPlot` for 3D.
 #' @return Returns invisibly the sampled points.
 #' @author Michael Hahsler
-#' @seealso [sample_belief_space()]
 #' @keywords hplot
 #' @examples
 #' # two-state POMDP

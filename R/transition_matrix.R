@@ -5,13 +5,13 @@
 #'
 #' See Details section in [POMDP] for details.
 #'
-#' @aliases transition_matrix observation_matrix reward_matrix
+#' @family POMDP
+#' 
 #' @param x A [POMDP] object.
 #' @param episode Episode used for time-dependent POMDPs ([POMDP]).
 #' @param type `'matrix'` or `'function'` to get a list of matrices or a function.
 #' @return A list or a list of lists of matrices.
 #' @author Michael Hahsler
-#' @seealso [POMDP]
 #' @examples
 #' data("Tiger")
 #'

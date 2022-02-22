@@ -7,6 +7,10 @@
 #' decision processes (POMDPs). The result is an optimal or approximately
 #' optimal policy.
 #'
+#' @family policy
+#' @family solver
+#' @family POMDP
+#'
 #' @param model a POMDP problem specification created with [POMDP()].
 #' Alternatively, a POMDP file or the URL for a POMDP file can be specified.
 #' @param method string; there is only one method available called `"sarsop"`.

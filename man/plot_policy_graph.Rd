@@ -2,7 +2,6 @@
 % Please edit documentation in R/plot_policy_graph.R
 \name{plot_policy_graph}
 \alias{plot_policy_graph}
-\alias{plot}
 \title{Visualize a POMDP Policy Graph}
 \usage{
 plot_policy_graph(
@@ -98,6 +97,14 @@ plot_policy_graph(sol, engine = "visNetwork")
 plot_policy_graph(sol, engine = "vis", layout = "layout_in_circle", smooth = TRUE)
 }
 \seealso{
-\code{\link[=solve_POMDP]{solve_POMDP()}}, \code{\link[=policy_graph]{policy_graph()}}.
+Other policy: 
+\code{\link{optimal_action}()},
+\code{\link{plot_value_function}()},
+\code{\link{policy_graph}()},
+\code{\link{policy}()},
+\code{\link{reward}()},
+\code{\link{solve_POMDP}()},
+\code{\link{solve_SARSOP}()}
 }
+\concept{policy}
 \keyword{hplot}

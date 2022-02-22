@@ -14,6 +14,8 @@
 #' 
 #' * `'vertices'` only samples from the vertices of the belief space.
 #'
+#' @family POMDP
+#' 
 #' @param model a unsolved or solved [POMDP].
 #' @param projection Sample in a projected belief space. All states not
 #' included in the projection are held at a belief of 0. `NULL` means no

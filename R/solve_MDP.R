@@ -5,6 +5,9 @@
 #'
 #' A simple implementation of value iteration and modified policy iteration.
 #'
+#' @family solver
+#' @familiy MDP
+#' 
 #' @param model a POMDP problem specification created with [POMDP()].
 #'   Alternatively, a POMDP file or the URL for a POMDP file can be specified.
 #' @param method string; one of the following solution methods: `'value'`,
@@ -31,6 +34,12 @@
 #'
 #' @return `solve_MDP()` returns an object of class POMDP which is a list with the
 #'   model specifications (`model`), the solution (`solution`).
+#'   The solution is a list with the elements:
+#'   - `policy` a list representing the policy graph. The list only has one element for converged solutions.
+#'   - `converged` did the algorithm converge (`NA`) for finite-horizon problems.
+#'   - `delta` final delta (infinite-horizon only)
+#'   - `iterations` number of iterations to convergence (infinite-horizon only)
+#'   
 #'
 #' @author Michael Hahsler
 #' @examples
@@ -263,6 +272,7 @@ MDP_value_iteration_inf_horizon <-
       )
     
     model$solution <- list(
+      method = "value iteration",
       policy = list(data.frame(
         state = S,
         U = U,
@@ -376,6 +386,7 @@ MDP_policy_iteration_inf_horizon <-
       )
     
     model$solution <- list(
+      method = "policy iteration",
       policy = list(data.frame(
         state = S,
         U = U,

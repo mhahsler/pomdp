@@ -34,6 +34,7 @@
 #'
 #' where \eqn{\eta = 1/ \sum_{s' \in S}[ O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)]} normalizes the new belief state so the probabilities add up to one.
 #'
+#' @family POMDP
 #'
 #' @param model a [POMDP] object.
 #' @param belief the current belief state.
@@ -47,7 +48,6 @@
 #' @param drop logical; drop the result to a vector if only a single belief
 #' state is returned.
 #' @author Michael Hahsler
-#' @seealso [POMDP()], [simulate_POMDP()]
 #' @examples
 #' data(Tiger)
 #'
@@ -96,6 +96,7 @@ update_belief <-
 #' the optimal actions will be chosen, for unsolved POMDPs random actions will
 #' be used.
 #'
+#' @family POMDP
 #'
 #' @param model a POMDP model.
 #' @param n number of trajectories.
@@ -116,7 +117,6 @@ update_belief <-
 #' @return A matrix with belief points as rows. Attributes containing action
 #' counts, and rewards may be available.
 #' @author Michael Hahsler
-#' @seealso [POMDP()]
 #' @md
 #' @examples
 #' data(Tiger)

@@ -20,7 +20,8 @@
 #' igraph object) using [policy_graph()] and converting it into a
 #' suitable representation for that library.
 #'
-#' @aliases plot_policy_graph plot
+#' @family policy
+#' 
 #' @param x object of class [POMDP] containing a solved POMDP problem.
 #' @param belief logical; display belief proportions as a pie chart in each node. This requires belief space sampling and may be slow.
 #' @param legend logical; display a legend for colors used belief proportions?
@@ -28,7 +29,6 @@
 #' @param col colors used for the states.
 #' @param \dots plotting options passed on to the plotting engine (see Details
 #' section).
-#' @seealso [solve_POMDP()], [policy_graph()].
 #' @keywords hplot
 #' @examples
 #' data("Tiger")

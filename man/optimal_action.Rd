@@ -46,6 +46,17 @@ optimal_action(sol, "uniform")
 optimal_action(sol, "tiger-right", epoch = 10)
 
 }
+\seealso{
+Other policy: 
+\code{\link{plot_policy_graph}()},
+\code{\link{plot_value_function}()},
+\code{\link{policy_graph}()},
+\code{\link{policy}()},
+\code{\link{reward}()},
+\code{\link{solve_POMDP}()},
+\code{\link{solve_SARSOP}()}
+}
 \author{
 Michael Hahsler
 }
+\concept{policy}

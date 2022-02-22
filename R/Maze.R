@@ -1,6 +1,6 @@
-#' Steward Russell's 3x4 Maze MDP
+#' Steward Russell's 4x3 Maze MDP
 #' 
-#' The 3x4 maze described in Chapter 17 of the the textbook: "Artificial Intelligence: A Modern Approach."
+#' The 4x3 maze described in Chapter 17 of the the textbook: "Artificial Intelligence: A Modern Approach" (AIMA).
 #'
 #' The simple maze has the following layout:
 #'
@@ -20,7 +20,7 @@
 #' Transitioning to + (state `s_12`) gives a reward of 1.0, transitioning to - (state `s_11`)
 #' has a reward of -1.0. States `s_11` and `s_12` are terminal states.
 #' 
-#' Actions are movements (`n`, `s`, `e`, `w`). The actions are unreliable with a .8 chance
+#' Actions are movements (`north`, `south`, `east`, `west`). The actions are unreliable with a .8 chance
 #' to move in the correct direction and a 0.1 chance to instead to move in a 
 #' perpendicular direction leading to a stochastic transition model.
 #' 
@@ -45,7 +45,7 @@
 #' }
 #' rc2s <- function(rc) S[rc[1] + 3 * (rc[2] - 1)]
 #' 
-#' A <- c("n", "s", "e", "w")
+#' A <- c("north", "south", "east", "west")
 #' 
 #' T <- function(action, start.state, end.state) {
 #'   action <- match.arg(action, choices = A)
@@ -55,12 +55,12 @@
 #'     else return(0)
 #'   }
 #'
-#'   if(action %in% c("n", "s")) error_direction <- c("e", "w")
-#'   else error_direction <- c("n", "s")
+#'   if(action %in% c("north", "south")) error_direction <- c("east", "west")
+#'   else error_direction <- c("north", "south")
 #'   
 #'   rc <- s2rc(start.state)
-#'   delta <- list(n = c(+1, 0), s = c(-1, 0), 
-#'                 e = c(0, +1), w = c(0, -1))
+#'   delta <- list(north = c(+1, 0), south = c(-1, 0), 
+#'                 east = c(0, +1), west = c(0, -1))
 #'   P <- matrix(0, nrow = 3, ncol = 4)
 #'   
 #'   add_prob <- function(P, rc, a, value) {
@@ -105,6 +105,12 @@
 #' 
 #' maze_solved <- solve_MDP(Maze, method = "value")
 #' policy(maze_solved)
+#' 
+#' # show the utilities and optimal actions organized in the maze layout (like in the AIMA textbook)
+#' matrix(policy(maze_solved)[[1]]$U, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
+#' matrix(policy(maze_solved)[[1]]$action, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
+#' 
+#' # Note: the optimal actions for the states with a utility of 0 are artefacts and should be ignored. 
 NULL
 
 ## save(Maze, file = "data/Maze.rda")

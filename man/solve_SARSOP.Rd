@@ -88,6 +88,33 @@ https://CRAN.R-project.org/package=sarsop
 
 H. Kurniawati, D. Hsu, and W.S. Lee (2008). SARSOP: Efficient point-based POMDP planning by approximating optimally reachable belief spaces. In Proc. Robotics: Science and Systems.
 }
+\seealso{
+Other policy: 
+\code{\link{optimal_action}()},
+\code{\link{plot_policy_graph}()},
+\code{\link{plot_value_function}()},
+\code{\link{policy_graph}()},
+\code{\link{policy}()},
+\code{\link{reward}()},
+\code{\link{solve_POMDP}()}
+
+Other solver: 
+\code{\link{solve_MDP}()},
+\code{\link{solve_POMDP}()}
+
+Other POMDP: 
+\code{\link{POMDP}()},
+\code{\link{plot_belief_space}()},
+\code{\link{sample_belief_space}()},
+\code{\link{simulate_POMDP}()},
+\code{\link{solve_POMDP}()},
+\code{\link{transition_matrix}()},
+\code{\link{update_belief}()},
+\code{\link{write_POMDP}()}
+}
 \author{
 Michael Hahsler
 }
+\concept{POMDP}
+\concept{policy}
+\concept{solver}

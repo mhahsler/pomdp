@@ -32,7 +32,19 @@ write_POMDP(Tiger, file = stdout())
 \references{
 POMDP solver website: http://www.pomdp.org
 }
+\seealso{
+Other POMDP: 
+\code{\link{POMDP}()},
+\code{\link{plot_belief_space}()},
+\code{\link{sample_belief_space}()},
+\code{\link{simulate_POMDP}()},
+\code{\link{solve_POMDP}()},
+\code{\link{solve_SARSOP}()},
+\code{\link{transition_matrix}()},
+\code{\link{update_belief}()}
+}
 \author{
 Hossein Kamalzadeh, Michael Hahsler
 }
+\concept{POMDP}
 \keyword{IO}

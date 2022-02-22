@@ -12,6 +12,8 @@
 #'
 #' * Part 2: One column with the optimal action.
 #'
+#' @family policy
+#' 
 #' @param x A solved [POMDP] object.
 #' @return A list with the policy for each epoch.
 #' @author Michael Hahsler

@@ -17,7 +17,8 @@ format_fixed <- function(x, digits = 7, debug = "unknown") {
 #'
 #' Reads and write a POMDP file suitable for the `pomdp-solve` program. _Note:_ read POMDP files are intended to be used in [solve_POMDP()] and do not support all auxiliary functions. Fields like the transition matrix, the observation matrix and the reward structure are not parsed.
 #'
-#' @aliases write_POMDP read_POMDP
+#' @family POMDP
+#' 
 #' @param x an object of class [POMDP].
 #' @param digits precision for writing numbers (digits after the decimal
 #' point).

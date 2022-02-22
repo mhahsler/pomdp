@@ -51,6 +51,17 @@ reward(sol, belief = "tiger-left")
 # than 10 since the tiger problem resets and another game staring with
 # a uniform belief is played which produces additional reward.
 }
+\seealso{
+Other policy: 
+\code{\link{optimal_action}()},
+\code{\link{plot_policy_graph}()},
+\code{\link{plot_value_function}()},
+\code{\link{policy_graph}()},
+\code{\link{policy}()},
+\code{\link{solve_POMDP}()},
+\code{\link{solve_SARSOP}()}
+}
 \author{
 Michael Hahsler
 }
+\concept{policy}

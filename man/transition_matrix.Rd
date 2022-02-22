@@ -73,8 +73,17 @@ Tiger$transition_prob <- trans
 transition_matrix(Tiger)
 }
 \seealso{
-\link{POMDP}
+Other POMDP: 
+\code{\link{POMDP}()},
+\code{\link{plot_belief_space}()},
+\code{\link{sample_belief_space}()},
+\code{\link{simulate_POMDP}()},
+\code{\link{solve_POMDP}()},
+\code{\link{solve_SARSOP}()},
+\code{\link{update_belief}()},
+\code{\link{write_POMDP}()}
 }
 \author{
 Michael Hahsler
 }
+\concept{POMDP}

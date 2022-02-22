@@ -3,7 +3,8 @@
 #' Determines the optimal action for a policy (solved POMDP) for a given belief
 #' at a given epoch.
 #'
-#'
+#' @family policy
+
 #' @param model a solved [POMDP].
 #' @param belief The belief (probability distribution over the states) as a
 #' vector or a matrix with multiple belief states as rows.

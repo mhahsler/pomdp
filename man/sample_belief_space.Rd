@@ -50,6 +50,18 @@ reward(sol, belief = sample_belief_space(sol, n = 5, method = "regular"))
 Luc Devroye, Non-Uniform Random Variate Generation, Springer
 Verlag, 1986.
 }
+\seealso{
+Other POMDP: 
+\code{\link{POMDP}()},
+\code{\link{plot_belief_space}()},
+\code{\link{simulate_POMDP}()},
+\code{\link{solve_POMDP}()},
+\code{\link{solve_SARSOP}()},
+\code{\link{transition_matrix}()},
+\code{\link{update_belief}()},
+\code{\link{write_POMDP}()}
+}
 \author{
 Michael Hahsler
 }
+\concept{POMDP}

@@ -90,9 +90,18 @@ plot_belief_space(sol, sample = simulate_POMDP(Three_doors, n = 50, horizon = 10
   random_actions = TRUE, visited_beliefs = TRUE))
 }
 \seealso{
-\code{\link[=sample_belief_space]{sample_belief_space()}}
+Other POMDP: 
+\code{\link{POMDP}()},
+\code{\link{sample_belief_space}()},
+\code{\link{simulate_POMDP}()},
+\code{\link{solve_POMDP}()},
+\code{\link{solve_SARSOP}()},
+\code{\link{transition_matrix}()},
+\code{\link{update_belief}()},
+\code{\link{write_POMDP}()}
 }
 \author{
 Michael Hahsler
 }
+\concept{POMDP}
 \keyword{hplot}

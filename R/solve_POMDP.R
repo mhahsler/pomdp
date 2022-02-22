@@ -83,7 +83,10 @@
 #' **Note:** The parser for POMDP files is experimental. Please report
 #' problems here: \url{https://github.com/mhahsler/pomdp/issues}.
 #'
-#' @aliases solve_POMDP solve_POMDP_parameter
+#' @family policy
+#' @family solver
+#' @family POMDP
+#' 
 #' @param model a POMDP problem specification created with [POMDP()].
 #' Alternatively, a POMDP file or the URL for a POMDP file can be specified.
 #' @param method string; one of the following solution methods: `"grid"`,
@@ -109,7 +112,15 @@
 #' output of the pomdp solver in the R console.
 #' @return The solver returns an object of class POMDP which is a list with the
 #' model specifications (`model`), the solution (`solution`), and the
-#' solver output (`solver_output`).
+#' solver output (`solver_output`). The solution is a list with elements:
+#' - `converged` did the solution converge?
+#' - `initial_belief` used initial beliefs.
+#' - `total_expected_reward` reward from the initial beliefs.
+#' - `pg`, `initial_pg_node` a list representing the policy graph. A converged solution has
+#' only a single list elements.
+#' - `belief_states` used belief states.
+#' - `alpha` hyperplanes for belief states used in the policy graph.
+#' - `policy` the policy.
 #' @author Hossein Kamalzadeh, Michael Hahsler
 #' @references
 #' Cassandra, A. (2015). pomdp-solve: POMDP Solver Software,

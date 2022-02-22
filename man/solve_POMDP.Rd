@@ -53,7 +53,17 @@ output of the pomdp solver in the R console.}
 \value{
 The solver returns an object of class POMDP which is a list with the
 model specifications (\code{model}), the solution (\code{solution}), and the
-solver output (\code{solver_output}).
+solver output (\code{solver_output}). The solution is a list with elements:
+\itemize{
+\item \code{converged} did the solution converge?
+\item \code{initial_belief} used initial beliefs.
+\item \code{total_expected_reward} reward from the initial beliefs.
+\item \code{pg}, \code{initial_pg_node} a list representing the policy graph. A converged solution has
+only a single list elements.
+\item \code{belief_states} used belief states.
+\item \code{alpha} hyperplanes for belief states used in the policy graph.
+\item \code{policy} the policy.
+}
 }
 \description{
 This function utilizes the C implementation of 'pomdp-solve' by Cassandra
@@ -316,6 +326,33 @@ iteration: an anytime algorithm for POMDPs. IJCAI'03: Proceedings of the
 18th international joint conference on Artificial Intelligence. Pages
 1025-1030.
 }
+\seealso{
+Other policy: 
+\code{\link{optimal_action}()},
+\code{\link{plot_policy_graph}()},
+\code{\link{plot_value_function}()},
+\code{\link{policy_graph}()},
+\code{\link{policy}()},
+\code{\link{reward}()},
+\code{\link{solve_SARSOP}()}
+
+Other solver: 
+\code{\link{solve_MDP}()},
+\code{\link{solve_SARSOP}()}
+
+Other POMDP: 
+\code{\link{POMDP}()},
+\code{\link{plot_belief_space}()},
+\code{\link{sample_belief_space}()},
+\code{\link{simulate_POMDP}()},
+\code{\link{solve_SARSOP}()},
+\code{\link{transition_matrix}()},
+\code{\link{update_belief}()},
+\code{\link{write_POMDP}()}
+}
 \author{
 Hossein Kamalzadeh, Michael Hahsler
 }
+\concept{POMDP}
+\concept{policy}
+\concept{solver}

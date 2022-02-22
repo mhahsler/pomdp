@@ -29,12 +29,13 @@ Copyright: Copyright (C) Hossein Kamalzadeh and Michael Hahsler.
 RoxygenNote: 7.1.2.9000
 Roxygen: list(markdown = TRUE)
 Collate: 
-    'AAAimports.R'
+    'AAA_check_installed.R'
+    'AAA_imports.R'
+    'AAA_pomdp-package.R'
     'POMDP.R'
     'MDP.R'
     'Maze.R'
     'Tiger.R'
-    'check_installed.R'
     'colors.R'
     'optimal_action.R'
     'plot_belief_space.R'
