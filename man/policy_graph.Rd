@@ -4,17 +4,18 @@
 \alias{policy_graph}
 \title{Extract the Policy Graph (as an igraph Object)}
 \usage{
-policy_graph(x, belief = TRUE, col = NULL)
+policy_graph(x, belief = TRUE, col = NULL, ...)
 }
 \arguments{
 \item{x}{A \link{POMDP} object.}
 
-\item{belief}{logical; add belief proportions as a pie chart in each node of
-the graph? If belief points are provided by the solver, then these are used.
-If a number is specified, then a random sample of that size is used instead
-to calculate belief proportions.}
+\item{belief}{logical; calculate belief proportions and show them as a pie chart in each node of
+the graph?}
 
 \item{col}{colors used for the states in the belief proportions.}
+
+\item{...}{if \code{belief = TRUE}, then additional parameters are passed on for belief point sampling with \code{\link[=sample_belief_space]{sample_belief_space()}} or
+\code{\link[=simulate_POMDP]{simulate_POMDP()}}.}
 }
 \value{
 An object of class igraph containing a directed graph.

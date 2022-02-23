@@ -27,7 +27,7 @@
 #' @param legend logical; display a legend for colors used belief proportions?
 #' @param engine The plotting engine to be used.
 #' @param col colors used for the states.
-#' @param \dots plotting options passed on to the plotting engine (see Details
+#' @param \dots parameters are passed on to [policy_graph()] and as plotting options to the plotting engine (see Details
 #' section).
 #' @keywords hplot
 #' @examples
@@ -97,7 +97,7 @@ plot_policy_graph <- function(x,
 
 .plot.igraph <-
   function(x, belief, legend, col, edge.curved = NULL, ...) {
-    pg <- policy_graph(x, belief = belief, col = col)
+    pg <- policy_graph(x, belief = belief, col = col, ...)
     
     if (is.null(edge.curved))
       edge.curved <- .curve_multiple_directed(pg)

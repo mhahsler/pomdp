@@ -24,7 +24,7 @@ plot_policy_graph(
 
 \item{col}{colors used for the states.}
 
-\item{\dots}{plotting options passed on to the plotting engine (see Details
+\item{\dots}{parameters are passed on to \code{\link[=policy_graph]{policy_graph()}} and as plotting options to the plotting engine (see Details
 section).}
 }
 \description{
