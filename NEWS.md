@@ -1,4 +1,4 @@
-# pomdp 0.99.3.1 (xx/xx/2022)
+# pomdp 1.0.0 (02/23/2022)
 
 * POMDP objects now have no list element model, but are the model list directly.
 * moved pomdp-solve to package pomdpSolve.
