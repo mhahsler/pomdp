@@ -6,7 +6,7 @@
 #' A simple implementation of value iteration and modified policy iteration.
 #'
 #' @family solver
-#' @familiy MDP
+#' @family MDP
 #' 
 #' @param model a POMDP problem specification created with [POMDP()].
 #'   Alternatively, a POMDP file or the URL for a POMDP file can be specified.

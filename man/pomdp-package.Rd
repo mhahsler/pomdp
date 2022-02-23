@@ -5,12 +5,13 @@
 \alias{pomdp-package}
 \title{pomdp: Solver for Partially Observable Markov Decision Processes (POMDP)}
 \description{
-Provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Processes (POMDP) models solved using pomdp-solve or SARSOP using a variety of exact and approximate value iteration algorithms.
+Provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Process (POMDP) models. Interfaces for various exact and approximate solution algorithms are available including value iteration, Point-Based Value Iteration (PBVI) and Successive Approximations of the Reachable Space under Optimal Policies (SARSOP).
 }
 \section{Key functions}{
 
 \itemize{
-\item \code{\link[=solve_POMDP]{solve_POMDP()}}, \code{\link[=solve_MDP]{solve_MDP()}}
+\item Problem specification: \link{POMDP}, \link{MDP}
+\item Solvers: \code{\link[=solve_POMDP]{solve_POMDP()}}, \code{\link[=solve_MDP]{solve_MDP()}}, \code{\link[=solve_SARSOP]{solve_SARSOP()}}
 }
 }
 
