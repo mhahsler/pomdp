@@ -115,7 +115,7 @@
 #' more details and an example.
 #'
 #' @family POMDP
-#' 
+#'
 #' @param states a character vector specifying the names of the states. Note that
 #' state names have to start with a letter.
 #' @param actions a character vector specifying the names of the available actions.
@@ -415,33 +415,35 @@ check_and_fix_MDP <- function(x) {
 
 #' @export
 print.POMDP <- function(x, ...) {
-  cat(paste(class(x), collapse = ", "),
+  writeLines(paste(paste(class(x), collapse = ", "),
     "-",
-    x$name,
-    "\n")
+    x$name))
   
   if (!is.null(x$discount))
-    cat("  Discount factor:",
-      paste(x$discount, collapse = "+"),
-      "\n")
+    writeLines(sprintf("  Discount factor: %s",
+      paste(x$discount, collapse = "+")))
   
   if (!is.null(x$horizon))
-    cat("  Horizon:",
-      paste(x$horizon, collapse = " + "),
-      "epochs\n")
-    
-    if (!is.null(x$solution))
-      cat(
-        "  Solved. Solution converged:",
-        x$solution$converged,
-        "\n",
-        " Total expected reward (for start probabilities):",
-        x$solution$total_expected_reward,
-        "\n"
+    writeLines(sprintf("  Horizon: %s epochs",
+      paste(x$horizon, collapse = " + ")))
+  
+  if (!is.null(x$solution))
+    writeLines(c(
+      sprintf("  Solved. Solution converged: %s",
+        x$solution$converged),
+      sprintf(
+        "  Total expected reward (for start probabilities): %f",
+        x$solution$total_expected_reward
       )
-    
-    cat("  List components:", paste(sQuote(names(x)), collapse = ", "),
-      "\n")
+    ))
+  
+  writeLines(strwrap(
+    paste("List components:", paste(sQuote(names(
+      x
+    )), collapse = ", "), "\n"),
+    indent = 2,
+    exdent = 4
+  ))
 }
 
 
