@@ -34,7 +34,7 @@ discount factor specified in \code{model} will be used.}
 
 \item{terminal_values}{a vector with the terminal utility values for each state or a
 matrix specifying the terminal rewards via a terminal value function (e.g.,
-the alpha component produced by \code{\link[=solve_POMDP]{solve_POMDP()}}).  If \code{NULL}, then, if available,
+the alpha components produced by \code{\link[=solve_POMDP]{solve_POMDP()}}).  If \code{NULL}, then, if available,
 the terminal values specified in \code{model} will be used or a vector with all 0s otherwise.}
 
 \item{method}{string; one of the following solution methods: \code{"grid"},
@@ -61,7 +61,7 @@ solver output (\code{solver_output}). The solution is a list with elements:
 \item \code{pg}, \code{initial_pg_node} a list representing the policy graph. A converged solution has
 only a single list elements.
 \item \code{belief_states} used belief states.
-\item \code{alpha} hyperplanes for belief states used in the policy graph.
+\item \code{alpha} value function as hyperplanes representing the nodes in the policy graph.
 \item \code{policy} the policy.
 }
 }
@@ -331,7 +331,6 @@ Other policy:
 \code{\link{optimal_action}()},
 \code{\link{plot_policy_graph}()},
 \code{\link{plot_value_function}()},
-\code{\link{policy_graph}()},
 \code{\link{policy}()},
 \code{\link{reward}()},
 \code{\link{solve_SARSOP}()}

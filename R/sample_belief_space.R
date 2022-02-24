@@ -23,6 +23,7 @@
 #' @param n size of the sample.
 #' @param method character string specifying the sampling strategy. Available
 #' are `"random"`, `"regular"`, and `"vertices"`.
+#' @param ... further arguments are ignored.
 #' @return Returns a matrix. Each row is a sample from the belief space.
 #' @author Michael Hahsler
 #' @references Luc Devroye, Non-Uniform Random Variate Generation, Springer
@@ -41,7 +42,7 @@ sample_belief_space <-
   function(model,
     projection = NULL,
     n = 1000,
-    method = "random") {
+    method = "random", ...) {
     method <-
       match.arg(method, choices = c("random", "regular", "vertices"))
     

@@ -21,8 +21,9 @@ For converged, infinite-horizon problems solutions, a list with only the
 converged solution is produced.
 The policy is a data.frame consisting o:
 \itemize{
-\item Part 1: The value function with one column per state. (For MDPs this is just
-one column with the state).
+\item Part 1: The value function with one column per state.
+For POMDPs these are alpha vectors and for MDPs this is just
+one column with the state.
 \item Part 2: One column with the optimal action.
 }
 }
@@ -49,7 +50,6 @@ Other policy:
 \code{\link{optimal_action}()},
 \code{\link{plot_policy_graph}()},
 \code{\link{plot_value_function}()},
-\code{\link{policy_graph}()},
 \code{\link{reward}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()}

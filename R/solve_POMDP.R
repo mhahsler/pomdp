@@ -102,7 +102,7 @@
 #' discount factor specified in `model` will be used.
 #' @param terminal_values a vector with the terminal utility values for each state or a
 #' matrix specifying the terminal rewards via a terminal value function (e.g.,
-#' the alpha component produced by [solve_POMDP()]).  If `NULL`, then, if available,
+#' the alpha components produced by [solve_POMDP()]).  If `NULL`, then, if available,
 #' the terminal values specified in `model` will be used or a vector with all 0s otherwise. 
 #' @param digits precision used when writing POMDP files (see
 #' [write_POMDP()]).
@@ -119,7 +119,7 @@
 #' - `pg`, `initial_pg_node` a list representing the policy graph. A converged solution has
 #' only a single list elements.
 #' - `belief_states` used belief states.
-#' - `alpha` hyperplanes for belief states used in the policy graph.
+#' - `alpha` value function as hyperplanes representing the nodes in the policy graph.
 #' - `policy` the policy.
 #' @author Hossein Kamalzadeh, Michael Hahsler
 #' @references

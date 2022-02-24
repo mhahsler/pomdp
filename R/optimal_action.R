@@ -8,7 +8,7 @@
 #' @param model a solved [POMDP].
 #' @param belief The belief (probability distribution over the states) as a
 #' vector or a matrix with multiple belief states as rows.
-#' @param epoch what epoch of the policy should be used.
+#' @param epoch what epoch of the policy should be used. Use 1 for converged policies.
 #' @return The name of the optimal action.
 #' @author Michael Hahsler
 #' @examples

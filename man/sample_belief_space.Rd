@@ -4,7 +4,7 @@
 \alias{sample_belief_space}
 \title{Sample from the Belief Space}
 \usage{
-sample_belief_space(model, projection = NULL, n = 1000, method = "random")
+sample_belief_space(model, projection = NULL, n = 1000, method = "random", ...)
 }
 \arguments{
 \item{model}{a unsolved or solved \link{POMDP}.}
@@ -17,6 +17,8 @@ projection.}
 
 \item{method}{character string specifying the sampling strategy. Available
 are \code{"random"}, \code{"regular"}, and \code{"vertices"}.}
+
+\item{...}{further arguments are ignored.}
 }
 \value{
 Returns a matrix. Each row is a sample from the belief space.

@@ -1,3 +1,8 @@
+# pomdp 1.0.0-1 (xx/xx/2022)
+
+* estimate_belief_for_nodes() is now exposed and the code has been improved.
+
+
 # pomdp 1.0.0 (02/23/2022)
 
 * POMDP objects now have no list element model, but are the model list directly.

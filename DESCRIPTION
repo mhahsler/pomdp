@@ -1,7 +1,7 @@
 Package: pomdp
 Title: Solver for Partially Observable Markov Decision Processes (POMDP)
-Version: 1.0.0
-Date: 2022-02-23
+Version: 1.0.0-1
+Date: 2022-xx-xx
 Authors@R: 
       c(person(given = "Michael",
              family = "Hahsler",
@@ -42,7 +42,6 @@ Collate:
     'plot_policy_graph.R'
     'plot_value_function.R'
     'policy.R'
-    'policy_graph.R'
     'print.text.R'
     'read_write_POMDP.R'
     'read_write_pomdp_solve.R'

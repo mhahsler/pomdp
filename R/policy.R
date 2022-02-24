@@ -7,8 +7,9 @@
 #' converged solution is produced.
 #' The policy is a data.frame consisting o:
 #'
-#' * Part 1: The value function with one column per state. (For MDPs this is just
-#' one column with the state).
+#' * Part 1: The value function with one column per state. 
+#'   For POMDPs these are alpha vectors and for MDPs this is just
+#'   one column with the state.
 #'
 #' * Part 2: One column with the optimal action.
 #'

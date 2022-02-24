@@ -21,8 +21,8 @@ plot_value_function(
 
 \item{projection}{index or name of two states for the projection.}
 
-\item{epoch}{the value function of what epoch should be plotted? Ignored
-for infinite-horizon solutions.}
+\item{epoch}{the value function of what epoch should be plotted? Use 1 for
+converged policies.}
 
 \item{ylim}{the y limits of the plot.}
 
@@ -61,7 +61,6 @@ plot_value_function(sol, epoch = 3, ylim = c(-5, 25))
 Other policy: 
 \code{\link{optimal_action}()},
 \code{\link{plot_policy_graph}()},
-\code{\link{policy_graph}()},
 \code{\link{policy}()},
 \code{\link{reward}()},
 \code{\link{solve_POMDP}()},

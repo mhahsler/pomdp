@@ -12,7 +12,7 @@
 #' @param belief specification of the current belief state (see argument start
 #' in [POMDP] for details). By default the belief state defined in
 #' the model as start is used.
-#' @param epoch return reward for this epoch. Default is the first epoch.
+#' @param epoch return reward for this epoch. Use 1 for converged policies.
 #' 
 #' @return A list with the components 
 #' \item{reward}{the total expected reward

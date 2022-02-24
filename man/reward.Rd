@@ -13,7 +13,7 @@ reward(x, belief = NULL, epoch = 1)
 in \link{POMDP} for details). By default the belief state defined in
 the model as start is used.}
 
-\item{epoch}{return reward for this epoch. Default is the first epoch.}
+\item{epoch}{return reward for this epoch. Use 1 for converged policies.}
 }
 \value{
 A list with the components
@@ -56,7 +56,6 @@ Other policy:
 \code{\link{optimal_action}()},
 \code{\link{plot_policy_graph}()},
 \code{\link{plot_value_function}()},
-\code{\link{policy_graph}()},
 \code{\link{policy}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()}

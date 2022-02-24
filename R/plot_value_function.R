@@ -8,8 +8,8 @@
 #'
 #' @param model a solved [POMDP].
 #' @param projection index or name of two states for the projection.
-#' @param epoch the value function of what epoch should be plotted? Ignored
-#' for infinite-horizon solutions.
+#' @param epoch the value function of what epoch should be plotted? Use 1 for
+#'   converged policies.
 #' @param ylim the y limits of the plot.
 #' @param legend logical; add a legend?
 #' @param col potting colors.

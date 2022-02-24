@@ -2,6 +2,8 @@
 % Please edit documentation in R/plot_policy_graph.R
 \name{plot_policy_graph}
 \alias{plot_policy_graph}
+\alias{policy_graph}
+\alias{estimate_belief_for_nodes}
 \title{Visualize a POMDP Policy Graph}
 \usage{
 plot_policy_graph(
@@ -12,11 +14,16 @@ plot_policy_graph(
   col = NULL,
   ...
 )
+
+policy_graph(x, belief = TRUE, col = NULL, ...)
+
+estimate_belief_for_nodes(x, method = c("regular", "random", "simulate"), ...)
 }
 \arguments{
-\item{x}{object of class \link{POMDP} containing a solved POMDP problem.}
+\item{x}{object of class \link{POMDP} containing a solved and converged POMDP problem.}
 
-\item{belief}{logical; display belief proportions as a pie chart in each node. This requires belief space sampling and may be slow.}
+\item{belief}{logical; estimate belief proportions? If \code{TRUE} then \code{estimate_belief_for_nodes()} is used
+and the belief is visualized as a pie chart in each node.}
 
 \item{legend}{logical; display a legend for colors used belief proportions?}
 
@@ -24,30 +31,42 @@ plot_policy_graph(
 
 \item{col}{colors used for the states.}
 
-\item{\dots}{parameters are passed on to \code{\link[=policy_graph]{policy_graph()}} and as plotting options to the plotting engine (see Details
-section).}
+\item{...}{parameters are passed on to \code{policy_graph()}, \code{estimate_belief_for_nodes()} and the functions
+they use. Also, plotting options are passed on to the plotting engine \code{\link[igraph:plot.igraph]{igraph::plot.igraph()}}
+or \code{\link[visNetwork:visNetwork-igraph]{visNetwork::visIgraph()}}.}
+
+\item{method}{sampling method used to estimate the belief. Methods "regular"
+and "random" call \code{\link[=sample_belief_space]{sample_belief_space()}}
+and method "simulate" calls \code{\link[=simulate_POMDP]{simulate_POMDP()}}. Further arguments are passed on to these
+functions.}
+}
+\value{
+\itemize{
+\item \code{plot_policy_graph()} returns invisibly what the plotting engine returns.
+\item \code{policy_graph()} returns the policy graph as an igraph object.
+\item \code{estimate_belief_for_nodes()} returns a matrix with the central belief for each node.
+}
 }
 \description{
-The function plots the POMDP policy graph in a POMDP. It
+The function plots the POMDP policy graph in a converged POMDP solution. It
 uses \code{plot} in \pkg{igraph} with appropriate plotting options.
 }
 \details{
-The function currently only plots converged policy graphs.
+The function only plots \strong{converged policy graphs.}
+The policy graph nodes represent the segments in the value function. Each
+segment represents one or more believe states. If available, a pie chart (or the color) in each node
+represent the average belief of the belief states
+belonging to the node/segment. This can help with interpreting the policy graph.
 
-The policy graph nodes represent segments in the value function. Each
-segment represents one or more believe states. The pie chart in each node
-(if available) represent the average belief proportions of the belief states
-belonging to the node/segment.
+First, the policy in the solved POMDP is converted into an \link{igraph} object using \code{policy_graph()}.
+Average beliefs for the graph nodes are estimated using \code{estimate_belief_for_node()} and then the igraph
+object is visualized using the plotting function \code{\link[igraph:plot.igraph]{igraph::plot.igraph()}} or,
+for interactive graphs, \code{\link[visNetwork:visNetwork-igraph]{visNetwork::visIgraph()}}.
 
-The built in plotting engines are \pkg{igraph} and \pkg{visNetwork}. The
-additional arguments specified in \code{...} are passed on to the engine
-plotting function.  For \pkg{igraph} this is
-\code{\link[igraph:plot.igraph]{igraph::plot.igraph()}}. For \pkg{visNetwork} this is
-\code{\link[visNetwork:visNetwork-igraph]{visNetwork::visIgraph()}}.
-
-Other plotting libraries can be used by creating a policy graph (as an
-igraph object) using \code{\link[=policy_graph]{policy_graph()}} and converting it into a
-suitable representation for that library.
+\code{estimate_belief_for_nodes()} estimated the central belief for each node/segment of the value function
+by generating/sampling a large set of possible belief points, assigning them to the segments and then averaging
+the belief over the points assigned to each segment. If no belief point is generated for a segment, then a
+warning is produced. In this case, the number of sampled points can be increased.
 }
 \examples{
 data("Tiger")
@@ -87,24 +106,30 @@ plot(pg,
 ## changes labels
 plot(pg,
   edge.label = abbreviate(E(pg)$label),
-  vertex.label = sol$solution$pg$action,
-  vertex.size = 10)
+  vertex.label = V(pg)$label,
+  vertex.size = 20)
 
-## plot interactive graphs using the visNetwork library
+## plot interactive graphs using the visNetwork library.
+## Note: the pie chart representation is not available, but colors are used instead.
 plot_policy_graph(sol, engine = "visNetwork")
 
 ## add smooth edges and a layout (note, engine can be abbreviated)
 plot_policy_graph(sol, engine = "vis", layout = "layout_in_circle", smooth = TRUE)
+
+## estimate the central belief for the graph nodes. We use here method "simulate".
+## For infinite horizon problems, the simulation horizon  has to be specified.
+## See simulate_POMDP().
+estimate_belief_for_nodes(sol, method = "simulate", horizon = 10)
 }
 \seealso{
 Other policy: 
 \code{\link{optimal_action}()},
 \code{\link{plot_value_function}()},
-\code{\link{policy_graph}()},
 \code{\link{policy}()},
 \code{\link{reward}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()}
 }
 \concept{policy}
+\keyword{graphs}
 \keyword{hplot}

@@ -12,7 +12,7 @@ optimal_action(model, belief, epoch = 1)
 \item{belief}{The belief (probability distribution over the states) as a
 vector or a matrix with multiple belief states as rows.}
 
-\item{epoch}{what epoch of the policy should be used.}
+\item{epoch}{what epoch of the policy should be used. Use 1 for converged policies.}
 }
 \value{
 The name of the optimal action.
@@ -50,7 +50,6 @@ optimal_action(sol, "tiger-right", epoch = 10)
 Other policy: 
 \code{\link{plot_policy_graph}()},
 \code{\link{plot_value_function}()},
-\code{\link{policy_graph}()},
 \code{\link{policy}()},
 \code{\link{reward}()},
 \code{\link{solve_POMDP}()},
