@@ -315,7 +315,7 @@ check_and_fix_MDP <- function(x) {
     
     # start
     if (is.numeric(start) && length(start) == length(states)) {
-      if (sum(start) != 1)
+      if (zapsmall(sum(start)) != 1)
         stop("The start probability vector does not add up to 1.")
       if (is.null(names(start)))
         names(start) <- states
