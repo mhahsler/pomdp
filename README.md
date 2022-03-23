@@ -17,7 +17,7 @@ The package provides the following algorithms:
 
 * Approximate value iteration
   - __Finite grid algorithm__ (Cassandra 2015), a variation of point-based value iteration to solve larger POMDPs (__PBVI__; see Pineau 2003) without dynamic belief set expansion.
-  - __SARSOP__ (Kurniawati, Hsu and Lee 2008), point-based algorithm that approximates optimally reachable belief spaces for infinite-horizon problems (via package sarsop).
+  - __SARSOP__ (Kurniawati, Hsu and Lee 2008), point-based algorithm that approximates optimally reachable belief spaces for infinite-horizon problems (via package [sarsop](https://github.com/boettiger-lab/sarsop)).
 
 ## Installation
 
