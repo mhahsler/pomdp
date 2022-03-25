@@ -21,9 +21,9 @@ update_belief(
 Defaults to the start belief state specified in
 the model or "uniform".}
 
-\item{action}{the taken action.}
+\item{action}{the taken action. Can also be a vector of multiple actions or, if missing, then all actions are evaluated.}
 
-\item{observation}{the received observation.}
+\item{observation}{the received observation. Can also be a vector of multiple observations or, if missing, then all observations are evaluated.}
 
 \item{episode}{Use transition and observation matrices for the given episode
 for time-dependent POMDPs (see \link{POMDP}).}
@@ -32,6 +32,11 @@ for time-dependent POMDPs (see \link{POMDP}).}
 
 \item{drop}{logical; drop the result to a vector if only a single belief
 state is returned.}
+}
+\value{
+returns the updated belief state as a named vector.
+If \code{action} or \code{observations} is a vector with multiple elements ot missing, then a matrix with all
+resulting belief states is returned.
 }
 \description{
 Update the belief given a taken action and observation.

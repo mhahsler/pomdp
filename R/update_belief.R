@@ -40,13 +40,18 @@
 #' @param belief the current belief state.
 #' Defaults to the start belief state specified in
 #' the model or "uniform".
-#' @param action the taken action.
-#' @param observation the received observation.
+#' @param action the taken action. Can also be a vector of multiple actions or, if missing, then all actions are evaluated.
+#' @param observation the received observation. Can also be a vector of multiple observations or, if missing, then all observations are evaluated.
 #' @param episode Use transition and observation matrices for the given episode
 #' for time-dependent POMDPs (see [POMDP]).
 #' @param digits round decimals.
 #' @param drop logical; drop the result to a vector if only a single belief
 #' state is returned.
+#' 
+#' @returns returns the updated belief state as a named vector. 
+#'   If `action` or `observations` is a vector with multiple elements ot missing, then a matrix with all
+#'   resulting belief states is returned.
+#' 
 #' @author Michael Hahsler
 #' @examples
 #' data(Tiger)
