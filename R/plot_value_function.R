@@ -16,6 +16,9 @@
 #' @param lwd line width.
 #' @param lty line type.
 #' @param ... additional arguments are passed on to [stats::line()]`.
+#' 
+#' @returns the function has no return value.
+#' 
 #' @author Michael Hahsler
 #' @keywords hplot
 #' @examples
@@ -33,6 +36,14 @@
 #' plot_value_function(sol, epoch = 1, ylim = c(-5, 25))
 #' plot_value_function(sol, epoch = 2, ylim = c(-5, 25))
 #' plot_value_function(sol, epoch = 3, ylim = c(-5, 25))
+#' 
+#' # using ggplot2
+#' # library(ggplot2)
+#' # pol <- policy(sol)[[3]]
+#' # ggplot(pol) + 
+#' #   geom_segment(aes(x = 0, y = `tiger-left`, xend=1, yend=`tiger-right`, color = action)) + 
+#' #   coord_cartesian(ylim = c(-5, 15)) + ylab("Reward") + xlab("Belief")
+#' 
 #' @import graphics
 #' @export
 plot_value_function <-
@@ -136,12 +147,7 @@ plot_value_function <-
           title = "Action",
           ...
         )
-      
-      ### use ggplot instead
-      #alpha <- cbind(as.data.frame(alpha), Action = factor(paste0(1:nrow(alpha), ": ", pg[,"action"])))
-      #ggplot() + geom_segment(data = alpha, mapping =
-      #    aes_(x=0, y=as.name(colnames(alpha)[1]), xend=1, yend=as.name(colnames(alpha)[2]), color = quote(Action))
-      #  ) + coord_cartesian(ylim = c(0, 15)) +
-      #   ylab("Reward") + xlab("Belief")
     }
+    
+    invisible(NULL)
   }

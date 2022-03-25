@@ -36,6 +36,9 @@ converged policies.}
 
 \item{...}{additional arguments are passed on to \code{\link[stats:line]{stats::line()}}`.}
 }
+\value{
+the function has no return value.
+}
 \description{
 Plots the value function of a POMDP solution as a line plot. The solution is
 projected on two states (i.e., the belief for the other states is held
@@ -56,6 +59,14 @@ sol
 plot_value_function(sol, epoch = 1, ylim = c(-5, 25))
 plot_value_function(sol, epoch = 2, ylim = c(-5, 25))
 plot_value_function(sol, epoch = 3, ylim = c(-5, 25))
+
+# using ggplot2
+# library(ggplot2)
+# pol <- policy(sol)[[3]]
+# ggplot(pol) + 
+#   geom_segment(aes(x = 0, y = `tiger-left`, xend=1, yend=`tiger-right`, color = action)) + 
+#   coord_cartesian(ylim = c(-5, 15)) + ylab("Reward") + xlab("Belief")
+
 }
 \seealso{
 Other policy: 
