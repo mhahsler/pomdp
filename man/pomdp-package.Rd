@@ -3,7 +3,7 @@
 \docType{package}
 \name{pomdp-package}
 \alias{pomdp-package}
-\title{pomdp: Solver for Partially Observable Markov Decision Processes (POMDP)}
+\title{pomdp: Infrastructure for Partially Observable Markov Decision Processes (POMDP)}
 \description{
 Provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Process (POMDP) models. Interfaces for various exact and approximate solution algorithms are available including value iteration, Point-Based Value Iteration (PBVI) and Successive Approximations of the Reachable Space under Optimal Policies (SARSOP).
 }

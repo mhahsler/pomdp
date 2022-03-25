@@ -1,6 +1,9 @@
-# pomdp 1.0.0-1 (xx/xx/2022)
+# pomdp 1.0.1 (03/25/2022)
 
+* Fixed rounding issue on some architectures.
+* Fixed bug in write_POMDP() (reported by emile-pelletier-gc).
 * estimate_belief_for_nodes() is now exposed and the code has been improved.
+
 
 
 # pomdp 1.0.0 (02/23/2022)
