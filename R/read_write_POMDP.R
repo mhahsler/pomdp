@@ -5,11 +5,13 @@ format_fixed <- function(x, digits = 7, debug = "unknown") {
   if (is.null(x))
     stop("missing field ", debug)
   
-  if (is.vector(x))
+  if (is.vector(x)) {
+    if(!is.numeric(x))
+      stop("Write_POMDP expects numbers, but got: ", dQuote(paste(x, collapse = ", ")))
     paste(sprintf(paste0("%.", digits, "f"), x), collapse = " ")
-  else if (is.matrix(x))
+  } else if (is.matrix(x)) {
     paste(apply(x, MARGIN = 1, format_fixed, digits = digits), collapse = "\n")
-  else
+  } else
     stop("formating not implemented for ", class(x), " in field ", debug)
 }
 
@@ -82,7 +84,7 @@ write_POMDP <- function(x, file, digits = 7) {
       if (!is.null(start)) {
         ## if the starting beliefs are given by enumerating the probabilities for each state
         if (is.numeric(start)) {
-          if (length(start) == length(states) && sum(start) == 1) {
+          if (length(start) == length(states) && zapsmall(sum(start) - 1) == 0) {
             code <-
               paste0(code,
                 "start: ",
@@ -204,13 +206,14 @@ write_POMDP <- function(x, file, digits = 7) {
         if (!identical(names(observation_prob), '*') &&
             !setequal(names(observation_prob), actions))
           stop("the names of given observation probability matrices do not match the actions!")
-      }
-      # writing the observation probability matrices
-      for (a in names(observation_prob)) {
-        code <- paste0(code, "O: ", a, "\n")
-        code <-
-          paste0(code,
-            format_POMDP_matrix(observation_prob[[a]], "O", digits))
+        
+        # writing the observation probability matrices
+        for (a in names(observation_prob)) {
+          code <- paste0(code, "O: ", a, "\n")
+          code <-
+            paste0(code,
+              format_POMDP_matrix(observation_prob[[a]], "O", digits))
+        }
       }
       
       ### Rewards/Costs
