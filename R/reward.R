@@ -13,15 +13,12 @@
 #' the model as start is used. Multiple belief states can be specified as rows in a matrix.
 #' @param epoch return reward for this epoch. Use 1 for converged policies.
 #' 
-#' @return `reward()` returns a vector of reward values, one for each belief if a matrix is specified.
+#' @returns `reward()` returns a vector of reward values, one for each belief if a matrix is specified.
 #' 
 #' `reward_node_action()` returns a list with the components 
-#' \item{reward}{the total expected reward
-#' given a belief and epoch. } 
-#' \item{belief_state}{the belief state specified
-#' in `belief`.} 
-#' \item{pg_node}{the policy node that represents the belief
-#' state.} 
+#' \item{belief_state}{the belief state specified in `belief`.} 
+#' \item{reward}{the total expected reward given a belief and epoch. } 
+#' \item{pg_node}{the policy node that represents the belief state.} 
 #' \item{action}{the optimal action.}
 #' @author Michael Hahsler
 #' @examples
