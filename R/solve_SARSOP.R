@@ -175,7 +175,7 @@ if (!is.null(terminal_values))
     class = "POMDP_solution"
   )
   
-  model$solution$total_expected_reward = reward(model, model$start)$reward
+  model$solution$total_expected_reward = reward(model, model$start)
   
   model
 }

@@ -92,8 +92,7 @@ plot_belief_space(sol, sample = simulate_POMDP(Three_doors, n = 50, horizon = 10
 # plot a 3-state belief space using ggtern (ggplot2)
 # library(ggtern)
 # samp <- sample_belief_space(sol, n = 1000)
-# rew <- reward(sol, belief = samp)
-# df <- cbind(as.data.frame(rew$belief), reward = rew$reward)
+# df <- cbind(as.data.frame(samp), reward = reward(sol, belief = samp))
 #
 # ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) + 
 #   geom_point(aes(color = reward))

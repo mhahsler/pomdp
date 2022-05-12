@@ -2,21 +2,26 @@
 % Please edit documentation in R/reward.R
 \name{reward}
 \alias{reward}
+\alias{reward_node_action}
 \title{Calculate the Reward for a POMDP Solution}
 \usage{
 reward(x, belief = NULL, epoch = 1)
+
+reward_node_action(x, belief = NULL, epoch = 1)
 }
 \arguments{
 \item{x}{a solved \link{POMDP} object.}
 
 \item{belief}{specification of the current belief state (see argument start
 in \link{POMDP} for details). By default the belief state defined in
-the model as start is used.}
+the model as start is used. Multiple belief states can be specified as rows in a matrix.}
 
 \item{epoch}{return reward for this epoch. Use 1 for converged policies.}
 }
 \value{
-A list with the components
+\code{reward()} returns a vector of reward values, one for each belief if a matrix is specified.
+
+\code{reward_node_action()} returns a list with the components
 \item{reward}{the total expected reward
 given a belief and epoch. }
 \item{belief_state}{the belief state specified
@@ -27,11 +32,9 @@ state.}
 }
 \description{
 This function calculates the expected total reward for a POMDP solution
-given a starting belief state.
-}
-\details{
-The value is calculated using the value function stored in the POMDP
-solution.
+given a starting belief state. The value is calculated using the value function stored
+in the POMDP solution. In addition, the policy graph node that represents the belief state
+and the optimal action can also be returned using \code{reward_node_action()}.
 }
 \examples{
 data("Tiger")
@@ -51,11 +54,15 @@ reward(sol, belief = "tiger-left")
 # than 10 since the tiger problem resets and another game staring with
 # a uniform belief is played which produces additional reward.
 
+# return reward, the initial node in the policy graph and the optimal action for
+# two beliefs. 
+reward_node_action(sol, belief = rbind(c(.5, .5), c(.9, .1)))
+
 # manually combining reward with belief space sampling to show the value function
 # (color signifies the optimal action)
 samp <- sample_belief_space(sol, n = 200)
-rew <- reward(sol, belief = samp)
-plot(rew$belief[,"tiger-right"], rew$reward, col = rew$action, ylim = c(0, 10))
+rew <- reward_node_action(sol, belief = samp)
+plot(rew$belief[,"tiger-right"], rew$reward, col = rew$action, ylim = c(0, 15))
 legend(x = "top", legend = levels(rew$action), title = "action", col = 1:3, pch = 1)
 
 # this is the piecewise linear value function from the solution

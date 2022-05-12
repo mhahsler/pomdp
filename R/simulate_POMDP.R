@@ -1,3 +1,5 @@
+## TODO: Reimplement in C++
+
 #' Simulate Trajectories in a POMDP
 #'
 #' Simulate several trajectories through a POMDP. The start state for each
@@ -177,7 +179,7 @@ simulate_POMDP <-
         
         #if(solved) {
         # e <- .get_pg_index(model, j)
-        # a <- as.character(reward(model, b, e)$action)
+        # a <- as.character(reward_node_action(model, b, e)$action)
         #}else a <- sample(actions, 1)
         # this takes about 1/2 the time
         if (solved) {

@@ -136,7 +136,7 @@ sol <- solve_POMDP(model = Tiger, horizon = 3, method = "incprune")
 
 policy_graph(sol)
 
-plot_policy_graph(sol, layout = layout_as_tree)
+plot_policy_graph(sol)
 # Note: the first number in the node id is the epoch.
 
 }

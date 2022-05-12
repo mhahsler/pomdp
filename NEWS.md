@@ -2,6 +2,7 @@
 
 * policy_graph can now produce policy trees for finite-horizon problems.
 * Fixed bug with not using horizon in simulate_POMDP().
+* reward() and reward_node_action() have now been separated.
 
 # pomdp 1.0.1 (03/25/2022)
 

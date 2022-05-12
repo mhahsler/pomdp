@@ -7,7 +7,8 @@
 
 #' @param model a solved [POMDP].
 #' @param belief The belief (probability distribution over the states) as a
-#' vector or a matrix with multiple belief states as rows.
+#' vector or a matrix with multiple belief states as rows. If `NULL`, then the initial belief of the
+#' model is used.
 #' @param epoch what epoch of the policy should be used. Use 1 for converged policies.
 #' @return The name of the optimal action.
 #' @author Michael Hahsler
@@ -37,5 +38,6 @@
 #'
 #' @export
 optimal_action <-
-  function(model, belief, epoch = 1)
-    reward(model, belief = belief, epoch = epoch)[["action"]]
+  function(model, belief = NULL, epoch = 1) {
+    reward_node_action(model, belief = belief, epoch = epoch)[["action"]]
+}

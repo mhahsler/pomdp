@@ -397,7 +397,7 @@ estimate_belief_for_nodes <-
       simulate = simulate_POMDP(x, visited_beliefs = TRUE, ...)
     )
     
-    r <- reward(x, belief = belief_points, epoch = epoch)
+    r <- reward_node_action(x, belief = belief_points, epoch = epoch)
     belief <- t(sapply(
       1:nrow(alpha),
       FUN = function(i)

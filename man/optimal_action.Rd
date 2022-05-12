@@ -4,13 +4,14 @@
 \alias{optimal_action}
 \title{Optimal action for a belief}
 \usage{
-optimal_action(model, belief, epoch = 1)
+optimal_action(model, belief = NULL, epoch = 1)
 }
 \arguments{
 \item{model}{a solved \link{POMDP}.}
 
 \item{belief}{The belief (probability distribution over the states) as a
-vector or a matrix with multiple belief states as rows.}
+vector or a matrix with multiple belief states as rows. If \code{NULL}, then the initial belief of the
+model is used.}
 
 \item{epoch}{what epoch of the policy should be used. Use 1 for converged policies.}
 }

@@ -47,7 +47,7 @@ policy <- function(x) x$solution$policy
   lapply(
     seq_along(pg),
     FUN = function(i) {
-      rew <- reward(x, belief = bs, epoch = i)
+      rew <- reward_node_action(x, belief = bs, epoch = i)
       data.frame(
         state = colnames(bs),
         U = rew$reward,

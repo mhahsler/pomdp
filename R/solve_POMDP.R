@@ -543,7 +543,7 @@ solve_POMDP <- function(model,
   )
   
   ## add initial node and reward
-  rew <- reward(model, belief = model$start)
+  rew <- reward_node_action(model, belief = model$start)
   model$solution$initial_belief <- rew$belief
   model$solution$total_expected_reward <- rew$reward
   model$solution$initial_pg_node <- rew$pg_node
