@@ -100,7 +100,7 @@
 #'
 #' policy_graph(sol)
 #' 
-#' plot_policy_graph(sol, layout = layout_as_tree)
+#' plot_policy_graph(sol)
 #' # Note: the first number in the node id is the epoch.
 #' 
 #' @export
@@ -292,6 +292,7 @@ policy_graph_unconverged <- function(x, belief = TRUE, col = NULL, ...) {
   
   vertex_attr(policy_graph)$size <- rep(40, times = num_nodes)
   edge_attr(policy_graph)$arrow.size  <- rep(.5, times = num_edges)
+  policy_graph <- add_layout_(policy_graph, as_tree()) 
   
   policy_graph
 }
