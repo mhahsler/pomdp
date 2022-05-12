@@ -40,6 +40,16 @@
 #' # Note that in this case, the total discounted expected reward is greater
 #' # than 10 since the tiger problem resets and another game staring with
 #' # a uniform belief is played which produces additional reward.
+#'
+#' # manually combining reward with belief space sampling to show the value function
+#' # (color signifies the optimal action)
+#' samp <- sample_belief_space(sol, n = 200)
+#' rew <- reward(sol, belief = samp)
+#' plot(rew$belief[,"tiger-right"], rew$reward, col = rew$action, ylim = c(0, 10))
+#' legend(x = "top", legend = levels(rew$action), title = "action", col = 1:3, pch = 1)
+#' 
+#' # this is the piecewise linear value function from the solution
+#' plot_value_function(sol, ylim = c(0, 10))
 #' @export
 reward <- function(x, belief = NULL, epoch = 1) {
   .solved_POMDP(x)

@@ -48,8 +48,8 @@ policy(sol)
 \seealso{
 Other policy: 
 \code{\link{optimal_action}()},
-\code{\link{plot_policy_graph}()},
 \code{\link{plot_value_function}()},
+\code{\link{policy_graph}()},
 \code{\link{reward}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()}

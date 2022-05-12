@@ -1,10 +1,13 @@
+# pomdp 1.0.1-1 (xx/xx/xxxx)
+
+* policy_graph can now produce policy trees for finite-horizon problems.
+* Fixed bug with not using horizon in simulate_POMDP().
+
 # pomdp 1.0.1 (03/25/2022)
 
 * Fixed rounding issue on some architectures.
 * Fixed bug in write_POMDP() (reported by emile-pelletier-gc).
 * estimate_belief_for_nodes() is now exposed and the code has been improved.
-
-
 
 # pomdp 1.0.0 (02/23/2022)
 

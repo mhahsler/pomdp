@@ -1,9 +1,9 @@
-#' Visualize a POMDP Policy Graph
+#' POMDP Policy Graphs
 #'
-#' The function plots the POMDP policy graph in a converged POMDP solution. It
+#' The function creates and plots the POMDP policy graph in a converged POMDP solution and the 
+#' policy tree for a finite-horizon solution.
 #' uses `plot` in \pkg{igraph} with appropriate plotting options.
 #'
-#' The function only plots **converged policy graphs.**
 #' The policy graph nodes represent the segments in the value function. Each
 #' segment represents one or more believe states. If available, a pie chart (or the color) in each node
 #' represent the average belief of the belief states
@@ -16,7 +16,9 @@
 #'
 #' `estimate_belief_for_nodes()` estimated the central belief for each node/segment of the value function
 #' by generating/sampling a large set of possible belief points, assigning them to the segments and then averaging
-#' the belief over the points assigned to each segment. If no belief point is generated for a segment, then a
+#' the belief over the points assigned to each segment. 
+#' Additional parameters like the sample size `n` are passed on to [sample_belief_space()] or [simulate_POMDP()].
+#' If no belief point is generated for a segment, then a
 #' warning is produced. In this case, the number of sampled points can be increased.
 #'
 #' @family policy
@@ -34,17 +36,18 @@
 #'   or [visNetwork::visIgraph()].
 #'
 #' @returns
-#' - `plot_policy_graph()` returns invisibly what the plotting engine returns.
 #' - `policy_graph()` returns the policy graph as an igraph object.
+#' - `plot_policy_graph()` returns invisibly what the plotting engine returns.
 #' - `estimate_belief_for_nodes()` returns a matrix with the central belief for each node.
 #'
 #' @keywords hplot graphs
 #' @examples
 #' data("Tiger")
+#' 
+#' ## policy graphs for converged solutions
 #' sol <- solve_POMDP(model = Tiger)
 #' sol
 #'
-#' ## policy graph
 #' policy_graph(sol)
 #'
 #' ## visualization
@@ -67,7 +70,7 @@
 #'   vertex.label.cex = 2,
 #'   vertex.label.color = "white")
 #'
-#' ## plotting using the graph object
+#' ## plotting the igraph object directly
 #' ## (e.g., using the graph in the layout and to change the edge curvature)
 #' pg <- policy_graph(sol)
 #' plot(pg,
@@ -85,12 +88,223 @@
 #' plot_policy_graph(sol, engine = "visNetwork")
 #'
 #' ## add smooth edges and a layout (note, engine can be abbreviated)
-#' plot_policy_graph(sol, engine = "vis", layout = "layout_in_circle", smooth = TRUE)
+#' plot_policy_graph(sol, engine = "visNetwork", layout = "layout_in_circle", smooth = TRUE)
 #'
 #' ## estimate the central belief for the graph nodes. We use here method "simulate".
 #' ## For infinite horizon problems, the simulation horizon  has to be specified.
 #' ## See simulate_POMDP().
 #' estimate_belief_for_nodes(sol, method = "simulate", horizon = 10)
+#'
+#' ## policy trees for finite-horizon solutions
+#' sol <- solve_POMDP(model = Tiger, horizon = 3, method = "incprune")
+#'
+#' policy_graph(sol)
+#' 
+#' plot_policy_graph(sol, layout = layout_as_tree)
+#' # Note: the first number in the node id is the epoch.
+#' 
+#' @export
+policy_graph <- function(x, belief = TRUE, col = NULL, ...) {
+  .solved_POMDP(x)
+  
+  ## FIXME: try to make a graph from a not converged policy
+  if (!x$solution$converged || length(x$solution$pg) > 1)
+    return(policy_graph_unconverged(x, belief, col, ...))
+  
+  # create policy graph and belief proportions (average belief for each alpha vector)
+  pg <- x$solution$pg[[1]]
+  
+  if (belief) {
+    # FIXME: for pomdp-solve, we could seed with x$solution$belief_states
+    bp <- estimate_belief_for_nodes(x, ...)
+    
+    # missing belief points?
+    missing_bp <- which(apply(is.na(bp), MARGIN = 1, any))
+    if (length(missing_bp) > 0)
+      warning(
+        "No belief points sampled for policy graph node(s): ",
+        paste(missing_bp, collapse = ", "),
+        ". Increase the number for parameter belief (number of sampled points)."
+      )
+  }
+  
+  # producing a list containing arcs
+  l <- list()
+  list_of_arcs <- NULL
+  #observations <- colnames(pg)[-c(1,2)]
+  observations <- x$observations
+  number_of_observations <- length(observations)
+  l <- lapply(
+    1:number_of_observations,
+    FUN = function(i)
+      data.frame(
+        from = pg$node,
+        to = pg[[observations[i]]],
+        label = observations[i]
+      )
+  )
+  
+  l <- do.call(rbind, l)
+  l <- l[!is.na(l$to), ] # remove links to nowhere ('-' in pg)
+  
+  # creating the initial graph
+  policy_graph <- graph.edgelist(as.matrix(l[, 1:2]))
+  edge.attributes(policy_graph) <- list(label = l$label)
+  
+  ### Note: the space helps with moving the id away from the pie cut.
+  init <- rep(":   ", nrow(pg))
+  init[x$solution$initial_pg_node] <- ": initial belief"
+  
+  V(policy_graph)$label <- paste0(pg$node, init, "\n", pg$action)
+  
+  # add belief proportions
+  ### FIXME: Add gray for missing points instead of a uniform distribution
+  if (belief) {
+    pie_values <-
+      lapply(
+        seq_len(nrow(bp)),
+        FUN = function(i)
+          if (any(is.na(bp[i, ])))
+            structure(rep(1 / ncol(bp), times = ncol(bp)), names = colnames(bp))
+        else
+          bp[i, ]
+      )
+    
+    ### Set1 from Colorbrewer
+    number_of_states <- length(x$states)
+    col <- .get_colors_descrete(number_of_states, col)
+    
+    V(policy_graph)$shape <- "pie"
+    V(policy_graph)$pie = pie_values
+    V(policy_graph)$pie.color = list(col)
+  }
+  
+  V(policy_graph)$size <- 40
+  E(policy_graph)$arrow.size  <- .5
+  
+  policy_graph
+}
+
+policy_graph_unconverged <- function(x, belief = TRUE, col = NULL, ...) {
+  .solved_POMDP(x)
+  
+  pg <- x$solution$pg
+  observations <- x$observations
+  epochs <- length(pg)
+  
+  # add episode to the node ids
+  for(i in seq(epochs)) pg[[i]] <- cbind(pg[[i]], epoch = i)
+  pg <- do.call(rbind, pg)
+  
+  pg[["node"]] <- paste0(pg[["epoch"]], "-", pg[["node"]])
+  for(o in observations) {
+    pg[[o]] <- paste0(pg[["epoch"]] + 1L, "-", pg[[o]])
+    pg[[o]][pg[["epoch"]] == epochs] <- NA
+  }
+  
+  ## remove unused nodes
+  used <- paste0("1-", x$solution$initial_pg_node)
+  for(i in seq(epochs)) {
+    used <- append(used, unlist(pg[pg[["epoch"]] == i & pg[["node"]] %in% used, observations]))
+  }
+  
+  used <- pg[["node"]] %in% used
+  pg <- pg[used,]
+  num_nodes <- nrow(pg)
+  
+  #pg[["node"]] <- factor(pg[["node"]])
+  #for(o in observations) 
+  #  pg[[o]] <- factor(pg[[o]], levels = levels(pg[["node"]]))
+  
+  
+  
+  # producing a list containing arcs
+  l <- list()
+  list_of_arcs <- NULL
+  #observations <- colnames(pg)[-c(1,2)]
+  observations <- x$observations
+  number_of_observations <- length(observations)
+  l <- lapply(
+    1:number_of_observations,
+    FUN = function(i)
+      data.frame(
+        from = pg[["node"]],
+        to = pg[[observations[i]]],
+        label = observations[i]
+      )
+  )
+  
+  l <- do.call(rbind, l)
+  l <- l[!is.na(l$to), ] # remove links to nowhere ('-' in pg)
+  num_edges <- nrow(l)
+  
+  # creating the initial graph
+  policy_graph <- graph_from_edgelist(as.matrix(l[, 1:2]))
+  edge_attr(policy_graph) <- list(label = l$label)
+  
+  ### Note: the space helps with moving the id away from the pie cut.
+  #init <- rep(":   ", nrow(pg))
+  #init[1] <- ": initial belief"
+  
+  m <- match(vertex_attr(policy_graph)$name, pg[["node"]]) 
+  vertex_attr(policy_graph)$name <- paste0(vertex_attr(policy_graph)$name, ":\n", pg[["action"]][m])
+  
+  # add belief proportions
+  ### FIXME: Add gray for missing points instead of a uniform distribution
+  if (belief) {
+    # FIXME: for pomdp-solve, we could seed with x$solution$belief_states
+    bp <-
+      lapply(
+        seq(epochs),
+        FUN = function(e)
+          estimate_belief_for_nodes(x, epoch = e, ...)
+      )
+    bp <- do.call(rbind, bp)
+    bp <- bp[used, ]
+    
+    # missing belief points?
+    missing_bp <- which(apply(is.na(bp), MARGIN = 1, any))
+    if (length(missing_bp) > 0)
+      warning(
+        "No belief points sampled for policy graph node(s): ",
+        paste(missing_bp, collapse = ", "),
+        ". Increase the number for parameter belief (number of sampled points)."
+      )
+    
+    pie_values <-
+      lapply(
+        seq_len(nrow(bp)),
+        FUN = function(i)
+          if (any(is.na(bp[i, ])))
+            structure(rep(1 / ncol(bp), times = ncol(bp)), names = colnames(bp))
+        else
+          bp[i, ]
+      )
+    
+    ### Set1 from Colorbrewer
+    number_of_states <- length(x$states)
+    col <- .get_colors_descrete(number_of_states, col)
+    
+    vertex_attr(policy_graph)$shape <- rep("pie", times = num_nodes)
+    vertex_attr(policy_graph)$pie = pie_values[m]
+    vertex_attr(policy_graph)$pie.color = rep(list(col), times = num_nodes)
+  }
+  
+  vertex_attr(policy_graph)$size <- rep(40, times = num_nodes)
+  edge_attr(policy_graph)$arrow.size  <- rep(.5, times = num_edges)
+  
+  policy_graph
+}
+
+
+
+# estimate central beliefs for each alpha vector (infinite horizon)
+# sample points and then average over each alpha vector.
+# TODO: finite horizon
+# TODO: we could also calculate this with some linear algebra
+
+
+#' @rdname policy_graph
 #' @export
 plot_policy_graph <- function(x,
   belief = TRUE,
@@ -159,114 +373,21 @@ plot_policy_graph <- function(x,
   cu
 }
 
-
-
-#' @rdname plot_policy_graph
-#' @export
-policy_graph <- function(x, belief = TRUE, col = NULL, ...) {
-  .solved_POMDP(x)
-  
-  ## FIXME: try to make a graph from a not converged policy
-  if (!x$solution$converged || length(x$solution$pg) > 1)
-    stop(
-      "Solution has not converged. Creating an igraph object is only supported for converged policies!"
-    )
-  
-  # create policy graph and belief proportions (average belief for each alpha vector)
-  pg <- x$solution$pg[[1]]
-  
-  if (belief) {
-    # FIXME: for pomdp-solve, we could seed with x$solution$belief_states
-    bp <- estimate_belief_for_nodes(x, ...)
-    
-    # missing belief points?
-    missing_bp <- which(apply(is.na(bp), MARGIN = 1, any))
-    if (length(missing_bp) > 0)
-      warning(
-        "No belief points sampled for policy graph node(s): ",
-        paste(missing_bp, collapse = ", "),
-        ". Increase the number for parameter belief (number of sampled points)."
-      )
-  }
-  
-  # producing a list containing arcs
-  l <- list()
-  list_of_arcs <- NULL
-  #observations <- colnames(pg)[-c(1,2)]
-  observations <- x$observations
-  number_of_observations <- length(observations)
-  l <- lapply(
-    1:number_of_observations,
-    FUN = function(i)
-      data.frame(
-        from = pg$node,
-        to = pg[[observations[i]]],
-        label = observations[i]
-      )
-  )
-  
-  l <- do.call(rbind, l)
-  l <- l[!is.na(l$to), ] # remove links to nowhere ('-' in pg)
-  
-  # creating the initial graph
-  policy_graph <- graph.edgelist(as.matrix(l[, 1:2]))
-  edge.attributes(policy_graph) <- list(label = l$label)
-  edge.attributes(policy_graph) <- list(label = l$label)
-  
-  ### Note: the space helps with moving the id away from the pie cut.
-  init <- rep(":   ", nrow(pg))
-  init[x$solution$initial_pg_node] <- ": initial belief"
-  
-  V(policy_graph)$label <- paste0(pg$node, init, "\n", pg$action)
-  
-  # add belief proportions
-  ### FIXME: Add gray for missing points instead of a uniform distribution
-  if (belief) {
-    pie_values <-
-      lapply(
-        seq_len(nrow(bp)),
-        FUN = function(i)
-          if (any(is.na(bp[i, ])))
-            structure(rep(1 / ncol(bp), times = ncol(bp)), names = colnames(bp))
-        else
-          bp[i, ]
-      )
-    
-    ### Set1 from Colorbrewer
-    number_of_states <- length(x$states)
-    col <- .get_colors_descrete(number_of_states, col)
-    
-    V(policy_graph)$shape <- "pie"
-    V(policy_graph)$pie = pie_values
-    V(policy_graph)$pie.color = list(col)
-  }
-  
-  V(policy_graph)$size <- 40
-  E(policy_graph)$arrow.size  <- .5
-  
-  policy_graph
-}
-
-
-
-# estimate central beliefs for each alpha vector (infinite horizon)
-# sample points and then average over each alpha vector.
-# TODO: finite horizon
-# TODO: we could also calculate this with some linear algebra
-
-#' @rdname plot_policy_graph
+#' @rdname policy_graph
 #' @param method sampling method used to estimate the belief. Methods "regular"
 #'   and "random" call [sample_belief_space()]
 #'   and method "simulate" calls [simulate_POMDP()]. Further arguments are passed on to these
 #'   functions.
+#' @param epoch estimate the belief for nodes in this epoch. Use 1 for converged policies.
 #' @export
 estimate_belief_for_nodes <-
   function(x,
     method = c("regular", "random", "simulate"),
+    epoch = 1,
     ...) {
     method <- match.arg(method)
     
-    alpha <- x$solution$alpha[[1]]
+    alpha <- x$solution$alpha[[epoch]]
     
     belief_points <- switch(
       method,
@@ -275,7 +396,7 @@ estimate_belief_for_nodes <-
       simulate = simulate_POMDP(x, visited_beliefs = TRUE, ...)
     )
     
-    r <- reward(x, belief = belief_points)
+    r <- reward(x, belief = belief_points, epoch = epoch)
     belief <- t(sapply(
       1:nrow(alpha),
       FUN = function(i)
@@ -284,3 +405,5 @@ estimate_belief_for_nodes <-
     
     belief
   }
+
+

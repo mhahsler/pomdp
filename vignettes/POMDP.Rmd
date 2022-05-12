@@ -100,9 +100,9 @@ $$\mathcal{P} = (S, A, T, R, \Omega , O, \gamma),$$ where
 
 -   $A = \{a_1, a_2, \dots, a_m\}$ is a set of actions,
 
--   \$T\$\$ a set of conditional transition probabilities
-    $T(s' \mid s,a)$ for the state transition $s \rightarrow s'$
-    conditioned on the taken action.
+-   $T$ a set of conditional transition probabilities $T(s' \mid s,a)$
+    for the state transition $s \rightarrow s'$ conditioned on the taken
+    action.
 
 -   $R: S \times A \rightarrow \mathbb{R}$ is the reward function,
 
@@ -113,7 +113,7 @@ $$\mathcal{P} = (S, A, T, R, \Omega , O, \gamma),$$ where
 
 -   $\gamma \in [0, 1]$ is the discount factor.
 
-At each time period, the environment is in some unkown state $s \in S$.
+At each time period, the environment is in some unknown state $s \in S$.
 The agent chooses an action $a \in A$, which causes the environment to
 transition to state $s' \in S$ with probability $T(s' \mid s,a)$. At the
 same time, the agent receives an observation $o \in \Omega$ which

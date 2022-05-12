@@ -12,17 +12,17 @@
 #' @param model a solved [POMDP].
 #' @param projection a vector with state IDs or names to project on. Allowed
 #' are projections on two or three states. `NULL` uses the first two or
-#' three states.
+#' three states. All other states are held at a belief of 0 (see[sample_belief_space()])
 #' @param epoch display this epoch.
 #' @param sample a matrix with belief points as rows or a character string
-#' specifying the `method` used for `sample_belief_space`.
+#' specifying the `method` used for [sample_belief_space()].
 #' @param n number of points sampled.
 #' @param what what to plot.
 #' @param legend logical; add a legend? If the legend is covered by the plot then you
 #' need to increase the plotting region of the plotting device.
 #' @param pch plotting symbols.
 #' @param col plotting colors.
-#' @param jitter_factor y jitter for 2D belief spaces.
+#' @param jitter y jitter amount for 2D belief spaces (good values are between 0 and 4).
 #' @param ...  additional arguments are passed on to `plot` for 2D or
 #' `TerneryPlot` for 3D.
 #' @return Returns invisibly the sampled points.
@@ -61,6 +61,15 @@
 #' # plot the belief points obtained using simulated trajectories (we use n = 50 to save time).
 #' plot_belief_space(sol, sample = simulate_POMDP(Three_doors, n = 50, horizon = 100,
 #'   random_actions = TRUE, visited_beliefs = TRUE))
+#'   
+#' # plot a 3-state belief space using ggtern (ggplot2)
+#' # library(ggtern)
+#' # samp <- sample_belief_space(sol, n = 1000)
+#' # rew <- reward(sol, belief = samp)
+#' # df <- cbind(as.data.frame(rew$belief), reward = rew$reward)
+#' #
+#' # ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) + 
+#' #   geom_point(aes(color = reward))
 #' @import graphics
 #' @export
 plot_belief_space <-
@@ -73,7 +82,7 @@ plot_belief_space <-
     legend = TRUE,
     pch = 20,
     col = NULL,
-    jitter_factor = 0,
+    jitter = 0,
     ...) {
     # sample: a matrix with belief points or a character string passed on to sample_belief_space as method.
     # E.g., "regular", "random", ...
@@ -145,30 +154,27 @@ plot_belief_space <-
       
     } else if (length(projection) == 2) {
       args <-  list(...)
-      if (is.null(args$ylim))
-        plot(
-          NA,
-          xlim = c(0, 1),
-          ylim = c(0, 4),
-          axes = FALSE,
-          xlab = NA,
-          ylab = NA,
-          ...
-        )
-      else
-        plot(
-          NA,
-          xlim = c(0, 1),
-          axes = FALSE,
-          xlab = NA,
-          ylab = NA,
-          ...
-        )
+      if (is.null(args$ylim)) args$ylim <- c(0, 4)
+      if (is.null(args$xlab)) args$xlab <- "Belief"
+      if (is.null(args$ylab)) args$ylab <- ""
       
-      points(sample[, 1],
-        jitter(rep(0, times = nrow(sample)), factor = jitter_factor),
-        col = cols,
-        pch = pch)
+      ps <- rep(0, times = nrow(sample))
+      if(jitter > 0) {
+        ps <- jitter(ps, amount = jitter)
+        ps <- ps - min(ps)
+      }
+      
+      do.call(plot, args = c(
+        list(
+          x = sample[, 2],
+          y = ps,
+          xlim = c(0, 1),
+          col = cols,
+          pch = pch,
+          axes = FALSE
+        ),
+        args
+      ))
       
       axis(1,
         at = c(0, 1),

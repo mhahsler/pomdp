@@ -25,8 +25,8 @@ Suggests: knitr,
 VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL (>=3)
-Copyright: Copyright (C) Hossein Kamalzadeh and Michael Hahsler.
-RoxygenNote: 7.1.2.9000
+Copyright: Copyright (C) Michael Hahsler and Hossein Kamalzadeh.
+RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
 Collate: 
     'AAA_check_installed.R'
@@ -48,6 +48,7 @@ Collate:
     'reward.R'
     'round_stochchastic.R'
     'sample_belief_space.R'
+    'simulate_POMDP.R'
     'solve_MDP.R'
     'solve_POMDP.R'
     'solve_SARSOP.R'

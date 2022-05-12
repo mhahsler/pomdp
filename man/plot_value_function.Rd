@@ -66,12 +66,11 @@ plot_value_function(sol, epoch = 3, ylim = c(-5, 25))
 # ggplot(pol) + 
 #   geom_segment(aes(x = 0, y = `tiger-left`, xend=1, yend=`tiger-right`, color = action)) + 
 #   coord_cartesian(ylim = c(-5, 15)) + ylab("Reward") + xlab("Belief")
-
 }
 \seealso{
 Other policy: 
 \code{\link{optimal_action}()},
-\code{\link{plot_policy_graph}()},
+\code{\link{policy_graph}()},
 \code{\link{policy}()},
 \code{\link{reward}()},
 \code{\link{solve_POMDP}()},

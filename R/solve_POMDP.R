@@ -66,7 +66,7 @@
 #'
 #' **Time-dependent POMDPs:** Time dependence of transition probabilities,
 #' observation probabilities and reward structure can be modeled by considering
-#' a set of episodes representing epoch with the same settings. In the scared
+#' a set of episodes representing epochs with the same settings. In the scared
 #' tiger example (see Examples section), the tiger has the normal behavior for
 #' the first three epochs (episode 1) and then becomes scared with different
 #' transition probabilities for the next three epochs (episode 2). The episodes
@@ -508,7 +508,7 @@ solve_POMDP <- function(model,
         !converged &&
         any(unlist(reward_matrix(model)) < 0))
       warning(
-        "The grid method for finite horizon did not converge. The value function and the calculated reward values may not be valid with negative reward in the reward matrix. Use method 'incprune' instead."
+        "The grid method for finite horizon did not converge. The value function and the calculated reward values may not be valid with negative reward in the reward matrix. Use method 'simulate_POMDP()' to estimate the reward or use solution method 'incprune'."
       )
     
     alpha <- rev(alpha)
@@ -549,10 +549,10 @@ solve_POMDP <- function(model,
   model$solution$initial_pg_node <- rew$pg_node
   
   model$solver_output <- structure(solver_output, class = "text")
- 
+  
   if(inherits(model, "MDP")) 
     model$solution$policy <- .policy_MDP_from_POMDP(model)
-   
+  
   model
 }
 
