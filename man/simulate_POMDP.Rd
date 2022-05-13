@@ -10,7 +10,7 @@ simulate_POMDP(
   belief = NULL,
   horizon = NULL,
   visited_beliefs = FALSE,
-  random_actions = FALSE,
+  epsilon = NULL,
   digits = 7,
   verbose = FALSE
 )
@@ -32,9 +32,8 @@ horizon for the model is used.}
 trajectories be returned? If \code{FALSE} then only the belief at the final
 epoch is returned.}
 
-\item{random_actions}{logical; should randomized actions be used instead of
-the policy of the solved POMDP? Randomized actions can be used for unsolved
-POMDPs.}
+\item{epsilon}{the probability of random actions  for using an epsilon-greedy policy.
+Default for solved models is 0 and for unsolved model 1.}
 
 \item{digits}{round belief points.}
 
@@ -45,7 +44,7 @@ A matrix with belief points (in the final epoch or all) as rows. Attributes cont
 counts, and rewards  for each trajectory may be available.
 }
 \description{
-Simulate several trajectories through a POMDP. The start state for each
+Simulate trajectories through a POMDP. The start state for each
 trajectory is randomly chosen using the specified belief. For solved POMDPs
 the optimal actions will be chosen, for unsolved POMDPs random actions will
 be used.
@@ -75,13 +74,13 @@ colMeans(attr(sim, "action"))
 sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), visited_beliefs = TRUE)
 
 # plot with added density
-plot_belief_space(sol, sample = sim, ylim = c(0,3))
-lines(density(sim[, 1], bw = .05)); axis(2); title(ylab = "Density")
+plot_belief_space(sol, sample = sim, ylim = c(0,5), jitter = 1)
+lines(density(sim[, 1], bw = .02)); axis(2); title(ylab = "Density")
 
 
-## Example 3: simulate trajectories for an unsolved POMDP using randomized actions
-sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, 
-  random_actions = TRUE, visited_beliefs = TRUE)
+## Example 3: simulate trajectories for an unsolved POMDP which uses a epsilon of 1 
+# (i.e., all randomized actions)
+sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, visited_beliefs = TRUE)
 plot_belief_space(sol, sample = sim, ylim = c(0,6))
 lines(density(sim[, 1], bw = .05)); axis(2); title(ylab = "Density")
 }

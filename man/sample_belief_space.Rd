@@ -13,22 +13,23 @@ sample_belief_space(model, projection = NULL, n = 1000, method = "random", ...)
 included in the projection are held at a belief of 0. \code{NULL} means no
 projection.}
 
-\item{n}{size of the sample.}
+\item{n}{size of the sample. For trajectories, it is the number of trajectories.}
 
 \item{method}{character string specifying the sampling strategy. Available
-are \code{"random"}, \code{"regular"}, and \code{"vertices"}.}
+are \code{"random"}, \code{"regular"}, \code{"vertices"}, and \code{"trajectories"}.}
 
-\item{...}{further arguments are ignored.}
+\item{...}{for the trajectory method, further arguments are passed on to \code{\link[=simulate_POMDP]{simulate_POMDP()}}. Further arguments are ignored for the other methods.}
 }
 \value{
 Returns a matrix. Each row is a sample from the belief space.
 }
 \description{
-Sample randomly (uniform) or regularly spaced points from the projected
-belief space.
+Sample points from belief space using a several sampling strategies.
 }
 \details{
-Several sampling methods are implemented:
+The purpose of sampling from the belief space is to provide good coverage or to sample belief points
+that are more likely to be encountered (see trajectory method).
+The following sampling methods are available:
 \itemize{
 \item \code{'random'} samples uniformly sample from the projected belief space using
 the method described by Luc Devroye (1986).
@@ -36,6 +37,10 @@ the method described by Luc Devroye (1986).
 regularly spaced grid. This method is only available for projections on 2 or
 3 states.
 \item \code{'vertices'} only samples from the vertices of the belief space.
+\item \code{"trajectories"} returns the belief states encountered in \code{n} trajectories of length \code{horizon} starting at the
+model's initial belief. Thus it returns \code{n} x \code{horizon} belief states and will contain duplicates.
+Projection is not supported for trajectories. Additional
+arguments can include the simulation \code{horizon} and the start \code{belief} which are passed on to \code{\link[=simulate_POMDP]{simulate_POMDP()}}.
 }
 }
 \examples{
@@ -43,10 +48,13 @@ data("Tiger")
 
 sample_belief_space(Tiger, n = 5)
 sample_belief_space(Tiger, n = 5, method = "regular")
+sample_belief_space(Tiger, n = 5, horizon = 5, method = "trajectories") 
 
-# sample and calculate the reward for a solve POMDP
+# sample and calculate the reward for a solved POMDP
 sol <- solve_POMDP(Tiger)
-reward(sol, belief = sample_belief_space(sol, n = 5, method = "regular"))
+samp <- sample_belief_space(sol, n = 5, method = "regular")
+rew <- reward(sol, belief = samp)
+cbind(samp, rew)
 }
 \references{
 Luc Devroye, Non-Uniform Random Variate Generation, Springer

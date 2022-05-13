@@ -2,12 +2,13 @@
 
 #' Simulate Trajectories in a POMDP
 #'
-#' Simulate several trajectories through a POMDP. The start state for each
+#' Simulate trajectories through a POMDP. The start state for each
 #' trajectory is randomly chosen using the specified belief. For solved POMDPs
 #' the optimal actions will be chosen, for unsolved POMDPs random actions will
 #' be used.
 #'
 #' @family POMDP
+#' @importFrom stats runif
 #'
 #' @param model a POMDP model.
 #' @param n number of trajectories.
@@ -20,9 +21,8 @@
 #' @param visited_beliefs logical; Should all belief points visited on the
 #' trajectories be returned? If `FALSE` then only the belief at the final
 #' epoch is returned.
-#' @param random_actions logical; should randomized actions be used instead of
-#' the policy of the solved POMDP? Randomized actions can be used for unsolved
-#' POMDPs.
+#' @param epsilon the probability of random actions  for using an epsilon-greedy policy.
+#' Default for solved models is 0 and for unsolved model 1.
 #' @param digits round belief points.
 #' @param verbose report used parameters.
 #' @return A matrix with belief points (in the final epoch or all) as rows. Attributes containing action
@@ -54,13 +54,13 @@
 #' sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), visited_beliefs = TRUE)
 #'
 #' # plot with added density
-#' plot_belief_space(sol, sample = sim, ylim = c(0,3))
-#' lines(density(sim[, 1], bw = .05)); axis(2); title(ylab = "Density")
+#' plot_belief_space(sol, sample = sim, ylim = c(0,5), jitter = 1)
+#' lines(density(sim[, 1], bw = .02)); axis(2); title(ylab = "Density")
 #'
 #'
-#' ## Example 3: simulate trajectories for an unsolved POMDP using randomized actions
-#' sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, 
-#'   random_actions = TRUE, visited_beliefs = TRUE)
+#' ## Example 3: simulate trajectories for an unsolved POMDP which uses a epsilon of 1 
+#' # (i.e., all randomized actions)
+#' sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, visited_beliefs = TRUE)
 #' plot_belief_space(sol, sample = sim, ylim = c(0,6))
 #' lines(density(sim[, 1], bw = .05)); axis(2); title(ylab = "Density")
 #' @export
@@ -70,7 +70,7 @@ simulate_POMDP <-
     belief = NULL,
     horizon = NULL,
     visited_beliefs = FALSE,
-    random_actions = FALSE,
+    epsilon = NULL,
     digits = 7,
     verbose = FALSE) {
     belief <- .translate_belief(belief, model = model)
@@ -83,13 +83,13 @@ simulate_POMDP <-
     if (is.infinite(horizon))
       stop("Simulation needs a finite simulation horizon.")
     
-    if (!is.null(random_actions)) {
-      random_actions <- as.logical(random_actions)
-      if (!solved &&
-          !random_actions)
-        stop("Only random actions are possible for unsolved POMDPs.")
-      solved <- !random_actions
+    if (is.null(epsilon)) {
+      if (!solved) epsilon <- 1
+      else epsilon <- 0
     }
+      
+    if (!solved && epsilon != 1)
+      stop("epsilon has to be 1 for unsolved models.")
     
     disc <- model$discount
     if (is.null(disc))
@@ -132,8 +132,8 @@ simulate_POMDP <-
     
     if (verbose) {
       cat("Simulating POMDP trajectories.\n")
-      cat("- using optimal actions:", solved, "\n")
       cat("- horizon:", horizon, "\n")
+      cat("- epsilon:", epsilon, "\n")
       if (dt)
         cat("- time-dependent:", length(dt_horizon), "episodes", "\n")
       cat("- discount factor:", disc, "\n")
@@ -177,18 +177,14 @@ simulate_POMDP <-
         
         # find action (if we have no solution then take a random action) and update state and sample obs
         
-        #if(solved) {
-        # e <- .get_pg_index(model, j)
-        # a <- as.character(reward_node_action(model, b, e)$action)
-        #}else a <- sample(actions, 1)
-        # this takes about 1/2 the time
-        if (solved) {
+        if (runif(1) < epsilon) {
+          a <- sample(actions, 1)
+        } else {
           #  convert index for converged POMDPs
           e <- .get_pg_index(model, j)
           a <-
             as.character(model$solution$pg[[e]][which.max(model$solution$alpha[[e]] %*% b), "action"])
-        } else
-          a <- sample(actions, 1)
+        }
         
         action_cnt[a] <- action_cnt[a] + 1L
         state_cnt[s] <- state_cnt[s] + 1L

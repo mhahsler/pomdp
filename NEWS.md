@@ -1,8 +1,10 @@
 # pomdp 1.0.1-1 (xx/xx/xxxx)
 
-* policy_graph can now produce policy trees for finite-horizon problems.
-* Fixed bug with not using horizon in simulate_POMDP().
+* policy_graph() can now produce policy trees for finite-horizon problems.
+* simulate_POMDP(): fixed bug with not using horizon.
 * reward() and reward_node_action() have now been separated.
+* sample_belief_space() gained method 'trajectories'.
+* simulate_POMDP(): supports not epsilon-greedy policies.
 
 # pomdp 1.0.1 (03/25/2022)
 
