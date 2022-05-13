@@ -5,6 +5,7 @@
 * reward() and reward_node_action() have now been separated.
 * sample_belief_space() gained method 'trajectories'.
 * simulate_POMDP(): supports not epsilon-greedy policies.
+* observation_matrix() et al. functions are now created with a separate function ending in _function.
 
 # pomdp 1.0.1 (03/25/2022)
 

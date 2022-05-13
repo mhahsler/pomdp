@@ -2,22 +2,29 @@
 % Please edit documentation in R/transition_matrix.R
 \name{transition_matrix}
 \alias{transition_matrix}
+\alias{transition_function}
 \alias{observation_matrix}
+\alias{observation_function}
 \alias{reward_matrix}
+\alias{reward_function}
 \title{Extract the Transition, Observation or Reward Information from a POMDP}
 \usage{
-transition_matrix(x, episode = 1, type = "matrix")
+transition_matrix(x, episode = 1)
 
-observation_matrix(x, episode = 1, type = "matrix")
+transition_function(x, episode = 1)
 
-reward_matrix(x, episode = 1, type = "matrix")
+observation_matrix(x, episode = 1)
+
+observation_function(x, episode = 1)
+
+reward_matrix(x, episode = 1)
+
+reward_function(x, episode = 1)
 }
 \arguments{
 \item{x}{A \link{POMDP} object.}
 
 \item{episode}{Episode used for time-dependent POMDPs (\link{POMDP}).}
-
-\item{type}{\code{'matrix'} or \code{'function'} to get a list of matrices or a function.}
 }
 \value{
 A list or a list of lists of matrices.
@@ -36,7 +43,7 @@ data("Tiger")
 Tiger$transition_prob
 transition_matrix(Tiger)
 
-f <- transition_matrix(Tiger, type = "function")
+f <- transition_function(Tiger)
 args(f)
 ## listening does not change the tiger's position.
 f("listen", "tiger-left", "tiger-left")
@@ -59,7 +66,7 @@ igraph.options("edge.curved" = TRUE)
 plot(g, layout = layout_on_grid, main = "Transitions for action 'open=left'")
 
 ## Use a function for the Tiger transition model
-trans <- function(end.state, start.state, action) {
+trans <- function(action, end.state, start.state) {
   ## listen has an identity matrix
   if(action == 'listen')
     if(end.state == start.state) return(1)

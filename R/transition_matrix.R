@@ -9,7 +9,6 @@
 #' 
 #' @param x A [POMDP] object.
 #' @param episode Episode used for time-dependent POMDPs ([POMDP]).
-#' @param type `'matrix'` or `'function'` to get a list of matrices or a function.
 #' @return A list or a list of lists of matrices.
 #' @author Michael Hahsler
 #' @examples
@@ -19,7 +18,7 @@
 #' Tiger$transition_prob
 #' transition_matrix(Tiger)
 #'
-#' f <- transition_matrix(Tiger, type = "function")
+#' f <- transition_function(Tiger)
 #' args(f)
 #' ## listening does not change the tiger's position.
 #' f("listen", "tiger-left", "tiger-left")
@@ -42,7 +41,7 @@
 #' plot(g, layout = layout_on_grid, main = "Transitions for action 'open=left'")
 #'
 #' ## Use a function for the Tiger transition model
-#' trans <- function(end.state, start.state, action) {
+#' trans <- function(action, end.state, start.state) {
 #'   ## listen has an identity matrix
 #'   if(action == 'listen')
 #'     if(end.state == start.state) return(1)
@@ -55,48 +54,51 @@
 #' Tiger$transition_prob <- trans
 #' transition_matrix(Tiger)
 #' @export
-transition_matrix <- function(x, episode = 1, type = "matrix") {
-  type <- match.arg(type, c("matrix", "function"))
-  
-  m <- .translate_probabilities(
+transition_matrix <- function(x, episode = 1) {
+  .translate_probabilities(
     x,
     field = "transition_prob",
     from = "states",
     to = "states",
     episode = episode
   )
+} 
+
+#' @rdname transition_matrix
+#' @export
+transition_function <- function(x, episode = 1) {
+  m <- transition_matrix(x, episode)
   
-  switch(type,
-    matrix = m,
-    `function` = {
-      m
-      function(action, start.state, end.state)
-        m[[action]][start.state, end.state]
-    }
-  )
-}  
+  return ({
+    m
+    function(action, start.state, end.state)
+      m[[action]][start.state, end.state]
+  })
+} 
 
 
 #' @rdname transition_matrix
 #' @export
-observation_matrix <- function(x, episode = 1, type = "matrix") {
-  type <- match.arg(type, c("matrix", "function"))
-  
+observation_matrix <- function(x, episode = 1) {
   if(is.null(x$observation_prob))
     stop("model is not a complete POMDP, no observation probabilities specified!")
   
   ## action list of s' x o matrices
-  m <- .translate_probabilities(
+  .translate_probabilities(
     x,
     field = "observation_prob",
     from = "states",
     to = "observations",
     episode = episode
   )
+}
+
+#' @rdname transition_matrix
+#' @export
+observation_function <- function(x, episode = 1) {
+  m <- observation_matrix(x, episode)
   
-  switch(type,
-    matrix = m,
-    `function` = {
+  return ( {
       m
       function(action, observation, end.state)
         m[[action]][end.state, observation]
@@ -106,36 +108,37 @@ observation_matrix <- function(x, episode = 1, type = "matrix") {
   
 #' @rdname transition_matrix
 #' @export
-reward_matrix <- function(x, episode = 1, type = "matrix") {
-  type <- match.arg(type, c("matrix", "function"))
-  
+reward_matrix <- function(x, episode = 1) {
   ## action list of s' x o matrices
   ## action list of s list of s' x o matrices
   ## if not observations are available then it is a s' vector
-  m <- .translate_reward(x, episode = episode)
+  .translate_reward(x, episode = episode)
+}
+
+#' @rdname transition_matrix
+#' @export
+reward_function <- function(x, episode = 1) {
+  m <- reward_matrix(x, episode = 1)
   
   ## MDP has no observations!
-  if (inherits(x, "POMDP")) {
-    switch(type,
-      matrix = m,
-      `function` = {
-        m
-        function(action,
-          start.state,
-          end.state,
-          observation)
-          m[[action]][[start.state]][end.state, observation]
-      })
-  } else{
-    switch(type,
-      matrix = m,
-      `function` = {
-        m
-        function(action, start.state, end.state)
-          m[[action]][[start.state]][end.state]
-      })
-  }
+  if (inherits(x, "POMDP"))
+    return({
+      m
+      function(action,
+        start.state,
+        end.state,
+        observation)
+        m[[action]][[start.state]][end.state, observation]
+    })
+  
+  else
+    return({
+      m
+      function(action, start.state, end.state)
+        m[[action]][[start.state]][end.state]
+    })
 }
+
 # translate different specifications of transitions, observations and rewards
 # into a list of matrices
 

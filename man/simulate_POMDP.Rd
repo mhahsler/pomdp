@@ -45,7 +45,8 @@ counts, and rewards  for each trajectory may be available.
 }
 \description{
 Simulate trajectories through a POMDP. The start state for each
-trajectory is randomly chosen using the specified belief. For solved POMDPs
+trajectory is randomly chosen using the specified belief. The belief is used to choose actions
+from the policy and then updated using observations. For solved POMDPs
 the optimal actions will be chosen, for unsolved POMDPs random actions will
 be used.
 }
