@@ -9,6 +9,7 @@
 #' 
 #' @param x A [POMDP] object.
 #' @param episode Episode used for time-dependent POMDPs ([POMDP]).
+#' @param action only return the matrix for a given action.
 #' @return A list or a list of lists of matrices.
 #' @author Michael Hahsler
 #' @examples
@@ -54,13 +55,14 @@
 #' Tiger$transition_prob <- trans
 #' transition_matrix(Tiger)
 #' @export
-transition_matrix <- function(x, episode = 1) {
+transition_matrix <- function(x, episode = 1, action = NULL) {
   .translate_probabilities(
     x,
     field = "transition_prob",
     from = "states",
     to = "states",
-    episode = episode
+    episode = episode,
+    action = action
   )
 } 
 
@@ -79,7 +81,7 @@ transition_function <- function(x, episode = 1) {
 
 #' @rdname transition_matrix
 #' @export
-observation_matrix <- function(x, episode = 1) {
+observation_matrix <- function(x, episode = 1, action = NULL) {
   if(is.null(x$observation_prob))
     stop("model is not a complete POMDP, no observation probabilities specified!")
   
@@ -89,7 +91,8 @@ observation_matrix <- function(x, episode = 1) {
     field = "observation_prob",
     from = "states",
     to = "observations",
-    episode = episode
+    episode = episode,
+    action = action
   )
 }
 
@@ -108,11 +111,11 @@ observation_function <- function(x, episode = 1) {
   
 #' @rdname transition_matrix
 #' @export
-reward_matrix <- function(x, episode = 1) {
+reward_matrix <- function(x, episode = 1, action = NULL) {
   ## action list of s' x o matrices
   ## action list of s list of s' x o matrices
   ## if not observations are available then it is a s' vector
-  .translate_reward(x, episode = episode)
+  .translate_reward(x, episode = episode, action = action)
 }
 
 #' @rdname transition_matrix
@@ -208,8 +211,12 @@ reward_function <- function(x, episode = 1) {
   from = "states",
   to = "states",
   episode = 1,
-  sparse = TRUE) {
-  actions <- model$actions
+  action = NULL) {
+  
+  if (is.null(action))
+    actions <- model$actions
+  else
+    actions <- action
   
   ## episodes are for time-dependent POMDPs
   if (.timedependent_POMDP(model)) {
@@ -308,14 +315,22 @@ reward_function <- function(x, episode = 1) {
     )
   } else
     stop("Unknown transition/observation matrix format.")
+  
+  if(!is.null(action) && length(action) == 1) 
+    prob <- prob[[1]]
+  
   prob
 }
 
 
 ## reward is action -> start.state -> end.state x observation
-.translate_reward <- function(model, episode = 1) {
-  actions <- model$actions
+.translate_reward <- function(model, episode = 1, action = NULL) {
   states <- model$states
+  
+  if (is.null(action))
+    actions <- model$actions
+  else
+    actions <- action
   
   ## note: observations does not exist for MDPs
   observations <- model$observations
@@ -424,5 +439,8 @@ reward_function <- function(x, episode = 1) {
   ##} else if (is.list(reward)) {
   ##}
    
+  if(!is.null(action) && length(action) == 1) 
+    reward <- reward[[1]]
+  
   reward
 }

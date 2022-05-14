@@ -9,15 +9,15 @@
 \alias{reward_function}
 \title{Extract the Transition, Observation or Reward Information from a POMDP}
 \usage{
-transition_matrix(x, episode = 1)
+transition_matrix(x, episode = 1, action = NULL)
 
 transition_function(x, episode = 1)
 
-observation_matrix(x, episode = 1)
+observation_matrix(x, episode = 1, action = NULL)
 
 observation_function(x, episode = 1)
 
-reward_matrix(x, episode = 1)
+reward_matrix(x, episode = 1, action = NULL)
 
 reward_function(x, episode = 1)
 }
@@ -25,6 +25,8 @@ reward_function(x, episode = 1)
 \item{x}{A \link{POMDP} object.}
 
 \item{episode}{Episode used for time-dependent POMDPs (\link{POMDP}).}
+
+\item{action}{only return the matrix for a given action.}
 }
 \value{
 A list or a list of lists of matrices.

@@ -128,7 +128,7 @@ sample_belief_space <-
           attr(belief_states, "TernaryTriangleCenters") <-
             triangleCentres
         } else
-          stop("method redular is only available for projections on 2 or 3 states.")
+          stop("method regular is only available for projections on 2 or 3 states.")
         
         belief_states
       },

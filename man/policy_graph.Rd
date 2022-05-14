@@ -6,28 +6,23 @@
 \alias{estimate_belief_for_nodes}
 \title{POMDP Policy Graphs}
 \usage{
-policy_graph(x, belief = TRUE, col = NULL, ...)
+policy_graph(x, show_belief = TRUE, col = NULL, ...)
 
 plot_policy_graph(
   x,
-  belief = TRUE,
+  show_belief = TRUE,
   legend = TRUE,
   engine = c("igraph", "visNetwork"),
   col = NULL,
   ...
 )
 
-estimate_belief_for_nodes(
-  x,
-  method = c("regular", "random", "simulate"),
-  epoch = 1,
-  ...
-)
+estimate_belief_for_nodes(x, epoch = 1, ...)
 }
 \arguments{
 \item{x}{object of class \link{POMDP} containing a solved and converged POMDP problem.}
 
-\item{belief}{logical; estimate belief proportions? If \code{TRUE} then \code{estimate_belief_for_nodes()} is used
+\item{show_belief}{logical; estimate belief proportions? If \code{TRUE} then \code{estimate_belief_for_nodes()} is used
 and the belief is visualized as a pie chart in each node.}
 
 \item{col}{colors used for the states.}
@@ -39,11 +34,6 @@ or \code{\link[visNetwork:visNetwork-igraph]{visNetwork::visIgraph()}}.}
 \item{legend}{logical; display a legend for colors used belief proportions?}
 
 \item{engine}{The plotting engine to be used.}
-
-\item{method}{sampling method used to estimate the belief. Methods "regular"
-and "random" call \code{\link[=sample_belief_space]{sample_belief_space()}}
-and method "simulate" calls \code{\link[=simulate_POMDP]{simulate_POMDP()}}. Further arguments are passed on to these
-functions.}
 
 \item{epoch}{estimate the belief for nodes in this epoch. Use 1 for converged policies.}
 }
@@ -73,7 +63,7 @@ for interactive graphs, \code{\link[visNetwork:visNetwork-igraph]{visNetwork::vi
 \code{estimate_belief_for_nodes()} estimated the central belief for each node/segment of the value function
 by generating/sampling a large set of possible belief points, assigning them to the segments and then averaging
 the belief over the points assigned to each segment.
-Additional parameters like the sample size \code{n} are passed on to \code{\link[=sample_belief_space]{sample_belief_space()}} or \code{\link[=simulate_POMDP]{simulate_POMDP()}}.
+Additional parameters like \code{method} and the sample size \code{n} are passed on to \code{\link[=sample_belief_space]{sample_belief_space()}}.
 If no belief point is generated for a segment, then a
 warning is produced. In this case, the number of sampled points can be increased.
 }
@@ -126,10 +116,9 @@ plot_policy_graph(sol, engine = "visNetwork")
 ## add smooth edges and a layout (note, engine can be abbreviated)
 plot_policy_graph(sol, engine = "visNetwork", layout = "layout_in_circle", smooth = TRUE)
 
-## estimate the central belief for the graph nodes. We use here method "simulate".
-## For infinite horizon problems, the simulation horizon  has to be specified.
-## See simulate_POMDP().
-estimate_belief_for_nodes(sol, method = "simulate", horizon = 10)
+## estimate the central belief for the graph nodes. We use the default random sampling method with 
+## a sample size of n = 100. 
+estimate_belief_for_nodes(sol, n = 100)
 
 ## policy trees for finite-horizon solutions
 sol <- solve_POMDP(model = Tiger, horizon = 3, method = "incprune")

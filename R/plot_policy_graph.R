@@ -17,7 +17,7 @@
 #' `estimate_belief_for_nodes()` estimated the central belief for each node/segment of the value function
 #' by generating/sampling a large set of possible belief points, assigning them to the segments and then averaging
 #' the belief over the points assigned to each segment. 
-#' Additional parameters like the sample size `n` are passed on to [sample_belief_space()] or [simulate_POMDP()].
+#' Additional parameters like `method` and the sample size `n` are passed on to [sample_belief_space()].
 #' If no belief point is generated for a segment, then a
 #' warning is produced. In this case, the number of sampled points can be increased.
 #'
@@ -26,7 +26,7 @@
 #' @import igraph
 #'
 #' @param x object of class [POMDP] containing a solved and converged POMDP problem.
-#' @param belief logical; estimate belief proportions? If `TRUE` then `estimate_belief_for_nodes()` is used
+#' @param show_belief logical; estimate belief proportions? If `TRUE` then `estimate_belief_for_nodes()` is used
 #'  and the belief is visualized as a pie chart in each node.
 #' @param legend logical; display a legend for colors used belief proportions?
 #' @param engine The plotting engine to be used.
@@ -90,10 +90,9 @@
 #' ## add smooth edges and a layout (note, engine can be abbreviated)
 #' plot_policy_graph(sol, engine = "visNetwork", layout = "layout_in_circle", smooth = TRUE)
 #'
-#' ## estimate the central belief for the graph nodes. We use here method "simulate".
-#' ## For infinite horizon problems, the simulation horizon  has to be specified.
-#' ## See simulate_POMDP().
-#' estimate_belief_for_nodes(sol, method = "simulate", horizon = 10)
+#' ## estimate the central belief for the graph nodes. We use the default random sampling method with 
+#' ## a sample size of n = 100. 
+#' estimate_belief_for_nodes(sol, n = 100)
 #'
 #' ## policy trees for finite-horizon solutions
 #' sol <- solve_POMDP(model = Tiger, horizon = 3, method = "incprune")
@@ -104,17 +103,18 @@
 #' # Note: the first number in the node id is the epoch.
 #' 
 #' @export
-policy_graph <- function(x, belief = TRUE, col = NULL, ...) {
+policy_graph <- function(x, show_belief = TRUE, col = NULL, ...) {
   .solved_POMDP(x)
+  ## FIXME: add initial belief!
   
-  ## FIXME: try to make a graph from a not converged policy
+  
   if (!x$solution$converged || length(x$solution$pg) > 1)
-    return(policy_graph_unconverged(x, belief, col, ...))
+    return(policy_graph_unconverged(x, show_belief, col = col, ...))
   
   # create policy graph and belief proportions (average belief for each alpha vector)
   pg <- x$solution$pg[[1]]
   
-  if (belief) {
+  if (show_belief) {
     # FIXME: for pomdp-solve, we could seed with x$solution$belief_states
     bp <- estimate_belief_for_nodes(x, ...)
     
@@ -159,7 +159,7 @@ policy_graph <- function(x, belief = TRUE, col = NULL, ...) {
   
   # add belief proportions
   ### FIXME: Add gray for missing points instead of a uniform distribution
-  if (belief) {
+  if (show_belief) {
     pie_values <-
       lapply(
         seq_len(nrow(bp)),
@@ -185,7 +185,7 @@ policy_graph <- function(x, belief = TRUE, col = NULL, ...) {
   policy_graph
 }
 
-policy_graph_unconverged <- function(x, belief = TRUE, col = NULL, ...) {
+policy_graph_unconverged <- function(x, show_belief = TRUE, col = NULL, ...) {
   .solved_POMDP(x)
   
   pg <- x$solution$pg
@@ -251,7 +251,7 @@ policy_graph_unconverged <- function(x, belief = TRUE, col = NULL, ...) {
   
   # add belief proportions
   ### FIXME: Add gray for missing points instead of a uniform distribution
-  if (belief) {
+  if (show_belief) {
     # FIXME: for pomdp-solve, we could seed with x$solution$belief_states
     bp <-
       lapply(
@@ -308,7 +308,7 @@ policy_graph_unconverged <- function(x, belief = TRUE, col = NULL, ...) {
 #' @rdname policy_graph
 #' @export
 plot_policy_graph <- function(x,
-  belief = TRUE,
+  show_belief = TRUE,
   legend = TRUE,
   engine = c("igraph", "visNetwork"),
   col = NULL,
@@ -318,22 +318,22 @@ plot_policy_graph <- function(x,
   engine <- match.arg(engine)
   switch(
     engine,
-    igraph = .plot.igraph(x, belief, legend, col, ...),
-    visNetwork = .plot.visNetwork(x, belief, legend, col, ...)
+    igraph = .plot.igraph(x, show_belief, legend = legend, col = col, ...),
+    visNetwork = .plot.visNetwork(x, show_belief, legend = legend, col = col, ...)
   )
 }
 
 
 .plot.igraph <-
-  function(x, belief, legend, col, edge.curved = NULL, ...) {
-    pg <- policy_graph(x, belief = belief, col = col, ...)
+  function(x, show_belief, legend, col, edge.curved = NULL, ...) {
+    pg <- policy_graph(x, belief = show_belief, col = col, ...)
     
     if (is.null(edge.curved))
       edge.curved <- .curve_multiple_directed(pg)
     
     plot.igraph(pg, edge.curved = edge.curved, ...)
     
-    if (legend && belief && !is.null(V(pg)$pie)) {
+    if (legend && show_belief && !is.null(V(pg)$pie)) {
       legend(
         "topright",
         legend = x$states,
@@ -375,28 +375,16 @@ plot_policy_graph <- function(x,
 }
 
 #' @rdname policy_graph
-#' @param method sampling method used to estimate the belief. Methods "regular"
-#'   and "random" call [sample_belief_space()]
-#'   and method "simulate" calls [simulate_POMDP()]. Further arguments are passed on to these
-#'   functions.
 #' @param epoch estimate the belief for nodes in this epoch. Use 1 for converged policies.
 #' @export
 estimate_belief_for_nodes <-
   function(x,
-    method = c("regular", "random", "simulate"),
     epoch = 1,
     ...) {
-    method <- match.arg(method)
     
     alpha <- x$solution$alpha[[epoch]]
     
-    belief_points <- switch(
-      method,
-      regular = sample_belief_space(x, method = "regular", ...),
-      random = sample_belief_space(x, method = "random", ...),
-      simulate = simulate_POMDP(x, visited_beliefs = TRUE, ...)
-    )
-    
+    belief_points <- sample_belief_space(x, ...)
     r <- reward_node_action(x, belief = belief_points, epoch = epoch)
     belief <- t(sapply(
       1:nrow(alpha),
