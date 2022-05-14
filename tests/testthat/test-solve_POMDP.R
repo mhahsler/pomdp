@@ -37,19 +37,19 @@ expect_equal(pg_horizon$action, pg_stepwise$action) # transitions do not work
 context("solve_POMDP and model files")
 
 sol <- solve_POMDP("http://www.pomdp.org/examples/1d.POMDP")
-plot_policy_graph(sol, belief = FALSE)
+plot_policy_graph(sol, show_belief = FALSE)
 policy(sol)
 
 sol <- solve_POMDP("http://www.pomdp.org/examples/cheese.95.POMDP")
-plot_policy_graph(sol, belief = FALSE)
+plot_policy_graph(sol, show_belief = FALSE)
 policy(sol)
 
 sol <- solve_POMDP("http://www.pomdp.org/examples/shuttle.95.POMDP", 
                    parameter = list(fg_points = 10))
-plot_policy_graph(sol, belief = FALSE)
+plot_policy_graph(sol, show_belief = FALSE)
 policy(sol)
 
 sol <- solve_POMDP("http://www.pomdp.org/examples/stand-tiger.95.POMDP")
-plot_policy_graph(sol, belief = FALSE)
+plot_policy_graph(sol, show_belief = FALSE)
 policy(sol)
 

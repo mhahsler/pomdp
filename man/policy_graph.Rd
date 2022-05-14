@@ -6,10 +6,11 @@
 \alias{estimate_belief_for_nodes}
 \title{POMDP Policy Graphs}
 \usage{
-policy_graph(x, show_belief = TRUE, col = NULL, ...)
+policy_graph(x, belief = NULL, show_belief = TRUE, col = NULL, ...)
 
 plot_policy_graph(
   x,
+  belief = NULL,
   show_belief = TRUE,
   legend = TRUE,
   engine = c("igraph", "visNetwork"),
@@ -22,6 +23,10 @@ estimate_belief_for_nodes(x, epoch = 1, ...)
 \arguments{
 \item{x}{object of class \link{POMDP} containing a solved and converged POMDP problem.}
 
+\item{belief}{the initial belief is used to mark the initial belief state in the
+grave of a converged solution and to identify the root node in a policy graph for a finite-horizon solution.
+If \code{NULL} then the belief is taken from the model definition.}
+
 \item{show_belief}{logical; estimate belief proportions? If \code{TRUE} then \code{estimate_belief_for_nodes()} is used
 and the belief is visualized as a pie chart in each node.}
 
@@ -33,7 +38,8 @@ or \code{\link[visNetwork:visNetwork-igraph]{visNetwork::visIgraph()}}.}
 
 \item{legend}{logical; display a legend for colors used belief proportions?}
 
-\item{engine}{The plotting engine to be used.}
+\item{engine}{The plotting engine to be used. For \code{"visNetwork"}, \code{flip.y = FALSE} can be used
+to show the root node on top.}
 
 \item{epoch}{estimate the belief for nodes in this epoch. Use 1 for converged policies.}
 }
@@ -50,10 +56,17 @@ policy tree for a finite-horizon solution.
 uses \code{plot} in \pkg{igraph} with appropriate plotting options.
 }
 \details{
-The policy graph nodes represent the segments in the value function. Each
-segment represents one or more believe states. If available, a pie chart (or the color) in each node
-represent the average belief of the belief states
-belonging to the node/segment. This can help with interpreting the policy graph.
+Each policy graph node represent a segment (or part of a hyperplane) of the value function.
+Each node represents one or more believe states. If available, a pie chart (or the color) in each node
+represent the central belief of the belief states
+belonging to the node (i.e., the center of the hyperplane segment).
+This can help with interpreting the policy graph.
+
+For converged POMDP solution a graph is produced, for finite-horizon solution a policy tree is produced.
+The levels of the tree and the first number in the node label represent the epochs. Many algorithms produce
+unused policy graph nodes which are filtered to produce a clean tree structure.
+Non-converged policies depend on the initial belief and if an initial belief is
+specified, then different nodes will be filtered and the tree will look different.
 
 First, the policy in the solved POMDP is converted into an \link{igraph} object using \code{policy_graph()}.
 Average beliefs for the graph nodes are estimated using \code{estimate_belief_for_node()} and then the igraph
@@ -121,12 +134,15 @@ plot_policy_graph(sol, engine = "visNetwork", layout = "layout_in_circle", smoot
 estimate_belief_for_nodes(sol, n = 100)
 
 ## policy trees for finite-horizon solutions
-sol <- solve_POMDP(model = Tiger, horizon = 3, method = "incprune")
+sol <- solve_POMDP(model = Tiger, horizon = 4, method = "incprune")
 
 policy_graph(sol)
 
 plot_policy_graph(sol)
 # Note: the first number in the node id is the epoch.
+
+# plot the policy tree for an initial belief of 90\% that the tiger is to the left
+plot_policy_graph(sol, belief = c(0.9, 0.1))
 
 }
 \seealso{

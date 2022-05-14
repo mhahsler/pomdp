@@ -4,10 +4,17 @@
 #' policy tree for a finite-horizon solution.
 #' uses `plot` in \pkg{igraph} with appropriate plotting options.
 #'
-#' The policy graph nodes represent the segments in the value function. Each
-#' segment represents one or more believe states. If available, a pie chart (or the color) in each node
-#' represent the average belief of the belief states
-#' belonging to the node/segment. This can help with interpreting the policy graph.
+#' Each policy graph node represent a segment (or part of a hyperplane) of the value function. 
+#' Each node represents one or more believe states. If available, a pie chart (or the color) in each node
+#' represent the central belief of the belief states
+#' belonging to the node (i.e., the center of the hyperplane segment). 
+#' This can help with interpreting the policy graph.
+#' 
+#' For converged POMDP solution a graph is produced, for finite-horizon solution a policy tree is produced. 
+#' The levels of the tree and the first number in the node label represent the epochs. Many algorithms produce
+#' unused policy graph nodes which are filtered to produce a clean tree structure. 
+#' Non-converged policies depend on the initial belief and if an initial belief is 
+#' specified, then different nodes will be filtered and the tree will look different. 
 #'
 #' First, the policy in the solved POMDP is converted into an [igraph] object using `policy_graph()`.
 #' Average beliefs for the graph nodes are estimated using `estimate_belief_for_node()` and then the igraph
@@ -26,10 +33,14 @@
 #' @import igraph
 #'
 #' @param x object of class [POMDP] containing a solved and converged POMDP problem.
+#' @param belief the initial belief is used to mark the initial belief state in the 
+#' grave of a converged solution and to identify the root node in a policy graph for a finite-horizon solution.
+#' If `NULL` then the belief is taken from the model definition.
 #' @param show_belief logical; estimate belief proportions? If `TRUE` then `estimate_belief_for_nodes()` is used
 #'  and the belief is visualized as a pie chart in each node.
 #' @param legend logical; display a legend for colors used belief proportions?
-#' @param engine The plotting engine to be used.
+#' @param engine The plotting engine to be used. For `"visNetwork"`, `flip.y = FALSE` can be used
+#'   to show the root node on top. 
 #' @param col colors used for the states.
 #' @param ... parameters are passed on to `policy_graph()`, `estimate_belief_for_nodes()` and the functions
 #'   they use. Also, plotting options are passed on to the plotting engine [igraph::plot.igraph()]
@@ -95,22 +106,28 @@
 #' estimate_belief_for_nodes(sol, n = 100)
 #'
 #' ## policy trees for finite-horizon solutions
-#' sol <- solve_POMDP(model = Tiger, horizon = 3, method = "incprune")
+#' sol <- solve_POMDP(model = Tiger, horizon = 4, method = "incprune")
 #'
 #' policy_graph(sol)
 #' 
 #' plot_policy_graph(sol)
 #' # Note: the first number in the node id is the epoch.
+#'
+#' # plot the policy tree for an initial belief of 90% that the tiger is to the left
+#' plot_policy_graph(sol, belief = c(0.9, 0.1))
 #' 
 #' @export
-policy_graph <- function(x, show_belief = TRUE, col = NULL, ...) {
+policy_graph <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) {
   .solved_POMDP(x)
-  ## FIXME: add initial belief!
-  
   
   if (!x$solution$converged || length(x$solution$pg) > 1)
-    return(policy_graph_unconverged(x, show_belief, col = col, ...))
+    policy_graph_unconverged(x, belief, show_belief = show_belief, col = col, ...)
+  else
+    policy_graph_converged(x, belief, show_belief = show_belief, col = col, ...)
+}
   
+policy_graph_converged <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) { 
+   
   # create policy graph and belief proportions (average belief for each alpha vector)
   pg <- x$solution$pg[[1]]
   
@@ -147,13 +164,19 @@ policy_graph <- function(x, show_belief = TRUE, col = NULL, ...) {
   l <- do.call(rbind, l)
   l <- l[!is.na(l$to), ] # remove links to nowhere ('-' in pg)
   
-  # creating the initial graph
+  # creating graph
   policy_graph <- graph.edgelist(as.matrix(l[, 1:2]))
   edge.attributes(policy_graph) <- list(label = l$label)
   
+  # mark the node for the initial belief
+  if (is.null(belief))
+    initial_pg_node <-  x$solution$initial_pg_node
+  else
+    initial_pg_node <- reward_node_action(x, belief = belief)$pg_node
+    
   ### Note: the space helps with moving the id away from the pie cut.
   init <- rep(":   ", nrow(pg))
-  init[x$solution$initial_pg_node] <- ": initial belief"
+  init[initial_pg_node] <- ": initial belief"
   
   V(policy_graph)$label <- paste0(pg$node, init, "\n", pg$action)
   
@@ -185,7 +208,7 @@ policy_graph <- function(x, show_belief = TRUE, col = NULL, ...) {
   policy_graph
 }
 
-policy_graph_unconverged <- function(x, show_belief = TRUE, col = NULL, ...) {
+policy_graph_unconverged <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) {
   .solved_POMDP(x)
   
   pg <- x$solution$pg
@@ -202,8 +225,14 @@ policy_graph_unconverged <- function(x, show_belief = TRUE, col = NULL, ...) {
     pg[[o]][pg[["epoch"]] == epochs] <- NA
   }
   
+  # mark the node for the initial belief
+  if (is.null(belief))
+    initial_pg_node <-  x$solution$initial_pg_node
+  else
+    initial_pg_node <- reward_node_action(x, belief = belief)$pg_node
+  
   ## remove unused nodes
-  used <- paste0("1-", x$solution$initial_pg_node)
+  used <- paste0("1-", initial_pg_node)
   for(i in seq(epochs)) {
     used <- append(used, unlist(pg[pg[["epoch"]] == i & pg[["node"]] %in% used, observations]))
   }
@@ -308,6 +337,7 @@ policy_graph_unconverged <- function(x, show_belief = TRUE, col = NULL, ...) {
 #' @rdname policy_graph
 #' @export
 plot_policy_graph <- function(x,
+  belief = NULL,
   show_belief = TRUE,
   legend = TRUE,
   engine = c("igraph", "visNetwork"),
@@ -318,15 +348,15 @@ plot_policy_graph <- function(x,
   engine <- match.arg(engine)
   switch(
     engine,
-    igraph = .plot.igraph(x, show_belief, legend = legend, col = col, ...),
-    visNetwork = .plot.visNetwork(x, show_belief, legend = legend, col = col, ...)
+    igraph = .plot.igraph(x, belief, show_belief = show_belief, legend = legend, col = col, ...),
+    visNetwork = .plot.visNetwork(x, belief, show_belief = show_belief, legend = legend, col = col, ...)
   )
 }
 
 
 .plot.igraph <-
-  function(x, show_belief, legend, col, edge.curved = NULL, ...) {
-    pg <- policy_graph(x, belief = show_belief, col = col, ...)
+  function(x, belief = NULL, show_belief, legend, col, edge.curved = NULL, ...) {
+    pg <- policy_graph(x, belief, show_belief = show_belief, col = col, ...)
     
     if (is.null(edge.curved))
       edge.curved <- .curve_multiple_directed(pg)
