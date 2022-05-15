@@ -222,6 +222,8 @@ policy_graph_unconverged <- function(x, belief = NULL, show_belief = TRUE, col =
   pg[["node"]] <- paste0(pg[["epoch"]], "-", pg[["node"]])
   for(o in observations) {
     pg[[o]] <- paste0(pg[["epoch"]] + 1L, "-", pg[[o]])
+    
+    ## these should be NA. Make sure they are
     pg[[o]][pg[["epoch"]] == epochs] <- NA
   }
   
@@ -231,7 +233,7 @@ policy_graph_unconverged <- function(x, belief = NULL, show_belief = TRUE, col =
   else
     initial_pg_node <- reward_node_action(x, belief = belief)$pg_node
   
-  ## remove unused nodes
+  ## remove unreached nodes
   used <- paste0("1-", initial_pg_node)
   for(i in seq(epochs)) {
     used <- append(used, unlist(pg[pg[["epoch"]] == i & pg[["node"]] %in% used, observations]))

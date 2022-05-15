@@ -116,8 +116,9 @@
 #' - `converged` did the solution converge?
 #' - `initial_belief` used initial beliefs.
 #' - `total_expected_reward` reward from the initial beliefs.
-#' - `pg`, `initial_pg_node` a list representing the policy graph. A converged solution has
-#' only a single list elements.
+#' - `pg`, `initial_pg_node` a list representing the policy graph. The epochs are 
+#'  the list entries. A converged infinite-horizon solution has
+#' only a single list elements. Finite-horizon solutions may converge early resulting in a shorter list.
 #' - `belief_states` used belief states.
 #' - `alpha` value function as hyperplanes representing the nodes in the policy graph.
 #' - `policy` the policy.
@@ -498,11 +499,23 @@ solve_POMDP <- function(model,
           cat("Convergence: Finite-horizon POMDP converged early at epoch:",
             i  -  1,
             "\n")
-        converged <- i  -  1
+        converged <- TRUE
+        
+        # we only need to keep the first pg element with the graph
+        pg <- tail(pg, n = 1L)
+        alpha <- tail(alpha, n = 1L)
+        
         break
       }
     }
+   
+    ## make transitions in last epoch NA for non converged solutions
+    if (!converged)
+      pg[[1L]][, as.character(model$observations)] <- NA 
     
+    ## order by epoch
+    alpha <- rev(alpha)
+    pg <- rev(pg)
     
     if (method == "grid" &&
         !converged &&
@@ -510,9 +523,6 @@ solve_POMDP <- function(model,
       warning(
         "The grid method for finite horizon did not converge. The value function and the calculated reward values may not be valid with negative reward in the reward matrix. Use method 'simulate_POMDP()' to estimate the reward or use solution method 'incprune'."
       )
-    
-    alpha <- rev(alpha)
-    pg <- rev(pg)
     
   }
   

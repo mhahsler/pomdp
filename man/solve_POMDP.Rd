@@ -58,8 +58,9 @@ solver output (\code{solver_output}). The solution is a list with elements:
 \item \code{converged} did the solution converge?
 \item \code{initial_belief} used initial beliefs.
 \item \code{total_expected_reward} reward from the initial beliefs.
-\item \code{pg}, \code{initial_pg_node} a list representing the policy graph. A converged solution has
-only a single list elements.
+\item \code{pg}, \code{initial_pg_node} a list representing the policy graph. The epochs are
+the list entries. A converged infinite-horizon solution has
+only a single list elements. Finite-horizon solutions may converge early resulting in a shorter list.
 \item \code{belief_states} used belief states.
 \item \code{alpha} value function as hyperplanes representing the nodes in the policy graph.
 \item \code{policy} the policy.

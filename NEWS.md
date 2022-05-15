@@ -6,6 +6,7 @@
 * sample_belief_space() gained method 'trajectories'.
 * simulate_POMDP(): supports not epsilon-greedy policies.
 * observation_matrix() et al. functions are now created with a separate function ending in _function.
+* fixed converged finite-horizon case. It now only returns the converged graph/alpha.
 
 # pomdp 1.0.1 (03/25/2022)
 

@@ -149,11 +149,6 @@
   )
   pg <- pg + 1 #index has to start from 1 not 0
   
-  ### FIXME: I am not sure we need this now
-  #if (dim(pg)[2]==1 ) {
-  #  pg <- t(pg)
-  #}
-  
   # renaming the columns and actions
   colnames(pg) <-
     c("node", "action", as.character(model$observations))
