@@ -149,8 +149,8 @@ if (!is.null(terminal_values))
   
   # package solution
   policy <- sarsop::read_policyx(policy_file)
-  pg <- data.frame(node = 1:length(policy$action),
-    action = model$actions[policy$action])
+  pg <- data.frame(node = seq_along(policy$action),
+    action = factor(model$actions[policy$action], levels = model$actions))
   alpha <- t(policy$vectors)
   colnames(alpha) = model$states
   

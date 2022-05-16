@@ -27,7 +27,7 @@ Three_doors <- POMDP(
     "open-center" =  "uniform",
     "open-right" = "uniform"),
   
-  # the rew helper expects: action, start.state, end.state, observation, value
+  # the raw helper expects: action, start.state, end.state, observation, value
   reward = rbind(
     R_("listen",     "*",           "*", "*", -1  ),
     R_("open-left",  "*",           "*", "*", 10),
@@ -43,11 +43,11 @@ Three_doors
 save(Three_doors, file = "data/Three_doors.rda")
 
 
-sol <- solve_POMDP(Three_doors)
-
-plot(sol)
-reward(sol)
-
-plot_belief_space(sol, projection = 1:3, n = 10000)
+#sol <- solve_POMDP(Three_doors)
+#
+#plot(sol)
+#reward(sol)
+#
+#plot_belief_space(sol, projection = 1:3, n = 10000)
 
 

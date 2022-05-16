@@ -13,6 +13,9 @@
 #'
 #' More details on specifying the model components can be found in the documentation
 #' for [POMDP].
+#'
+#' @family MDP
+#'
 #' @include POMDP.R
 #' @param states a character vector specifying the names of the states.
 #' @param actions a character vector specifying the names of the available
@@ -103,7 +106,35 @@ MDP <- function(states,
 }
 
 #' @export
-print.MDP <- print.POMDP
+print.MDP <- function(x, ...) {
+  writeLines(paste(paste(class(x), collapse = ", "),
+    "-",
+    x$name))
+  
+  if (!is.null(x$discount))
+    writeLines(sprintf("  Discount factor: %s",
+      paste(x$discount, collapse = "+")))
+  
+  if (!is.null(x$horizon))
+    writeLines(sprintf("  Horizon: %s epochs",
+      paste(x$horizon, collapse = " + ")))
+  
+  if (.solved_MDP(x))
+    writeLines(c(
+      "  Solved:",
+      sprintf("    Solution converged: %s",
+        x$solution$converged)
+      )
+    )
+  
+  writeLines(strwrap(
+    paste("List components:", paste(sQuote(names(
+      x
+    )), collapse = ", "), "\n"),
+    indent = 2,
+    exdent = 4
+  ))
+}
 
 #' @rdname MDP
 #' @export
@@ -117,14 +148,33 @@ MDP2POMDP <- function(x) {
   ident_matrix <- diag(length(x$states))
   dimnames(ident_matrix) <- list(x$states, x$observations)
   
-  x$observation_prob <- list('*' = ident_matrix)
+  x$observation_prob <- sapply(x$actions, FUN = function(x) ident_matrix, simplify = FALSE)
   class(x) <- c("MDP", "POMDP", "list")
   x
 }
 
-.solved_MDP <- function(x) {
+.solved_MDP <- function(x, stop = FALSE) {
   if (!inherits(x, "MDP"))
-    stop("x needs to be a POMDP object!")
-  if (is.null(x$solution))
+    stop("x needs to be a MDP object!")
+  solved <- !is.null(x$solution)
+  if (stop && !solved)
     stop("x needs to be a solved MDP. Use solve_MDP() first.")
+  
+  solved
+}
+
+## this is .get_pg_index for MDPs
+.get_pol_index <- function(model, epoch) {
+  
+  epoch <- as.integer(epoch)
+  if(epoch < 1L) stop("Epoch has to be >= 1")
+  
+  ### (converged) infinite horizon POMDPs. We ignore epoch.
+  if (length(model$solution$policy) == 1L) return(1L)
+  
+  ### regular epoch for finite/infinite horizon case
+  if (epoch > length(model$solution$policy)) 
+    stop("MDP model has only a policy up to epoch ", length(model$solution$policy))
+      
+  return(epoch)
 }

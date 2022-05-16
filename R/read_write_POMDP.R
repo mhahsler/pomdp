@@ -38,6 +38,9 @@ format_fixed <- function(x, digits = 7, debug = "unknown") {
 write_POMDP <- function(x, file, digits = 7) {
   if (!inherits(x, "POMDP"))
     stop("model needs to be a POMDP model use POMDP()!")
+  
+  x <- check_and_fix_MDP(x) 
+  
   with(x,
     {
       number_of_states        <- length(states)
@@ -47,6 +50,7 @@ write_POMDP <- function(x, file, digits = 7) {
       # we only support rewards and not cost
       values <- "reward"
       
+      ## TODO: we currently convert function to matrix 
       if (is.function(transition_prob))
         transition_prob <- transition_matrix(x)
       if (is.function(observation_prob))
@@ -84,7 +88,7 @@ write_POMDP <- function(x, file, digits = 7) {
       if (!is.null(start)) {
         ## if the starting beliefs are given by enumerating the probabilities for each state
         if (is.numeric(start)) {
-          if (length(start) == length(states) && zapsmall(sum(start) - 1) == 0) {
+          if (length(start) == length(states) && sum1(start)) {
             code <-
               paste0(code,
                 "start: ",
@@ -138,11 +142,16 @@ write_POMDP <- function(x, file, digits = 7) {
           var_cols <- seq_len(ncol(x) - 1L)
           value_col <- ncol(x)
           
-          # fix indexing
-          for (j in var_cols)
+          # fix indexing and convert factor to character
+          for (j in var_cols) {
             if (is.numeric(x[[j]]))
               x[[j]] <- as.integer(x[[j]]) - 1L
-          
+            if (is.factor(x[[j]])) {
+              x[[j]] <- as.character(x[[j]])
+              x[[j]][is.na(x[[j]])] <- "*"
+            }
+          }
+            
           # write lines
           for (i in 1:nrow(x)) {
             code <- paste0(
@@ -179,7 +188,6 @@ write_POMDP <- function(x, file, digits = 7) {
       
       ### Transition Probabilities
       if (is.data.frame(transition_prob)) {
-        check_df(transition_prob, T_, "transition_prob")
         code <-
           paste0(code, format_POMDP_df(transition_prob, "T", digits))
       } else{
@@ -199,7 +207,6 @@ write_POMDP <- function(x, file, digits = 7) {
       }
       ### Observation Probabilities
       if (is.data.frame(observation_prob)) {
-        check_df(observation_prob, O_, "observation_prob")
         code <-
           paste0(code, format_POMDP_df(observation_prob, "O", digits))
       } else{
@@ -218,7 +225,6 @@ write_POMDP <- function(x, file, digits = 7) {
       
       ### Rewards/Costs
       if (is.data.frame(reward)) {
-        check_df(reward, R_, "reward")
         code <-
           paste0(code, format_POMDP_df(reward, "R", digits))
       } else {

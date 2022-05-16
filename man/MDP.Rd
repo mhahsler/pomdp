@@ -107,6 +107,12 @@ sol2
 policy(sol2)
 plot_value_function(sol2)
 }
+\seealso{
+Other MDP: 
+\code{\link{simulate_MDP}()},
+\code{\link{solve_MDP}()}
+}
 \author{
 Michael Hahsler
 }
+\concept{MDP}

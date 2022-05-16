@@ -4,9 +4,7 @@
 #'
 #' Simulate trajectories through a POMDP. The start state for each
 #' trajectory is randomly chosen using the specified belief. The belief is used to choose actions
-#' from the policy and then updated using observations. For solved POMDPs
-#' the optimal actions will be chosen, for unsolved POMDPs random actions will
-#' be used.
+#' from the the epsilon-greedy policy and then updated using observations.
 #'
 #' @family POMDP
 #' @importFrom stats runif
@@ -146,7 +144,7 @@ simulate_POMDP <-
     bs <- replicate(n, expr = {
       # find a initial state
       
-      s <- sample(states, 1, prob = belief)
+      s <- sample(states, 1L, prob = belief)
       b <- belief
       
       action_cnt <- rep(0L, length(actions))
@@ -156,6 +154,7 @@ simulate_POMDP <-
       names(state_cnt) <- states
       
       rew <- 0
+      e <- 1L
       
       if (visited_beliefs)
         b_all <- matrix(
@@ -179,20 +178,20 @@ simulate_POMDP <-
         # find action (if we have no solution then take a random action) and update state and sample obs
         
         if (runif(1) < epsilon) {
-          a <- sample(actions, 1)
+          a <- sample.int(length(actions), 1L, replace = TRUE)
         } else {
-          #  convert index for converged POMDPs
-          e <- .get_pg_index(model, j)
+          if(!model$solution$converged)
+            e <- .get_pg_index(model, j)
           a <-
-            as.character(model$solution$pg[[e]][which.max(model$solution$alpha[[e]] %*% b), "action"])
+            as.integer(model$solution$pg[[e]][["action"]][which.max(model$solution$alpha[[e]] %*% b)])
         }
         
         action_cnt[a] <- action_cnt[a] + 1L
         state_cnt[s] <- state_cnt[s] + 1L
         
         s_prev <- s
-        s <- sample(states, 1, prob = trans_m[[a]][s,])
-        o <- sample(obs, 1, prob = obs_m[[a]][s,])
+        s <- sample.int(length(states), 1L, prob = trans_m[[a]][s,])
+        o <- sample.int(length(obs), 1L, prob = obs_m[[a]][s,])
         
         rew <- rew + rew_m[[a]][[s_prev]][s, o] * disc ^ (j - 1L)
         
@@ -216,13 +215,13 @@ simulate_POMDP <-
       
     }, simplify = FALSE)
     
-    ac <- Reduce(rbind, lapply(bs, attr, "action_cnt"))
+    ac <- do.call(rbind, lapply(bs, attr, "action_cnt"))
     rownames(ac) <- NULL
-    sc <- Reduce(rbind, lapply(bs, attr, "state_cnt"))
+    sc <- do.call(rbind, lapply(bs, attr, "state_cnt"))
     rownames(sc) <- NULL
-    rew <- Reduce(rbind, lapply(bs, attr, "reward"))
+    rew <- do.call(rbind, lapply(bs, attr, "reward"))
     rownames(rew) <- NULL
-    bs <- Reduce(rbind, bs)
+    bs <- do.call(rbind, bs)
     rownames(bs) <- NULL
     
     attr(bs, "action_cnt") <- ac

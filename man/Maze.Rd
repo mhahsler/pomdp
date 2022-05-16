@@ -28,7 +28,7 @@ We represent the maze states as a matrix with 3 rows (north/south) and
 The # (state \code{s_5}) in the middle of the maze is an obstruction and not reachable.
 Rewards are associated with transitions. The default reward (penalty) is -0.04.
 Transitioning to + (state \code{s_12}) gives a reward of 1.0, transitioning to - (state \code{s_11})
-has a reward of -1.0. States \code{s_11} and \code{s_12} are terminal states.
+has a reward of -1.0. States \code{s_11} and \code{s_12} are terminal (absorbing) states.
 
 Actions are movements (\code{north}, \code{south}, \code{east}, \code{west}). The actions are unreliable with a .8 chance
 to move in the correct direction and a 0.1 chance to instead to move in a

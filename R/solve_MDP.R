@@ -1,5 +1,4 @@
-# TODO:
-# * actions(s)
+# TODO: deal with available actions for states actions(s)
 
 #' Solve an MDP Problem
 #'

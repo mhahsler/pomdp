@@ -118,7 +118,7 @@
 #' 
 #' @export
 policy_graph <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) {
-  .solved_POMDP(x)
+  .solved_POMDP(x, stop = TRUE)
   
   if (!x$solution$converged || length(x$solution$pg) > 1)
     policy_graph_unconverged(x, belief, show_belief = show_belief, col = col, ...)
@@ -209,7 +209,6 @@ policy_graph_converged <- function(x, belief = NULL, show_belief = TRUE, col = N
 }
 
 policy_graph_unconverged <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) {
-  .solved_POMDP(x)
   
   pg <- x$solution$pg
   observations <- x$observations
@@ -345,7 +344,6 @@ plot_policy_graph <- function(x,
   engine = c("igraph", "visNetwork"),
   col = NULL,
   ...) {
-  .solved_POMDP(x)
   
   engine <- match.arg(engine)
   switch(

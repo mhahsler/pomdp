@@ -18,7 +18,7 @@
 #' The # (state `s_5`) in the middle of the maze is an obstruction and not reachable.  
 #' Rewards are associated with transitions. The default reward (penalty) is -0.04.
 #' Transitioning to + (state `s_12`) gives a reward of 1.0, transitioning to - (state `s_11`)
-#' has a reward of -1.0. States `s_11` and `s_12` are terminal states.
+#' has a reward of -1.0. States `s_11` and `s_12` are terminal (absorbing) states.
 #' 
 #' Actions are movements (`north`, `south`, `east`, `west`). The actions are unreliable with a .8 chance
 #' to move in the correct direction and a 0.1 chance to instead to move in a 

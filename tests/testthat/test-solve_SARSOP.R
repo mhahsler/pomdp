@@ -27,3 +27,4 @@ if(sarsop::assert_has_appl()) {
   # check alpha vectors
   expect_true(all((pol_SARSOP[,1:2] - pol_POMDP[,1:2]) < 1e-3))
 }
+

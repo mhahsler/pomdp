@@ -43,5 +43,9 @@ round_stochastic <- function(x, digits = 3) {
   r
 }
 
-
-
+sum1 <- function(x) {
+  if(is.matrix(x))
+    all(apply(x, MARGIN = 1, sum1))
+  else
+    zapsmall(sum(x) - 1) == 0
+}

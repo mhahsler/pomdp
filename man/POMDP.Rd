@@ -56,9 +56,9 @@ matrix specifying the terminal rewards via a terminal value function (e.g.,
 the alpha component produced by solve_POMDP).  A single 0 specifies that all
 terminal values are zero.}
 
-\item{start}{Specifies the initial probabilities for each state (i.e., the
-initial belief), typically as a vector or the string \code{'uniform'}
-(default).  This belief is used to calculate the total expected cumulative
+\item{start}{Specifies the initial belief state of the agent. A vector with the
+probability for each state is supplied. Also the string \code{'uniform'}
+(default) can be used.  The belief is used to calculate the total expected cumulative
 reward. It is also used by some solvers. See Details section for more
 information.}
 
@@ -67,7 +67,7 @@ information.}
 \item{action, start.state, end.state, observation, probability, value}{Values
 used in the helper functions \code{O_()}, \code{R_()}, and \code{T_()} to
 create an entry for \code{observation_prob}, \code{reward}, or
-\code{transistion_prob} above, respectively. The default value \code{'*"'}
+\code{transition_prob} above, respectively. The default value \code{'*"'}
 matches any action/state/observation.}
 }
 \value{
@@ -103,8 +103,9 @@ the size of a set we will use cardinality, e.g., the number of actions is
 
 State names, actions and observations can be specified as strings or index numbers
 (e.g., \code{start.state} can be specified as the index of the state in \code{states}).
-For the specification as data.frames below, \code{'*'} can be used to mean
-any  \code{start.state}, \code{end.state}, \code{action} or \code{observation}.
+For the specification as data.frames below, \code{'*'} or \code{NA} can be used to mean
+any  \code{start.state}, \code{end.state}, \code{action} or \code{observation}. Note that \code{'*'} is internally
+always represented as an \code{NA}.
 
 The specification below map to the format used by pomdp-solve
 (see \url{http://www.pomdp.org}).
@@ -159,14 +160,12 @@ that returns the reward.
 
 \strong{Start Belief}
 
-This belief is used to calculate the total expected cumulative reward
-printed with the solved model.  The function \code{\link[=reward]{reward()}} can be
+The initial belief state of the agent is a distribution over the states. It is used to calculate the
+total expected cumulative reward printed with the solved model. The function \code{\link[=reward]{reward()}} can be
 used to calculate rewards for any belief.
 
 Some methods use this belief to decide which belief states to explore (e.g.,
-the finite grid method).  The default initial belief is a uniform
-distribution over all states. No initial belief state can be used by setting
-\code{start = NULL}.
+the finite grid method).
 
 Options to specify the start belief state are:
 \itemize{
@@ -175,8 +174,11 @@ of \eqn{|S|} probabilities, that add up to \eqn{1}.
 \item The string \code{"uniform"} for a uniform
 distribution over all states.
 \item An integer in the range \eqn{1} to \eqn{n} to specify the index of a single starting state.
-\item a string specifying the name of a single starting state.
+\item A string specifying the name of a single starting state.
 }
+
+The default initial belief is a uniform
+distribution over all states.
 
 \strong{Time-dependent POMDPs}
 

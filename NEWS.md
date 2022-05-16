@@ -5,8 +5,10 @@
 * reward() and reward_node_action() have now been separated.
 * sample_belief_space() gained method 'trajectories'.
 * simulate_POMDP(): supports not epsilon-greedy policies.
-* observation_matrix() et al. functions are now created with a separate function ending in _function.
+* added x_prob() and x_val() functions to access individual parts of the matrices.
 * fixed converged finite-horizon case. It now only returns the converged graph/alpha.
+* we use not internally NA to represent * in the POMDP definition.
+* actions, states and observations are now factors in most places.
 
 # pomdp 1.0.1 (03/25/2022)
 

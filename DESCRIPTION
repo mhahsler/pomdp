@@ -48,6 +48,7 @@ Collate:
     'reward.R'
     'round_stochchastic.R'
     'sample_belief_space.R'
+    'simulate_MDP.R'
     'simulate_POMDP.R'
     'solve_MDP.R'
     'solve_POMDP.R'

@@ -152,7 +152,7 @@
   # renaming the columns and actions
   colnames(pg) <-
     c("node", "action", as.character(model$observations))
-  pg[, 2] <- model$actions[pg[, 2]]
+  pg[, 2] <- factor(pg[, 2], levels = seq(length(model$actions)), labels = model$actions)
   pg
 }
 

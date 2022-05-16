@@ -129,6 +129,10 @@ policy(maze_solved)
 Other solver: 
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()}
+
+Other MDP: 
+\code{\link{MDP}()},
+\code{\link{simulate_MDP}()}
 }
 \author{
 Michael Hahsler
