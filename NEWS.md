@@ -1,4 +1,4 @@
-# pomdp 1.0.1-1 (xx/xx/xxxx)
+# pomdp 1.0.2 (05/17/2022)
 
 * policy_graph() can now produce policy trees for finite-horizon problems and the initial belief can be specified.
 * simulate_POMDP(): fixed bug with not using horizon.
