@@ -1,3 +1,6 @@
+# pomdp 1.0.3 (05/18/2022)
+* Fixed rounding issue on some architectures.
+
 # pomdp 1.0.2 (05/17/2022)
 
 * policy_graph() can now produce policy trees for finite-horizon problems and the initial belief can be specified.

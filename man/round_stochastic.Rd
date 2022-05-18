@@ -4,7 +4,7 @@
 \alias{round_stochastic}
 \title{Round a stochastic vector or a row-stochastic matrix}
 \usage{
-round_stochastic(x, digits = 3)
+round_stochastic(x, digits = getOption("digits"))
 }
 \arguments{
 \item{x}{a stochastic vector or a row-stochastic matrix.}
@@ -22,12 +22,13 @@ that the rows still sum up to 1.
 Rounds and adjusts one entry such that the rounding error is the smallest.
 }
 \examples{
+# a vector that is off by 1e-8
+x <- c(0.25 + 1e-8, 0.25, 0.5)
 
-x <- c(0.25, 0.25, 0.5)
-round_stochastic(x, 2)
-round_stochastic(x, 1)
-round_stochastic(x, 0)
-
+round_stochastic(x)
+round_stochastic(x, digits = 2)
+round_stochastic(x, digits = 1)
+round_stochastic(x, digits = 0)
 }
 \seealso{
 \link{round}
