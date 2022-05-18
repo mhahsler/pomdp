@@ -3,6 +3,10 @@ title: "R package pomdp: Partially Observable Markov Decision Processes"
 output: github_document
 ---
 
+```{r echo=FALSE}
+options(digits = 2)
+knitr::opts_chunk$set(tidy = TRUE, message = FALSE, fig.path = 'inst/README_files/')
+```
 
 [![CRAN version](https://www.r-pkg.org/badges/version/pomdp)](https://cran.r-project.org/package=pomdp)
 [![R build status](https://github.com/mhahsler/pomdp/workflows/R-CMD-check/badge.svg)](https://github.com/mhahsler/pomdp/actions)
@@ -36,11 +40,6 @@ devtools::install_github("mhahsler/pomdp")
 
 ## Usage
 
-```{r echo=FALSE}
-options(digits = 2)
-knitr::opts_chunk$set(tidy = TRUE, message = FALSE)
-```
-
 Solving the simple infinite-horizon Tiger problem.
 ```{r}
 library("pomdp")
@@ -53,11 +52,11 @@ sol <- solve_POMDP(model = Tiger)
 sol
 ```
 
-```{r}
+```{r value_function, fig.height=4}
 plot_value_function(sol, ylim = c(0,20))
 ```
 
-```{r}
+```{r policy_graph, fig.height=7}
 plot_policy_graph(sol)
 ```
 

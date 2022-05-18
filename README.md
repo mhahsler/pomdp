@@ -79,16 +79,16 @@ sol
     ##     'start', 'solution', 'solver_output'
 
 ``` r
-plot_value_function(sol, ylim = c(0,20))
+plot_value_function(sol, ylim = c(0, 20))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](inst/README_files/value_function-1.png)<!-- -->
 
 ``` r
 plot_policy_graph(sol)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](inst/README_files/policy_graph-1.png)<!-- -->
 
 ## References
 
