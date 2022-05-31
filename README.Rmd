@@ -57,7 +57,7 @@ sol
 ```
 
 ```{r value_function, fig.height=4}
-plot_value_function(sol, ylim = c(0,20))
+plot_value_function(sol, ylim = c(0, 20))
 ```
 
 ```{r policy_graph, fig.height=7}
