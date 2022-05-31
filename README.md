@@ -2,11 +2,11 @@ R package pomdp: Partially Observable Markov Decision Processes
 ================
 
 [![CRAN
-version](https://www.r-pkg.org/badges/version/pomdp)](https://cran.r-project.org/package=pomdp)
-[![R build
-status](https://github.com/mhahsler/pomdp/workflows/R-CMD-check/badge.svg)](https://github.com/mhahsler/pomdp/actions)
+version](http://www.r-pkg.org/badges/version/pomdp)](https://CRAN.R-project.org/package=pomdp)
+[![stream r-universe
+status](https://mhahsler.r-universe.dev/badges/pomdp)](https://mhahsler.r-universe.dev/ui#package:pomdp)
 [![CRAN RStudio mirror
-downloads](https://cranlogs.r-pkg.org/badges/pomdp)](https://cran.r-project.org/package=pomdp)
+downloads](http://cranlogs.r-pkg.org/badges/grand-total/pomdp)](https://CRAN.R-project.org/package=pomdp)
 
 Provides the infrastructure to define and analyze the solutions of
 Partially Observable Markov Decision Processes (POMDP) models. The
@@ -40,11 +40,8 @@ The package provides the following algorithms:
 install.packages("pomdp")
 ```
 
-**Current development version:** install from GitHub (needs devtools).
-
-``` r
-devtools::install_github("mhahsler/pomdp")
-```
+**Current development version:** Install from
+[r-universe.](https://mhahsler.r-universe.dev/ui#package:pomdp)
 
 ## Usage
 
