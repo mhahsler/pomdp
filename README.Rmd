@@ -1,7 +1,9 @@
 ---
-title: "R package pomdp: Partially Observable Markov Decision Processes"
 output: github_document
 ---
+
+# <img src='man/figures/logo.svg' align="right" height="139" /> R package pomdp: Partially Observable Markov Decision Processes
+
 
 ```{r echo=FALSE}
 options(digits = 2)
@@ -18,7 +20,7 @@ library(stringr)
   cat(str_interp("[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/grand-total/${pkg})](https://CRAN.R-project.org/package=${pkg})\n"))
 ```
 
-Provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Processes (POMDP) models. The package uses the solvers from [pomdp-solve](http://www.pomdp.org/code/) (Cassandra, 2015) available in the R package [**pomdpSolve**](https://github.com/mhahsler/pomdpSolve) to solve POMDPs using
+Provides the infrastructure to define and analyze the solutions of optimal control problems formulated as Partially Observable Markov Decision Processes (POMDP). The package uses the solvers from [pomdp-solve](http://www.pomdp.org/code/) (Cassandra, 2015) available in the R package [**pomdpSolve**](https://github.com/mhahsler/pomdpSolve) to solve POMDPs using
 a variety of algorithms.
 
 The package provides the following algorithms:
