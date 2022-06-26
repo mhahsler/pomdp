@@ -2,22 +2,11 @@
 output: github_document
 ---
 
-# <img src='man/figures/logo.svg' align="right" height="139" /> R package pomdp: Partially Observable Markov Decision Processes
-
-
-```{r echo=FALSE}
-options(digits = 2)
-knitr::opts_chunk$set(tidy = TRUE, message = FALSE, fig.path = 'inst/README_files/')
-```
-
 ```{r echo=FALSE, results = 'asis'}
 pkg <- 'pomdp'
 
-library(stringr)
-
-  cat(str_interp("[![CRAN version](http://www.r-pkg.org/badges/version/${pkg})](https://CRAN.R-project.org/package=${pkg})\n"))
-  cat(str_interp("[![stream r-universe status](https://mhahsler.r-universe.dev/badges/${pkg})](https://mhahsler.r-universe.dev/ui#package:${pkg})\n"))
-  cat(str_interp("[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/grand-total/${pkg})](https://CRAN.R-project.org/package=${pkg})\n"))
+source("https://raw.githubusercontent.com/mhahsler/pkg_helpers/main/pkg_helpers.R")
+pkg_title(pkg)
 ```
 
 Provides the infrastructure to define and analyze the solutions of optimal control problems formulated as Partially Observable Markov Decision Processes (POMDP). The package uses the solvers from [pomdp-solve](http://www.pomdp.org/code/) (Cassandra, 2015) available in the R package [**pomdpSolve**](https://github.com/mhahsler/pomdpSolve) to solve POMDPs using
@@ -35,14 +24,9 @@ The package provides the following algorithms:
   - __Finite grid algorithm__ (Cassandra 2015), a variation of point-based value iteration to solve larger POMDPs (__PBVI__; see Pineau 2003) without dynamic belief set expansion.
   - __SARSOP__ (Kurniawati, Hsu and Lee 2008), point-based algorithm that approximates optimally reachable belief spaces for infinite-horizon problems (via package [sarsop](https://github.com/boettiger-lab/sarsop)).
 
-## Installation
-
-__Stable CRAN version:__ install from within R with
-```{r eval=FALSE}
-install.packages("pomdp")
+```{r echo=FALSE, results = 'asis'}
+pkg_install(pkg)
 ```
-
-__Current development version:__ Install from [r-universe.](https://mhahsler.r-universe.dev/ui#package:pomdp)
 
 ## Usage
 
