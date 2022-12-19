@@ -485,6 +485,8 @@ print.POMDP <- function(x, ...) {
   if (.solved_POMDP(x))
     writeLines(c(
       "  Solved:",
+      sprintf("    Method: %s",
+        x$solution$method),
       sprintf("    Solution converged: %s",
         x$solution$converged),
       sprintf(
