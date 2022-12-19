@@ -24,10 +24,10 @@ format_fixed <- function(x, digits = 7, debug = "unknown") {
 #' @param x an object of class [POMDP].
 #' @param digits precision for writing numbers (digits after the decimal
 #' point).
-#' @param file a file name.
+#' @param file a file name. `read_POMDP()` also accepts [connections] including URLs.
 #' @return `read_POMDP()` returns a [POMDP] object.
 #' @author Hossein Kamalzadeh, Michael Hahsler
-#' @references POMDP solver website: http://www.pomdp.org
+#' @references POMDP solver website: https://www.pomdp.org
 #' @keywords IO
 #' @examples
 #' data(Tiger)

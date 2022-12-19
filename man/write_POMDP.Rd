@@ -12,7 +12,7 @@ read_POMDP(file)
 \arguments{
 \item{x}{an object of class \link{POMDP}.}
 
-\item{file}{a file name.}
+\item{file}{a file name. \code{read_POMDP()} also accepts \link{connections} including URLs.}
 
 \item{digits}{precision for writing numbers (digits after the decimal
 point).}
@@ -30,7 +30,7 @@ data(Tiger)
 write_POMDP(Tiger, file = stdout())
 }
 \references{
-POMDP solver website: http://www.pomdp.org
+POMDP solver website: https://www.pomdp.org
 }
 \seealso{
 Other POMDP: 
