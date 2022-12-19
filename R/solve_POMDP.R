@@ -100,6 +100,8 @@
 #' section).
 #' @param discount discount factor in range \eqn{[0, 1]}. If `NULL`, then the
 #' discount factor specified in `model` will be used.
+#' @param initial_belief An initial belief vector. If `NULL`, then the
+#' initial belief specified in `model` (as start) will be used.
 #' @param terminal_values a vector with the terminal utility values for each state or a
 #' matrix specifying the terminal rewards via a terminal value function (e.g.,
 #' the alpha components produced by [solve_POMDP()]).  If `NULL`, then, if available,
@@ -301,6 +303,7 @@
 solve_POMDP <- function(model,
   horizon = NULL,
   discount = NULL,
+  initial_belief = NULL,
   terminal_values = NULL,
   method = "grid",
   digits = 7,
@@ -321,6 +324,10 @@ solve_POMDP <- function(model,
   if (is.null(horizon))
     horizon <- Inf
   model$horizon <- horizon
+  
+  if (!is.null(initial_belief)) {
+    model$start <- initial_belief
+  }
   
   # time-dependent POMDP? (horizon is a vector of length >1)
   if (.timedependent_POMDP(model))

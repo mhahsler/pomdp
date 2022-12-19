@@ -9,6 +9,7 @@ solve_POMDP(
   model,
   horizon = NULL,
   discount = NULL,
+  initial_belief = NULL,
   terminal_values = NULL,
   method = "grid",
   digits = 7,
@@ -31,6 +32,9 @@ section).}
 
 \item{discount}{discount factor in range \eqn{[0, 1]}. If \code{NULL}, then the
 discount factor specified in \code{model} will be used.}
+
+\item{initial_belief}{An initial belief vector. If \code{NULL}, then the
+initial belief specified in \code{model} (as start) will be used.}
 
 \item{terminal_values}{a vector with the terminal utility values for each state or a
 matrix specifying the terminal rewards via a terminal value function (e.g.,
