@@ -149,14 +149,6 @@ sol <- solve_POMDP(model = Tiger, horizon = 10, method = "incprune")
 
 plot_policy_graph(sol, vertex.size = 8, edge.arrow.size = .1, 
   vertex.label.cex = .5, edge.label.cex = .5)  
-
-
-pg <- policy_graph(sol)
-plot(simplify(pg, edge.attr.comb = toString), vertex.size = 8, edge.arrow.size = .1, 
-  vertex.label.cex = .5, edge.label.cex = .5)
-
-plot(simplify(pg, edge.attr.comb = toString)
-  
 }
 \seealso{
 Other policy: 

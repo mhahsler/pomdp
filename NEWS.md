@@ -1,3 +1,6 @@
+# pomdp 1.0.3-1 (xx/xx/2022)
+* Added model normalization 
+
 # pomdp 1.0.3 (05/18/2022)
 * Fixed rounding issue on some architectures.
 

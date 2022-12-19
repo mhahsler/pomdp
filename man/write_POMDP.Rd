@@ -35,12 +35,12 @@ POMDP solver website: https://www.pomdp.org
 \seealso{
 Other POMDP: 
 \code{\link{POMDP}()},
+\code{\link{matrix_extractions}},
 \code{\link{plot_belief_space}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()},
-\code{\link{transition_matrix}()},
 \code{\link{update_belief}()}
 }
 \author{

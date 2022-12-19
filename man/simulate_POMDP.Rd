@@ -86,11 +86,11 @@ lines(density(sim[, 1], bw = .05)); axis(2); title(ylab = "Density")
 \seealso{
 Other POMDP: 
 \code{\link{POMDP}()},
+\code{\link{matrix_extractions}},
 \code{\link{plot_belief_space}()},
 \code{\link{sample_belief_space}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()},
-\code{\link{transition_matrix}()},
 \code{\link{update_belief}()},
 \code{\link{write_POMDP}()}
 }

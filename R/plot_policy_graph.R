@@ -121,14 +121,6 @@
 #' 
 #' plot_policy_graph(sol, vertex.size = 8, edge.arrow.size = .1, 
 #'   vertex.label.cex = .5, edge.label.cex = .5)  
-#'
-#'
-#' pg <- policy_graph(sol)
-#' plot(simplify(pg, edge.attr.comb = toString), vertex.size = 8, edge.arrow.size = .1, 
-#'   vertex.label.cex = .5, edge.label.cex = .5)
-#'
-#' plot(simplify(pg, edge.attr.comb = toString)
-#'   
 #' @export
 policy_graph <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) {
   .solved_POMDP(x, stop = TRUE)

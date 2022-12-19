@@ -2,16 +2,26 @@
 #'
 #' Converts the description of transition probabilities and observation
 #' probabilities in a POMDP into a list of matrices. Individual values or parts of the matrices
-#' can be more efficiently retrieved using the functions ending `_prob` and `_val`.
+#' can be more efficiently retrieved using the functions ending `_prob` and `_val`. 
 #'
-#' See Details section in [POMDP] for details.
+#' `normalize_POMDP()` returns a new POMDP definition where `transition_prob`, `observations_prob`,
+#' `reward`, and `start` are normalized to (lists of) matrices and vectors to make access easy. 
+#' Also, `states`, `actions`, and `observations` are ordered as given in the problem definition to make safe
+#' access using numerical indices possible.
+#' 
+#' `start_vector` normalizes the initial belief vector.
+#' 
+#' See Details section in [POMDP] for more details about possible formats for `transition_prob`, `observations_prob`,
+#' `reward`, and `start`.
 #'
 #' @family POMDP
+#' @name matrix_extractions
 #' 
 #' @param x A [POMDP] object.
 #' @param episode Episode used for time-dependent POMDPs ([POMDP]).
 #' @param action only return the matrix/value for a given action.
-#' @param start.state,end.state,observation name of the state or observation. 
+#' @param start.state,end.state name of the state.
+#' @param observation name of observation. 
 #' @return A list or a list of lists of matrices.
 #' @author Michael Hahsler
 #' @examples
@@ -33,7 +43,15 @@
 #' reward_matrix(Tiger)
 #' reward_val(Tiger, action = "listen", start.state = "tiger")
 #'
-#' # Visualize transition matrix for action 'open-left'
+#' # Translate the initial belief vector
+#' Tiger$start
+#' start_vector(Tiger)
+#' 
+#' # Normalize the whole model
+#' Tiger_norm <- normalize_POMDP(Tiger)
+#' Tiger_norm$transition_prob
+#'
+#' ## Visualize transition matrix for action 'open-left'
 #' library("igraph")
 #' g <- graph_from_adjacency_matrix(transition_matrix(Tiger)$"open-left", weighted = TRUE)
 #' edge_attr(g, "label") <- edge_attr(g, "weight")
@@ -68,13 +86,13 @@ transition_matrix <- function(x, episode = 1, action = NULL) {
 
 ## TODO: make the access functions more efficient for a single value
 
-#' @rdname transition_matrix
+#' @rdname matrix_extractions
 #' @export
 transition_prob <- function(x, action, start.state, end.state, episode = 1) {
   transition_matrix(x, episode = 1, action = action)[start.state, end.state]
 }
 
-#' @rdname transition_matrix
+#' @rdname matrix_extractions
 #' @export
 observation_matrix <- function(x, episode = 1, action = NULL) {
   if(is.null(x$observation_prob))
@@ -91,13 +109,13 @@ observation_matrix <- function(x, episode = 1, action = NULL) {
   )
 }
 
-#' @rdname transition_matrix
+#' @rdname matrix_extractions
 #' @export
 observation_prob <- function(x, action, end.state, observation, episode = 1) {
   observation_matrix(x, episode = 1, action = action)[end.state, observation]
 }
   
-#' @rdname transition_matrix
+#' @rdname matrix_extractions
 #' @export
 reward_matrix <- function(x, episode = 1, action = NULL, start.state = NULL) {
   ## action list of s' x o matrices
@@ -106,11 +124,28 @@ reward_matrix <- function(x, episode = 1, action = NULL, start.state = NULL) {
   .translate_reward(x, episode = episode, action = action, start.state = start.state)
 }
 
-#' @rdname transition_matrix
+#' @rdname matrix_extractions
 #' @export
 reward_val <- function(x, action, start.state, end.state, observation, episode = 1) {
   reward_matrix(x, episode = 1, action = action, start.state = start.state)[end.state, observation]
 }
+
+#' @rdname matrix_extractions
+#' @export
+start_vector <- function(x) {
+  .translate_belief(x$start, model = x)
+}
+
+#' @rdname matrix_extractions
+#' @export
+normalize_POMDP <- function(x, episode = 1) {
+  x$start <- start_vector(x)
+  x$transition_prob <- transition_matrix(x, episode)
+  x$observation_prob <- observation_matrix(x, episode)
+  x$reward <- reward_matrix(x, episode) 
+  x
+}
+
 
 # translate different specifications of transitions, observations and rewards
 # into a list of matrices
