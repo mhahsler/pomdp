@@ -276,13 +276,15 @@ normalize_POMDP <- function(x, episode = 1) {
       p
     }, simplify = FALSE, USE.NAMES = TRUE)
     
-    ## translate from list of matrices (fix names, and deal with "identity", et al)
+    ## translate from list of matrices (fix order names, and deal with "identity", et al)
   } else if (is.list(prob)) {
+    ## fix order in list
     if (is.null(names(prob)))
       names(prob) <- actions
     else
       prob <- prob[actions]
     
+    ## translate to matrix and fix order or rows and columns
     from <- as.character(model[[from]])
     to <- as.character(model[[to]])
     
@@ -303,15 +305,10 @@ normalize_POMDP <- function(x, episode = 1) {
         
         if (!is.matrix(tr))
           stop("Probabilities cannot be converted to matrix.")
+        
+        ## fix names and order
         if (is.null(dimnames(tr)))
           dimnames(tr) <- list(from, to)
-        
-        if (is.null(prob))
-          stop(
-            "Field ",
-            field,
-            " is not available. Parsing some fields is not implemented for models read with read_POMDP!"
-          )
         else
           tr <- tr[from, to]
         
