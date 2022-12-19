@@ -27,7 +27,7 @@ VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL (>=3)
 Copyright: Copyright (C) Michael Hahsler and Hossein Kamalzadeh.
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.2
 Roxygen: list(markdown = TRUE)
 Collate: 
     'AAA_check_installed.R'

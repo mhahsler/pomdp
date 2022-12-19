@@ -12,7 +12,7 @@ pkg_title(pkg)
 Provides the infrastructure to define and analyze the solutions of optimal control problems formulated as Partially Observable Markov Decision Processes (POMDP). The package uses the solvers from [pomdp-solve](http://www.pomdp.org/code/) (Cassandra, 2015) available in the R package [**pomdpSolve**](https://github.com/mhahsler/pomdpSolve) to solve POMDPs using
 a variety of algorithms.
 
-The package provides the following algorithms:
+The package provides access to the following algorithms:
 
 * Exact value iteration
   - __Enumeration algorithm__ (Sondik 1971, Mohan 1982).
