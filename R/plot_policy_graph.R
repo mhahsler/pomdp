@@ -115,7 +115,20 @@
 #'
 #' # plot the policy tree for an initial belief of 90% that the tiger is to the left
 #' plot_policy_graph(sol, belief = c(0.9, 0.1))
+#'
+#' # Plotting a larger graph (see ? igraph.plotting for plotting options)
+#' sol <- solve_POMDP(model = Tiger, horizon = 10, method = "incprune")
 #' 
+#' plot_policy_graph(sol, vertex.size = 8, edge.arrow.size = .1, 
+#'   vertex.label.cex = .5, edge.label.cex = .5)  
+#'
+#'
+#' pg <- policy_graph(sol)
+#' plot(simplify(pg, edge.attr.comb = toString), vertex.size = 8, edge.arrow.size = .1, 
+#'   vertex.label.cex = .5, edge.label.cex = .5)
+#'
+#' plot(simplify(pg, edge.attr.comb = toString)
+#'   
 #' @export
 policy_graph <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) {
   .solved_POMDP(x, stop = TRUE)
@@ -328,12 +341,9 @@ policy_graph_unconverged <- function(x, belief = NULL, show_belief = TRUE, col =
 }
 
 
-
 # estimate central beliefs for each alpha vector (infinite horizon)
 # sample points and then average over each alpha vector.
-# TODO: finite horizon
 # TODO: we could also calculate this with some linear algebra
-
 
 #' @rdname policy_graph
 #' @export
