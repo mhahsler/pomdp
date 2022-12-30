@@ -9,8 +9,9 @@ simulate_MDP(
   n = 100,
   start = NULL,
   horizon = NULL,
-  visited_states = FALSE,
+  return_states = FALSE,
   epsilon = NULL,
+  method = "cpp",
   verbose = FALSE
 )
 }
@@ -26,16 +27,26 @@ Defaults to "uniform".}
 \item{horizon}{number of epochs for the simulation. If \code{NULL} then the
 horizon for the model is used.}
 
-\item{visited_states}{logical; Should all visited states on the
-trajectories be returned? If \code{FALSE} then only the final
-state is returned.}
+\item{return_states}{logical; return visited states.}
 
 \item{epsilon}{the probability of random actions  for using an epsilon-greedy policy.
 Default for solved models is 0 and for unsolved model 1.}
 
+\item{method}{\code{'r'} or \code{'cpp'} to perform simulation using an R or faster C++ implementation.}
+
 \item{verbose}{report used parameters.}
 }
 \value{
+A list with elements:
+\itemize{
+\item \code{avg_reward}: The average discounted reward.
+\item \code{reward}: Reward for each trajectory.
+\item \code{action_cnt}: Action counts.
+\item \code{state_cnt}: State counts.
+\item \code{states}: a vector with state ids.
+Rows represent trajectories.
+}
+
 A vector with state ids (in the final epoch or all). Attributes containing action
 counts, and rewards  for each trajectory may be available.
 }
@@ -51,23 +62,24 @@ data(Maze)
 sol <- solve_MDP(Maze, discount = 1)
 sol
 policy(sol)
+# U in the policy is and estimate of the utility of being in a state when using the optimal policy.
 
 ## Example 1: simulate 10 trajectories, only the final belief state is returned
-sim <- simulate_MDP(sol, n = 10, horizon = 10, verbose = TRUE)
-head(sim)
-
-# additional data is available as attributes
-names(attributes(sim))
-attr(sim, "avg_reward")
-colMeans(attr(sim, "action"))
-
-## Example 2: simulate starting always in state s_1
-sim <- simulate_MDP(sol, n = 100, start = "s_1", horizon = 10)
+sim <- simulate_MDP(sol, n = 100, horizon = 10, verbose = TRUE)
 sim
 
-# the average reward is an estimate of the utility in the optimal policy:
-policy(sol)[[1]][1,]
+# Calculate proportion of actions used
+sim$action_cnt / sum(sim$action_cnt)
 
+# reward distribution
+hist(sim$reward)
+
+## Example 2: simulate starting always in state s_1 and return all visited states
+sim <- simulate_MDP(sol, n = 100, start = "s_1", horizon = 10, return_states = TRUE)
+sim$avg_reward
+
+# how often was each state visited?
+table(sim$states)
 }
 \seealso{
 Other MDP: 

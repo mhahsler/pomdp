@@ -1,5 +1,3 @@
-## TODO: Reimplement in C++
-
 #' Simulate Trajectories in a POMDP
 #'
 #' Simulate trajectories through a POMDP. The start state for each
@@ -17,15 +15,18 @@
 #' the model or "uniform".
 #' @param horizon number of epochs for the simulation. If `NULL` then the
 #' horizon for the model is used.
-#' @param visited_beliefs logical; Should all belief points visited on the
-#' trajectories be returned? If `FALSE` then only the belief at the final
-#' epoch is returned.
-#' @param epsilon the probability of random actions  for using an epsilon-greedy policy.
+#' @param return_beliefs logical; Return all visited belief states? This requires n x horizon memory.
+#' @param epsilon the probability of random actions for using an epsilon-greedy policy.
 #' Default for solved models is 0 and for unsolved model 1.
-#' @param digits round belief points.
+#' @param digits round probabilities for belief points.
+#' @param method `'r'` or `'cpp'` to perform simulation using an R or faster C++ implementation.
 #' @param verbose report used parameters.
-#' @return A matrix with belief points (in the final epoch or all) as rows. Attributes containing action
-#' counts, and rewards  for each trajectory may be available.
+#' @return A list with elements:
+#'  * `avg_reward`: The average discounted reward.
+#'  * `belief_states`: A matrix with belief states as rows.
+#'  * `action_cnt`: Action counts.
+#'  * `state_cnt`: State counts.
+#'  * `reward`: Reward for each trajectory.
 #' @author Michael Hahsler
 #' @md
 #' @examples
@@ -36,44 +37,50 @@
 #' sol
 #' policy(sol)
 #'
-#' ## Example 1: simulate 10 trajectories, only the final belief state is returned
+#' ## Example 1: simulate 10 trajectories
 #' sim <- simulate_POMDP(sol, n = 100, verbose = TRUE)
-#' head(sim)
+#' sim
 #'
-#' # plot the final belief state, look at the average reward and how often different actions were used.
-#' plot_belief_space(sol, sample = sim)
+#' # calculate the percentage that each action is used in the simulation
+#' sim$action_cnt / sum(sim$action_cnt)
 #'
-#' # additional data is available as attributes
-#' names(attributes(sim))
-#' attr(sim, "avg_reward")
-#' colMeans(attr(sim, "action"))
-#'
+#' # reward distribution
+#' hist(sim$reward)
 #'
 #' ## Example 2: look at all belief states in the trajectory starting with an initial start belief.
-#' sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), visited_beliefs = TRUE)
+#' sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), return_beliefs = TRUE)
+#' head(sim$belief_states)
 #'
 #' # plot with added density
-#' plot_belief_space(sol, sample = sim, ylim = c(0,5), jitter = 1)
-#' lines(density(sim[, 1], bw = .02)); axis(2); title(ylab = "Density")
+#' plot_belief_space(sol, sample = sim$belief_states, ylim = c(0,5), jitter = 1)
+#' lines(density(sim$belief_states[, 1], bw = .02)); axis(2); title(ylab = "Density")
 #'
 #'
-#' ## Example 3: simulate trajectories for an unsolved POMDP which uses a epsilon of 1 
-#' # (i.e., all randomized actions)
-#' sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, visited_beliefs = TRUE)
-#' plot_belief_space(sol, sample = sim, ylim = c(0,6))
-#' lines(density(sim[, 1], bw = .05)); axis(2); title(ylab = "Density")
+#' ## Example 3: simulate trajectories for an unsolved POMDP which uses an epsilon of 1
+#' #             (i.e., all actions are randomized)
+#' sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, return_beliefs = TRUE, verbose = TRUE)
+#' sim$avg_reward
+#' 
+#' plot_belief_space(sol, sample = sim$belief_states, ylim = c(0,6), jitter = 1)
+#' lines(density(sim$belief_states[, 1], bw = .05)); axis(2); title(ylab = "Density")
 #' @export
 simulate_POMDP <-
   function(model,
     n = 100,
     belief = NULL,
     horizon = NULL,
-    visited_beliefs = FALSE,
+    return_beliefs = FALSE,
     epsilon = NULL,
     digits = 7,
+    method = "cpp",
     verbose = FALSE) {
-    belief <- .translate_belief(belief, model = model)
+    method <- match.arg(tolower(method), c("r", "cpp"))
+    
     solved <- !is.null(model$solution)
+    dt <- .timedependent_POMDP(model)
+    
+    if (is.null(belief))
+      belief <- start_vector(model)
     
     if (is.null(horizon))
       horizon <- model$horizon
@@ -83,16 +90,42 @@ simulate_POMDP <-
       stop("Simulation needs a finite simulation horizon.")
     
     if (is.null(epsilon)) {
-      if (!solved) epsilon <- 1
-      else epsilon <- 0
+      if (!solved)
+        epsilon <- 1
+      else
+        epsilon <- 0
     }
-      
+    
     if (!solved && epsilon != 1)
       stop("epsilon has to be 1 for unsolved models.")
     
     disc <- model$discount
     if (is.null(disc))
       disc <- 1
+    
+    if (method == "cpp") {
+      if (!dt) {
+        ### FIXME: this can be done better
+        model <- normalize_POMDP(model)
+        
+        return (
+          simulate_POMDP_cpp(
+            model,
+            n,
+            belief,
+            horizon,
+            disc,
+            return_beliefs,
+            epsilon,
+            digits,
+            verbose
+          )
+        )
+      } else {
+        message("Using method 'r'. Time-dependent models can only be simulated using method 'r'!")
+        method <- "r"
+      }
+    }
     
     states <- as.character(model$states)
     n_states <- length(states)
@@ -105,7 +138,6 @@ simulate_POMDP <-
     rew_m <- reward_matrix(model)
     
     # precompute matrix lists for time-dependent POMDPs
-    dt <- .timedependent_POMDP(model)
     if (dt) {
       dt_horizon <- model$horizon
       dt_episodes <- cumsum(c(1, head(model$horizon, -1)))
@@ -131,6 +163,7 @@ simulate_POMDP <-
     
     if (verbose) {
       cat("Simulating POMDP trajectories.\n")
+      cat("- method:", method, "\n")
       cat("- horizon:", horizon, "\n")
       cat("- epsilon:", epsilon, "\n")
       if (dt)
@@ -146,29 +179,32 @@ simulate_POMDP <-
       
       s <- sample(states, 1L, prob = belief)
       b <- belief
-      
-      action_cnt <- rep(0L, length(actions))
-      names(action_cnt) <- actions
-      
-      state_cnt <- rep(0L, length(states))
-      names(state_cnt) <- states
-      
       rew <- 0
       e <- 1L
       
-      if (visited_beliefs)
+      action_cnt <- rep(0L, length(actions))
+      names(action_cnt) <- actions
+      state_cnt <- rep(0L, length(states))
+      names(state_cnt) <- states
+      obs_cnt <- rep(0L, length(obs))
+      names(obs_cnt) <- obs
+      
+      if (return_beliefs)
         b_all <- matrix(
           NA,
           nrow = horizon,
           ncol = n_states,
           dimnames = list(NULL, states)
         )
+      else
+        b_all <- matrix(nrow =0, ncol = 0)
       
       for (j in 1:horizon) {
         # change matrices for time-dependent POMDPs
         if (dt) {
           if (length(new_ep <- which(j == dt_episodes)) == 1L) {
-            #cat("- Switching to episode" , new_ep, "at epoch", j, "\n")
+            if (verbose)
+              cat("- Switching to episode" , new_ep, "at epoch", j, "\n")
             obs_m <- dt_obs_m[[new_ep]]
             trans_m <- dt_trans_m[[new_ep]]
             rew_m <- dt_rew_m[[new_ep]]
@@ -176,58 +212,62 @@ simulate_POMDP <-
         }
         
         # find action (if we have no solution then take a random action) and update state and sample obs
-        
         if (runif(1) < epsilon) {
-          a <- sample.int(length(actions), 1L, replace = TRUE)
+          a <- sample.int(length(actions), 1L)
         } else {
-          if(!model$solution$converged)
+          if (!model$solution$converged)
             e <- .get_pg_index(model, j)
           a <-
-            as.integer(model$solution$pg[[e]][["action"]][which.max(model$solution$alpha[[e]] %*% b)])
+            as.integer(model$solution$pg[[e]][["action"]])[which.max(model$solution$alpha[[e]] %*% b)]
         }
+        
+        # debug
+        # cat("Episode: ", j, "\n")
+        # cat("alpha: ", model$solution$alpha[[e]], "\n")
+        # cat("b: ", b , "\n")
+        # cat("alpha %*% : ", model$solution$alpha[[e]] %*% b , "\n")
+        # cat("a: ", a , "\n\n")
+        
+        s_prev <- s
+        s <-
+          sample.int(length(states), 1L, prob = trans_m[[a]][s,])
+        o <- sample.int(length(obs), 1L, prob = obs_m[[a]][s,])
         
         action_cnt[a] <- action_cnt[a] + 1L
         state_cnt[s] <- state_cnt[s] + 1L
-        
-        s_prev <- s
-        s <- sample.int(length(states), 1L, prob = trans_m[[a]][s,])
-        o <- sample.int(length(obs), 1L, prob = obs_m[[a]][s,])
+        obs_cnt[o] <- obs_cnt[o] + 1L
         
         rew <- rew + rew_m[[a]][[s_prev]][s, o] * disc ^ (j - 1L)
-        
         #cat(j, ":", s_prev , "->", s, "- a:", a, "- o:", o, "- rew:", rew_m[[a]][[s_prev]][s, o], "\n")
         
-        
         # update belief
-        b <- .update_belief(b, a, o, trans_m, obs_m, digits)
-        if (visited_beliefs)
+        b <-
+          .update_belief(b, a, o, trans_m, obs_m, digits = digits)
+        if (return_beliefs)
           b_all[j, ] <- b
       }
-      
-      if (!visited_beliefs)
-        b_all <- b
       
       rownames(b_all) <- NULL
       attr(b_all, "action_cnt") <- action_cnt
       attr(b_all, "state_cnt") <- state_cnt
+      attr(b_all, "obs_cnt") <- obs_cnt
       attr(b_all, "reward") <- rew
       b_all
       
     }, simplify = FALSE)
     
-    ac <- do.call(rbind, lapply(bs, attr, "action_cnt"))
-    rownames(ac) <- NULL
-    sc <- do.call(rbind, lapply(bs, attr, "state_cnt"))
-    rownames(sc) <- NULL
-    rew <- do.call(rbind, lapply(bs, attr, "reward"))
-    rownames(rew) <- NULL
-    bs <- do.call(rbind, bs)
-    rownames(bs) <- NULL
+    ac <- Reduce('+', lapply(bs, attr, "action_cnt"))
+    sc <- Reduce('+', lapply(bs, attr, "state_cnt"))
+    oc <- Reduce('+', lapply(bs, attr, "obs_cnt"))
+    rew <- Reduce(c, lapply(bs, attr, "reward"))
+    bs <- Reduce(rbind, bs)
     
-    attr(bs, "action_cnt") <- ac
-    attr(bs, "state_cnt") <- sc
-    attr(bs, "reward") <- rew
-    attr(bs, "avg_reward") <- mean(rew, na.rm = TRUE)
-    
-    bs
+    list(
+      avg_reward = mean(rew, na.rm = TRUE),
+      action_cnt = ac,
+      state_cnt = sc,
+      obs_cnt = oc,
+      reward = rew,
+      belief_states = bs
+    )
   }

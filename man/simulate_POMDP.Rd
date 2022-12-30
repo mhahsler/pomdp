@@ -9,9 +9,10 @@ simulate_POMDP(
   n = 100,
   belief = NULL,
   horizon = NULL,
-  visited_beliefs = FALSE,
+  return_beliefs = FALSE,
   epsilon = NULL,
   digits = 7,
+  method = "cpp",
   verbose = FALSE
 )
 }
@@ -28,20 +29,26 @@ the model or "uniform".}
 \item{horizon}{number of epochs for the simulation. If \code{NULL} then the
 horizon for the model is used.}
 
-\item{visited_beliefs}{logical; Should all belief points visited on the
-trajectories be returned? If \code{FALSE} then only the belief at the final
-epoch is returned.}
+\item{return_beliefs}{logical; Return all visited belief states? This requires n x horizon memory.}
 
-\item{epsilon}{the probability of random actions  for using an epsilon-greedy policy.
+\item{epsilon}{the probability of random actions for using an epsilon-greedy policy.
 Default for solved models is 0 and for unsolved model 1.}
 
-\item{digits}{round belief points.}
+\item{digits}{round probabilities for belief points.}
+
+\item{method}{\code{'r'} or \code{'cpp'} to perform simulation using an R or faster C++ implementation.}
 
 \item{verbose}{report used parameters.}
 }
 \value{
-A matrix with belief points (in the final epoch or all) as rows. Attributes containing action
-counts, and rewards  for each trajectory may be available.
+A list with elements:
+\itemize{
+\item \code{avg_reward}: The average discounted reward.
+\item \code{belief_states}: A matrix with belief states as rows.
+\item \code{action_cnt}: Action counts.
+\item \code{state_cnt}: State counts.
+\item \code{reward}: Reward for each trajectory.
+}
 }
 \description{
 Simulate trajectories through a POMDP. The start state for each
@@ -56,32 +63,32 @@ sol <- solve_POMDP(Tiger, horizon = 5, discount = 1, method = "enum")
 sol
 policy(sol)
 
-## Example 1: simulate 10 trajectories, only the final belief state is returned
+## Example 1: simulate 10 trajectories
 sim <- simulate_POMDP(sol, n = 100, verbose = TRUE)
-head(sim)
+sim
 
-# plot the final belief state, look at the average reward and how often different actions were used.
-plot_belief_space(sol, sample = sim)
+# calculate the percentage that each action is used in the simulation
+sim$action_cnt / sum(sim$action_cnt)
 
-# additional data is available as attributes
-names(attributes(sim))
-attr(sim, "avg_reward")
-colMeans(attr(sim, "action"))
-
+# reward distribution
+hist(sim$reward)
 
 ## Example 2: look at all belief states in the trajectory starting with an initial start belief.
-sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), visited_beliefs = TRUE)
+sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), return_beliefs = TRUE)
+head(sim$belief_states)
 
 # plot with added density
-plot_belief_space(sol, sample = sim, ylim = c(0,5), jitter = 1)
-lines(density(sim[, 1], bw = .02)); axis(2); title(ylab = "Density")
+plot_belief_space(sol, sample = sim$belief_states, ylim = c(0,5), jitter = 1)
+lines(density(sim$belief_states[, 1], bw = .02)); axis(2); title(ylab = "Density")
 
 
-## Example 3: simulate trajectories for an unsolved POMDP which uses a epsilon of 1 
-# (i.e., all randomized actions)
-sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, visited_beliefs = TRUE)
-plot_belief_space(sol, sample = sim, ylim = c(0,6))
-lines(density(sim[, 1], bw = .05)); axis(2); title(ylab = "Density")
+## Example 3: simulate trajectories for an unsolved POMDP which uses an epsilon of 1
+#             (i.e., all actions are randomized)
+sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, return_beliefs = TRUE, verbose = TRUE)
+sim$avg_reward
+
+plot_belief_space(sol, sample = sim$belief_states, ylim = c(0,6), jitter = 1)
+lines(density(sim$belief_states[, 1], bw = .05)); axis(2); title(ylab = "Density")
 }
 \seealso{
 Other POMDP: 

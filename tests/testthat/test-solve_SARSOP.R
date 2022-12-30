@@ -2,7 +2,7 @@ library("testthat")
 library("pomdp")
 
 skip_if_not_installed("sarsop")
-context("solve_SARSOP")
+## context("solve_SARSOP")
 
 ### In case sarsop is not installed correctly (taken from the example in ? pomdpsol)
 if(sarsop::assert_has_appl()) {

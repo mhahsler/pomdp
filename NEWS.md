@@ -1,5 +1,14 @@
 # pomdp 1.0.3-1 (xx/xx/2022)
-* Added model normalization 
+
+# New Features
+* Added model normalization.
+* simulate_POMDP and simulate_MDP are now reimplemented using C++ (Rcpp).
+
+# Changes
+* simulate_POMDP and simulate_MDP now return a list.
+* reimplemented round_stochastic to improve speed.
+* MDP policy now uses factors for actions.
+
 
 # pomdp 1.0.3 (05/18/2022)
 * Fixed rounding issue on some architectures.

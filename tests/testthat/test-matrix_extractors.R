@@ -1,7 +1,7 @@
 library("testthat")
 library("pomdp")
 
-context("matrix extractors")
+## context("matrix extractors")
 
 # make sure extractors reorder according to actions and observations...
 data(Tiger)

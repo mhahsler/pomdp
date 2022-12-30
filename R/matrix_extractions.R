@@ -146,6 +146,14 @@ normalize_POMDP <- function(x, episode = 1) {
   x
 }
 
+#' @rdname matrix_extractions
+#' @export
+normalize_MDP <- function(x, episode = 1) {
+  x$start <- start_vector(x)
+  x$transition_prob <- transition_matrix(x, episode)
+  x$reward <- reward_matrix(x, episode) 
+  x
+}
 
 # translate different specifications of transitions, observations and rewards
 # into a list of matrices

@@ -1,7 +1,7 @@
 library("testthat")
 library("pomdp")
 
-context("read and write_POMDP")
+## context("read and write_POMDP")
 
 data(Tiger)
 

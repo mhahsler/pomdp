@@ -108,14 +108,14 @@ policy(maze_solved)
 maze_solved <- solve_MDP(Maze, method = "value", horizon = 3)
 policy(maze_solved)
 
-# create a random policy where action n is very likely and approximate 
+# create a random policy where action n is very likely and approximate
 #  the value function. We change the discount factor to .9 for this.
 Maze_discounted <- Maze
 Maze_discounted$discount <- .9
 pi <- random_MDP_policy(Maze_discounted, prob = c(n = .7, e = .1, s = .1, w = 0.1))
 pi
 
-# compare the utility function for the random policy with the function for the optimal 
+# compare the utility function for the random policy with the function for the optimal
 #  policy found by the solver.
 maze_solved <- solve_MDP(Maze)
 

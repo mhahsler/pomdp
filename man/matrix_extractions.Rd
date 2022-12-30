@@ -10,6 +10,7 @@
 \alias{reward_val}
 \alias{start_vector}
 \alias{normalize_POMDP}
+\alias{normalize_MDP}
 \title{Extract the Transition, Observation or Reward Information from a POMDP}
 \usage{
 transition_matrix(x, episode = 1, action = NULL)
@@ -27,6 +28,8 @@ reward_val(x, action, start.state, end.state, observation, episode = 1)
 start_vector(x)
 
 normalize_POMDP(x, episode = 1)
+
+normalize_MDP(x, episode = 1)
 }
 \arguments{
 \item{x}{A \link{POMDP} object.}

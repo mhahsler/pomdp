@@ -11,7 +11,9 @@
     belief <-
       Ob[[action]][, observation, drop = FALSE] * crossprod(Tr[[action]], cbind(belief))
     belief <- belief / sum(belief)
-    belief <- round(belief, digits)
+   
+    belief <- round_stochastic_int(belief, digits)
+    
     drop(belief)
   }
 

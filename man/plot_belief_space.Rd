@@ -88,7 +88,7 @@ plot_belief_space(sol, sample = sol$solution$belief_states)
 # plot the belief points obtained using simulated trajectories with an epsilon-greedy policy.
 # Note that we only use n = 50 to save time.
 plot_belief_space(sol, sample = simulate_POMDP(sol, n = 50, horizon = 100,
-  epsilon = 0.1, visited_beliefs = TRUE))
+  epsilon = 0.1, return_beliefs = TRUE)$belief_states)
   
 # plot a 3-state belief space using ggtern (ggplot2)
 # library(ggtern)

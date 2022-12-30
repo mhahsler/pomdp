@@ -1,7 +1,7 @@
 library("testthat")
 library("pomdp")
 
-context("solve_POMDP")
+## context("solve_POMDP")
 
 data("Tiger")
 sol <- solve_POMDP(Tiger)
@@ -15,7 +15,7 @@ reward(sol)
 reward(sol, belief = c(0,1))
 reward(sol, belief = c(0,1), epoch = 3)
 
-context("solve_POMDP with terminal values")
+## context("solve_POMDP with terminal values")
 
 # solve 10 epochs
 sol <- solve_POMDP(Tiger, discount = 1, horizon = 10, method = "enum")
@@ -34,7 +34,7 @@ expect_equal(alpha_horizon, alpha_stepwise)
 expect_equal(pg_horizon$action, pg_stepwise$action) # transitions do not work
 
 
-context("solve_POMDP and model files")
+## context("solve_POMDP and model files")
 
 sol <- solve_POMDP("http://www.pomdp.org/examples/1d.POMDP")
 plot_policy_graph(sol, show_belief = FALSE)

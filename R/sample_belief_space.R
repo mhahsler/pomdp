@@ -147,7 +147,7 @@ sample_belief_space <-
       },
       
       trajectories = {
-        simulate_POMDP(model, n = n, visited_beliefs = TRUE, ...) 
+        simulate_POMDP(model, n = n, return_beliefs = TRUE, ...)$belief_states 
       }
       
       )

@@ -9,4 +9,7 @@
 #' @author Michael Hahsler
 #' @docType package
 #' @name pomdp-package
+#' 
+#' @import Rcpp
+#' @useDynLib pomdp, .registration=TRUE
 NULL
