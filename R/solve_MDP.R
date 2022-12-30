@@ -6,7 +6,7 @@
 #'
 #' @family solver
 #' @family MDP
-#' 
+#'
 #' @param model a POMDP problem specification created with [POMDP()].
 #'   Alternatively, a POMDP file or the URL for a POMDP file can be specified.
 #' @param method string; one of the following solution methods: `'value'`,
@@ -38,7 +38,7 @@
 #'   - `converged` did the algorithm converge (`NA`) for finite-horizon problems.
 #'   - `delta` final delta (infinite-horizon only)
 #'   - `iterations` number of iterations to convergence (infinite-horizon only)
-#'   
+#'
 #'
 #' @author Michael Hahsler
 #' @examples
@@ -51,7 +51,7 @@
 #'
 #' # value function (utility function U)
 #' plot_value_function(maze_solved)
-#' 
+#'
 #' # Q-function (states times action)
 #' q_values_MDP(maze_solved)
 #'
@@ -63,20 +63,20 @@
 #' maze_solved <- solve_MDP(Maze, method = "value", horizon = 3)
 #' policy(maze_solved)
 #'
-#' # create a random policy where action n is very likely and approximate 
+#' # create a random policy where action n is very likely and approximate
 #' #  the value function. We change the discount factor to .9 for this.
 #' Maze_discounted <- Maze
 #' Maze_discounted$discount <- .9
 #' pi <- random_MDP_policy(Maze_discounted, prob = c(n = .7, e = .1, s = .1, w = 0.1))
 #' pi
-#' 
-#' # compare the utility function for the random policy with the function for the optimal 
+#'
+#' # compare the utility function for the random policy with the function for the optimal
 #' #  policy found by the solver.
 #' maze_solved <- solve_MDP(Maze)
-#' 
+#'
 #' approx_MDP_policy_evaluation(pi, Maze, k_backup = 100)
 #' approx_MDP_policy_evaluation(policy(maze_solved)[[1]], Maze, k_backup = 100)
-#' 
+#'
 #' # Note that the solver already calculates the utility function and returns it with the policy
 #' policy(maze_solved)
 #' @export
@@ -141,13 +141,13 @@ solve_MDP <- function(model,
 # from stage k onward, if we choose a_k = a and then proceed optimally (given by U).
 .QV <-
   function(s, a, P, R, GAMMA, U)
-    sum(P[[a]][s, ] * (R[[a]][[s]] + GAMMA * U))
+    sum(P[[a]][s,] * (R[[a]][[s]] + GAMMA * U))
 
 .QV_vec <- Vectorize(.QV, vectorize.args = c("s", "a"))
 
 #' @rdname solve_MDP
 #' @param U a vector with state utilities (expected sum of discounted rewards from that point on).
-#' @return `q_values_MDP()` returns a state by action matrix specifying the Q-function, 
+#' @return `q_values_MDP()` returns a state by action matrix specifying the Q-function,
 #'   i.e., the utility value of executing each action in each state.
 #' @export
 q_values_MDP <- function(model, U = NULL) {
@@ -161,16 +161,16 @@ q_values_MDP <- function(model, U = NULL) {
   policy <- model$solution$policy[[1]]
   GAMMA <- model$discount
   
-  if (is.null(U)) 
+  if (is.null(U))
     if (!is.null(policy))
       U <- policy$U
-    else
-      stop("'model' does not contain state utilities (it is unsolved). You need to specify U.")
+  else
+    stop("'model' does not contain state utilities (it is unsolved). You need to specify U.")
   
   qs <- outer(S, A, .QV_vec, P, R, GAMMA, U)
   dimnames(qs) <- list(S, A)
   qs
-  }
+}
 
 # TODO: we could check for convergence
 MDP_value_iteration_finite_horizon <-
@@ -202,7 +202,7 @@ MDP_value_iteration_finite_horizon <-
       Qs <- outer(S, A, .QV_vec, P, R, GAMMA, U)
       m <- apply(Qs, MARGIN = 1, which.max)
       
-      pi <- A[m]
+      pi <- factor(m, levels = seq_along(A), labels = A)
       U <- Qs[cbind(seq_along(S), m)]
       
       policy[[t]] <- data.frame(
@@ -242,7 +242,7 @@ MDP_value_iteration_inf_horizon <-
       Qs <- outer(S, A, .QV_vec, P, R, GAMMA, U)
       m <- apply(Qs, MARGIN = 1, which.max)
       
-      pi <- A[m]
+      pi <- factor(m, levels = seq_along(A), labels = A)
       U_t_minus_1 <- Qs[cbind(seq_along(S), m)]
       
       delta <- max(abs(U_t_minus_1 - U))
@@ -288,7 +288,7 @@ MDP_value_iteration_inf_horizon <-
 # Policy iteration with approximate policy evaluation
 
 #' @rdname solve_MDP
-#' @param prob probability vector for actions. 
+#' @param prob probability vector for actions.
 #' @return `random_MDP_policy()` returns a data.frame with columns state and action to define a policy.
 #' @export
 random_MDP_policy <-
@@ -296,45 +296,56 @@ random_MDP_policy <-
     if (!inherits(model, "MDP"))
       stop("'model' needs to be of class 'MDP'.")
     
+    A <- model$actions
+    S <- model$states
+    
     data.frame(
       state = model$states,
-      action = sample(
-        model$actions,
-        size = length(model$states),
-        replace = TRUE,
-        prob = prob
+      action = factor(
+        sample(
+          seq_along(A),
+          size = length(S),
+          replace = TRUE,
+          prob = prob
+        ),
+        levels = seq_along(A),
+        labels = A
       )
     )
   }
 
 #' @rdname solve_MDP
 #' @param pi a policy as a data.frame with columns state and action.
-#' @return `approx_MDP_policy_evaluation()` is used by the modified policy 
+#' @return `approx_MDP_policy_evaluation()` is used by the modified policy
 #'   iteration algorithm and returns an approximate utility vector U estimated by evaluating policy `pi`.
 #' @export
-approx_MDP_policy_evaluation <- function(pi, model, U = NULL, k_backups = 10) {
-  if (!inherits(model, "MDP"))
-    stop("'model' needs to be of class 'MDP'.")
-  
-  S <- model$states
-  A <- model$actions
-  P <- transition_matrix(model)
-  R <- reward_matrix(model)
-  GAMMA <- model$discount
-  
-  if (is.data.frame(pi))
-    pi <- pi$action
-  names(pi) <- S
-  
-  # start with all 0s if no previous U is given
-  if (is.null(U))
-    U <- rep(0, times = length(S))
-  
-  for (i in seq_len(k_backups))
-    U <- .QV_vec(S, pi, P, R, GAMMA, U)
-  
-  U
-}
+approx_MDP_policy_evaluation <-
+  function(pi,
+    model,
+    U = NULL,
+    k_backups = 10) {
+    if (!inherits(model, "MDP"))
+      stop("'model' needs to be of class 'MDP'.")
+    
+    S <- model$states
+    A <- model$actions
+    P <- transition_matrix(model)
+    R <- reward_matrix(model)
+    GAMMA <- model$discount
+    
+    if (is.data.frame(pi))
+      pi <- pi$action
+    names(pi) <- S
+    
+    # start with all 0s if no previous U is given
+    if (is.null(U))
+      U <- rep(0, times = length(S))
+    
+    for (i in seq_len(k_backups))
+      U <- .QV_vec(S, pi, P, R, GAMMA, U)
+    
+    U
+  }
 
 MDP_policy_iteration_inf_horizon <-
   function(model,
@@ -361,12 +372,13 @@ MDP_policy_iteration_inf_horizon <-
         cat("Iteration ", i, "\n")
       
       # evaluate to get U from pi
-      U <- approx_MDP_policy_evaluation(pi, model, U, k_backups = k_backups)
+      U <-
+        approx_MDP_policy_evaluation(pi, model, U, k_backups = k_backups)
       
       # get greedy policy for U
       Qs <- outer(S, A, .QV_vec, P, R, GAMMA, U)
       m <- apply(Qs, MARGIN = 1, which.max)
-      pi_prime <- A[m]
+      pi_prime <- factor(m, levels = seq_along(A), labels = A)
       
       if (all(pi == pi_prime)) {
         converged <- TRUE
