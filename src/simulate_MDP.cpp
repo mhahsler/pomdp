@@ -21,12 +21,12 @@ simulate_MDP_cpp(Maze_norm, 10, start_vector(Maze_norm), 10,
 
 simulate_MDP_cpp(Maze_norm, 10, start_vector(Maze_norm), 10, 
   disc = .9, return_states = TRUE, epsilon = 1, verbose = TRUE)
- 
+
 # solve MDP
 sol <- solve_MDP(Maze_norm, discount = 1)
 sol
 policy(sol)
- 
+
 simulate_MDP_cpp(sol, 10, start_vector(sol), 20, 
   disc = 1, return_states = FALSE, epsilon = 0, verbose = TRUE)
 
@@ -46,8 +46,8 @@ List simulate_MDP_cpp(const List& model,
   bool return_states = false,
   double epsilon = 1.0,
   bool verbose = false
-  ) {
-
+) {
+  
   bool solved = is_solved(model);
   
   //double disc = get_discount(model); 
@@ -95,7 +95,7 @@ List simulate_MDP_cpp(const List& model,
   // n replications
   for (int i = 0; i < n; ++i) {
 #ifdef DEBUG 
-      Rcout << "--- Replication " << i << " ---\n";
+    Rcout << "--- Replication " << i << " ---\n";
 #endif
     rews[i] = 0.0;
     s = sample(nstates, 1, false, start, false)[0]; // last false if for 0-based index
@@ -135,7 +135,7 @@ List simulate_MDP_cpp(const List& model,
   // make states a factor
   states.attr("class") = "factor";
   states.attr("levels") = get_states(model);
- 
+  
   double m = mean(rews);
   
   List L = List::create(Named("avg_reward") = m,

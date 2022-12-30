@@ -29,7 +29,7 @@ inline double transition_prob(const List& model, int action, int start_state, in
 inline NumericMatrix observation_matrix(const List& model, int action) {
   return as<NumericMatrix>(as<List>(model["observation_prob"])[action]);
 }
-  
+
 inline double observation_prob(const List& model, int action, int end_state, int observation) {
   return observation_matrix(model, action)(end_state, observation);
 }
@@ -39,8 +39,8 @@ inline NumericMatrix reward_matrix(const List& model, int action, int start_stat
 }
 
 inline double reward_val(const List& model, int action, int start_state, int end_state, int observation) {
-    return reward_matrix(model, action, start_state)(end_state, observation);
-  }  
+  return reward_matrix(model, action, start_state)(end_state, observation);
+}  
 
 inline NumericVector start_vector(const List& model) {
   return as<NumericVector>(model["start"]);
@@ -66,18 +66,18 @@ inline double get_discount(const List& model) {
 // epochs start with 0
 inline int get_pg_index_cpp(const List& model, int epoch) {
   List pg = as<List>(as<List>(model["solution"])["alpha"]);
-    
+  
   // (converged) infinite horizon POMDPs. We ignore epoch.
   if (pg.length() == 1)
     return 0;
-
+  
   // regular epoch for finite/infinite horizon case
   if (epoch < 0 || epoch >= pg.length())
     stop("Epoch not available! POMDP model has only solutions for ", pg.length(), " epochs!");
-          
+  
   return epoch;
 }
-  
+
 inline NumericMatrix get_alpha(const List& model, int epoch = 0) {
   if (!is_solved(model))
     stop("Unsolved POMDP model. No alpha vectors available");
@@ -94,8 +94,8 @@ inline DataFrame get_pg(const List& model, int epoch = 0) {
   return as<DataFrame>(as<List>(as<List>(model["solution"])["pg"])[epoch]);
 }
 
-  
-  
+
+
 // MDP section
 
 // MDP has a different reward structure (no observations so it is a vector not a matrix)
@@ -104,14 +104,14 @@ inline NumericVector reward_vector_MDP(const List& model, int action, int start_
 }
 
 inline double reward_val_MDP(const List& model, int action, int start_state, int end_state) {
-    return reward_vector_MDP(model, action, start_state)[end_state];
-  }  
+  return reward_vector_MDP(model, action, start_state)[end_state];
+}  
 
 // returns the MDP policy as a vector. Index is the state index and the value is the action index.
 inline IntegerVector get_policy_MDP(const List& model) {
   if (!is_solved(model))
     stop("Unsolved MDP model. No policy available");
-    
+  
   return as<IntegerVector>(as<List>(as<List>(as<List>(model["solution"])["policy"])[0])["action"]) - 1;
 }
 #endif

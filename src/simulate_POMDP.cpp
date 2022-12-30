@@ -37,7 +37,7 @@ NumericVector update_belief_cpp(const List& model, const NumericVector& belief,
   
   // round so we get fewer distinct belief states.
   new_belief = round_stochastic_cpp(new_belief, digits);
-
+  
   return new_belief;
 }
 
@@ -54,20 +54,17 @@ List simulate_POMDP_cpp(const List& model,
   double epsilon = 1.0,
   int digits = 7,
   bool verbose = false
-  ) {
+) {
   bool solved = is_solved(model);
   bool converged = solved && is_converged(model);
-
+  
   //double disc = get_discount(model); 
   int nstates = get_states(model).size();
   int nactions = get_actions(model).size();
   int nobs = get_obs(model).size();
-
+  
   // define current belief b, action a, observation o, and state s
-  NumericVector b;
-  int a, o, s, s_prev;
-  double disc_pow; // used for discounting
-
+  
   // allocate output
   NumericVector rews(n);
   IntegerVector action_cnt(nactions);
@@ -88,97 +85,100 @@ List simulate_POMDP_cpp(const List& model,
           << "- n: " << n << "\n"
           << "- horizon: " << horizon << "\n"
           << "- epsilon: " << epsilon << "\n"
-  //  if (dt)
-  //    cat("- time-dependent:", length(dt_horizon), "episodes", "\n")
-      
-        << "- discount factor: " << disc << "\n"
-        << "- starting belief: " << belief << "\n\n";
+    //  if (dt)
+    //    cat("- time-dependent:", length(dt_horizon), "episodes", "\n")
+    
+    << "- discount factor: " << disc << "\n"
+    << "- starting belief: " << belief << "\n\n";
   }
   
   // start with converged values to be faster
   NumericMatrix alpha; 
   IntegerVector pg_actions; 
- 
+  
   if (solved) { 
-   alpha = get_alpha(model, 0);
-   //pg_actions = as<IntegerVector>(get_pg(model, 0)["action"]);
-   pg_actions = as<IntegerVector>(get_pg(model, 0)[1]) - 1;
+    alpha = get_alpha(model, 0);
+    //pg_actions = as<IntegerVector>(get_pg(model, 0)["action"]);
+    pg_actions = as<IntegerVector>(get_pg(model, 0)[1]) - 1;
   } else{ 
-   if (epsilon != 1)
-     stop("epsilon needs to be 1 for unsolved models.");
+    if (epsilon != 1)
+      stop("epsilon needs to be 1 for unsolved models.");
   }
- 
+  
   // n replications
   for (int i = 0; i < n; ++i) {
+    NumericVector b;
+    int a, o, s, s_prev;
+    double disc_pow; // used for discounting
 #ifdef DEBUG 
-      Rcout << "--- Replication " << i << " ---\n";
+    Rcout << "--- Replication " << i << " ---\n";
 #endif
     rews[i] = 0.0;
     b = Rcpp::clone(belief);
     s = sample(nstates, 1, false, b, false)[0]; // last false if for 0-based index
     disc_pow = 1.0;
-  
-   // horizon epochs  
-   for (int j = 0; j < horizon; ++j) {
+    
+    // horizon epochs  
+    for (int j = 0; j < horizon; ++j) {
 #ifdef DEBUG 
       Rcout << "Epoch: " << j << "\n";
 #endif
-         // find action (if we have no solution then take a random action) and update state and sample obs
-
-    if (epsilon != 0 && (epsilon == 1 || R::runif(0, 1) < epsilon)) {
-      a = sample(nactions, 1, false, R_NilValue, false)[0];
-    } else {
-      // actions in model start index with 1! 
-      if (!converged) {
-        if (!solved)
-          stop("Model is not solved. No alpha vectors and policy available!");
-        
-        alpha = get_alpha(model, j);
-        //pg_actions = get_pg(model, j)["actions"];
-        pg_actions = as<IntegerVector>(get_pg(model, j)[1]) - 1;
-      }
-#ifdef DEBUG 
-      Rcout << "alpha:\n" << alpha << "\n" 
-        << "b: "<< b << "\n" 
-        << "alpha %*% b: = " <<  vecprod(alpha, b) << "\n";
-#endif
+      // find action (if we have no solution then take a random action) and update state and sample obs
       
-      a = pg_actions[which_max(vecprod(alpha, b))];
-
+      if (epsilon != 0 && (epsilon == 1 || R::runif(0, 1) < epsilon)) {
+        a = sample(nactions, 1, false, R_NilValue, false)[0];
+      } else {
+        // actions in model start index with 1! 
+        if (!converged) {
+          if (!solved)
+            stop("Model is not solved. No alpha vectors and policy available!");
+          
+          alpha = get_alpha(model, j);
+          //pg_actions = get_pg(model, j)["actions"];
+          pg_actions = as<IntegerVector>(get_pg(model, j)[1]) - 1;
+        }
 #ifdef DEBUG 
-      Rcout << "a: " << a <<  " (idx: " << which_max(vecprod(alpha, b)) <<  ")\n";
+        Rcout << "alpha:\n" << alpha << "\n" 
+              << "b: "<< b << "\n" 
+              << "alpha %*% b: = " <<  vecprod(alpha, b) << "\n";
 #endif
-    }
-    
-    s_prev = s;
-    NumericVector trans_v = transition_matrix(model, a)(s, _ );
-    s = sample(nstates, 1, false, trans_v, false)[0];
-    
-    NumericVector obs_v = observation_matrix(model, a)(s, _ );
-    o = sample(nobs, 1, false, obs_v, false)[0];
-    
-    action_cnt[a]++;
-    state_cnt[s]++;
-    obs_cnt[o]++;
-
+        
+        a = pg_actions[which_max(vecprod(alpha, b))];
+        
 #ifdef DEBUG 
-    Rcout << "reward: " << reward_matrix(model, a, s_prev)(s, o) << " (disc_pow: " << disc_pow << ")\n\n";
+        Rcout << "a: " << a <<  " (idx: " << which_max(vecprod(alpha, b)) <<  ")\n";
 #endif
-    //rews[i] += reward_matrix(model, a, s_prev)(s, o) * pow(disc, j);
-    rews[i] += reward_matrix(model, a, s_prev)(s, o) * disc_pow;
-    disc_pow *= disc;
-
-    b = update_belief_cpp(model, b, a, o, digits);
-    
-    //Rcout << "action: " << a << "\n"
-    //      << "observation: " << o << "\n"
-    //      << "reward " << reward_matrix(model, a, s_prev)(s, o) << "\n"
-    //      << "new belief: " << b << "\n\n";
-    
-    if (return_beliefs) {
-      belief_states(k++, _ ) = b;
+      }
+      
+      s_prev = s;
+      NumericVector trans_v = transition_matrix(model, a)(s, _ );
+      s = sample(nstates, 1, false, trans_v, false)[0];
+      
+      NumericVector obs_v = observation_matrix(model, a)(s, _ );
+      o = sample(nobs, 1, false, obs_v, false)[0];
+      
+      action_cnt[a]++;
+      state_cnt[s]++;
+      obs_cnt[o]++;
+      
+#ifdef DEBUG 
+      Rcout << "reward: " << reward_matrix(model, a, s_prev)(s, o) << " (disc_pow: " << disc_pow << ")\n\n";
+#endif
+      //rews[i] += reward_matrix(model, a, s_prev)(s, o) * pow(disc, j);
+      rews[i] += reward_matrix(model, a, s_prev)(s, o) * disc_pow;
+      disc_pow *= disc;
+      
+      b = update_belief_cpp(model, b, a, o, digits);
+      
+      //Rcout << "action: " << a << "\n"
+      //      << "observation: " << o << "\n"
+      //      << "reward " << reward_matrix(model, a, s_prev)(s, o) << "\n"
+      //      << "new belief: " << b << "\n\n";
+      
+      if (return_beliefs) {
+        belief_states(k++, _ ) = b;
+      }
     }
-   }
   }
   
   double m = mean(rews);
@@ -188,7 +188,7 @@ List simulate_POMDP_cpp(const List& model,
     _["state_cnt"] = state_cnt,
     _["obs_cnt"] = obs_cnt,
     _["belief_states"] = belief_states
-    );
+  );
   
   return L;
 }
