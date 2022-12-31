@@ -136,7 +136,8 @@ simulate_MDP <-
       cat("\n")
     }
     
-    st <- replicate(n, expr = {
+    #st <- replicate(n, expr = {
+    st <- times(n) %dopar% {
       # find a initial state
       
       s <- sample(states, 1, prob = start)
@@ -176,9 +177,12 @@ simulate_MDP <-
       attr(s_all, "action_cnt") <- action_cnt
       attr(s_all, "state_cnt") <- state_cnt
       attr(s_all, "reward") <- rew
-      s_all
       
-    }, simplify = FALSE)
+      #s_all
+      list(s_all)
+      
+    }
+    #, simplify = FALSE)
     
     
     ac <- Reduce('+', lapply(st, attr, "action_cnt"))

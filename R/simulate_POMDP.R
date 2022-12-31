@@ -3,7 +3,13 @@
 #' Simulate trajectories through a POMDP. The start state for each
 #' trajectory is randomly chosen using the specified belief. The belief is used to choose actions
 #' from the the epsilon-greedy policy and then updated using observations.
-#'
+#' 
+#' A native R implementation is available (`method = 'r'`) and a faster C++ implementation
+#' (`method = 'cpp'`). Both implementations support parallel execution using the package 
+#' \pkg{foreach}. To enable parallel execution, a parallel backend like
+#' \pkg{doparallel} needs to be available needs to be registered (see 
+#' [doParallel::registerDoParallel()]).
+#' 
 #' @family POMDP
 #' @importFrom stats runif
 #'
@@ -60,7 +66,7 @@
 #' #             (i.e., all actions are randomized)
 #' sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, return_beliefs = TRUE, verbose = TRUE)
 #' sim$avg_reward
-#' 
+#'
 #' plot_belief_space(sol, sample = sim$belief_states, ylim = c(0,6), jitter = 1)
 #' lines(density(sim$belief_states[, 1], bw = .05)); axis(2); title(ylab = "Density")
 #' @export
@@ -108,19 +114,60 @@ simulate_POMDP <-
         ### FIXME: this can be done better
         model <- normalize_POMDP(model)
         
-        return (
-          simulate_POMDP_cpp(
-            model,
-            n,
+        if (foreach::getDoParWorkers() == 1)
+          return (
+            simulate_POMDP_cpp(
+              model,
+              n,
+              belief,
+              horizon,
+              disc,
+              return_beliefs,
+              epsilon,
+              digits,
+              verbose
+            )
+          )
+        else {
+          nw <- foreach::getDoParWorkers()
+          
+          if (verbose)
+            cat("Using ", nw, "workers!")
+          
+          
+          ns <- rep(ceiling(n / nw), times = nw)
+          dif <- sum(ns) - n
+          if (dif > 0)
+            ns[1:dif] <- ns[1:dif] - 1
+        }
+        
+        w <- NULL # to shut up the warning for the foreach counter variable
+        
+        bs <- foreach(w = 1:nw) %dopar%
+          simulate_POMDP_cpp(model,
+            ns[w],
             belief,
             horizon,
             disc,
             return_beliefs,
             epsilon,
             digits,
-            verbose
+            verbose)
+        
+        rew <- Reduce(c,  lapply(bs, "[[", "reward"))
+        
+        return(
+          list(
+            avg_reward = mean(rew, na.rm = TRUE),
+            action_cnt = Reduce('+', lapply(bs, "[[" ,"state_cnt")),
+            state_cnt =  Reduce('+', lapply(bs, "[[", "state_cnt")),
+            obs_cnt =    Reduce('+', lapply(bs, "[[", "obs_cnt")),
+            reward = rew,
+            belief_states = Reduce(rbind, lapply(bs, "[[", "belief_states"))
           )
         )
+        
+        
       } else {
         message("Using method 'r'. Time-dependent models can only be simulated using method 'r'!")
         method <- "r"
@@ -163,7 +210,7 @@ simulate_POMDP <-
     
     if (verbose) {
       cat("Simulating POMDP trajectories.\n")
-      cat("- method:", method, "\n")
+      cat("- method: r\n")
       cat("- horizon:", horizon, "\n")
       cat("- epsilon:", epsilon, "\n")
       if (dt)
@@ -174,9 +221,9 @@ simulate_POMDP <-
       cat("\n")
     }
     
-    bs <- replicate(n, expr = {
-      # find a initial state
-      
+    #bs <- replicate(n, expr = {
+    bs <- times(n) %dopar% {
+      # initialize replication
       s <- sample(states, 1L, prob = belief)
       b <- belief
       rew <- 0
@@ -197,7 +244,7 @@ simulate_POMDP <-
           dimnames = list(NULL, states)
         )
       else
-        b_all <- matrix(nrow =0, ncol = 0)
+        b_all <- matrix(nrow = 0, ncol = 0)
       
       for (j in 1:horizon) {
         # change matrices for time-dependent POMDPs
@@ -248,26 +295,26 @@ simulate_POMDP <-
       }
       
       rownames(b_all) <- NULL
-      attr(b_all, "action_cnt") <- action_cnt
-      attr(b_all, "state_cnt") <- state_cnt
-      attr(b_all, "obs_cnt") <- obs_cnt
-      attr(b_all, "reward") <- rew
-      b_all
       
-    }, simplify = FALSE)
+      list(list(
+        action_cnt = action_cnt,
+        state_cnt = state_cnt,
+        obs_cnt = obs_cnt,
+        reward = rew,
+        belief_states = b_all
+      ))
+    }
+    #, simplify = FALSE)
     
-    ac <- Reduce('+', lapply(bs, attr, "action_cnt"))
-    sc <- Reduce('+', lapply(bs, attr, "state_cnt"))
-    oc <- Reduce('+', lapply(bs, attr, "obs_cnt"))
-    rew <- Reduce(c, lapply(bs, attr, "reward"))
-    bs <- Reduce(rbind, bs)
+    
+    rew <- Reduce(c,  lapply(bs, "[[", "reward"))
     
     list(
       avg_reward = mean(rew, na.rm = TRUE),
-      action_cnt = ac,
-      state_cnt = sc,
-      obs_cnt = oc,
+      action_cnt = Reduce('+', lapply(bs, "[[" ,"state_cnt")),
+      state_cnt =  Reduce('+', lapply(bs, "[[", "state_cnt")),
+      obs_cnt =    Reduce('+', lapply(bs, "[[", "obs_cnt")),
       reward = rew,
-      belief_states = bs
+      belief_states = Reduce(rbind, lapply(bs, "[[", "belief_states"))
     )
   }

@@ -11,5 +11,6 @@
 #' @name pomdp-package
 #' 
 #' @import Rcpp
+#' @import foreach
 #' @useDynLib pomdp, .registration=TRUE
 NULL

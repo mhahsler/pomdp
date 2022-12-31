@@ -55,6 +55,13 @@ Simulate trajectories through a POMDP. The start state for each
 trajectory is randomly chosen using the specified belief. The belief is used to choose actions
 from the the epsilon-greedy policy and then updated using observations.
 }
+\details{
+A native R implementation is available (\code{method = 'r'}) and a faster C++ implementation
+(\code{method = 'cpp'}). Both implementations support parallel execution using the package
+\pkg{foreach}. To enable parallel execution, a parallel backend like
+\pkg{doparallel} needs to be available needs to be registered (see
+\code{\link[doParallel:registerDoParallel]{doParallel::registerDoParallel()}}).
+}
 \examples{
 data(Tiger)
 

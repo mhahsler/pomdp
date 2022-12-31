@@ -13,7 +13,7 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 NumericVector round_stochastic_cpp(NumericVector x, int digits = 7) {
-  NumericVector xr = round(x, digits = digits);
+  NumericVector xr = round(x, digits);
   double s = sum(xr);
   if (s != 1.0)
     xr[which_max(x - xr)] += 1 - s;
