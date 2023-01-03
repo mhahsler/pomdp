@@ -3,29 +3,33 @@
 #' Simulate trajectories through a POMDP. The start state for each
 #' trajectory is randomly chosen using the specified belief. The belief is used to choose actions
 #' from the the epsilon-greedy policy and then updated using observations.
-#' 
+#'
 #' A native R implementation is available (`method = 'r'`) and a faster C++ implementation
-#' (`method = 'cpp'`). Both implementations support parallel execution using the package 
-#' \pkg{foreach}. To enable parallel execution, a parallel backend like
-#' \pkg{doparallel} needs to be available needs to be registered (see 
-#' [doParallel::registerDoParallel()]).
+#' (`method = 'cpp'`). 
 #' 
+#' Both implementations support parallel execution using the package
+#' \pkg{foreach}. To enable parallel execution, a parallel backend like
+#' \pkg{doparallel} needs to be available needs to be registered (see
+#' [doParallel::registerDoParallel()]). 
+#' Note that small simulations are slower using parallelization. Therefore, C++ simulations 
+#' with n * horizon less than 100,000 are always executed using a single worker.
+#'
 #' @family POMDP
 #' @importFrom stats runif
 #'
 #' @param model a POMDP model.
 #' @param n number of trajectories.
 #' @param belief probability distribution over the states for choosing the
-#' starting states for the trajectories.
-#' Defaults to the start belief state specified in
-#' the model or "uniform".
+#'  starting states for the trajectories.
+#'  Defaults to the start belief state specified in the model or "uniform".
 #' @param horizon number of epochs for the simulation. If `NULL` then the
-#' horizon for the model is used.
+#'  horizon for the model is used.
 #' @param return_beliefs logical; Return all visited belief states? This requires n x horizon memory.
 #' @param epsilon the probability of random actions for using an epsilon-greedy policy.
-#' Default for solved models is 0 and for unsolved model 1.
+#'  Default for solved models is 0 and for unsolved model 1.
 #' @param digits round probabilities for belief points.
-#' @param method `'r'` or `'cpp'` to perform simulation using an R or faster C++ implementation.
+#' @param method `'cpp'` or `'r'` to perform simulation using a faster C++ or a 
+#'  native R implementation.
 #' @param verbose report used parameters.
 #' @return A list with elements:
 #'  * `avg_reward`: The average discounted reward.
@@ -43,18 +47,21 @@
 #' sol
 #' policy(sol)
 #'
+#' # register a parallel backend for simulation (needs package doparallel installed)
+#' doParallel::registerDoParallel()
+#'
 #' ## Example 1: simulate 10 trajectories
-#' sim <- simulate_POMDP(sol, n = 100, verbose = TRUE)
+#' sim <- simulate_POMDP(sol, n = 10, verbose = TRUE)
 #' sim
 #'
 #' # calculate the percentage that each action is used in the simulation
-#' sim$action_cnt / sum(sim$action_cnt)
+#' round_stochastic(sim$action_cnt / sum(sim$action_cnt), 2)
 #'
 #' # reward distribution
 #' hist(sim$reward)
 #'
 #' ## Example 2: look at all belief states in the trajectory starting with an initial start belief.
-#' sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), return_beliefs = TRUE)
+#' sim <- simulate_POMDP(sol, n = 1000, belief = c(.5, .5), return_beliefs = TRUE)
 #' head(sim$belief_states)
 #'
 #' # plot with added density
@@ -64,7 +71,7 @@
 #'
 #' ## Example 3: simulate trajectories for an unsolved POMDP which uses an epsilon of 1
 #' #             (i.e., all actions are randomized)
-#' sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, return_beliefs = TRUE, verbose = TRUE)
+#' sim <- simulate_POMDP(Tiger, n = 1000, horizon = 5, return_beliefs = TRUE, verbose = TRUE)
 #' sim$avg_reward
 #'
 #' plot_belief_space(sol, sample = sim$belief_states, ylim = c(0,6), jitter = 1)
@@ -95,6 +102,9 @@ simulate_POMDP <-
     if (is.infinite(horizon))
       stop("Simulation needs a finite simulation horizon.")
     
+    n <- as.integer(n)
+    horizon <- as.integer(horizon)
+    
     if (is.null(epsilon)) {
       if (!solved)
         epsilon <- 1
@@ -114,7 +124,7 @@ simulate_POMDP <-
         ### FIXME: this can be done better
         model <- normalize_POMDP(model)
         
-        if (foreach::getDoParWorkers() == 1)
+        if (foreach::getDoParWorkers() == 1 || n * horizon < 100000)
           return (
             simulate_POMDP_cpp(
               model,
@@ -128,22 +138,34 @@ simulate_POMDP <-
               verbose
             )
           )
-        else {
-          nw <- foreach::getDoParWorkers()
-          
-          if (verbose)
-            cat("Using ", nw, "workers!")
-          
-          
-          ns <- rep(ceiling(n / nw), times = nw)
-          dif <- sum(ns) - n
-          if (dif > 0)
-            ns[1:dif] <- ns[1:dif] - 1
+        
+        nw <- foreach::getDoParWorkers()
+        ns <- rep(ceiling(n / nw), times = nw)
+        dif <- sum(ns) - n
+        if (dif > 0)
+          ns[1:dif] <- ns[1:dif] - 1
+        
+        
+        if (verbose) {
+          cat("Simulating POMDP trajectories.\n")
+          cat("- method: cpp\n")
+          cat("- horizon:", horizon, "\n")
+          cat("- n:",
+            n,
+            "- parallel workers:",
+            foreach::getDoParWorkers(),
+            "\n")
+          cat("- epsilon:", epsilon, "\n")
+          cat("- discount factor:", disc, "\n")
+          cat("- starting belief:\n")
+          print(belief)
+          cat("\n")
         }
         
-        w <- NULL # to shut up the warning for the foreach counter variable
+        w <-
+          NULL # to shut up the warning for the foreach counter variable
         
-        bs <- foreach(w = 1:nw) %dopar%
+        sim <- foreach(w = 1:nw) %dopar%
           simulate_POMDP_cpp(model,
             ns[w],
             belief,
@@ -152,21 +174,20 @@ simulate_POMDP <-
             return_beliefs,
             epsilon,
             digits,
-            verbose)
+            verbose = FALSE)
         
-        rew <- Reduce(c,  lapply(bs, "[[", "reward"))
+        rew <- Reduce(c,  lapply(sim, "[[", "reward"))
         
         return(
           list(
             avg_reward = mean(rew, na.rm = TRUE),
-            action_cnt = Reduce('+', lapply(bs, "[[" ,"state_cnt")),
-            state_cnt =  Reduce('+', lapply(bs, "[[", "state_cnt")),
-            obs_cnt =    Reduce('+', lapply(bs, "[[", "obs_cnt")),
             reward = rew,
-            belief_states = Reduce(rbind, lapply(bs, "[[", "belief_states"))
+            action_cnt = Reduce('+', lapply(sim, "[[" , "action_cnt")),
+            state_cnt =  Reduce('+', lapply(sim, "[[", "state_cnt")),
+            obs_cnt =    Reduce('+', lapply(sim, "[[", "obs_cnt")),
+            belief_states = Reduce(rbind, lapply(sim, "[[", "belief_states"))
           )
         )
-        
         
       } else {
         message("Using method 'r'. Time-dependent models can only be simulated using method 'r'!")
@@ -187,7 +208,7 @@ simulate_POMDP <-
     # precompute matrix lists for time-dependent POMDPs
     if (dt) {
       dt_horizon <- model$horizon
-      dt_episodes <- cumsum(c(1, head(model$horizon, -1)))
+      dt_episodes <- cumsum(c(1, head(model$horizon,-1)))
       dt_trans_m <-
         lapply(
           1:length(dt_horizon),
@@ -212,6 +233,11 @@ simulate_POMDP <-
       cat("Simulating POMDP trajectories.\n")
       cat("- method: r\n")
       cat("- horizon:", horizon, "\n")
+      cat("- n:",
+        n,
+        "- parallel workers:",
+        foreach::getDoParWorkers(),
+        "\n")
       cat("- epsilon:", epsilon, "\n")
       if (dt)
         cat("- time-dependent:", length(dt_horizon), "episodes", "\n")
@@ -222,7 +248,7 @@ simulate_POMDP <-
     }
     
     #bs <- replicate(n, expr = {
-    bs <- times(n) %dopar% {
+    sim <- times(n) %dopar% {
       # initialize replication
       s <- sample(states, 1L, prob = belief)
       b <- belief
@@ -237,14 +263,14 @@ simulate_POMDP <-
       names(obs_cnt) <- obs
       
       if (return_beliefs)
-        b_all <- matrix(
+        visited_belief_states <- matrix(
           NA,
           nrow = horizon,
           ncol = n_states,
           dimnames = list(NULL, states)
         )
       else
-        b_all <- matrix(nrow = 0, ncol = 0)
+        visited_belief_states <- matrix(nrow = 0, ncol = 0)
       
       for (j in 1:horizon) {
         # change matrices for time-dependent POMDPs
@@ -277,8 +303,8 @@ simulate_POMDP <-
         
         s_prev <- s
         s <-
-          sample.int(length(states), 1L, prob = trans_m[[a]][s,])
-        o <- sample.int(length(obs), 1L, prob = obs_m[[a]][s,])
+          sample.int(length(states), 1L, prob = trans_m[[a]][s, ])
+        o <- sample.int(length(obs), 1L, prob = obs_m[[a]][s, ])
         
         action_cnt[a] <- action_cnt[a] + 1L
         state_cnt[s] <- state_cnt[s] + 1L
@@ -291,30 +317,32 @@ simulate_POMDP <-
         b <-
           .update_belief(b, a, o, trans_m, obs_m, digits = digits)
         if (return_beliefs)
-          b_all[j, ] <- b
+          visited_belief_states[j,] <- b
       }
       
-      rownames(b_all) <- NULL
+      rownames(visited_belief_states) <- NULL
       
-      list(list(
-        action_cnt = action_cnt,
-        state_cnt = state_cnt,
-        obs_cnt = obs_cnt,
-        reward = rew,
-        belief_states = b_all
-      ))
+      list(
+        list(
+          action_cnt = action_cnt,
+          state_cnt = state_cnt,
+          obs_cnt = obs_cnt,
+          reward = rew,
+          belief_states = visited_belief_states
+        )
+      )
     }
     #, simplify = FALSE)
     
     
-    rew <- Reduce(c,  lapply(bs, "[[", "reward"))
+    rew <- Reduce(c,  lapply(sim, "[[", "reward"))
     
     list(
       avg_reward = mean(rew, na.rm = TRUE),
-      action_cnt = Reduce('+', lapply(bs, "[[" ,"state_cnt")),
-      state_cnt =  Reduce('+', lapply(bs, "[[", "state_cnt")),
-      obs_cnt =    Reduce('+', lapply(bs, "[[", "obs_cnt")),
+      action_cnt = Reduce('+', lapply(sim, "[[" , "state_cnt")),
+      state_cnt =  Reduce('+', lapply(sim, "[[", "state_cnt")),
+      obs_cnt =    Reduce('+', lapply(sim, "[[", "obs_cnt")),
       reward = rew,
-      belief_states = Reduce(rbind, lapply(bs, "[[", "belief_states"))
+      belief_states = Reduce(rbind, lapply(sim, "[[", "belief_states"))
     )
   }

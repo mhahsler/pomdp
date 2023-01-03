@@ -23,8 +23,7 @@ simulate_POMDP(
 
 \item{belief}{probability distribution over the states for choosing the
 starting states for the trajectories.
-Defaults to the start belief state specified in
-the model or "uniform".}
+Defaults to the start belief state specified in the model or "uniform".}
 
 \item{horizon}{number of epochs for the simulation. If \code{NULL} then the
 horizon for the model is used.}
@@ -36,7 +35,8 @@ Default for solved models is 0 and for unsolved model 1.}
 
 \item{digits}{round probabilities for belief points.}
 
-\item{method}{\code{'r'} or \code{'cpp'} to perform simulation using an R or faster C++ implementation.}
+\item{method}{\code{'cpp'} or \code{'r'} to perform simulation using a faster C++ or a
+native R implementation.}
 
 \item{verbose}{report used parameters.}
 }
@@ -57,10 +57,14 @@ from the the epsilon-greedy policy and then updated using observations.
 }
 \details{
 A native R implementation is available (\code{method = 'r'}) and a faster C++ implementation
-(\code{method = 'cpp'}). Both implementations support parallel execution using the package
+(\code{method = 'cpp'}).
+
+Both implementations support parallel execution using the package
 \pkg{foreach}. To enable parallel execution, a parallel backend like
 \pkg{doparallel} needs to be available needs to be registered (see
 \code{\link[doParallel:registerDoParallel]{doParallel::registerDoParallel()}}).
+Note that small simulations are slower using parallelization. Therefore, C++ simulations
+with n * horizon less than 100,000 are always executed using a single worker.
 }
 \examples{
 data(Tiger)
@@ -70,18 +74,21 @@ sol <- solve_POMDP(Tiger, horizon = 5, discount = 1, method = "enum")
 sol
 policy(sol)
 
+# register a parallel backend for simulation (needs package doparallel installed)
+doParallel::registerDoParallel()
+
 ## Example 1: simulate 10 trajectories
-sim <- simulate_POMDP(sol, n = 100, verbose = TRUE)
+sim <- simulate_POMDP(sol, n = 10, verbose = TRUE)
 sim
 
 # calculate the percentage that each action is used in the simulation
-sim$action_cnt / sum(sim$action_cnt)
+round_stochastic(sim$action_cnt / sum(sim$action_cnt), 2)
 
 # reward distribution
 hist(sim$reward)
 
 ## Example 2: look at all belief states in the trajectory starting with an initial start belief.
-sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), return_beliefs = TRUE)
+sim <- simulate_POMDP(sol, n = 1000, belief = c(.5, .5), return_beliefs = TRUE)
 head(sim$belief_states)
 
 # plot with added density
@@ -91,7 +98,7 @@ lines(density(sim$belief_states[, 1], bw = .02)); axis(2); title(ylab = "Density
 
 ## Example 3: simulate trajectories for an unsolved POMDP which uses an epsilon of 1
 #             (i.e., all actions are randomized)
-sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, return_beliefs = TRUE, verbose = TRUE)
+sim <- simulate_POMDP(Tiger, n = 1000, horizon = 5, return_beliefs = TRUE, verbose = TRUE)
 sim$avg_reward
 
 plot_belief_space(sol, sample = sim$belief_states, ylim = c(0,6), jitter = 1)

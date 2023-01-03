@@ -4,20 +4,29 @@
 #' trajectory is randomly chosen using the specified belief. The belief is used to choose actions
 #' from an epsilon-greedy policy and then update the state.
 #'
+#' A native R implementation is available (`method = 'r'`) and the default is a 
+#' faster C++ implementation (`method = 'cpp'`). 
+#' 
+#' Both implementations support parallel execution using the package
+#' \pkg{foreach}. To enable parallel execution, a parallel backend like
+#' \pkg{doparallel} needs to be available needs to be registered (see
+#' [doParallel::registerDoParallel()]). 
+#' Note that small simulations are slower using parallelization. Therefore, C++ simulations 
+#' with n * horizon less than 100,000 are always executed using a single worker.
 #' @family MDP
 #' @importFrom stats runif
 #'
 #' @param model a MDP model.
 #' @param n number of trajectories.
 #' @param start probability distribution over the states for choosing the
-#' starting states for the trajectories.
-#' Defaults to "uniform".
+#'  starting states for the trajectories. Defaults to "uniform".
 #' @param horizon number of epochs for the simulation. If `NULL` then the
-#' horizon for the model is used.
+#'  horizon for the model is used.
 #' @param return_states logical; return visited states.
 #' @param epsilon the probability of random actions  for using an epsilon-greedy policy.
-#' Default for solved models is 0 and for unsolved model 1.
-#' @param method `'r'` or `'cpp'` to perform simulation using an R or faster C++ implementation.
+#'  Default for solved models is 0 and for unsolved model 1.
+#' @param method `'cpp'` or `'r'` to perform simulation using a faster C++ 
+#'  or a native R implementation. 
 #' @param verbose report used parameters.
 #' @return A list with elements:
 #'  * `avg_reward`: The average discounted reward.
@@ -45,7 +54,7 @@
 #' sim
 #'
 #' # Calculate proportion of actions used
-#' sim$action_cnt / sum(sim$action_cnt)
+#' round_stochastic(sim$action_cnt / sum(sim$action_cnt), 2)
 #'
 #' # reward distribution
 #' hist(sim$reward)
@@ -53,7 +62,7 @@
 #' ## Example 2: simulate starting always in state s_1 and return all visited states
 #' sim <- simulate_MDP(sol, n = 100, start = "s_1", horizon = 10, return_states = TRUE)
 #' sim$avg_reward
-#' 
+#'
 #' # how often was each state visited?
 #' table(sim$states)
 #' @export
@@ -95,8 +104,8 @@ simulate_MDP <-
     if (method == "cpp") {
       model <- normalize_MDP(model)
       
-      return (
-        simulate_MDP_cpp(
+      if (foreach::getDoParWorkers() == 1 || n * horizon < 100000)
+        return (simulate_MDP_cpp(
           model,
           n,
           start,
@@ -105,10 +114,52 @@ simulate_MDP <-
           return_states,
           epsilon,
           verbose
+        ))
+      
+      nw <- foreach::getDoParWorkers()
+      ns <- rep(ceiling(n / nw), times = nw)
+      dif <- sum(ns) - n
+      if (dif > 0)
+        ns[1:dif] <- ns[1:dif] - 1
+      
+      if (verbose) {
+        cat("Simulating MDP trajectories.\n")
+        cat("- method: cpp \n")
+        cat("- horizon:", horizon, "\n")
+        cat("- n:", n, "- parallel workers:", foreach::getDoParWorkers(), "\n")
+        cat("- epsilon:", epsilon, "\n")
+        cat("- discount factor:", disc, "\n")
+        cat("\n")
+      }
+      
+      w <-
+        NULL # to shut up the warning for the foreach counter variable
+      
+      sim <- foreach(w = 1:nw) %dopar%
+        simulate_MDP_cpp(model,
+          ns[w],
+          start,
+          horizon,
+          disc,
+          return_states,
+          epsilon,
+          verbose = FALSE)
+      
+      rew <- Reduce(c,  lapply(sim, "[[", "reward"))
+      
+      return(
+        list(
+          avg_reward = mean(rew, na.rm = TRUE),
+          reward = rew,
+          action_cnt = Reduce('+', lapply(sim, "[[" , "action_cnt")),
+          state_cnt =  Reduce('+', lapply(sim, "[[", "state_cnt")),
+          states = Reduce(c, lapply(sim, "[[", "states"))
         )
       )
-    } 
+      
+    }
     
+    ## R implementation starts here
     states <- as.character(model$states)
     n_states <- length(states)
     actions <- as.character(model$actions)
@@ -128,31 +179,27 @@ simulate_MDP <-
       cat("Simulating MDP trajectories.\n")
       cat("- method:", method, "\n")
       cat("- horizon:", horizon, "\n")
-      cat("- n:", n, "\n")
+      cat("- n:", n, "- parallel workers:", foreach::getDoParWorkers(), "\n")
       cat("- epsilon:", epsilon, "\n")
       cat("- discount factor:", disc, "\n")
-      cat("- start state distribution:\n")
-      print(start)
       cat("\n")
     }
     
     #st <- replicate(n, expr = {
-    st <- times(n) %dopar% {
+    sim <- times(n) %dopar% {
       # find a initial state
-      
       s <- sample(states, 1, prob = start)
       
       action_cnt <- rep(0L, length(actions))
       names(action_cnt) <- actions
       state_cnt <- rep(0L, length(states))
       names(state_cnt) <- states
-      
       rew <- 0
       
       if (return_states)
-        s_all <- integer(horizon)
-      else 
-        s_all <- integer()
+        states_visited <- integer(horizon)
+      else
+        states_visited <- integer()
       
       for (j in 1:horizon) {
         if (runif(1) < epsilon) {
@@ -165,38 +212,37 @@ simulate_MDP <-
         state_cnt[s] <- state_cnt[s] + 1L
         
         s_prev <- s
-        s <- sample.int(length(states), 1L, prob = trans_m[[a]][s, ])
+        s <-
+          sample.int(length(states), 1L, prob = trans_m[[a]][s, ])
         
         rew <- rew + rew_m[[a]][[s_prev]][s] * disc ^ (j - 1L)
         
         if (return_states)
-          s_all[j] <- s
+          states_visited[j] <- s
       }
       
-      rownames(s_all) <- NULL
-      attr(s_all, "action_cnt") <- action_cnt
-      attr(s_all, "state_cnt") <- state_cnt
-      attr(s_all, "reward") <- rew
+      states_visited <-
+        factor(states_visited,
+          levels = seq_along(model$states),
+          labels = model$states)
       
-      #s_all
-      list(s_all)
-      
+      list(list(
+        action_cnt =  action_cnt,
+        state_cnt = state_cnt,
+        reward = rew,
+        states = states_visited
+      ))
     }
     #, simplify = FALSE)
     
-    
-    ac <- Reduce('+', lapply(st, attr, "action_cnt"))
-    sc <- Reduce('+', lapply(st, attr, "state_cnt"))
-    rew <- Reduce(c, lapply(st, attr, "reward"))
-    unname(rew)
-    st <- Reduce(c, st)
-    st <- factor(st, levels = seq_along(model$states), labels = model$states)
+    rew <- Reduce(c, lapply(sim, "[[", "reward"))
+    rew <- unname(rew)
     
     list(
       avg_reward = mean(rew, na.rm = TRUE),
       reward = rew,
-      action_cnt = ac,
-      state_cnt = sc,
-      states = st
+      action_cnt = Reduce('+', lapply(sim, "[[", "action_cnt")),
+      state_cnt = Reduce('+', lapply(sim, "[[", "state_cnt")),
+      states = Reduce(c, lapply(sim, "[[", "states"))
     )
   }

@@ -181,6 +181,9 @@ List simulate_POMDP_cpp(const List& model,
     }
   }
   
+  if (return_beliefs)
+    colnames(belief_states) = get_states(model);
+  
   double m = mean(rews);
   List L = List::create(Named("avg_reward") = m,
     _["reward"] = rews,

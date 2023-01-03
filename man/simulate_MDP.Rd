@@ -21,8 +21,7 @@ simulate_MDP(
 \item{n}{number of trajectories.}
 
 \item{start}{probability distribution over the states for choosing the
-starting states for the trajectories.
-Defaults to "uniform".}
+starting states for the trajectories. Defaults to "uniform".}
 
 \item{horizon}{number of epochs for the simulation. If \code{NULL} then the
 horizon for the model is used.}
@@ -32,7 +31,8 @@ horizon for the model is used.}
 \item{epsilon}{the probability of random actions  for using an epsilon-greedy policy.
 Default for solved models is 0 and for unsolved model 1.}
 
-\item{method}{\code{'r'} or \code{'cpp'} to perform simulation using an R or faster C++ implementation.}
+\item{method}{\code{'cpp'} or \code{'r'} to perform simulation using a faster C++
+or a native R implementation.}
 
 \item{verbose}{report used parameters.}
 }
@@ -55,6 +55,17 @@ Simulate trajectories through a MDP. The start state for each
 trajectory is randomly chosen using the specified belief. The belief is used to choose actions
 from an epsilon-greedy policy and then update the state.
 }
+\details{
+A native R implementation is available (\code{method = 'r'}) and the default is a
+faster C++ implementation (\code{method = 'cpp'}).
+
+Both implementations support parallel execution using the package
+\pkg{foreach}. To enable parallel execution, a parallel backend like
+\pkg{doparallel} needs to be available needs to be registered (see
+\code{\link[doParallel:registerDoParallel]{doParallel::registerDoParallel()}}).
+Note that small simulations are slower using parallelization. Therefore, C++ simulations
+with n * horizon less than 100,000 are always executed using a single worker.
+}
 \examples{
 data(Maze)
 
@@ -69,7 +80,7 @@ sim <- simulate_MDP(sol, n = 100, horizon = 10, verbose = TRUE)
 sim
 
 # Calculate proportion of actions used
-sim$action_cnt / sum(sim$action_cnt)
+round_stochastic(sim$action_cnt / sum(sim$action_cnt), 2)
 
 # reward distribution
 hist(sim$reward)

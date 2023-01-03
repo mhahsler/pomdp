@@ -3,7 +3,7 @@
 # New Features
 * Added model normalization.
 * simulate_POMDP and simulate_MDP are now reimplemented using C++ (Rcpp).
-* simulate_POMDP and simulate_MDP have now foreach support.
+* simulate_POMDP and simulate_MDP have now parallel (foreach) support.
 
 # Changes
 * simulate_POMDP and simulate_MDP now return a list.
