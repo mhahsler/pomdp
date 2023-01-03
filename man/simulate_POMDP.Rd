@@ -74,8 +74,10 @@ sol <- solve_POMDP(Tiger, horizon = 5, discount = 1, method = "enum")
 sol
 policy(sol)
 
-# register a parallel backend for simulation (needs package doparallel installed)
-doParallel::registerDoParallel()
+# uncomment the following line to register a parallel backend for simulation 
+# (needs package doparallel installed)
+
+# doParallel::registerDoParallel()
 
 ## Example 1: simulate 10 trajectories
 sim <- simulate_POMDP(sol, n = 10, verbose = TRUE)

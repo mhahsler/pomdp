@@ -256,15 +256,19 @@ read_POMDP <- function(file) {
   problem <- readLines(file)
   
   get_vals <- function(var, number = FALSE) {
-    ind <- grep(paste0("^", var, ":"), problem)
-    if (length(ind) == 0)
+    label <- paste0("^", var, "\\s*:\\s*")
+    ind <- grep(label, problem)
+    if (length(ind) == 0L)
       return(NULL)
     
+    if (length(ind) > 1L)
+      stop("Multiple definitions for ", var)
+      
     vals <-
-      strsplit(trimws(problem[ind]), "\\s+")[[1]][-1]
+      strsplit(trimws(sub(label, "", problem[ind])), "\\s+")[[1]]
     
     # the data may be in the next line
-    if (length(vals) == 0)
+    if (length(vals) == 0L)
       vals <- strsplit(problem[[ind + 1]], "\\s+")[[1]]
     
     # numbers?
@@ -276,16 +280,20 @@ read_POMDP <- function(file) {
     vals
   }
   
+  start <-  get_vals("start")
+  if (is.numeric(start))
+    start <-  round_stochastic(start)
+  
   x <- list(
     name = file,
     states = get_vals("states", number = TRUE),
     observations = get_vals("observations", number = TRUE),
     actions = get_vals("actions", number = TRUE),
-    start = get_vals("start"),
+    start = start,
     discount = get_vals("discount"),
     problem = structure(problem, class = "text")
   )
-  
+    
   class(x) <- c("POMDP", "list")
   x <- check_and_fix_MDP(x)
   x

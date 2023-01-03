@@ -54,7 +54,8 @@ can be more efficiently retrieved using the functions ending \verb{_prob} and \v
 \code{normalize_POMDP()} returns a new POMDP definition where \code{transition_prob}, \code{observations_prob},
 \code{reward}, and \code{start} are normalized to (lists of) matrices and vectors to make access easy.
 Also, \code{states}, \code{actions}, and \code{observations} are ordered as given in the problem definition to make safe
-access using numerical indices possible.
+access using numerical indices possible. Normalized POMDP and MDP descriptions are used for C++ based code (e.g., \code{\link[=simulate_POMDP]{simulate_POMDP()}}) and normalizing them once will save time if the code is called
+repeatedly.
 
 \code{start_vector} normalizes the initial belief vector.
 
@@ -99,8 +100,8 @@ plot(g, layout = layout_on_grid, main = "Transitions for action 'open=left'")
 ## Use a function for the Tiger transition model
 trans <- function(action, end.state, start.state) {
   ## listen has an identity matrix
-  if(action == 'listen')
-    if(end.state == start.state) return(1)
+  if (action == 'listen')
+    if (end.state == start.state) return(1)
     else return(0)
 
   # other actions have a uniform distribution
