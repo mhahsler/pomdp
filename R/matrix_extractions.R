@@ -7,7 +7,8 @@
 #' `normalize_POMDP()` returns a new POMDP definition where `transition_prob`, `observations_prob`,
 #' `reward`, and `start` are normalized to (lists of) matrices and vectors to make access easy. 
 #' Also, `states`, `actions`, and `observations` are ordered as given in the problem definition to make safe
-#' access using numerical indices possible.
+#' access using numerical indices possible. Normalized POMDP and MDP descriptions are used for C++ based code (e.g., [simulate_POMDP()]) and normalizing them once will save time if the code is called
+#' repeatedly. 
 #' 
 #' `start_vector` normalizes the initial belief vector.
 #' 
@@ -62,8 +63,8 @@
 #' ## Use a function for the Tiger transition model
 #' trans <- function(action, end.state, start.state) {
 #'   ## listen has an identity matrix
-#'   if(action == 'listen')
-#'     if(end.state == start.state) return(1)
+#'   if (action == 'listen')
+#'     if (end.state == start.state) return(1)
 #'     else return(0)
 #'
 #'   # other actions have a uniform distribution
