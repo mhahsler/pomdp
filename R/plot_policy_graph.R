@@ -136,6 +136,9 @@ policy_graph_converged <- function(x, belief = NULL, show_belief = TRUE, col = N
   # create policy graph and belief proportions (average belief for each alpha vector)
   pg <- x$solution$pg[[1]]
   
+  if (ncol(pg) <= 2)
+    stop("Solution does not contain policy graph information. Use a different solver.")
+  
   if (show_belief) {
     # FIXME: for pomdp-solve, we could seed with x$solution$belief_states
     bp <- estimate_belief_for_nodes(x, ...)
@@ -155,9 +158,9 @@ policy_graph_converged <- function(x, belief = NULL, show_belief = TRUE, col = N
   list_of_arcs <- NULL
   #observations <- colnames(pg)[-c(1,2)]
   observations <- x$observations
-  number_of_observations <- length(observations)
+  
   l <- lapply(
-    1:number_of_observations,
+    seq_along(observations),
     FUN = function(i)
       data.frame(
         from = pg$node,
@@ -199,8 +202,7 @@ policy_graph_converged <- function(x, belief = NULL, show_belief = TRUE, col = N
       )
     
     ### Set1 from Colorbrewer
-    number_of_states <- length(x$states)
-    col <- .get_colors_descrete(number_of_states, col)
+    col <- .get_colors_descrete(length(x$states), col)
     
     V(policy_graph)$shape <- "pie"
     V(policy_graph)$pie = pie_values
