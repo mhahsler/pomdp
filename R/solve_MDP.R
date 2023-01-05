@@ -156,8 +156,8 @@ q_values_MDP <- function(model, U = NULL) {
   
   S <- model$states
   A <- model$actions
-  P <- transition_matrix(model)
-  R <- reward_matrix(model)
+  P <- transition_matrix(model, sparse = TRUE)
+  R <- reward_matrix(model, sparse = TRUE)
   policy <- model$solution$policy[[1]]
   GAMMA <- model$discount
   
@@ -183,8 +183,8 @@ MDP_value_iteration_finite_horizon <-
     
     S <- model$states
     A <- model$actions
-    P <- transition_matrix(model)
-    R <- reward_matrix(model)
+    P <- transition_matrix(model, sparse = TRUE)
+    R <- reward_matrix(model, sparse = TRUE)
     GAMMA <- model$discount
     
     horizon <- as.integer(horizon)
@@ -356,8 +356,8 @@ MDP_policy_iteration_inf_horizon <-
     verbose = FALSE) {
     S <- model$states
     A <- model$actions
-    P <- transition_matrix(model)
-    R <- reward_matrix(model)
+    P <- transition_matrix(model, sparse = TRUE)
+    R <- reward_matrix(model, sparse = TRUE)
     GAMMA <- model$discount
     
     if (is.null(U))

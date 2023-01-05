@@ -32,7 +32,7 @@ discount factor specified in \code{model} will be used.}
 \code{\link[=write_POMDP]{write_POMDP()}}).}
 
 \item{parameter}{a list with parameters passed on to
-the function \code{sarsop} in package \pkg{sarsop}.}
+the function \code{\link[sarsop:appl]{sarsop::pomdpsol()}} in package \pkg{sarsop}.}
 
 \item{verbose}{logical, if set to \code{TRUE}, the function provides the
 output of the solver in the R console.}
@@ -75,8 +75,8 @@ plot_policy_graph(sol)
 # reward of the optimal policy
 reward(sol)
 
-# Solve a problem specified as a POMDP file
-sol <- solve_SARSOP("http://www.pomdp.org/examples/cheese.95.POMDP")
+# Solve a problem specified as a POMDP file. The timeout is set to 10 seconds.
+sol <- solve_SARSOP("http://www.pomdp.org/examples/cheese.95.POMDP", parameter = list(timeout = 10))
 sol
 }
 

@@ -70,7 +70,7 @@
 #' #
 #' # ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) + 
 #' #   geom_point(aes(color = reward))
-#' @import graphics
+#' @importFrom graphics plot axis legend
 #' @export
 plot_belief_space <-
   function(model,

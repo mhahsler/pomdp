@@ -21,7 +21,7 @@
 #' @param digits precision used when writing POMDP files (see
 #' [write_POMDP()]).
 #' @param parameter a list with parameters passed on to
-#' the function `sarsop` in package \pkg{sarsop}.
+#' the function [sarsop::pomdpsol()] in package \pkg{sarsop}.
 #' @param verbose logical, if set to `TRUE`, the function provides the
 #' output of the solver in the R console.
 #' @return The solver returns an object of class POMDP which is a list with the
@@ -60,8 +60,8 @@
 #' # reward of the optimal policy
 #' reward(sol)
 #'
-#' # Solve a problem specified as a POMDP file
-#' sol <- solve_SARSOP("http://www.pomdp.org/examples/cheese.95.POMDP")
+#' # Solve a problem specified as a POMDP file. The timeout is set to 10 seconds.
+#' sol <- solve_SARSOP("http://www.pomdp.org/examples/cheese.95.POMDP", parameter = list(timeout = 10))
 #' sol
 #' }
 #'
@@ -137,7 +137,8 @@ if (!is.null(terminal_values))
       model = model_file,
       output = policy_file,
       stdout = log_file,
-      stderr = log_file
+      stderr = log_file,
+      spinner = FALSE
     ),
     parameter
   ))

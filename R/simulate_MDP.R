@@ -164,8 +164,8 @@ simulate_MDP <-
     n_states <- length(states)
     actions <- as.character(model$actions)
     
-    trans_m <- transition_matrix(model)
-    rew_m <- reward_matrix(model)
+    trans_m <- transition_matrix(model, sparse = TRUE)
+    rew_m <- reward_matrix(model, sparse = TRUE)
     
     # for easier access
     pol <-

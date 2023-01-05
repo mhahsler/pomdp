@@ -7,7 +7,7 @@
 \usage{
 write_POMDP(x, file, digits = 7)
 
-read_POMDP(file)
+read_POMDP(file, parse_matrices = "sparse")
 }
 \arguments{
 \item{x}{an object of class \link{POMDP}.}
@@ -16,12 +16,22 @@ read_POMDP(file)
 
 \item{digits}{precision for writing numbers (digits after the decimal
 point).}
+
+\item{parse_matrices}{character; parse model matrices can be either \code{"no"}, \code{"dense"}, or \code{"sparse"}.
+Use \code{"no"} to disable the experimental R parser.
+Solvers still work, but helpers for simulation are not available.}
 }
 \value{
 \code{read_POMDP()} returns a \link{POMDP} object.
 }
 \description{
-Reads and write a POMDP file suitable for the \code{pomdp-solve} program. \emph{Note:} read POMDP files are intended to be used in \code{\link[=solve_POMDP]{solve_POMDP()}} and do not support all auxiliary functions. Fields like the transition matrix, the observation matrix and the reward structure are not parsed.
+Reads and write a POMDP file suitable for the \code{pomdp-solve} program.
+}
+\details{
+\link{POMDP} objects read from a POMDP file have an extra element called \code{problem} which contains the original
+POMDP specification. \strong{The original specification is directly used by external solvers.} In addition, the file
+is parsed using an experimental POMDP file parser. The parsed information can be used with auxiliary functions
+in this package that use fields like the transition matrix, the observation matrix and the reward structure.
 }
 \examples{
 data(Tiger)

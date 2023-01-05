@@ -89,7 +89,13 @@ simulate_POMDP <-
     digits = 7,
     method = "cpp",
     verbose = FALSE) {
-    method <- match.arg(tolower(method), c("r", "cpp"))
+    method <- match.arg(tolower(method), c("r", "r-sparse", "cpp"))
+    
+    sparse <- FALSE
+    if (method == "r-sparse") {
+      method <- "r"
+      sparse <- TRUE
+      }
     
     solved <- !is.null(model$solution)
     dt <- .timedependent_POMDP(model)
@@ -124,7 +130,8 @@ simulate_POMDP <-
     if (method == "cpp") {
       if (!dt) {
         ### FIXME: this can be done better
-        model <- normalize_POMDP(model)
+        ### TODO: Add support for sparse matrices
+        model <- normalize_POMDP(model, sparse = FALSE)
         
         if (foreach::getDoParWorkers() == 1 || n * horizon < 100000)
           return (
@@ -203,9 +210,9 @@ simulate_POMDP <-
     n_obs <- length(obs)
     actions <- as.character(model$actions)
     
-    trans_m <- transition_matrix(model)
-    obs_m <- observation_matrix(model)
-    rew_m <- reward_matrix(model)
+    trans_m <- transition_matrix(model, sparse = sparse)
+    obs_m <- observation_matrix(model, sparse = sparse)
+    rew_m <- reward_matrix(model, sparse = sparse)
     
     # precompute matrix lists for time-dependent POMDPs
     if (dt) {
@@ -318,6 +325,7 @@ simulate_POMDP <-
         # update belief
         b <-
           .update_belief(b, a, o, trans_m, obs_m, digits = digits)
+        
         if (return_beliefs)
           visited_belief_states[j,] <- b
       }

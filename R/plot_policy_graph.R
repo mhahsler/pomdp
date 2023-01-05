@@ -17,7 +17,11 @@
 #' specified, then different nodes will be filtered and the tree will look different. 
 #'
 #' First, the policy in the solved POMDP is converted into an [igraph] object using `policy_graph()`.
-#' Average beliefs for the graph nodes are estimated using `estimate_belief_for_node()` and then the igraph
+#' Central beliefs for the graph nodes are estimated using `estimate_belief_for_node()`
+#' which samples the belief space, assigns each sampled point to a node, and then averages the belief of these nodes.
+#' If no belief point is samples for a node, then the estimation fails. Increase the the sample size `n` or
+#' change the sample `method` to get better estimates. 
+#' Finally, the igraph
 #' object is visualized using the plotting function [igraph::plot.igraph()] or,
 #' for interactive graphs, [visNetwork::visIgraph()].
 #'
@@ -216,8 +220,11 @@ policy_graph_converged <- function(x, belief = NULL, show_belief = TRUE, col = N
 }
 
 policy_graph_unconverged <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) {
-  
   pg <- x$solution$pg
+  
+  if (ncol(pg[[1]]) <= 2)
+    stop("Solution does not contain policy graph information. Use a different solver.")
+  
   observations <- x$observations
   epochs <- length(pg)
   
@@ -410,9 +417,13 @@ plot_policy_graph <- function(x,
 
 #' @rdname policy_graph
 #' @param epoch estimate the belief for nodes in this epoch. Use 1 for converged policies.
+#' @param n sample size for estimation.
+#' @param method character string specifying the sampling strategy (see [sample_belief_space()]).
 #' @export
 estimate_belief_for_nodes <-
   function(x,
+    n = 1000,
+    method = "random",
     epoch = 1,
     ...) {
     

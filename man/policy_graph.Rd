@@ -18,7 +18,7 @@ plot_policy_graph(
   ...
 )
 
-estimate_belief_for_nodes(x, epoch = 1, ...)
+estimate_belief_for_nodes(x, n = 1000, method = "random", epoch = 1, ...)
 }
 \arguments{
 \item{x}{object of class \link{POMDP} containing a solved and converged POMDP problem.}
@@ -40,6 +40,10 @@ or \code{\link[visNetwork:visNetwork-igraph]{visNetwork::visIgraph()}}.}
 
 \item{engine}{The plotting engine to be used. For \code{"visNetwork"}, \code{flip.y = FALSE} can be used
 to show the root node on top.}
+
+\item{n}{sample size for estimation.}
+
+\item{method}{character string specifying the sampling strategy (see \code{\link[=sample_belief_space]{sample_belief_space()}}).}
 
 \item{epoch}{estimate the belief for nodes in this epoch. Use 1 for converged policies.}
 }
@@ -69,7 +73,11 @@ Non-converged policies depend on the initial belief and if an initial belief is
 specified, then different nodes will be filtered and the tree will look different.
 
 First, the policy in the solved POMDP is converted into an \link{igraph} object using \code{policy_graph()}.
-Average beliefs for the graph nodes are estimated using \code{estimate_belief_for_node()} and then the igraph
+Central beliefs for the graph nodes are estimated using \code{estimate_belief_for_node()}
+which samples the belief space, assigns each sampled point to a node, and then averages the belief of these nodes.
+If no belief point is samples for a node, then the estimation fails. Increase the the sample size \code{n} or
+change the sample \code{method} to get better estimates.
+Finally, the igraph
 object is visualized using the plotting function \code{\link[igraph:plot.igraph]{igraph::plot.igraph()}} or,
 for interactive graphs, \code{\link[visNetwork:visNetwork-igraph]{visNetwork::visIgraph()}}.
 

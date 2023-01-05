@@ -1,6 +1,8 @@
 # pomdp 1.0.3-1 (xx/xx/2022)
 
 # New Features
+* We support sparse matrices from package Matrix for matrices with a density below 50%.
+* Added support to parse matrices for POMDP files.
 * Added model normalization.
 * simulate_POMDP and simulate_MDP are now reimplemented using C++ (Rcpp).
 * simulate_POMDP and simulate_MDP have now parallel (foreach) support.

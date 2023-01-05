@@ -13,23 +13,23 @@
 \alias{normalize_MDP}
 \title{Extract the Transition, Observation or Reward Information from a POMDP}
 \usage{
-transition_matrix(x, episode = 1, action = NULL)
+transition_matrix(x, episode = 1, action = NULL, sparse = NULL)
 
 transition_prob(x, action, start.state, end.state, episode = 1)
 
-observation_matrix(x, episode = 1, action = NULL)
+observation_matrix(x, episode = 1, action = NULL, sparse = NULL)
 
 observation_prob(x, action, end.state, observation, episode = 1)
 
-reward_matrix(x, episode = 1, action = NULL, start.state = NULL)
+reward_matrix(x, episode = 1, action = NULL, start.state = NULL, sparse = NULL)
 
 reward_val(x, action, start.state, end.state, observation, episode = 1)
 
 start_vector(x)
 
-normalize_POMDP(x, episode = 1)
+normalize_POMDP(x, episode = 1, sparse = NULL)
 
-normalize_MDP(x, episode = 1)
+normalize_MDP(x, episode = 1, sparse = NULL)
 }
 \arguments{
 \item{x}{A \link{POMDP} object.}
@@ -37,6 +37,9 @@ normalize_MDP(x, episode = 1)
 \item{episode}{Episode used for time-dependent POMDPs (\link{POMDP}).}
 
 \item{action}{only return the matrix/value for a given action.}
+
+\item{sparse}{logical; return sparse matrices (\link[Matrix:dgCMatrix-class]{Matrix::dgCMatrix}), if the density is below 50\% . \code{NULL} returns the
+representation stored in the problem description.}
 
 \item{start.state, end.state}{name of the state.}
 
@@ -54,13 +57,21 @@ can be more efficiently retrieved using the functions ending \verb{_prob} and \v
 \code{normalize_POMDP()} returns a new POMDP definition where \code{transition_prob}, \code{observations_prob},
 \code{reward}, and \code{start} are normalized to (lists of) matrices and vectors to make access easy.
 Also, \code{states}, \code{actions}, and \code{observations} are ordered as given in the problem definition to make safe
-access using numerical indices possible. Normalized POMDP and MDP descriptions are used for C++ based code (e.g., \code{\link[=simulate_POMDP]{simulate_POMDP()}}) and normalizing them once will save time if the code is called
+access using numerical indices possible.
+Normalized POMDP and MDP descriptions are used for C++ based
+code (e.g., \code{\link[=simulate_POMDP]{simulate_POMDP()}}) and normalizing them once will save time if the code is called
 repeatedly.
 
 \code{start_vector} normalizes the initial belief vector.
 
 See Details section in \link{POMDP} for more details about possible formats for \code{transition_prob}, \code{observations_prob},
 \code{reward}, and \code{start}.
+
+\strong{Sparse matrix support}
+
+Sparse matrix representation provided by package \pkg{Matrix} is available for \code{transition_prob}, \code{observations_prob},
+\code{reward}. Matrices that have a density above 50\% are kept as a regular dense matrix, matrices with a density
+below 50\% are represented as a \link[Matrix:dgCMatrix-class]{Matrix::dgCMatrix}.
 }
 \examples{
 data("Tiger")

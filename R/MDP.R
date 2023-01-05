@@ -105,6 +105,9 @@ MDP <- function(states,
   check_and_fix_MDP(x)
 }
 
+
+#' @export
+
 #' @export
 print.MDP <- function(x, ...) {
   writeLines(paste(paste(class(x), collapse = ", "),

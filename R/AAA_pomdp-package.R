@@ -10,10 +10,11 @@
 #' @docType package
 #' @name pomdp-package
 #' 
-#' @importFrom utils head tail read.table type.convert
-#' @import graphics
 #' @import Rcpp
-#' @import foreach
+#' @importFrom Matrix spMatrix crossprod coerce Math Math2 cBind rBind nnzero
+#' @importFrom methods as
+#' @importFrom utils head tail read.table type.convert
+#' @importFrom foreach foreach times %dopar% getDoParWorkers
 #' @useDynLib pomdp, .registration=TRUE
 NULL
 

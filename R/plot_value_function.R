@@ -43,7 +43,7 @@
 #' # ggplot(pol) + 
 #' #   geom_segment(aes(x = 0, y = `tiger-left`, xend=1, yend=`tiger-right`, color = action)) + 
 #' #   coord_cartesian(ylim = c(-5, 15)) + ylab("Reward") + xlab("Belief")
-#' @import graphics
+#' @importFrom graphics plot barplot mtext box lines
 #' @export
 plot_value_function <-
   function(model,
