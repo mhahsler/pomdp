@@ -329,6 +329,9 @@ solve_POMDP <- function(model,
     model$start <- initial_belief
   }
   
+  if (is.null(model$start))
+    model$start <- "uniform"
+  
   # time-dependent POMDP? (horizon is a vector of length >1)
   if (.timedependent_POMDP(model))
     return(
@@ -371,7 +374,7 @@ solve_POMDP <- function(model,
   pomdp_filename <- paste0(file_prefix, ".POMDP")
   
   # write model POMDP file
-  if (!is.null(model$problem))
+  if (is.null(model$transition_prob) || is.null(model$observation_prob) || is.null(model$reward))
     writeLines(model$problem, con = pomdp_filename)
   else
     write_POMDP(model, pomdp_filename, digits = digits)

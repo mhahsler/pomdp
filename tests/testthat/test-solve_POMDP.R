@@ -43,7 +43,7 @@ policy(sol)
 
 ## test with some online problems from http://www.pomdp.org/examples/
 
-#problem <- read_POMDP("http://www.pomdp.org/examples/1d.POMDP", parse_matrices = FALSE)
+#problem <- read_POMDP("http://www.pomdp.org/examples/1d.POMDP", parse_matrices = "no")
 #sol <- solve_POMDP(problem)
 
 sol <- solve_POMDP("http://www.pomdp.org/examples/1d.POMDP")
