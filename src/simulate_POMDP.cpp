@@ -29,7 +29,9 @@ NumericVector round_stochastic_cpp(NumericVector x, int digits = 7) {
 NumericVector update_belief_cpp(const List& model, const NumericVector& belief,
   int action, int observation, int digits = 7) {
   
-  NumericVector obs_v = observation_matrix(model, action)( _ , observation);
+  //NumericVector obs_v = observation_matrix(model, action)( _ , observation);
+  //NumericVector obs_v = observation_matrix(model, action).column(observation);
+  NumericMatrix::Column obs_v = observation_matrix(model, action).column(observation);
   NumericMatrix tr_v = transition_matrix(model, action);
   
   NumericVector new_belief = obs_v * veccrossprod(tr_v, belief);
@@ -151,10 +153,12 @@ List simulate_POMDP_cpp(const List& model,
       }
       
       s_prev = s;
-      NumericVector trans_v = transition_matrix(model, a)(s, _ );
+      //NumericVector trans_v = transition_matrix(model, a)(s, _ );
+      NumericVector trans_v = transition_matrix(model, a).row(s);
       s = sample(nstates, 1, false, trans_v, false)[0];
       
-      NumericVector obs_v = observation_matrix(model, a)(s, _ );
+      //NumericVector obs_v = observation_matrix(model, a)(s, _ );
+      NumericVector obs_v = observation_matrix(model, a).row(s);
       o = sample(nobs, 1, false, obs_v, false)[0];
       
       action_cnt[a]++;

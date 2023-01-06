@@ -62,8 +62,8 @@ Verlag, 1986.
 }
 \seealso{
 Other POMDP: 
+\code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
-\code{\link{matrix_extractions}},
 \code{\link{plot_belief_space}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},

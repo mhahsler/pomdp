@@ -7,8 +7,7 @@
 using namespace Rcpp;
 
 // NOTE: Episode in time-dependent POMDPs are currently unsupported.
-
-// Note: all indices are 0-based
+// NOTE: All indices are 0-based.
 
 inline bool is_solved(const List& model) { 
   return model.containsElementNamed("solution");

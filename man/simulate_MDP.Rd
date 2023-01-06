@@ -32,7 +32,7 @@ horizon for the model is used.}
 Default for solved models is 0 and for unsolved model 1.}
 
 \item{method}{\code{'cpp'} or \code{'r'} to perform simulation using a faster C++
-or a native R implementation.}
+or a native R implementation which supports sparse matrices.}
 
 \item{verbose}{report used parameters.}
 }
@@ -95,6 +95,7 @@ table(sim$states)
 \seealso{
 Other MDP: 
 \code{\link{MDP}()},
+\code{\link{POMDP_accessors}},
 \code{\link{solve_MDP}()}
 }
 \author{

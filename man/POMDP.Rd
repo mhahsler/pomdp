@@ -274,7 +274,7 @@ pomdp-solve website: \url{http://www.pomdp.org}
 }
 \seealso{
 Other POMDP: 
-\code{\link{matrix_extractions}},
+\code{\link{POMDP_accessors}},
 \code{\link{plot_belief_space}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},

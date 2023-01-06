@@ -28,8 +28,8 @@
 #' @param epsilon the probability of random actions for using an epsilon-greedy policy.
 #'  Default for solved models is 0 and for unsolved model 1.
 #' @param digits round probabilities for belief points.
-#' @param method `'cpp'` or `'r'` to perform simulation using a faster C++ or a 
-#'  native R implementation.
+#' @param method `'cpp'`, `'r'` to perform simulation using a faster C++ or a 
+#'  native R implementation that supports sparse matrices and muli-episode problems.
 #' @param verbose report used parameters.
 #' @return A list with elements:
 #'  * `avg_reward`: The average discounted reward.
@@ -89,13 +89,14 @@ simulate_POMDP <-
     digits = 7,
     method = "cpp",
     verbose = FALSE) {
-    method <- match.arg(tolower(method), c("r", "r-sparse", "cpp"))
+    time_start <- proc.time()  
     
-    sparse <- FALSE
-    if (method == "r-sparse") {
-      method <- "r"
-      sparse <- TRUE
-      }
+    method <- match.arg(tolower(method), c("cpp", "r"))
+    
+    if (method == "r")
+      sparse <- NULL ### use the version in the model
+    else
+      sparse <- FALSE
     
     solved <- !is.null(model$solution)
     dt <- .timedependent_POMDP(model)
@@ -131,22 +132,28 @@ simulate_POMDP <-
       if (!dt) {
         ### FIXME: this can be done better
         ### TODO: Add support for sparse matrices
+        #model <- normalize_POMDP(model, sparse = TRUE)
         model <- normalize_POMDP(model, sparse = FALSE)
         
-        if (foreach::getDoParWorkers() == 1 || n * horizon < 100000)
-          return (
-            simulate_POMDP_cpp(
-              model,
-              n,
-              belief,
-              horizon,
-              disc,
-              return_beliefs,
-              epsilon,
-              digits,
-              verbose
-            )
+        if (foreach::getDoParWorkers() == 1 || n * horizon < 100000) {
+          res <- simulate_POMDP_cpp(
+            model,
+            n,
+            belief,
+            horizon,
+            disc,
+            return_beliefs,
+            epsilon,
+            digits,
+            verbose
           )
+          
+          time_end <- proc.time()
+          if (verbose)
+            print(time_end - time_start)
+          
+          return(res)
+        }
         
         nw <- foreach::getDoParWorkers()
         ns <- rep(ceiling(n / nw), times = nw)
@@ -186,6 +193,10 @@ simulate_POMDP <-
             verbose = FALSE)
         
         rew <- Reduce(c,  lapply(sim, "[[", "reward"))
+    
+        time_end <- proc.time()
+        if (verbose)
+          print(time_end - time_start)
         
         return(
           list(
@@ -344,8 +355,11 @@ simulate_POMDP <-
     }
     #, simplify = FALSE)
     
-    
     rew <- Reduce(c,  lapply(sim, "[[", "reward"))
+    
+    time_end <- proc.time()
+    if (verbose)
+      print(time_end - time_start)
     
     list(
       avg_reward = mean(rew, na.rm = TRUE),

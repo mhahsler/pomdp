@@ -8,8 +8,9 @@
 * simulate_POMDP and simulate_MDP have now parallel (foreach) support.
 
 # Changes
-* simulate_POMDP and simulate_MDP now return a list.
-* reimplemented round_stochastic to improve speed.
+* accessors are now called now transition_val() and observation_val().
+* simulate_POMDP() and simulate_MDP() now return a list.
+* reimplemented round_stochastic() to improve speed.
 * MDP policy now uses factors for actions.
 
 

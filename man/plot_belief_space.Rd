@@ -100,8 +100,8 @@ plot_belief_space(sol, sample = simulate_POMDP(sol, n = 50, horizon = 100,
 }
 \seealso{
 Other POMDP: 
+\code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
-\code{\link{matrix_extractions}},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},

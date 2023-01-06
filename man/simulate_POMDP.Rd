@@ -35,8 +35,8 @@ Default for solved models is 0 and for unsolved model 1.}
 
 \item{digits}{round probabilities for belief points.}
 
-\item{method}{\code{'cpp'} or \code{'r'} to perform simulation using a faster C++ or a
-native R implementation.}
+\item{method}{\code{'cpp'}, \code{'r'} to perform simulation using a faster C++ or a
+native R implementation that supports sparse matrices and muli-episode problems.}
 
 \item{verbose}{report used parameters.}
 }
@@ -108,8 +108,8 @@ lines(density(sim$belief_states[, 1], bw = .05)); axis(2); title(ylab = "Density
 }
 \seealso{
 Other POMDP: 
+\code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
-\code{\link{matrix_extractions}},
 \code{\link{plot_belief_space}()},
 \code{\link{sample_belief_space}()},
 \code{\link{solve_POMDP}()},

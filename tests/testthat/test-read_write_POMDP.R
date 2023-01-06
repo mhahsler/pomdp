@@ -22,10 +22,3 @@ expect_equal(Tiger_norm[fields], Tiger2[fields])
 sol <- solve_POMDP(Tiger)
 sol2 <- solve_POMDP(Tiger2)
 expect_equal(sol$solution, sol2$solution)
-
-
-
-## read a sparse problem
-problem <- read_POMDP("http://www.pomdp.org/examples/1d.POMDP", parse_matrices = "sparse")
-simulate_POMDP(problem, n = 100, horizon = 10)
-

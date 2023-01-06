@@ -109,6 +109,7 @@ plot_value_function(sol2)
 }
 \seealso{
 Other MDP: 
+\code{\link{POMDP_accessors}},
 \code{\link{simulate_MDP}()},
 \code{\link{solve_MDP}()}
 }

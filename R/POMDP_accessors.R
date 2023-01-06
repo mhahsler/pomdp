@@ -1,37 +1,29 @@
-#' Extract the Transition, Observation or Reward Information from a POMDP
+#' Access to Parts of the POMDP Description
 #'
-#' Converts the description of transition probabilities and observation
-#' probabilities in a POMDP into a list of matrices. Individual values or parts of the matrices
-#' can be more efficiently retrieved using the functions ending `_prob` and `_val`.
+#' Functions to provide uniform access to different parts of the POMDP description.
+#' 
+#' Several parts of the POMDP description can be defined in different ways. In particular,
+#' `transition_prob`, `observation_prob`, `reward`, and `start` can be defined using matrices, data frames or
+#' keywords. See [POMDP] for details. The functions provided here, provide unified access to the data in these fields
+#' to make writing code easier.
+#' 
+#' * `start_vector()` translates the initial probability vector into a vector. 
+#' * For `transition_prob`, `observation_prob`, `reward`, functions ending in `_matrix()` and `_val()` are 
+#'    provided to access the data as lists of matrices, a matrix or a scalar value. For `_matrix()`, 
+#'    matrices with a density below 50% can be requested in sparse format (as a [Matrix::dgCMatrix-class]). 
+#' * `normalize_POMDP()` returns a new POMDP definition where `transition_prob`, 
+#'    `observations_prob`, `reward`, and `start` are normalized to (lists of) matrices and vectors to 
+#'    make direct access easy.  Also, `states`, `actions`, and `observations` are ordered as given in the problem 
+#'    definition to make safe access using numerical indices possible. Normalized POMDP descriptions are used for 
+#'    C++ based code (e.g., [simulate_POMDP()]) and normalizing them once will save time if the code is 
+#'    called repeatedly.
 #'
-#' **Access**
-#' Individual elements of the POMDP description can be accessed as a matrix, list of matrices, or individual values
-#' independently of how the data is stored internally.
+#' @family POMDP 
+#' @family MDP
+#' @name POMDP_accessors
 #'
-#' **Normalization**
-#' `normalize_POMDP()` returns a new POMDP definition where `transition_prob`, `observations_prob`,
-#' `reward`, and `start` are normalized to (lists of) matrices and vectors to make access easy.
-#' Also, `states`, `actions`, and `observations` are ordered as given in the problem definition to make safe
-#' access using numerical indices possible. 
-#' Normalized POMDP and MDP descriptions are used for C++ based 
-#' code (e.g., [simulate_POMDP()]) and normalizing them once will save time if the code is called
-#' repeatedly.
-#'
-#' `start_vector` normalizes the initial belief vector.
-#'
-#' See Details section in [POMDP] for more details about possible formats for `transition_prob`, `observations_prob`,
-#' `reward`, and `start`.
-#'
-#' **Sparse matrix support**
-#' Sparse matrix representation provided by package \pkg{Matrix} is available for `transition_prob`, `observations_prob`,
-#' `reward`. Matrices that have a density above 50% are kept as a regular dense matrix, matrices with a density
-#' below 50% are represented as a [Matrix::dgCMatrix-class].
-#'
-#' @family POMDP
-#' @name matrix_extractions
-#'
-#' @param x A [POMDP] object.
-#' @param episode Episode used for time-dependent POMDPs ([POMDP]).
+#' @param x A [POMDP] or [MDP] object.
+#' @param episode Episode used for time-dependent POMDPs.
 #' @param action only return the matrix/value for a given action.
 #' @param start.state,end.state name of the state.
 #' @param observation name of observation.
@@ -45,12 +37,12 @@
 #' # List of |A| transition matrices. One per action in the from states x states
 #' Tiger$transition_prob
 #' transition_matrix(Tiger)
-#' transition_prob(Tiger, action = "listen", start.state = "tiger-left")
+#' transition_val(Tiger, action = "listen", start.state = "tiger-left")
 #'
 #' # List of |A| observation matrices. One per action in the from states x observations
 #' Tiger$observation_prob
 #' observation_matrix(Tiger)
-#' observation_prob(Tiger, action = "listen", end.state = "tiger-left")
+#' observation_val(Tiger, action = "listen", end.state = "tiger-left")
 #'
 #' # List of list of reward matrices. 1st level is action and second level is the
 #' #  start state in the form end state x observation
@@ -92,7 +84,7 @@ transition_matrix <-
   function(x,
     episode = 1,
     action = NULL,
-    sparse = NULL) {
+    sparse = TRUE) {
     .translate_probabilities(
       x,
       field = "transition_prob",
@@ -106,9 +98,9 @@ transition_matrix <-
 
 ## TODO: make the access functions more efficient for a single value
 
-#' @rdname matrix_extractions
+#' @rdname POMDP_accessors
 #' @export
-transition_prob <-
+transition_val <-
   function(x,
     action,
     start.state,
@@ -117,13 +109,13 @@ transition_prob <-
     transition_matrix(x, episode = 1, action = action, sparse = NULL)[start.state, end.state]
   }
 
-#' @rdname matrix_extractions
+#' @rdname POMDP_accessors
 #' @export
 observation_matrix <-
   function(x,
     episode = 1,
     action = NULL,
-    sparse = NULL) {
+    sparse = TRUE) {
     if (is.null(x$observation_prob))
       stop("model is not a complete POMDP, no observation probabilities specified!")
     
@@ -139,9 +131,9 @@ observation_matrix <-
     )
   }
 
-#' @rdname matrix_extractions
+#' @rdname POMDP_accessors
 #' @export
-observation_prob <-
+observation_val <-
   function(x,
     action,
     end.state,
@@ -150,14 +142,14 @@ observation_prob <-
     observation_matrix(x, episode = 1, action = action, sparse = NULL)[end.state, observation]
   }
 
-#' @rdname matrix_extractions
+#' @rdname POMDP_accessors
 #' @export
 reward_matrix <-
   function(x,
     episode = 1,
     action = NULL,
     start.state = NULL,
-    sparse = NULL) {
+    sparse = TRUE) {
     ## action list of s' x o matrices
     ## action list of s list of s' x o matrices
     ## if not observations are available then it is a s' vector
@@ -170,7 +162,7 @@ reward_matrix <-
     )
   }
 
-#' @rdname matrix_extractions
+#' @rdname POMDP_accessors
 #' @export
 reward_val <-
   function(x,
@@ -185,15 +177,15 @@ reward_val <-
       start.state = start.state, sparse = NULL)[end.state, observation]
   }
 
-#' @rdname matrix_extractions
+#' @rdname POMDP_accessors
 #' @export
 start_vector <- function(x) {
   .translate_belief(x$start, model = x)
 }
 
-#' @rdname matrix_extractions
+#' @rdname POMDP_accessors
 #' @export
-normalize_POMDP <- function(x, episode = 1, sparse = NULL) {
+normalize_POMDP <- function(x, episode = 1, sparse = TRUE) {
   x$start <- start_vector(x)
   x$transition_prob <-
     transition_matrix(x, episode, sparse = sparse)
@@ -203,9 +195,9 @@ normalize_POMDP <- function(x, episode = 1, sparse = NULL) {
   x
 }
 
-#' @rdname matrix_extractions
+#' @rdname POMDP_accessors
 #' @export
-normalize_MDP <- function(x, episode = 1, sparse = NULL) {
+normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
   x$start <- start_vector(x)
   x$transition_prob <-
     transition_matrix(x, episode, sparse = sparse)

@@ -26,7 +26,7 @@
 #' @param epsilon the probability of random actions  for using an epsilon-greedy policy.
 #'  Default for solved models is 0 and for unsolved model 1.
 #' @param method `'cpp'` or `'r'` to perform simulation using a faster C++ 
-#'  or a native R implementation. 
+#'  or a native R implementation which supports sparse matrices. 
 #' @param verbose report used parameters.
 #' @return A list with elements:
 #'  * `avg_reward`: The average discounted reward.
@@ -75,7 +75,12 @@ simulate_MDP <-
     epsilon = NULL,
     method = "cpp",
     verbose = FALSE) {
-    method <- match.arg(tolower(method), c("r", "cpp"))
+    method <- match.arg(tolower(method), c("cpp", "r"))
+    
+    if (method == "r")
+      sparse <- NULL   ### use the version in the model
+    else
+      sparse <- FALSE
     
     start <- .translate_belief(start, model = model)
     solved <- .solved_MDP(model)
@@ -102,7 +107,7 @@ simulate_MDP <-
       disc <- 1
     
     if (method == "cpp") {
-      model <- normalize_MDP(model)
+      model <- normalize_MDP(model, sparse = FALSE)
       
       if (foreach::getDoParWorkers() == 1 || n * horizon < 100000)
         return (simulate_MDP_cpp(
@@ -164,8 +169,8 @@ simulate_MDP <-
     n_states <- length(states)
     actions <- as.character(model$actions)
     
-    trans_m <- transition_matrix(model, sparse = TRUE)
-    rew_m <- reward_matrix(model, sparse = TRUE)
+    trans_m <- transition_matrix(model, sparse = sparse)
+    rew_m <- reward_matrix(model, sparse = sparse)
     
     # for easier access
     pol <-

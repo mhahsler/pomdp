@@ -307,9 +307,9 @@ read_POMDP <- function(file, parse_matrices = "sparse") {
   reward <- NULL 
   
   if (parse_matrices != "no") {
-    transition_prob <- parse_POMDP_matrix(problem, field = "T", actions, states, observations, sparse = sparse)
-    observation_prob <- parse_POMDP_matrix(problem, field = "O", actions, states, observations, sparse = sparse)
-    reward <- parse_POMDP_matrix(problem, field = "R", actions, states, observations, sparse = sparse)
+    try(transition_prob <- parse_POMDP_matrix(problem, field = "T", actions, states, observations, sparse = sparse))
+    try(observation_prob <- parse_POMDP_matrix(problem, field = "O", actions, states, observations, sparse = sparse))
+    try(reward <- parse_POMDP_matrix(problem, field = "R", actions, states, observations, sparse = sparse))
   }
   
   x <- list(

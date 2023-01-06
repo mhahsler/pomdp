@@ -1,5 +1,6 @@
 inst/doc
 .Rproj.user
 *.o
+*.so
 *.a
 Work

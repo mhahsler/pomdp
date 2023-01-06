@@ -345,8 +345,8 @@ Other solver:
 \code{\link{solve_SARSOP}()}
 
 Other POMDP: 
+\code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
-\code{\link{matrix_extractions}},
 \code{\link{plot_belief_space}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
