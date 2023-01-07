@@ -155,12 +155,7 @@ simulate_POMDP <-
           return(res)
         }
         
-        nw <- foreach::getDoParWorkers()
-        ns <- rep(ceiling(n / nw), times = nw)
-        dif <- sum(ns) - n
-        if (dif > 0)
-          ns[1:dif] <- ns[1:dif] - 1
-        
+        ns <- foreach_split(n)
         
         if (verbose) {
           cat("Simulating POMDP trajectories.\n")
@@ -169,7 +164,7 @@ simulate_POMDP <-
           cat("- n:",
             n,
             "- parallel workers:",
-            foreach::getDoParWorkers(),
+            length(ns),
             "\n")
           cat("- epsilon:", epsilon, "\n")
           cat("- discount factor:", disc, "\n")
@@ -177,11 +172,11 @@ simulate_POMDP <-
           print(belief)
           cat("\n")
         }
-        
+       
         w <-
           NULL # to shut up the warning for the foreach counter variable
         
-        sim <- foreach(w = 1:nw) %dopar%
+        sim <- foreach(w = 1:length(ns)) %dopar%
           simulate_POMDP_cpp(model,
             ns[w],
             belief,

@@ -4,14 +4,14 @@
 #' trajectory is randomly chosen using the specified belief. The belief is used to choose actions
 #' from an epsilon-greedy policy and then update the state.
 #'
-#' A native R implementation is available (`method = 'r'`) and the default is a 
-#' faster C++ implementation (`method = 'cpp'`). 
-#' 
+#' A native R implementation is available (`method = 'r'`) and the default is a
+#' faster C++ implementation (`method = 'cpp'`).
+#'
 #' Both implementations support parallel execution using the package
 #' \pkg{foreach}. To enable parallel execution, a parallel backend like
 #' \pkg{doparallel} needs to be available needs to be registered (see
-#' [doParallel::registerDoParallel()]). 
-#' Note that small simulations are slower using parallelization. Therefore, C++ simulations 
+#' [doParallel::registerDoParallel()]).
+#' Note that small simulations are slower using parallelization. Therefore, C++ simulations
 #' with n * horizon less than 100,000 are always executed using a single worker.
 #' @family MDP
 #' @importFrom stats runif
@@ -25,8 +25,8 @@
 #' @param return_states logical; return visited states.
 #' @param epsilon the probability of random actions  for using an epsilon-greedy policy.
 #'  Default for solved models is 0 and for unsolved model 1.
-#' @param method `'cpp'` or `'r'` to perform simulation using a faster C++ 
-#'  or a native R implementation which supports sparse matrices. 
+#' @param method `'cpp'` or `'r'` to perform simulation using a faster C++
+#'  or a native R implementation which supports sparse matrices.
 #' @param verbose report used parameters.
 #' @return A list with elements:
 #'  * `avg_reward`: The average discounted reward.
@@ -121,17 +121,13 @@ simulate_MDP <-
           verbose
         ))
       
-      nw <- foreach::getDoParWorkers()
-      ns <- rep(ceiling(n / nw), times = nw)
-      dif <- sum(ns) - n
-      if (dif > 0)
-        ns[1:dif] <- ns[1:dif] - 1
+      ns <- foreach_split(n)
       
       if (verbose) {
         cat("Simulating MDP trajectories.\n")
         cat("- method: cpp \n")
         cat("- horizon:", horizon, "\n")
-        cat("- n:", n, "- parallel workers:", foreach::getDoParWorkers(), "\n")
+        cat("- n:", n, "- parallel workers:", length(ns), "\n")
         cat("- epsilon:", epsilon, "\n")
         cat("- discount factor:", disc, "\n")
         cat("\n")
@@ -140,7 +136,7 @@ simulate_MDP <-
       w <-
         NULL # to shut up the warning for the foreach counter variable
       
-      sim <- foreach(w = 1:nw) %dopar%
+      sim <- foreach(w = 1:length(ns)) %dopar%
         simulate_MDP_cpp(model,
           ns[w],
           start,
@@ -184,7 +180,11 @@ simulate_MDP <-
       cat("Simulating MDP trajectories.\n")
       cat("- method:", method, "\n")
       cat("- horizon:", horizon, "\n")
-      cat("- n:", n, "- parallel workers:", foreach::getDoParWorkers(), "\n")
+      cat("- n:",
+        n,
+        "- parallel workers:",
+        foreach::getDoParWorkers(),
+        "\n")
       cat("- epsilon:", epsilon, "\n")
       cat("- discount factor:", disc, "\n")
       cat("\n")
@@ -218,7 +218,7 @@ simulate_MDP <-
         
         s_prev <- s
         s <-
-          sample.int(length(states), 1L, prob = trans_m[[a]][s, ])
+          sample.int(length(states), 1L, prob = trans_m[[a]][s,])
         
         rew <- rew + rew_m[[a]][[s_prev]][s] * disc ^ (j - 1L)
         
@@ -231,12 +231,14 @@ simulate_MDP <-
           levels = seq_along(model$states),
           labels = model$states)
       
-      list(list(
-        action_cnt =  action_cnt,
-        state_cnt = state_cnt,
-        reward = rew,
-        states = states_visited
-      ))
+      list(
+        list(
+          action_cnt =  action_cnt,
+          state_cnt = state_cnt,
+          reward = rew,
+          states = states_visited
+        )
+      )
     }
     #, simplify = FALSE)
     

@@ -42,6 +42,7 @@ Collate:
     'RcppExports.R'
     'Tiger.R'
     'colors.R'
+    'foreach_helper.R'
     'optimal_action.R'
     'plot_belief_space.R'
     'plot_policy_graph.R'

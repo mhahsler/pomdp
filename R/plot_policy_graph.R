@@ -429,13 +429,15 @@ estimate_belief_for_nodes <-
     
     alpha <- x$solution$alpha[[epoch]]
     
-    belief_points <- sample_belief_space(x, ...)
+    belief_points <- sample_belief_space(x, n = n, method = method, ...)
     r <- reward_node_action(x, belief = belief_points, epoch = epoch)
     belief <- t(sapply(
       1:nrow(alpha),
       FUN = function(i)
         colMeans(r$belief[r$pg_node == i, , drop = FALSE])
     ))
+    
+    rownames(belief) <- seq_len(nrow(belief))
     
     belief
   }

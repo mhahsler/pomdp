@@ -7,7 +7,8 @@
 #' The following sampling methods are available:
 #' 
 #' * `'random'` samples uniformly sample from the projected belief space using
-#' the method described by Luc Devroye (1986). 
+#' the method described by Luc Devroye (1986). Sampling is be done in parallel
+#' after a foreach backend is registered.  
 #' 
 #' * `'regular'` samples points using a
 #' regularly spaced grid. This method is only available for projections on 2 or
@@ -37,6 +38,9 @@
 #' @examples
 #' data("Tiger")
 #'
+#' # random sampling can be done in parallel after registering a backend.
+#' # doparallel::registerDoParallel()
+#'
 #' sample_belief_space(Tiger, n = 5)
 #' sample_belief_space(Tiger, n = 5, method = "regular")
 #' sample_belief_space(Tiger, n = 5, horizon = 5, method = "trajectories") 
@@ -46,6 +50,7 @@
 #' samp <- sample_belief_space(sol, n = 5, method = "regular")
 #' rew <- reward(sol, belief = samp)
 #' cbind(samp, rew)
+#' 
 #' @export
 sample_belief_space <-
   function(model,
@@ -77,20 +82,30 @@ sample_belief_space <-
         # uniformly sample from a simplex.
         # https://cs.stackexchange.com/questions/3227/uniform-sampling-from-a-simplex)
         # Luc Devroye, Non-Uniform Random Variate Generation, Springer Verlag, 1986.
-        belief_states <-
-          matrix(0, nrow = n, ncol = length(model$states))
-        colnames(belief_states) <- model$states
         
-        m <-
-          cbind(0, matrix(stats::runif(n * (d - 1)), ncol = d - 1), 1)
-        belief_states[, projection] <-
-          t(apply(
-            m,
-            MARGIN = 1,
-            FUN = function(x)
-              diff(sort(x))
-          ))
-        belief_states
+        ns <- foreach_split(n)
+        w <-
+          NULL # to shut up the warning for the foreach counter variable
+        
+        bs <- foreach(w = 1:length(ns), .combine = rbind) %dopar% 
+          {
+            n <- ns[w]
+            
+            belief_states <- matrix(0, nrow = n, ncol = length(model$states))
+            colnames(belief_states) <- model$states
+            
+            m <-
+              cbind(0, matrix(stats::runif(n * (d - 1)), ncol = d - 1), 1)
+            belief_states[, projection] <-
+              t(apply(
+                m,
+                MARGIN = 1,
+                FUN = function(x)
+                  diff(sort(x))
+              ))
+            belief_states
+          }
+        bs
       }, 
       
       regular = {

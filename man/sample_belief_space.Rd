@@ -32,7 +32,8 @@ that are more likely to be encountered (see trajectory method).
 The following sampling methods are available:
 \itemize{
 \item \code{'random'} samples uniformly sample from the projected belief space using
-the method described by Luc Devroye (1986).
+the method described by Luc Devroye (1986). Sampling is be done in parallel
+after a foreach backend is registered.
 \item \code{'regular'} samples points using a
 regularly spaced grid. This method is only available for projections on 2 or
 3 states.
@@ -46,6 +47,9 @@ arguments can include the simulation \code{horizon} and the start \code{belief} 
 \examples{
 data("Tiger")
 
+# random sampling can be done in parallel after registering a backend.
+# doparallel::registerDoParallel()
+
 sample_belief_space(Tiger, n = 5)
 sample_belief_space(Tiger, n = 5, method = "regular")
 sample_belief_space(Tiger, n = 5, horizon = 5, method = "trajectories") 
@@ -55,6 +59,7 @@ sol <- solve_POMDP(Tiger)
 samp <- sample_belief_space(sol, n = 5, method = "regular")
 rew <- reward(sol, belief = samp)
 cbind(samp, rew)
+
 }
 \references{
 Luc Devroye, Non-Uniform Random Variate Generation, Springer
