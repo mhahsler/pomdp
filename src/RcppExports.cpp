@@ -10,6 +10,45 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// reward_cpp
+DataFrame reward_cpp(const NumericMatrix& belief, const NumericMatrix& alpha);
+RcppExport SEXP _pomdp_reward_cpp(SEXP beliefSEXP, SEXP alphaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type belief(beliefSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(reward_cpp(belief, alpha));
+    return rcpp_result_gen;
+END_RCPP
+}
+// update_belief_cpp
+NumericVector update_belief_cpp(const List& model, const NumericVector& belief, int action, int observation, int digits);
+RcppExport SEXP _pomdp_update_belief_cpp(SEXP modelSEXP, SEXP beliefSEXP, SEXP actionSEXP, SEXP observationSEXP, SEXP digitsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type belief(beliefSEXP);
+    Rcpp::traits::input_parameter< int >::type action(actionSEXP);
+    Rcpp::traits::input_parameter< int >::type observation(observationSEXP);
+    Rcpp::traits::input_parameter< int >::type digits(digitsSEXP);
+    rcpp_result_gen = Rcpp::wrap(update_belief_cpp(model, belief, action, observation, digits));
+    return rcpp_result_gen;
+END_RCPP
+}
+// round_stochastic_cpp
+NumericVector round_stochastic_cpp(const NumericVector& x, int digits);
+RcppExport SEXP _pomdp_round_stochastic_cpp(SEXP xSEXP, SEXP digitsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type digits(digitsSEXP);
+    rcpp_result_gen = Rcpp::wrap(round_stochastic_cpp(x, digits));
+    return rcpp_result_gen;
+END_RCPP
+}
 // veccrossprod
 NumericVector veccrossprod(const NumericMatrix& A, const NumericVector& b);
 RcppExport SEXP _pomdp_veccrossprod(SEXP ASEXP, SEXP bSEXP) {
@@ -34,6 +73,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sample_simplex_cpp
+NumericMatrix sample_simplex_cpp(int n, int d);
+RcppExport SEXP _pomdp_sample_simplex_cpp(SEXP nSEXP, SEXP dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type d(dSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_simplex_cpp(n, d));
+    return rcpp_result_gen;
+END_RCPP
+}
 // simulate_MDP_cpp
 List simulate_MDP_cpp(const List& model, int n, const NumericVector& start, int horizon, double disc, bool return_states, double epsilon, bool verbose);
 RcppExport SEXP _pomdp_simulate_MDP_cpp(SEXP modelSEXP, SEXP nSEXP, SEXP startSEXP, SEXP horizonSEXP, SEXP discSEXP, SEXP return_statesSEXP, SEXP epsilonSEXP, SEXP verboseSEXP) {
@@ -49,33 +100,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type epsilon(epsilonSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     rcpp_result_gen = Rcpp::wrap(simulate_MDP_cpp(model, n, start, horizon, disc, return_states, epsilon, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// round_stochastic_cpp
-NumericVector round_stochastic_cpp(NumericVector x, int digits);
-RcppExport SEXP _pomdp_round_stochastic_cpp(SEXP xSEXP, SEXP digitsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int >::type digits(digitsSEXP);
-    rcpp_result_gen = Rcpp::wrap(round_stochastic_cpp(x, digits));
-    return rcpp_result_gen;
-END_RCPP
-}
-// update_belief_cpp
-NumericVector update_belief_cpp(const List& model, const NumericVector& belief, int action, int observation, int digits);
-RcppExport SEXP _pomdp_update_belief_cpp(SEXP modelSEXP, SEXP beliefSEXP, SEXP actionSEXP, SEXP observationSEXP, SEXP digitsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const List& >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type belief(beliefSEXP);
-    Rcpp::traits::input_parameter< int >::type action(actionSEXP);
-    Rcpp::traits::input_parameter< int >::type observation(observationSEXP);
-    Rcpp::traits::input_parameter< int >::type digits(digitsSEXP);
-    rcpp_result_gen = Rcpp::wrap(update_belief_cpp(model, belief, action, observation, digits));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -100,11 +124,13 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_pomdp_reward_cpp", (DL_FUNC) &_pomdp_reward_cpp, 2},
+    {"_pomdp_update_belief_cpp", (DL_FUNC) &_pomdp_update_belief_cpp, 5},
+    {"_pomdp_round_stochastic_cpp", (DL_FUNC) &_pomdp_round_stochastic_cpp, 2},
     {"_pomdp_veccrossprod", (DL_FUNC) &_pomdp_veccrossprod, 2},
     {"_pomdp_vecprod", (DL_FUNC) &_pomdp_vecprod, 2},
+    {"_pomdp_sample_simplex_cpp", (DL_FUNC) &_pomdp_sample_simplex_cpp, 2},
     {"_pomdp_simulate_MDP_cpp", (DL_FUNC) &_pomdp_simulate_MDP_cpp, 8},
-    {"_pomdp_round_stochastic_cpp", (DL_FUNC) &_pomdp_round_stochastic_cpp, 2},
-    {"_pomdp_update_belief_cpp", (DL_FUNC) &_pomdp_update_belief_cpp, 5},
     {"_pomdp_simulate_POMDP_cpp", (DL_FUNC) &_pomdp_simulate_POMDP_cpp, 9},
     {NULL, NULL, 0}
 };

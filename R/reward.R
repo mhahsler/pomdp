@@ -87,16 +87,19 @@ reward_node_action <- function(x, belief = NULL, epoch = 1) {
 .rew <- function(belief, alpha) {
   if (!is.matrix(belief))
     belief <- rbind(belief)
-  r <- apply(
-    belief,
-    MARGIN = 1,
-    FUN = function(b) {
-      rewards <- alpha %*% b
-      c(max(rewards), which.max(rewards))
-    }
-  )
-  r <- as.data.frame(t(r))
-  colnames(r) <- c("reward", "pg_node")
-  #r$pg_node <- factor(r$pg_node, levels = 1:nrow(alpha))
+  
+  r <- reward_cpp(belief, alpha)
+  
+  # r <- apply(
+  #   belief,
+  #   MARGIN = 1,
+  #   FUN = function(b) {
+  #     rewards <- alpha %*% b
+  #     c(max(rewards), which.max(rewards))
+  #   }
+  # )
+  # r <- as.data.frame(t(r))
+  # colnames(r) <- c("reward", "pg_node")
+  ### not needed r$pg_node <- factor(r$pg_node, levels = 1:nrow(alpha))
   r
 }

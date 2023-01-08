@@ -52,7 +52,7 @@ data("Tiger")
 
 sample_belief_space(Tiger, n = 5)
 sample_belief_space(Tiger, n = 5, method = "regular")
-sample_belief_space(Tiger, n = 5, horizon = 5, method = "trajectories") 
+sample_belief_space(Tiger, n = 5, horizon = 5, method = "trajectories")
 
 # sample and calculate the reward for a solved POMDP
 sol <- solve_POMDP(Tiger)

@@ -5,6 +5,17 @@
 
 using namespace Rcpp;
 
+
+// [[Rcpp::export]]
+NumericVector round_stochastic_cpp(const NumericVector& x, int digits) {
+  NumericVector xr = round(x, digits);
+  double s = sum(xr);
+  if (s != 1.0)
+    xr[which_max(x - xr)] += 1 - s;
+  
+  return xr;
+}
+
 // [[Rcpp::export]]
 NumericVector veccrossprod(const NumericMatrix& A, const NumericVector& b) {
   if (A.nrow() != b.length())
