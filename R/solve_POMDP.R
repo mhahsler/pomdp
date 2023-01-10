@@ -374,6 +374,8 @@ solve_POMDP <- function(model,
   pomdp_filename <- paste0(file_prefix, ".POMDP")
   
   # write model POMDP file
+  if (verbose)
+    cat("Writing the problem to", pomdp_filename, "\n")
   if (is.null(model$transition_prob) || is.null(model$observation_prob) || is.null(model$reward))
     writeLines(model$problem, con = pomdp_filename)
   else

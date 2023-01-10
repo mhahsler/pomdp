@@ -219,7 +219,7 @@ simulate_MDP <-
         s_prev <- s
         s <-
           sample.int(length(states), 1L, prob = trans_m[[a]][s,])
-        
+       
         rew <- rew + rew_m[[a]][[s_prev]][s] * disc ^ (j - 1L)
         
         if (return_states)

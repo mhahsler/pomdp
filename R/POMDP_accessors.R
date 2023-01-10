@@ -1,24 +1,24 @@
 #' Access to Parts of the POMDP Description
 #'
 #' Functions to provide uniform access to different parts of the POMDP description.
-#' 
+#'
 #' Several parts of the POMDP description can be defined in different ways. In particular,
 #' `transition_prob`, `observation_prob`, `reward`, and `start` can be defined using matrices, data frames or
 #' keywords. See [POMDP] for details. The functions provided here, provide unified access to the data in these fields
 #' to make writing code easier.
-#' 
-#' * `start_vector()` translates the initial probability vector into a vector. 
-#' * For `transition_prob`, `observation_prob`, `reward`, functions ending in `_matrix()` and `_val()` are 
-#'    provided to access the data as lists of matrices, a matrix or a scalar value. For `_matrix()`, 
-#'    matrices with a density below 50% can be requested in sparse format (as a [Matrix::dgCMatrix-class]). 
-#' * `normalize_POMDP()` returns a new POMDP definition where `transition_prob`, 
-#'    `observations_prob`, `reward`, and `start` are normalized to (lists of) matrices and vectors to 
-#'    make direct access easy.  Also, `states`, `actions`, and `observations` are ordered as given in the problem 
-#'    definition to make safe access using numerical indices possible. Normalized POMDP descriptions are used for 
-#'    C++ based code (e.g., [simulate_POMDP()]) and normalizing them once will save time if the code is 
+#'
+#' * `start_vector()` translates the initial probability vector into a vector.
+#' * For `transition_prob`, `observation_prob`, `reward`, functions ending in `_matrix()` and `_val()` are
+#'    provided to access the data as lists of matrices, a matrix or a scalar value. For `_matrix()`,
+#'    matrices with a density below 50% can be requested in sparse format (as a [Matrix::dgCMatrix-class]).
+#' * `normalize_POMDP()` returns a new POMDP definition where `transition_prob`,
+#'    `observations_prob`, `reward`, and `start` are normalized to (lists of) matrices and vectors to
+#'    make direct access easy.  Also, `states`, `actions`, and `observations` are ordered as given in the problem
+#'    definition to make safe access using numerical indices possible. Normalized POMDP descriptions are used for
+#'    C++ based code (e.g., [simulate_POMDP()]) and normalizing them once will save time if the code is
 #'    called repeatedly.
 #'
-#' @family POMDP 
+#' @family POMDP
 #' @family MDP
 #' @name POMDP_accessors
 #'
@@ -106,7 +106,10 @@ transition_val <-
     start.state,
     end.state,
     episode = 1) {
-    transition_matrix(x, episode = 1, action = action, sparse = NULL)[start.state, end.state]
+    transition_matrix(x,
+      episode = 1,
+      action = action,
+      sparse = FALSE)[start.state, end.state]
   }
 
 #' @rdname POMDP_accessors
@@ -139,7 +142,10 @@ observation_val <-
     end.state,
     observation,
     episode = 1) {
-    observation_matrix(x, episode = 1, action = action, sparse = NULL)[end.state, observation]
+    observation_matrix(x,
+      episode = 1,
+      action = action,
+      sparse = FALSE)[end.state, observation]
   }
 
 #' @rdname POMDP_accessors
@@ -149,7 +155,7 @@ reward_matrix <-
     episode = 1,
     action = NULL,
     start.state = NULL,
-    sparse = TRUE) {
+    sparse = FALSE) {
     ## action list of s' x o matrices
     ## action list of s list of s' x o matrices
     ## if not observations are available then it is a s' vector
@@ -171,10 +177,13 @@ reward_val <-
     end.state,
     observation,
     episode = 1) {
-    reward_matrix(x,
+    reward_matrix(
+      x,
       episode = 1,
       action = action,
-      start.state = start.state, sparse = NULL)[end.state, observation]
+      start.state = start.state,
+      sparse = FALSE
+    )[end.state, observation]
   }
 
 #' @rdname POMDP_accessors
@@ -208,11 +217,20 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
 # translate different specifications of transitions, observations and rewards
 # into a list of matrices
 
-.sparsify <- function(x) {
-  if (nnzero(x) / length(x) < .5) 
-    m <- as(x , "CsparseMatrix")
+.sparsify <- function(x,
+  sparse = TRUE,
+  max_density = .5) {
+  # NULL mans as is
+  if (is.null(sparse))
+    return(x)
+  
+  if (!sparse)
+    return(as.matrix(x))
+  
+  if (nnzero(x) / length(x) < max_density)
+    return(as(x , "CsparseMatrix"))
   else
-    m <- as(x , "matrix")
+    return(as.matrix(x))
 }
 
 # df needs to have 3 columns: from, to, and val
@@ -221,7 +239,8 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
     df,
     from = "states",
     to = "observations",
-    sparse = FALSE) {
+    sparse = TRUE) {
+    # default is sparse
     if (is.null(sparse))
       sparse <- TRUE
     
@@ -233,6 +252,7 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
     df[, 1] <- .get_names(df[, 1], from)
     df[, 2] <- .get_names(df[, 2], to)
     
+    # build sparse matrix using tiplet format
     if (sparse) {
       m <- spMatrix(nrow = length(from), ncol = length(to))
       dimnames(m) <- list(from, to)
@@ -251,15 +271,13 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
       else if (is.na(df[i, 1]))
         m[, df[i, 2]] <- df[i, 3]
       else if (is.na(df[i, 2]))
-        m[df[i, 1], ] <- df[i, 3]
+        m[df[i, 1],] <- df[i, 3]
       else
         m[df[i, 1], df[i, 2]] <- df[i, 3]
     }
     
-    if (sparse)
-      m <- .sparsify(m)
-    
-    m
+    # this will make the triplet matrix into a dgCMatrix or a dense matrix
+    .sparsify(m, sparse)
   }
 
 # df needs to have 2 columns: to and val
@@ -285,10 +303,13 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
 
 ### translate ids to names
 .get_names <- function(x, names) {
+  x[x == "*"] <- NA
+  x <- type.convert(x, as.is = TRUE)
+  
   if (!is.numeric(x))
     as.character(x)
   else
-    as.character(factor(x, labels = names))
+    as.character(factor(x, levels = seq_along(names), labels = names))
 }
 
 .translate_probabilities <- function(model,
@@ -297,7 +318,7 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
   to = "states",
   episode = 1,
   action = NULL,
-  sparse = NULL) {
+  sparse = TRUE) {
   if (is.null(action))
     actions <- model$actions
   else
@@ -355,12 +376,8 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
             to)
       )
       dimnames(p) <- list(model[[from]], model[[to]])
-      
-      if (!is.null(sparse) && sparse)
-        p <- .sparsify(p)
-      
-      p
-    }, simplify = FALSE, USE.NAMES = TRUE)
+      .sparsify(p, sparse)
+    }, simplify = FALSE)
     
     
     ## translate from list of matrices (fix order names, and deal with "identity", et al)
@@ -381,13 +398,21 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
         if (is.character(tr)) {
           tr <- switch(
             tr,
-            identity = diag(1, nrow = length(from), ncol = length(to)),
+            identity = {
+              if (is.null(sparse) || sparse) 
+                Matrix::Diagonal(length(from))
+              else
+                diag(length(from))
+            },
             uniform = matrix(
               1 / length(to),
               nrow = length(from),
               ncol = length(to)
             )
           )
+          
+          dimnames(tr) <- list(from, to)
+          tr
         }
         
         if (!is.matrix(tr) && !inherits(tr, "Matrix"))
@@ -399,22 +424,14 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
         else
           tr <- tr[from, to]
         
-        tr
+        .sparsify(tr, sparse)
       }
     )
   } else
     stop("Unknown transition/observation matrix format.")
   
-  if (!is.null(sparse)) {
-    if (sparse)
-      prob <- lapply(prob, .sparsify)
-    else
-      prob <- lapply(prob, as, "matrix")
-  }
-  
   if (!is.null(action) && length(action) == 1)
     prob <- prob[[1]]
-  
   
   prob
 }
@@ -426,7 +443,7 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
     episode = 1,
     action = NULL,
     start.state = NULL,
-    sparse = NULL) {
+    sparse = FALSE) {
     if (is.null(start.state))
       states <- model$states
     else
@@ -475,41 +492,98 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
       return (NULL)
     }
     
-    
     if (is.data.frame(reward)) {
       reward[[1]] <- .get_names(reward[[1]], actions)
       reward[[2]] <- .get_names(reward[[2]], states)
       reward[[3]] <- .get_names(reward[[3]], states)
       reward[[4]] <- .get_names(reward[[4]], observations)
-      reward <- sapply(
-        actions,
-        FUN = function(a)
-          sapply(
-            states,
-            FUN = function(s) {
-              if (!is.null(observations)) {
-                .df2matrix(model,
-                  reward[(reward$action == a |
-                      is.na(reward$action)) &
-                      (reward$start.state == s |
-                          is.na(reward$start.state)), 3:5],
-                  from = "states", to = "observations", sparse = sparse)
-              } else{
-                ## MDPs have no observations
-                .df2vector(model,
-                  reward[(reward$action == a |
-                      is.na(reward$action)) &
-                      (reward$start.state == s |
-                          is.na(reward$start.state)), c(3, 5)],
-                  from = "states")
-              }
-            },
-            simplify = FALSE,
-            USE.NAMES = TRUE
-          ),
-        simplify = FALSE,
-        USE.NAMES = TRUE
-      )
+      
+      # allocate the memory
+      if (inherits(model, "POMDP")) {
+        mat <- sapply(
+          actions,
+          FUN = function(a)
+            sapply(
+              states,
+              FUN = function(s)
+                if (!is.null(sparse) && sparse) {
+                  m <- spMatrix(nrow = length(states),
+                    ncol = length(observations))
+                  dimnames(m) <- list(states, observations)
+                  m
+                } else {
+                  matrix(
+                    0,
+                    nrow = length(states),
+                    ncol = length(observations),
+                    dimnames = list(states, observations)
+                  )
+                },
+              simplify = FALSE
+            ),
+          simplify = FALSE
+        )
+        
+        for (i in seq_len(nrow(reward))) {
+          acts <- reward[i, 1]
+          if (is.na(acts))
+            acts <- actions
+          else
+            if (is.null(mat[[acts]]))
+              next
+          ss_from <- reward[i , 2]
+          if (is.na(ss_from))
+            ss_from <- states
+          ss_to <- reward[i , 3]
+          if (is.na(ss_to))
+            ss_to <- states
+          os <- reward[i, 4]
+          if (is.na(os))
+            os <- observations
+          val <- reward[i, 5]
+          
+          for (a in acts)
+            for (s_from in ss_from)
+              mat[[a]][[s_from]][ss_to, os] <- val
+        }
+      } else {
+        ### MDP has vectors and the value is in position 4
+        mat <- sapply(
+          actions,
+          FUN = function(a)
+            sapply(
+              states,
+              FUN = function(s) {
+                v <- numeric(length(states))
+                names(v) <- states
+                v
+              },
+              simplify = FALSE
+            ),
+          simplify = FALSE
+        )
+        
+        for (i in seq_len(nrow(reward))) {
+          acts <- reward[i, 1]
+          if (is.na(acts))
+            acts <- actions
+          ss_from <- reward[i, 2]
+          if (is.na(ss_from))
+            ss_from <- states
+          ss_to <- reward[i, 3]
+          if (is.na(ss_to))
+            ss_to <- states
+          val <- reward[i, 5]
+          
+          
+          for (a in acts)
+            for (s_from in ss_from)
+              mat[[a]][[s_from]][ss_to] <- val
+        }
+      }
+      
+      reward <- mat
+      
       ## translate from function
     } else if (is.function(reward)) {
       reward <- Vectorize(reward)
@@ -531,17 +605,11 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
                   )
               )
               dimnames(p) <- list(states, observations)
-              
-              if (!is.null(sparse) && sparse)
-                p <- .sparsify(p)
-              
-              p
+              p <- .sparsify(p, sparse)
             },
-            simplify = FALSE,
-            USE.NAMES = TRUE
+            simplify = FALSE
           ),
-        simplify = FALSE,
-        USE.NAMES = TRUE
+        simplify = FALSE
       )
     }
     
@@ -552,12 +620,7 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
     
     ### MDPs have vectors not matrices here!
     if (!inherits(model, "MDP")) {
-      if (!is.null(sparse)) {
-        if (sparse)
-          reward <- lapply(reward, lapply, .sparsify)
-        else
-          reward <- lapply(reward, lapply, as, "matrix")
-      }
+        reward <- lapply(reward, lapply, .sparsify, sparse)
     }
     
     if (!is.null(action) && length(action) == 1)

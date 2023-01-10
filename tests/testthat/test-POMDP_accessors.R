@@ -185,4 +185,3 @@ for(i in 1:nrow(df_start)) {
   expect_equal(m_start[df_start[i,]$start.state, df_start[i,]$end.state], df_start[i,]$probability)
 }
 
-

@@ -14,7 +14,7 @@ sim <- simulate_POMDP(Tiger, n = 1000, horizon = 5, return_beliefs = TRUE, verbo
 sim <- simulate_POMDP(Tiger, n = 1000, horizon = 5, return_beliefs = TRUE, verbose = verb, method = 'r')
 
 ### sparse matrices
-problem <- read_POMDP(system.file("examples/shuttle.95.POMDP", package = "pomdp"), parse_matrices = "sparse")
+problem <- read_POMDP(system.file("examples/shuttle.95.POMDP", package = "pomdp"), parse = TRUE)
 simulate_POMDP(problem, n = 100, horizon = 10, verbose = verb)
 simulate_POMDP(problem, n = 100, horizon = 10, verbose = verb, method = 'r')
 

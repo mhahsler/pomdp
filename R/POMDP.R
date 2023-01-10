@@ -482,6 +482,9 @@ print.POMDP <- function(x, ...) {
     writeLines(sprintf("  Horizon: %s epochs",
       paste(x$horizon, collapse = " + ")))
   
+  writeLines(sprintf("  Size: %d states / %d actions / %d obs.\n",
+      length(x$states), length(x$actions), length(x$observations)))
+  
   if (.solved_POMDP(x))
     writeLines(c(
       "  Solved:",
@@ -557,7 +560,7 @@ O_ <-
       action = action,
       end.state = end.state,
       observation = observation,
-      probability = probability,
+      probability = as.numeric(probability),
       stringsAsFactors = FALSE
     )
 
@@ -572,7 +575,7 @@ T_ <-
       action = action,
       start.state = start.state,
       end.state = end.state,
-      probability = probability,
+      probability = as.numeric(probability),
       stringsAsFactors = FALSE
     )
 
@@ -589,6 +592,6 @@ R_ <-
       start.state = start.state,
       end.state = end.state,
       observation = observation,
-      value = value,
+      value = as.numeric(value),
       stringsAsFactors = FALSE
     )

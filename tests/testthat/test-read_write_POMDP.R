@@ -7,14 +7,15 @@ data(Tiger)
 
 on.exit(file.remove("Tiger.POMDP"))
 write_POMDP(Tiger, "Tiger.POMDP")
-Tiger2 <- read_POMDP("Tiger.POMDP", parse_matrices = "dense")
+Tiger2 <- read_POMDP("Tiger.POMDP", parse = TRUE)
 
 fields <- c("states", "observations", "actions", "start", "discount")
 expect_equal(Tiger[fields], Tiger2[fields])
 
 fields <- c("transition_prob", "observation_prob", "reward")
 Tiger_norm <- normalize_POMDP(Tiger, sparse = FALSE)
-expect_equal(Tiger_norm[fields], Tiger2[fields])
+Tiger2_norm <- normalize_POMDP(Tiger2, sparse = FALSE)
+expect_equal(Tiger_norm[fields], Tiger2_norm[fields])
 
 
 # check that the solutions agree

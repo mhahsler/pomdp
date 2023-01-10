@@ -21,7 +21,13 @@ observation_matrix(x, episode = 1, action = NULL, sparse = TRUE)
 
 observation_val(x, action, end.state, observation, episode = 1)
 
-reward_matrix(x, episode = 1, action = NULL, start.state = NULL, sparse = TRUE)
+reward_matrix(
+  x,
+  episode = 1,
+  action = NULL,
+  start.state = NULL,
+  sparse = FALSE
+)
 
 reward_val(x, action, start.state, end.state, observation, episode = 1)
 

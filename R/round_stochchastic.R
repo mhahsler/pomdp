@@ -42,6 +42,8 @@ round_stochastic <- function(x, digits = 7) {
 
 # Round a stochastic vector
 round_stochastic_int <- function(x, digits = 7) {
+  x[x<0] <- 0
+  
   #x / sum(x)
   xr <- round(x, digits = digits)
   s <- sum(xr)

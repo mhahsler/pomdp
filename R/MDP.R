@@ -122,6 +122,9 @@ print.MDP <- function(x, ...) {
     writeLines(sprintf("  Horizon: %s epochs",
       paste(x$horizon, collapse = " + ")))
   
+  writeLines(sprintf("  Size: %d states / %d actions\n",
+    length(x$states), length(x$actions)))
+  
   if (.solved_MDP(x))
     writeLines(c(
       "  Solved:",

@@ -7,7 +7,7 @@
 \usage{
 write_POMDP(x, file, digits = 7)
 
-read_POMDP(file, parse_matrices = "sparse")
+read_POMDP(file, parse = TRUE)
 }
 \arguments{
 \item{x}{an object of class \link{POMDP}.}
@@ -17,9 +17,8 @@ read_POMDP(file, parse_matrices = "sparse")
 \item{digits}{precision for writing numbers (digits after the decimal
 point).}
 
-\item{parse_matrices}{character; parse model matrices can be either \code{"no"}, \code{"dense"}, or \code{"sparse"}.
-Use \code{"no"} to disable the experimental R parser.
-Solvers still work, but helpers for simulation are not available.}
+\item{parse}{logical; try to parse the model matrices.
+Solvers still work with unparsed matrices, but helpers for simulation are not available.}
 }
 \value{
 \code{read_POMDP()} returns a \link{POMDP} object.
