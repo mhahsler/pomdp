@@ -137,15 +137,21 @@ policy_graph <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) 
   
 policy_graph_converged <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) { 
    
+  ### this is for sarsop...
+  if (ncol(x$solution$pg[[1]]) <= 2) {
+    pg_complete <- .add_policy_graph(x, ...)
+    x$solution$central_belief <- pg_complete$central_belief
+    x$solution$pg <- pg_complete$pg
+  }
+    
   # create policy graph and belief proportions (average belief for each alpha vector)
   pg <- x$solution$pg[[1]]
   
-  if (ncol(pg) <= 2)
-    stop("Solution does not contain policy graph information. Use a different solver.")
-  
   if (show_belief) {
-    # FIXME: for pomdp-solve, we could seed with x$solution$belief_states
-    bp <- estimate_belief_for_nodes(x, ...)
+    if (!is.null(x$solution$central_belief))
+      bp <- x$solution$central_belief[[1]]
+    else
+      bp <- estimate_belief_for_nodes(x, ...)
     
     # missing belief points?
     missing_bp <- which(apply(is.na(bp), MARGIN = 1, any))
@@ -422,14 +428,18 @@ plot_policy_graph <- function(x,
 #' @export
 estimate_belief_for_nodes <-
   function(x,
-    n = 1000,
+    n = 10000,
     method = "random",
     epoch = 1,
     ...) {
     
     alpha <- x$solution$alpha[[epoch]]
-    
-    belief_points <- sample_belief_space(x, n = n, method = method, ...)
+   
+    # for pomdp-solve, we can use x$solution$belief_states
+    if (!is.null(x$solution$belief_states))
+      belief_points <- x$solution$belief_states
+    else
+      belief_points <- sample_belief_space(x, n = n, method = method, ...)
     
      # r <- reward_node_action(x, belief = belief_points, epoch = epoch)
      # belief <- t(sapply(
@@ -443,7 +453,38 @@ estimate_belief_for_nodes <-
     ind <- split(seq_len(nrow(belief_points)), f = r$pg_node)
     belief <- t(sapply(ind, FUN = function(i) colMeans(belief_points[i, , drop = FALSE])))
     
+    if(nrow(belief) < nrow(x$solution$pg[[epoch]]))
+      warning("Not enough points were sampled to estimate all central beliefs. Increase n.")
+    
     belief
   }
 
 
+### returns a list with central_beliefs and a completed pg 
+### this currently only works for converged solutions
+.add_policy_graph <- function(model, ...) {
+  if (!is.null(model$solution) && length(model$solution$pg) != 1L)
+    stop("policy graph inference is currently only available for converges solutions!")
+  
+  # find central beliefs and use them to create the policy graph
+  central_beliefs <- estimate_belief_for_nodes(model, ...)
+  if (nrow(central_beliefs) < nrow(model$solution$pg[[1]]))
+    stop("Unable to estimate all central beliefs.")
+  
+  pg <- model$solution$pg[[1]]
+  pg_to <-
+    t(sapply(
+      seq_len(nrow(central_beliefs)),
+      FUN = function(i)
+        reward_node_action(
+          model,
+          update_belief(model, belief = central_beliefs[i, ], action = pg$action[i])
+        )$pg_node
+    ))
+  colnames(pg_to) <- model$observations
+  
+  pg <- cbind(pg, pg_to)
+  
+  list(central_beliefs = list(central_beliefs),
+    pg = list(pg))
+}

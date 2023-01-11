@@ -85,7 +85,7 @@ solve_SARSOP <- function(model,
     stop("Only available method: 'sarsop'")
   
   # check parameters
-if (!is.null(terminal_values))
+  if (!is.null(terminal_values))
     stop("the SARSOP solver does not support terminal values.")
   
   # do we have a model POMDP file?
@@ -150,8 +150,10 @@ if (!is.null(terminal_values))
   
   # package solution
   policy <- sarsop::read_policyx(policy_file)
-  pg <- data.frame(node = seq_along(policy$action),
-    action = factor(model$actions[policy$action], levels = model$actions))
+  pg <- data.frame(
+    node = seq_along(policy$action),
+    action = factor(model$actions[policy$action], levels = model$actions)
+  )
   alpha <- t(policy$vectors)
   colnames(alpha) = model$states
   
