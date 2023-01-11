@@ -358,6 +358,7 @@ read_POMDP <- function(file, parse = TRUE) {
   if (is.null(start))
     start <- "uniform"
   
+  ### expand states, actions and observations
   states <- get_vals("states")
   if (is.integer(states) && length(states == 1L))
     states <- paste0("s", seq_len(states))

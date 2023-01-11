@@ -103,7 +103,7 @@ expect_equal(rew_func, rew)
 
 ## check for factor translation in data.frames (pre R 4.0)
 objPOMDP <- POMDP(
-  name = "Displays a possible bug",
+  name = "Check Factors",
   discount = 0.8, 
   states = c("A-first-state", "A-plus-1-state", "A-plus-2-state"), 
   actions = c("Start", "Pause", "End"),
@@ -185,3 +185,107 @@ for(i in 1:nrow(df_start)) {
   expect_equal(m_start[df_start[i,]$start.state, df_start[i,]$end.state], df_start[i,]$probability)
 }
 
+# check sparse/dense representation
+
+sparsePOMDP <- POMDP(
+  name = "Sparse POMDP",
+  discount = 0.8, 
+  states = 5, 
+  actions = 3,
+  observations = 5,
+  horizon = Inf, 
+  start = 5, 
+  
+  transition_prob = list("identity",
+    rbind(
+      c(0, 1, 0, 0, 0),
+      c(0, 1, 0, 0, 0),
+      c(0, 0, .5, .5, 0),
+      c(0, 1, 0, 0, 0),
+      c(0, 1, 0, 0, 0)
+    ),
+    "uniform"), 
+  
+  reward = rbind(
+    R_("*", "*", "*", v = -1),
+    R_(1, 2, 1, 1, v = 100),
+    R_(1, 3, v = 200),
+    R_(2, 1, v = 0)
+  ),
+  
+  observation_prob = list(
+    "uniform",
+    rbind(
+      c(0, 1, 0, 0, 0), 
+      c(0, 1, 0, 0, 0), 
+      c(0, 0, .5, .5, 0), 
+      c(0, 1, 0, 0, 0), 
+      c(0, 1, 0, 0, 0)
+      ),
+    rbind(
+      c(.2, .2, .2, .2, .2), 
+      c(.2, .2, .2, .2, .2), 
+      c(.2, .2, .2, .2, .2), 
+      c(.2, .2, .2, .2, .2), 
+      c(.2, .2, .2, .2, .2) 
+    )
+  )
+)
+
+densePOMDP <- normalize_POMDP(sparsePOMDP, sparse = FALSE)
+
+expect_equal(sparsePOMDP$states, paste0("s", 1:5))
+expect_equal(sparsePOMDP$observations, paste0("o", 1:5))
+expect_equal(sparsePOMDP$actions, paste0("a", 1:3))
+
+expect_equal(start_vector(sparsePOMDP), c(s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 1))
+
+### keep it sparse (only identity was sparse)
+m <- transition_matrix(sparsePOMDP, sparse = NULL)
+expect_equal(names(m), sparsePOMDP$actions)
+expect_true(inherits(m[[1]], "Matrix"))
+expect_true(inherits(m[[2]], "matrix"))
+expect_true(inherits(m[[3]], "matrix"))
+
+### densify
+m <- transition_matrix(sparsePOMDP, sparse = FALSE)
+expect_equal(names(m), sparsePOMDP$actions)
+expect_true(inherits(m[[1]], "matrix"))
+expect_true(inherits(m[[2]], "matrix"))
+expect_true(inherits(m[[3]], "matrix"))
+
+### keep it dense
+m <- transition_matrix(densePOMDP, sparse = NULL)
+expect_equal(names(m), sparsePOMDP$actions)
+expect_true(inherits(m[[1]], "matrix"))
+expect_true(inherits(m[[2]], "matrix"))
+expect_true(inherits(m[[3]], "matrix"))
+
+### sparsify
+m <- transition_matrix(densePOMDP, sparse = TRUE)
+expect_equal(names(m), sparsePOMDP$actions)
+expect_true(inherits(m[[1]], "Matrix"))
+expect_true(inherits(m[[2]], "Matrix"))
+expect_true(inherits(m[[3]], "matrix"))
+
+m <- observation_matrix(sparsePOMDP, sparse = TRUE)
+expect_equal(names(m), sparsePOMDP$actions)
+expect_true(inherits(m[[1]], "matrix"))
+expect_true(inherits(m[[2]], "Matrix"))
+expect_true(inherits(m[[3]], "matrix"))
+
+m <- transition_matrix(sparsePOMDP, sparse = FALSE)
+expect_true(inherits(m[[1]], "matrix"))
+expect_true(inherits(m[[2]], "matrix"))
+expect_true(inherits(m[[3]], "matrix"))
+
+
+rm <- reward_matrix(sparsePOMDP, sparse = TRUE)
+expect_equal(names(rm), sparsePOMDP$actions)
+m <- rm[[1]]
+expect_equal(names(m), sparsePOMDP$states)
+#print(rm)
+expect_true(all(sapply(m, inherits, "matrix")))
+
+m <- rm[[2]]
+expect_true(inherits(m[[1]], "Matrix"))

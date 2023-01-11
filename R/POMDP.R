@@ -85,12 +85,12 @@
 #'
 #' **Start Belief**
 #'
-#' The initial belief state of the agent is a distribution over the states. It is used to calculate the 
+#' The initial belief state of the agent is a distribution over the states. It is used to calculate the
 #' total expected cumulative reward printed with the solved model. The function [reward()] can be
 #' used to calculate rewards for any belief.
 #'
 #' Some methods use this belief to decide which belief states to explore (e.g.,
-#' the finite grid method). 
+#' the finite grid method).
 #'
 #' Options to specify the start belief state are:
 #'
@@ -137,7 +137,7 @@
 #' matrix specifying the terminal rewards via a terminal value function (e.g.,
 #' the alpha component produced by solve_POMDP).  A single 0 specifies that all
 #' terminal values are zero.
-#' @param start Specifies the initial belief state of the agent. A vector with the 
+#' @param start Specifies the initial belief state of the agent. A vector with the
 #' probability for each state is supplied. Also the string `'uniform'`
 #' (default) can be used.  The belief is used to calculate the total expected cumulative
 #' reward. It is also used by some solvers. See Details section for more
@@ -268,204 +268,216 @@ POMDP <- function(states,
 
 # make sure the definition is complete and everything is in the right order and the right factors
 check_and_fix_MDP <- function(x) {
-  
-  ## TODO: fix and use check_formals
+  ### TODO: check function needs to be used!
+  ### TODO: keep functions. For now we expand functions into matrices
   check_func <- function(x, func, name) {
-    req_formals <- head(names(formals(func)), -1)
+    req_formals <- head(names(formals(func)),-1)
     if (!identical(names(formals(x)), req_formals))
       stop(name,
         " function needs formal arguments: ",
         paste(sQuote(req_formals), collapse = ", "))
   }
   
-  ## Note: uses x (model) from the surrounding environment
-  check_df <- function(field, func) {
+  check_df <- function(x, field, func) {
     req_columns <- names(formals(func))
     if (is.null(colnames(field)))
       colnames(field) <- req_columns
     
     if (!identical(colnames(field), req_columns))
-      stop("The ",
+      stop(
+        "The ",
         deparse(substitute(field)),
         " data.frame needs columns named: ",
-        paste(sQuote(req_columns), collapse = ", "))
+        paste(sQuote(req_columns), collapse = ", ")
+      )
     
     # convert * to NA
     field[field == '*'] <- NA
+    field <- type.convert(field, as.is = TRUE)
     
-    for (i in grep("action", colnames(field))) { 
-      if(is.numeric(field[[i]])) field[[i]] <- x$actions[field[[i]]]
+    for (i in grep("action", colnames(field))) {
+      if (is.numeric(field[[i]]))
+        field[[i]] <- x$actions[field[[i]]]
       field[[i]] <- factor(field[[i]], levels = x$actions)
     }
-    for (i in grep("state", colnames(field))) { 
-      if(is.numeric(field[[i]])) field[[i]] <- x$states[field[[i]]]
+    
+    for (i in grep("state", colnames(field))) {
+      if (is.numeric(field[[i]]))
+        field[[i]] <- x$states[field[[i]]]
       field[[i]] <- factor(field[[i]], levels = x$states)
     }
-    for (i in grep("observation", colnames(field))){ 
-      if(is.numeric(field[[i]])) field[[i]] <- x$observations[field[[i]]]
+    for (i in grep("observation", colnames(field))) {
+      if (is.numeric(field[[i]]))
+        field[[i]] <- x$observations[field[[i]]]
       field[[i]] <- factor(field[[i]], levels = x$observations)
     }
     
-    field  
+    field
   }
   
-  within(x, {
+  ### do the checking
+  
+  # expand states, actions and observations
+  if (is.numeric(x$states) &&
+      length(x$states) == 1L)
+    x$states <- paste0("s", seq_len(x$states))
+  
+  if (is.numeric(x$actions) &&
+      length(x$actions) == 1L)
+    x$actions <- paste0("a", seq_len(x$actions))
+  
+  if (inherits(x, "POMDP")) {
+    if (is.numeric(x$observations) &&
+        length(x$observations) == 1L)
+      x$observations <- paste0("o", seq_len(x$observations))
+  }
+  
+  x$discount <- as.numeric(x$discount)
+  if (length(x$discount) != 1L ||
+      x$discount < 0 || x$discount > 1)
+    stop("discount has to be a single value in the range [0,1].")
+  
+  if (is.null(x$horizon))
+    x$horizon <- Inf
+  x$horizon <- as.numeric(x$horizon)
+  if (any(x$horizon != floor(x$horizon)))
+    stop("horizon needs to be an integer.")
+  
+  
+  # start
+  if (is.numeric(x$start) &&
+      length(x$start) == length(x$states)) {
+    if (!sum1(x$start))
+      stop("The start probability vector does not add up to 1.")
+    if (is.null(names(x$start)))
+      names(x$start) <- x$states
+    else
+      x$start <- x$start[x$states]
+  }
+  if (any(is.na(x$start)))
+    stop("start containes undefined start states.")
+  if (is.character(x$start)) {
+    if (!(identical(x$start, "uniform") || all(x$start %in% x$states)))
+      stop(
+        "when using characters for start, then it needs to be the keyword 'uniform' or a set of start states."
+      )
+  }
+  
+  ## TODO: check terminal_values
+  
+  if ((is.null(x$transition_prob) ||
+      (inherits(x, "POMDP") &&
+          is.null(x$observation_prob)) ||
+      is.null(x$reward)) && is.null(x$problem))
+    stop(
+      "transition_prob, observation_prob or reward can only miss if the field problem is available!"
+    )
+  
+  if (!is.null(x$transition_prob)) {
+    # if we have matrices then check and add names
+    #check_func(x$transition_prob, T_, "transition_prob")
+    if (is.function(x$transition_prob))
+      x$transition_prob <- transition_matrix(x)
+    else if (is.data.frame(x$transition_prob))
+      x$transition_prob <- check_df(x, x$transition_prob, T_)
+    else {
+      if (is.null(names(x$transition_prob)))
+        names(x$transition_prob) <- x$actions
+      for (a in x$actions) {
+        if (is.null(x$transition_prob[[a]]))
+          stop("transition_prob for action ", a, " is missing!")
+        if (is.matrix(x$transition_prob[[a]])) {
+          if (!identical(dim(x$transition_prob[[a]]), c(length(x$states), length(x$states))))
+            stop("transition_prob matrix for action ",
+              a,
+              ": has not the right dimensions!")
+          if (!sum1(x$transition_prob[[a]]))
+            stop("transition_prob matrix for action ",
+              a,
+              ": rows do not add up to 1!")
+          if (is.null(dimnames(x$transition_prob[[a]])))
+            dimnames(x$transition_prob[[a]]) <-
+              list(x$states, x$states)
+          else
+            x$transition_prob[[a]][x$states, x$states]
+        }
+      }
+    }
+  }
+  if (!is.null(x$reward)) {
+    #check_func(reward, R_, "reward")
+    if (is.function(x$reward))
+      x$reward <- reward_matrix(x)
     
-    if (is.numeric(states) &&
-        length(states) == 1L)
-      states <- seq_len(states)
-    states <- as.character(states)
-    
-    if (is.numeric(actions) &&
-        length(actions) == 1L)
-      actions <- seq_len(actions)
-    actions <- as.character(actions)
-    
-    if (inherits(x, "POMDP")) {
-      if (is.numeric(observations) &&
-          length(observations) == 1L)
-        observations <- seq_len(observations)
-      observations <- as.character(observations)
+    if (is.data.frame(x$reward))
+      x$reward <- check_df(x, x$reward, R_)
+    else {
+      if (is.null(names(x$reward)))
+        names(x$reward) <- x$actions
+      for (a in x$actions) {
+        if (is.null(x$reward[[a]]))
+          stop("reward for action ", a, " is missing!")
+        for (s in x$states) {
+          if (is.null(x$reward[[a]][[s]]))
+            stop("reward for action ",
+              a,
+              " and state ",
+              s,
+              " is missing!")
+          if (is.matrix(x$reward[[a]][[s]])) {
+            if (!identical(dim(x$reward[[a]][[s]]), c(length(x$states), length(x$observations))))
+              stop(
+                "reward matrix for action ",
+                a,
+                " and start.state ",
+                s,
+                ": has not the right dimensions!"
+              )
+            if (is.null(dimnames(x$reward[[a]][[s]])))
+              dimnames(x$reward[[a]][[s]]) <-
+                list(x$states, x$observations)
+            else
+              x$reward[[a]][[s]][x$states, x$observations]
+          }
+        }
+      }
     }
     
-    discount <- as.numeric(discount)
-    if (length(discount) != 1L || discount < 0 || discount > 1)
-      stop("discount has to be a single value in the range [0,1].")
-    
-    if (!exists("horizon"))
-      horizon <- Inf
-    horizon <- as.numeric(horizon)
-    if (any(horizon != floor(horizon)))
-      stop("horizon needs to be an integer.")
-    
-    ## TODO: check terminal_values
-    
-    # start
-    if (is.numeric(start) && length(start) == length(states)) {
-      if (!sum1(start))
-        stop("The start probability vector does not add up to 1.")
-      if (is.null(names(start)))
-        names(start) <- states
-      else
-        start <- start[states]
-    }
-    if (any(is.na(start)))
-      stop("start containes undefined start states.")
-    if (is.character(start)) {
-      if (!(identical(start, "uniform") || all(start %in% states)))
-        stop(
-          "when using characters for start, then it needs to be the keyword 'uniform' or a set of start states."
-        )
-    }
-    
-    ## read_POMDP does not parse these!
-    if (!exists("problem")) {
-    
-      ## TODO: keep functions. For now we expand functions into matrices
+    if (inherits(x, "POMDP") && !is.null(x$observation_prob)) {
+      #check_func(observation_prob, O_, "observation_prob")
+      if (is.function(x$observation_prob))
+        x$observation_prob <- observation_matrix(x)
       
-      #check_func(transition_prob, T_, "transition_prob")
-      if (is.function(transition_prob))
-        transition_prob <- transition_matrix(x)
-      #check_func(reward, R_, "reward")
-      if (is.function(reward))
-        reward <- reward_matrix(x)
-      if (inherits(x, "POMDP"))
-        #check_func(observation_prob, O_, "observation_prob")
-        if (is.function(observation_prob))
-          observation_prob <- observation_matrix(x)
-      
-      # if we have matrices then check and add names
-      if (is.data.frame(transition_prob))
-        transition_prob <- check_df(transition_prob, T_)
+      if (is.data.frame(x$observation_prob))
+        x$observation_prob <-
+          check_df(x, x$observation_prob, O_)
       else {
-        if (is.null(names(transition_prob)))
-          names(transition_prob) <- actions
-        for (a in actions) {
-          if (is.null(transition_prob[[a]]))
-            stop("transition_prob for action ", a, " is missing!")
-          if (is.matrix(transition_prob[[a]])) {
-            if (!identical(dim(transition_prob[[a]]), c(length(states), length(states))))
-              stop("transition_prob matrix for action ",
+        if (is.null(names(x$observation_prob)))
+          names(x$observation_prob) <- x$actions
+        for (a in x$actions) {
+          if (is.null(x$observation_prob[[a]]))
+            stop("observation_prob for action ", a, " is missing!")
+          if (is.matrix(x$observation_prob[[a]])) {
+            if (!identical(dim(x$observation_prob[[a]]), c(length(x$states), length(x$observations))))
+              stop("observation_prob matrix for action ",
                 a,
                 ": has not the right dimensions!")
-            if (!sum1(transition_prob[[a]]))
-              stop("transition_prob matrix for action ",
+            if (!all(rowSums(x$observation_prob[[a]]) == 1))
+              stop("observation_prob matrix for action ",
                 a,
                 ": rows do not add up to 1!")
-            if (is.null(dimnames(transition_prob[[a]])))
-              dimnames(transition_prob[[a]]) <- list(states, states)
+            
+            if (is.null(dimnames(x$observation_prob[[a]])))
+              dimnames(x$observation_prob[[a]]) <-
+                list(x$states, x$observations)
             else
-              transition_prob[[a]][states, states]
-          }
-        }
-      }
-      
-      if (is.data.frame(reward))
-        reward <- check_df(reward, R_)
-      else {
-        if (is.null(names(reward)))
-          names(reward) <- actions
-        for (a in actions) {
-          if (is.null(reward[[a]]))
-            stop("reward for action ", a, " is missing!")
-          for (s in states) {
-            if (is.null(reward[[a]][[s]]))
-              stop("reward for action ", a, " and state ", s, " is missing!")
-            if (is.matrix(reward[[a]][[s]])) {
-              if (!identical(dim(reward[[a]][[s]]), c(length(states), length(observations))))
-                stop(
-                  "reward matrix for action ",
-                  a,
-                  " and start.state ",
-                  s,
-                  ": has not the right dimensions!"
-                )
-              if (is.null(dimnames(reward[[a]][[s]])))
-                dimnames(reward[[a]][[s]]) <-
-                  list(states, observations)
-              else
-                reward[[a]][[s]][states, observations]
-            }
-          }
-        }
-      }
-      
-      if (inherits(x, "POMDP")) {
-        if (is.data.frame(observation_prob))
-          observation_prob <- check_df(observation_prob, O_)
-        else {
-          if (is.null(names(observation_prob)))
-            names(observation_prob) <- actions
-          for (a in actions) {
-            if (is.null(observation_prob[[a]]))
-              stop("observation_prob for action ", a, " is missing!")
-            if (is.matrix(observation_prob[[a]])) {
-              if (!identical(dim(observation_prob[[a]]), c(length(states), length(observations))))
-                stop("observation_prob matrix for action ",
-                  a,
-                  ": has not the right dimensions!")
-              if (!all(rowSums(observation_prob[[a]]) == 1))
-                stop("observation_prob matrix for action ",
-                  a,
-                  ": rows do not add up to 1!")
-              
-              if (is.null(dimnames(observation_prob[[a]])))
-                dimnames(observation_prob[[a]]) <-
-                  list(states, observations)
-              else
-                observation_prob[[a]][states, observations]
-            }
+              x$observation_prob[[a]][x$states, x$observations]
           }
         }
       }
     }
-    
-    # cleanup
-    if (exists("a", inherits = FALSE))
-      rm(a)
-    if (exists("s", inherits = FALSE))
-      rm(s)
-  })
+  }
+  x
 }
 
 #' @export
@@ -482,8 +494,12 @@ print.POMDP <- function(x, ...) {
     writeLines(sprintf("  Horizon: %s epochs",
       paste(x$horizon, collapse = " + ")))
   
-  writeLines(sprintf("  Size: %d states / %d actions / %d obs.\n",
-      length(x$states), length(x$actions), length(x$observations)))
+  writeLines(sprintf(
+    "  Size: %d states / %d actions / %d obs.\n",
+    length(x$states),
+    length(x$actions),
+    length(x$observations)
+  ))
   
   if (.solved_POMDP(x))
     writeLines(c(
@@ -518,10 +534,10 @@ print.POMDP <- function(x, ...) {
     stop("x needs to be a solved POMDP. Use solve_POMDP() first.")
   
   solved
-} 
-  
-.timedependent_POMDP <- function(x) 
-  !is.null(x$horizon) && length(x$horizon) > 1L
+}
+
+.timedependent_POMDP <- function(x)
+  ! is.null(x$horizon) && length(x$horizon) > 1L
 
 
 # get pg and alpha for a epoch
@@ -529,15 +545,19 @@ print.POMDP <- function(x, ...) {
   #.solved_POMDP(model, stop = TRUE)
   
   epoch <- as.integer(epoch)
-  if(epoch < 1L) stop("Epoch has to be >= 1")
+  if (epoch < 1L)
+    stop("Epoch has to be >= 1")
   
   ### (converged) infinite horizon POMDPs. We ignore epoch.
-  if (length(model$solution$pg) == 1L) return(1L)
+  if (length(model$solution$pg) == 1L)
+    return(1L)
   
   ### regular epoch for finite/infinite horizon case
   if (epoch > length(model$solution$pg))
-    stop("POMDP model has only solutions for ", length(model$solution$pg), " epochs!")
-    
+    stop("POMDP model has only solutions for ",
+      length(model$solution$pg),
+      " epochs!")
+  
   return(epoch)
 }
 

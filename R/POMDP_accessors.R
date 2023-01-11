@@ -349,7 +349,7 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
       "Field ",
       field,
       " is not available. ",
-      "Note: Parsing some fields is not implemented for models read with read_POMDP!"
+      "Note: Parsing some fields may be disabled with read_POMDP!"
     )
   
   
@@ -428,7 +428,7 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
       }
     )
   } else
-    stop("Unknown transition/observation matrix format.")
+    stop("Unknown ", field, " matrix format.\n")
   
   if (!is.null(action) && length(action) == 1)
     prob <- prob[[1]]
