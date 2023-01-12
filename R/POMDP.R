@@ -501,7 +501,7 @@ print.POMDP <- function(x, ...) {
     length(x$observations)
   ))
   
-  if (.solved_POMDP(x))
+  if (is_solved_POMDP(x))
     writeLines(c(
       "  Solved:",
       sprintf("    Method: %s",
@@ -525,7 +525,11 @@ print.POMDP <- function(x, ...) {
 
 
 # check if x is a solved POMDP
-.solved_POMDP <- function(x, stop = FALSE) {
+#' @rdname POMDP
+#' @param x a POMDP.
+#' @param stop logical; stop with an error.
+#' @export
+is_solved_POMDP <- function(x, stop = FALSE) {
   if (!inherits(x, "POMDP"))
     stop("x needs to be a POMDP object!")
   
@@ -536,13 +540,28 @@ print.POMDP <- function(x, ...) {
   solved
 }
 
-.timedependent_POMDP <- function(x)
+#' @rdname POMDP
+#' @export
+is_timedependent_POMDP <- function(x)
   ! is.null(x$horizon) && length(x$horizon) > 1L
+
+#' @rdname POMDP
+#' @export
+is_converged_POMDP <- function(x, stop = FALSE) {
+  is_solved_POMDP(x, stop = stop)
+  
+  converged <- x$solution$converged && length(x$solution$pg) == 1L 
+  
+  if (stop && !converged)
+    stop("POMDP solution has not converged.")
+
+  converged
+}
 
 
 # get pg and alpha for a epoch
 .get_pg_index <- function(model, epoch) {
-  #.solved_POMDP(model, stop = TRUE)
+  #is_solved_POMDP(model, stop = TRUE)
   
   epoch <- as.integer(epoch)
   if (epoch < 1L)

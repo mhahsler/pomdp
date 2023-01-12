@@ -4,34 +4,26 @@
 #' policy tree for a finite-horizon solution.
 #' uses `plot` in \pkg{igraph} with appropriate plotting options.
 #'
-#' Each policy graph node represent a segment (or part of a hyperplane) of the value function. 
-#' Each node represents one or more believe states. If available, a pie chart (or the color) in each node
-#' represent the central belief of the belief states
-#' belonging to the node (i.e., the center of the hyperplane segment). 
+#' Each policy graph node is represented by an alpha vector specifying a hyper plane segment. The convex hull of
+#' the set of hyperplanes represents the the value function. 
+#' The policy specifies for each node an optimal action which is printed together with the node ID inside the node.
+#' The arcs are labeled with observations.
+#' 
+#' If available, a pie chart (or the color) in each node
+#' represent an example of the belief that the agent has if it is in this node.
 #' This can help with interpreting the policy graph.
 #' 
-#' For converged POMDP solution a graph is produced, for finite-horizon solution a policy tree is produced. 
+#' For finite-horizon solution a policy tree is produced. 
 #' The levels of the tree and the first number in the node label represent the epochs. Many algorithms produce
 #' unused policy graph nodes which are filtered to produce a clean tree structure. 
 #' Non-converged policies depend on the initial belief and if an initial belief is 
 #' specified, then different nodes will be filtered and the tree will look different. 
 #'
 #' First, the policy in the solved POMDP is converted into an [igraph] object using `policy_graph()`.
-#' Central beliefs for the graph nodes are estimated using `estimate_belief_for_node()`
-#' which samples the belief space, assigns each sampled point to a node, and then averages the belief of these nodes.
-#' If no belief point is samples for a node, then the estimation fails. Increase the the sample size `n` or
-#' change the sample `method` to get better estimates. 
+#' Example beliefs for the graph nodes are estimated using [estimate_belief_for_nodes()].
 #' Finally, the igraph
 #' object is visualized using the plotting function [igraph::plot.igraph()] or,
 #' for interactive graphs, [visNetwork::visIgraph()].
-#'
-#' `estimate_belief_for_nodes()` estimated the central belief for each node/segment of the value function
-#' by generating/sampling a large set of possible belief points, assigning them to the segments and then averaging
-#' the belief over the points assigned to each segment. 
-#' Additional parameters like `method` and the sample size `n` are passed on to [sample_belief_space()].
-#' If no belief point is generated for a segment, then a
-#' warning is produced. In this case, the number of sampled points can be increased.
-#'
 #' @family policy
 #'
 #' @import igraph
@@ -40,20 +32,18 @@
 #' @param belief the initial belief is used to mark the initial belief state in the 
 #' grave of a converged solution and to identify the root node in a policy graph for a finite-horizon solution.
 #' If `NULL` then the belief is taken from the model definition.
-#' @param show_belief logical; estimate belief proportions? If `TRUE` then `estimate_belief_for_nodes()` is used
-#'  and the belief is visualized as a pie chart in each node.
+#' @param show_belief logical; show estimated belief proportions as a pie chart in each node?
 #' @param legend logical; display a legend for colors used belief proportions?
 #' @param engine The plotting engine to be used. For `"visNetwork"`, `flip.y = FALSE` can be used
 #'   to show the root node on top. 
 #' @param col colors used for the states.
-#' @param ... parameters are passed on to `policy_graph()`, `estimate_belief_for_nodes()` and the functions
+#' @param ... parameters are passed on to `policy_graph()`, [estimate_belief_for_nodes()] and the functions
 #'   they use. Also, plotting options are passed on to the plotting engine [igraph::plot.igraph()]
 #'   or [visNetwork::visIgraph()].
 #'
 #' @returns
 #' - `policy_graph()` returns the policy graph as an igraph object.
 #' - `plot_policy_graph()` returns invisibly what the plotting engine returns.
-#' - `estimate_belief_for_nodes()` returns a matrix with the central belief for each node.
 #'
 #' @keywords hplot graphs
 #' @examples
@@ -105,10 +95,6 @@
 #' ## add smooth edges and a layout (note, engine can be abbreviated)
 #' plot_policy_graph(sol, engine = "visNetwork", layout = "layout_in_circle", smooth = TRUE)
 #'
-#' ## estimate the central belief for the graph nodes. We use the default random sampling method with 
-#' ## a sample size of n = 100. 
-#' estimate_belief_for_nodes(sol, n = 100)
-#'
 #' ## policy trees for finite-horizon solutions
 #' sol <- solve_POMDP(model = Tiger, horizon = 4, method = "incprune")
 #'
@@ -127,9 +113,9 @@
 #'   vertex.label.cex = .5, edge.label.cex = .5)  
 #' @export
 policy_graph <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) {
-  .solved_POMDP(x, stop = TRUE)
+  is_solved_POMDP(x, stop = TRUE)
   
-  if (!x$solution$converged || length(x$solution$pg) > 1)
+  if (!is_converged_POMDP(x))
     policy_graph_unconverged(x, belief, show_belief = show_belief, col = col, ...)
   else
     policy_graph_converged(x, belief, show_belief = show_belief, col = col, ...)
@@ -302,7 +288,6 @@ policy_graph_unconverged <- function(x, belief = NULL, show_belief = TRUE, col =
   # add belief proportions
   ### FIXME: Add gray for missing points instead of a uniform distribution
   if (show_belief) {
-    # FIXME: for pomdp-solve, we could seed with x$solution$belief_states
     bp <-
       lapply(
         seq(epochs),
@@ -421,43 +406,6 @@ plot_policy_graph <- function(x,
   cu
 }
 
-#' @rdname policy_graph
-#' @param epoch estimate the belief for nodes in this epoch. Use 1 for converged policies.
-#' @param n sample size for estimation.
-#' @param method character string specifying the sampling strategy (see [sample_belief_space()]).
-#' @export
-estimate_belief_for_nodes <-
-  function(x,
-    n = 10000,
-    method = "random",
-    epoch = 1,
-    ...) {
-    
-    alpha <- x$solution$alpha[[epoch]]
-   
-    # for pomdp-solve, we can use x$solution$belief_states
-    if (!is.null(x$solution$belief_states))
-      belief_points <- x$solution$belief_states
-    else
-      belief_points <- sample_belief_space(x, n = n, method = method, ...)
-    
-     # r <- reward_node_action(x, belief = belief_points, epoch = epoch)
-     # belief <- t(sapply(
-     #   1:nrow(alpha),
-     #   FUN = function(i)
-     #     colMeans(r$belief[r$pg_node == i, , drop = FALSE])
-     # ))
-     # rownames(belief) <- seq_len(nrow(belief))
-    
-    r <- .rew(belief_points, alpha)
-    ind <- split(seq_len(nrow(belief_points)), f = r$pg_node)
-    belief <- t(sapply(ind, FUN = function(i) colMeans(belief_points[i, , drop = FALSE])))
-    
-    if(nrow(belief) < nrow(x$solution$pg[[epoch]]))
-      warning("Not enough points were sampled to estimate all central beliefs. Increase n.")
-    
-    belief
-  }
 
 
 ### returns a list with central_beliefs and a completed pg 

@@ -12,7 +12,8 @@ simulate_MDP(
   return_states = FALSE,
   epsilon = NULL,
   engine = "cpp",
-  verbose = FALSE
+  verbose = FALSE,
+  ...
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ Default for solved models is 0 and for unsolved model 1.}
 or a native R implementation which supports sparse matrices.}
 
 \item{verbose}{report used parameters.}
+
+\item{...}{further arguments are ignored.}
 }
 \value{
 A list with elements:

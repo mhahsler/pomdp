@@ -62,12 +62,9 @@ solver output (\code{solver_output}). The solution is a list with elements:
 \item \code{converged} did the solution converge?
 \item \code{initial_belief} used initial beliefs.
 \item \code{total_expected_reward} reward from the initial beliefs.
-\item \code{pg}, \code{initial_pg_node} a list representing the policy graph. The epochs are
-the list entries. A converged infinite-horizon solution has
-only a single list elements. Finite-horizon solutions may converge early resulting in a shorter list.
-\item \code{belief_states} used belief states.
-\item \code{alpha} value function as hyperplanes representing the nodes in the policy graph.
-\item \code{policy} the policy.
+\item \code{pg}, \code{initial_pg_node} the policy graph (see Details section).
+\item \code{belief_points_solver} optional; belief points used by the solver.
+\item \code{alpha} value function as hyperplanes representing the nodes in the policy graph (see Details section).
 }
 }
 \description{
@@ -77,6 +74,8 @@ decision processes (POMDPs). The result is an optimal or approximately
 optimal policy.
 }
 \details{
+\subsection{Parameters}{
+
 \code{solve_POMDP_parameter()} displays available solver parameter options.
 
 \strong{Horizon:} Infinite-horizon POMDPs (\code{horizon = Inf}) converge to a
@@ -85,19 +84,6 @@ depth equal to the smaller of the horizon or the number of epochs to
 convergence.  The policy (and the associated value function) are stored in a
 list by epoch. The policy for the first epoch is stored as the first
 element.
-
-\strong{Policy:} Each policy is a data frame where each row representing a
-policy graph node with an associated optimal action and a list of node IDs
-to go to depending on the observation (specified as the column names). For
-the finite-horizon case, the observation specific node IDs refer to nodes in
-the next epoch creating a policy tree.  Impossible observations have a
-\code{NA} as the next state.
-
-\strong{Value function:} The value function is stored as a matrix. Each row is
-associated with a node (row) in the policy graph and represents the
-coefficients (alpha vector) of a hyperplane. An alpha vector contains one
-value per state and is the value for the belief state that has a probability
-of 1 for that state and 0s for all others.
 
 \emph{Precision:}* The POMDP solver uses various epsilon values to control
 precision for comparing alpha vectors to check for convergence, and solving
@@ -152,9 +138,23 @@ to be in the same order (the numeric index is used). Only the time-varying
 matrices need to be specified. An example can be found in Example 4 in the
 Examples section. The procedure can also be done by calling the solver
 multiple times (see Example 5).
+}
 
-\strong{Note:} The parser for POMDP files is experimental. Please report
-problems here: \url{https://github.com/mhahsler/pomdp/issues}.
+\subsection{Solution}{
+
+\strong{Policy:} Each policy is a data frame where each row representing a
+policy graph node with an associated optimal action and a list of node IDs
+to go to depending on the observation (specified as the column names). For
+the finite-horizon case, the observation specific node IDs refer to nodes in
+the next epoch creating a policy tree.  Impossible observations have a
+\code{NA} as the next state.
+
+\strong{Value function:} The value function is stored as a matrix. Each row is
+associated with a node (row) in the policy graph and represents the
+coefficients (alpha vector) of a hyperplane. An alpha vector contains one
+value per state and is the value for the belief state that has a probability
+of 1 for that state and 0s for all others.
+}
 }
 \examples{
 ################################################################
@@ -333,6 +333,7 @@ iteration: an anytime algorithm for POMDPs. IJCAI'03: Proceedings of the
 }
 \seealso{
 Other policy: 
+\code{\link{estimate_belief_for_nodes}()},
 \code{\link{optimal_action}()},
 \code{\link{plot_value_function}()},
 \code{\link{policy_graph}()},

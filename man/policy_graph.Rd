@@ -3,7 +3,6 @@
 \name{policy_graph}
 \alias{policy_graph}
 \alias{plot_policy_graph}
-\alias{estimate_belief_for_nodes}
 \title{POMDP Policy Graphs}
 \usage{
 policy_graph(x, belief = NULL, show_belief = TRUE, col = NULL, ...)
@@ -17,8 +16,6 @@ plot_policy_graph(
   col = NULL,
   ...
 )
-
-estimate_belief_for_nodes(x, n = 10000, method = "random", epoch = 1, ...)
 }
 \arguments{
 \item{x}{object of class \link{POMDP} containing a solved and converged POMDP problem.}
@@ -27,12 +24,11 @@ estimate_belief_for_nodes(x, n = 10000, method = "random", epoch = 1, ...)
 grave of a converged solution and to identify the root node in a policy graph for a finite-horizon solution.
 If \code{NULL} then the belief is taken from the model definition.}
 
-\item{show_belief}{logical; estimate belief proportions? If \code{TRUE} then \code{estimate_belief_for_nodes()} is used
-and the belief is visualized as a pie chart in each node.}
+\item{show_belief}{logical; show estimated belief proportions as a pie chart in each node?}
 
 \item{col}{colors used for the states.}
 
-\item{...}{parameters are passed on to \code{policy_graph()}, \code{estimate_belief_for_nodes()} and the functions
+\item{...}{parameters are passed on to \code{policy_graph()}, \code{\link[=estimate_belief_for_nodes]{estimate_belief_for_nodes()}} and the functions
 they use. Also, plotting options are passed on to the plotting engine \code{\link[igraph:plot.igraph]{igraph::plot.igraph()}}
 or \code{\link[visNetwork:visNetwork-igraph]{visNetwork::visIgraph()}}.}
 
@@ -40,18 +36,11 @@ or \code{\link[visNetwork:visNetwork-igraph]{visNetwork::visIgraph()}}.}
 
 \item{engine}{The plotting engine to be used. For \code{"visNetwork"}, \code{flip.y = FALSE} can be used
 to show the root node on top.}
-
-\item{n}{sample size for estimation.}
-
-\item{method}{character string specifying the sampling strategy (see \code{\link[=sample_belief_space]{sample_belief_space()}}).}
-
-\item{epoch}{estimate the belief for nodes in this epoch. Use 1 for converged policies.}
 }
 \value{
 \itemize{
 \item \code{policy_graph()} returns the policy graph as an igraph object.
 \item \code{plot_policy_graph()} returns invisibly what the plotting engine returns.
-\item \code{estimate_belief_for_nodes()} returns a matrix with the central belief for each node.
 }
 }
 \description{
@@ -60,33 +49,26 @@ policy tree for a finite-horizon solution.
 uses \code{plot} in \pkg{igraph} with appropriate plotting options.
 }
 \details{
-Each policy graph node represent a segment (or part of a hyperplane) of the value function.
-Each node represents one or more believe states. If available, a pie chart (or the color) in each node
-represent the central belief of the belief states
-belonging to the node (i.e., the center of the hyperplane segment).
+Each policy graph node is represented by an alpha vector specifying a hyper plane segment. The convex hull of
+the set of hyperplanes represents the the value function.
+The policy specifies for each node an optimal action which is printed together with the node ID inside the node.
+The arcs are labeled with observations.
+
+If available, a pie chart (or the color) in each node
+represent an example of the belief that the agent has if it is in this node.
 This can help with interpreting the policy graph.
 
-For converged POMDP solution a graph is produced, for finite-horizon solution a policy tree is produced.
+For finite-horizon solution a policy tree is produced.
 The levels of the tree and the first number in the node label represent the epochs. Many algorithms produce
 unused policy graph nodes which are filtered to produce a clean tree structure.
 Non-converged policies depend on the initial belief and if an initial belief is
 specified, then different nodes will be filtered and the tree will look different.
 
 First, the policy in the solved POMDP is converted into an \link{igraph} object using \code{policy_graph()}.
-Central beliefs for the graph nodes are estimated using \code{estimate_belief_for_node()}
-which samples the belief space, assigns each sampled point to a node, and then averages the belief of these nodes.
-If no belief point is samples for a node, then the estimation fails. Increase the the sample size \code{n} or
-change the sample \code{method} to get better estimates.
+Example beliefs for the graph nodes are estimated using \code{\link[=estimate_belief_for_nodes]{estimate_belief_for_nodes()}}.
 Finally, the igraph
 object is visualized using the plotting function \code{\link[igraph:plot.igraph]{igraph::plot.igraph()}} or,
 for interactive graphs, \code{\link[visNetwork:visNetwork-igraph]{visNetwork::visIgraph()}}.
-
-\code{estimate_belief_for_nodes()} estimated the central belief for each node/segment of the value function
-by generating/sampling a large set of possible belief points, assigning them to the segments and then averaging
-the belief over the points assigned to each segment.
-Additional parameters like \code{method} and the sample size \code{n} are passed on to \code{\link[=sample_belief_space]{sample_belief_space()}}.
-If no belief point is generated for a segment, then a
-warning is produced. In this case, the number of sampled points can be increased.
 }
 \examples{
 data("Tiger")
@@ -137,10 +119,6 @@ plot_policy_graph(sol, engine = "visNetwork")
 ## add smooth edges and a layout (note, engine can be abbreviated)
 plot_policy_graph(sol, engine = "visNetwork", layout = "layout_in_circle", smooth = TRUE)
 
-## estimate the central belief for the graph nodes. We use the default random sampling method with 
-## a sample size of n = 100. 
-estimate_belief_for_nodes(sol, n = 100)
-
 ## policy trees for finite-horizon solutions
 sol <- solve_POMDP(model = Tiger, horizon = 4, method = "incprune")
 
@@ -160,6 +138,7 @@ plot_policy_graph(sol, vertex.size = 8, edge.arrow.size = .1,
 }
 \seealso{
 Other policy: 
+\code{\link{estimate_belief_for_nodes}()},
 \code{\link{optimal_action}()},
 \code{\link{plot_value_function}()},
 \code{\link{policy}()},

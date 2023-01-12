@@ -5,6 +5,7 @@
 #' decision processes (POMDPs). The result is an optimal or approximately
 #' optimal policy.
 #'
+#' ## Parameters 
 #' `solve_POMDP_parameter()` displays available solver parameter options.
 #'
 #' **Horizon:** Infinite-horizon POMDPs (`horizon = Inf`) converge to a
@@ -13,19 +14,6 @@
 #' convergence.  The policy (and the associated value function) are stored in a
 #' list by epoch. The policy for the first epoch is stored as the first
 #' element.
-#'
-#' **Policy:** Each policy is a data frame where each row representing a
-#' policy graph node with an associated optimal action and a list of node IDs
-#' to go to depending on the observation (specified as the column names). For
-#' the finite-horizon case, the observation specific node IDs refer to nodes in
-#' the next epoch creating a policy tree.  Impossible observations have a
-#' `NA` as the next state.
-#'
-#' **Value function:** The value function is stored as a matrix. Each row is
-#' associated with a node (row) in the policy graph and represents the
-#' coefficients (alpha vector) of a hyperplane. An alpha vector contains one
-#' value per state and is the value for the belief state that has a probability
-#' of 1 for that state and 0s for all others.
 #'
 #' *Precision:** The POMDP solver uses various epsilon values to control
 #' precision for comparing alpha vectors to check for convergence, and solving
@@ -80,8 +68,21 @@
 #' Examples section. The procedure can also be done by calling the solver
 #' multiple times (see Example 5).
 #'
-#' **Note:** The parser for POMDP files is experimental. Please report
-#' problems here: \url{https://github.com/mhahsler/pomdp/issues}.
+#' ## Solution
+#' 
+#' **Policy:** Each policy is a data frame where each row representing a
+#' policy graph node with an associated optimal action and a list of node IDs
+#' to go to depending on the observation (specified as the column names). For
+#' the finite-horizon case, the observation specific node IDs refer to nodes in
+#' the next epoch creating a policy tree.  Impossible observations have a
+#' `NA` as the next state.
+#'
+#' **Value function:** The value function is stored as a matrix. Each row is
+#' associated with a node (row) in the policy graph and represents the
+#' coefficients (alpha vector) of a hyperplane. An alpha vector contains one
+#' value per state and is the value for the belief state that has a probability
+#' of 1 for that state and 0s for all others.
+#'
 #'
 #' @family policy
 #' @family solver
@@ -118,12 +119,9 @@
 #' - `converged` did the solution converge?
 #' - `initial_belief` used initial beliefs.
 #' - `total_expected_reward` reward from the initial beliefs.
-#' - `pg`, `initial_pg_node` a list representing the policy graph. The epochs are 
-#'  the list entries. A converged infinite-horizon solution has
-#' only a single list elements. Finite-horizon solutions may converge early resulting in a shorter list.
-#' - `belief_states` used belief states.
-#' - `alpha` value function as hyperplanes representing the nodes in the policy graph.
-#' - `policy` the policy.
+#' - `pg`, `initial_pg_node` the policy graph (see Details section). 
+#' - `belief_points_solver` optional; belief points used by the solver.
+#' - `alpha` value function as hyperplanes representing the nodes in the policy graph (see Details section).
 #' @author Hossein Kamalzadeh, Michael Hahsler
 #' @references
 #' Cassandra, A. (2015). pomdp-solve: POMDP Solver Software,
@@ -333,7 +331,7 @@ solve_POMDP <- function(model,
     model$start <- "uniform"
   
   # time-dependent POMDP? (horizon is a vector of length >1)
-  if (.timedependent_POMDP(model))
+  if (is_timedependent_POMDP(model))
     return(
       .solve_POMDP_time_dependent(
         model = model,
@@ -541,12 +539,6 @@ solve_POMDP <- function(model,
   # read belief states if available (method: grid)
   belief <- .get_belief_file(file_prefix, model)
   
-  policy <- pg
-  for (i in 1:length(policy)) {
-    policy[[i]] <- cbind(alpha[[i]],
-      policy[[i]][, "action", drop = FALSE])
-  }
-  
   # add solution to model
   model$solution <- structure(
     list(
@@ -556,10 +548,9 @@ solve_POMDP <- function(model,
       total_expected_reward = NA,
       initial_belief = NA,
       initial_pg_node = NA,
-      belief_states = belief,
+      belief_points_solver = belief,
       pg = pg,
-      alpha = alpha,
-      policy = policy
+      alpha = alpha
     ),
     class = "POMDP_solution"
   )
@@ -571,10 +562,11 @@ solve_POMDP <- function(model,
   model$solution$initial_pg_node <- rew$pg_node
   
   model$solver_output <- structure(solver_output, class = "text")
-  
+
+  ### MDP uses policy field
   if(inherits(model, "MDP")) 
-    model$solution$policy <- .policy_MDP_from_POMDP(model)
-  
+    model$solution$policy <- .MDP_policy_from_POMDP(model)
+   
   model
 }
 

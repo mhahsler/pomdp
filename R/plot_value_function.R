@@ -56,7 +56,7 @@ plot_value_function <-
     lty = 1,
     ...) {
     if (inherits(model, "MDP")) {
-      .solved_MDP(model, stop = TRUE)
+      is_solved_MDP(model, stop = TRUE)
       
       policy <- policy(model)[[epoch]]
       
@@ -81,7 +81,7 @@ plot_value_function <-
         at = 0
       )
     } else {
-      .solved_POMDP(model, stop = TRUE)
+      is_solved_POMDP(model, stop = TRUE)
       
       if (is.character(projection))
         projection <- pmatch(projection, model$states)

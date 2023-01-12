@@ -47,6 +47,7 @@ policy(sol)
 }
 \seealso{
 Other policy: 
+\code{\link{estimate_belief_for_nodes}()},
 \code{\link{optimal_action}()},
 \code{\link{plot_value_function}()},
 \code{\link{policy_graph}()},

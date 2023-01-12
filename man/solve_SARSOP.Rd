@@ -90,6 +90,7 @@ H. Kurniawati, D. Hsu, and W.S. Lee (2008). SARSOP: Efficient point-based POMDP 
 }
 \seealso{
 Other policy: 
+\code{\link{estimate_belief_for_nodes}()},
 \code{\link{optimal_action}()},
 \code{\link{plot_value_function}()},
 \code{\link{policy_graph}()},

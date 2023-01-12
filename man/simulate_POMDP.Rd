@@ -13,7 +13,8 @@ simulate_POMDP(
   epsilon = NULL,
   digits = 7,
   engine = "cpp",
-  verbose = FALSE
+  verbose = FALSE,
+  ...
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ Default for solved models is 0 and for unsolved model 1.}
 native R implementation that supports sparse matrices and multi-episode problems.}
 
 \item{verbose}{report used parameters.}
+
+\item{...}{further arguments are ignored.}
 }
 \value{
 A list with elements:

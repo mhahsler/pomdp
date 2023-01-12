@@ -28,6 +28,7 @@
 #' @param engine `'cpp'` or `'r'` to perform simulation using a faster C++
 #'  or a native R implementation which supports sparse matrices.
 #' @param verbose report used parameters.
+#' @param ... further arguments are ignored.
 #' @return A list with elements:
 #'  * `avg_reward`: The average discounted reward.
 #'  * `reward`: Reward for each trajectory.
@@ -74,7 +75,8 @@ simulate_MDP <-
     return_states = FALSE,
     epsilon = NULL,
     engine = "cpp",
-    verbose = FALSE) {
+    verbose = FALSE,
+    ...) {
     engine <- match.arg(tolower(engine), c("cpp", "r"))
     
     if (engine == "r")
@@ -83,7 +85,7 @@ simulate_MDP <-
       sparse <- FALSE
     
     start <- .translate_belief(start, model = model)
-    solved <- .solved_MDP(model)
+    solved <- is_solved_MDP(model)
     
     if (is.null(horizon))
       horizon <- model$horizon

@@ -73,7 +73,7 @@ sample_belief_space <-
         stop("Projection needs to be on 2 or more states.")
     }  
     
-    belief_states <- switch(
+    belief_points <- switch(
       method,
       random = {
         
@@ -86,10 +86,10 @@ sample_belief_space <-
             n <- ns[w]
             
             if (is.null(projection)) {
-              belief_states <- sample_simplex_cpp(n, length(model$states))
+              belief_points <- sample_simplex_cpp(n, length(model$states))
             } else {
-              belief_states <- matrix(0, nrow = n, ncol = length(model$states))
-              belief_states[, projection] <- sample_simplex_cpp(n, length(projection))
+              belief_points <- matrix(0, nrow = n, ncol = length(model$states))
+              belief_points[, projection] <- sample_simplex_cpp(n, length(projection))
         
               # uniformly sample from a simplex.
               # https://cs.stackexchange.com/questions/3227/uniform-sampling-from-a-simplex)
@@ -107,14 +107,14 @@ sample_belief_space <-
               
             }
             
-            colnames(belief_states) <- model$states
-            belief_states
+            colnames(belief_points) <- model$states
+            belief_points
           }
         bs
       },
       
       regular = {
-        belief_states <-
+        belief_points <-
           matrix(0, nrow = n, ncol = length(model$states))
         
         if (is.null(projection))
@@ -123,7 +123,7 @@ sample_belief_space <-
         
         if (d == 2) {
           b <- seq(0, 1, length.out = n)
-          belief_states[, projection] <- cbind(b, 1 - b)
+          belief_points[, projection] <- cbind(b, 1 - b)
         } else if (d == 3) {
           check_installed("Ternary")
           
@@ -138,40 +138,40 @@ sample_belief_space <-
               n,
               " belief space samples!"
             )
-            belief_states <-
+            belief_points <-
               matrix(0,
                 nrow = ncol(triangleCentres),
                 ncol = length(model$states))
-            colnames(belief_states) <- model$states
+            colnames(belief_points) <- model$states
           }
           
-          belief_states[, projection] <-
+          belief_points[, projection] <-
             t(Ternary::XYToTernary(triangleCentres["x",], triangleCentres["y",],
               direction = 1))
-          attr(belief_states, "TernaryTriangleCenters") <-
+          attr(belief_points, "TernaryTriangleCenters") <-
             triangleCentres
         } else
           stop("method regular is only available for projections on 2 or 3 states.")
         
-        colnames(belief_states) <- model$states
-        belief_states
+        colnames(belief_points) <- model$states
+        belief_points
       },
       
       vertices = {
-        belief_states <-
+        belief_points <-
           matrix(0, nrow = n, ncol = length(model$states))
         
         if (is.null(projection))
           projection <- seq_along(model$states)
         d <- length(projection)
         
-        belief_states <- belief_states[rep(1, d), ]
-        belief_states[cbind(projection, projection)] <- 1
-        belief_states <-
-          belief_states[sample(d, size = n, replace = TRUE), ]
+        belief_points <- belief_points[rep(1, d), ]
+        belief_points[cbind(projection, projection)] <- 1
+        belief_points <-
+          belief_points[sample(d, size = n, replace = TRUE), ]
         
-        colnames(belief_states) <- model$states
-        belief_states
+        colnames(belief_points) <- model$states
+        belief_points
       },
       
       trajectories = {
@@ -183,5 +183,5 @@ sample_belief_space <-
       
     )
     
-    belief_states
+    belief_points
   }

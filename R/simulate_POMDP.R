@@ -31,6 +31,7 @@
 #' @param engine `'cpp'`, `'r'` to perform simulation using a faster C++ or a 
 #'  native R implementation that supports sparse matrices and multi-episode problems.
 #' @param verbose report used parameters.
+#' @param ... further arguments are ignored.
 #' @return A list with elements:
 #'  * `avg_reward`: The average discounted reward.
 #'  * `belief_states`: A matrix with belief states as rows.
@@ -88,7 +89,8 @@ simulate_POMDP <-
     epsilon = NULL,
     digits = 7,
     engine = "cpp",
-    verbose = FALSE) {
+    verbose = FALSE,
+    ...) {
     time_start <- proc.time()  
     
     engine <- match.arg(tolower(engine), c("cpp", "r"))
@@ -98,8 +100,8 @@ simulate_POMDP <-
     else
       sparse <- FALSE
     
-    solved <- !is.null(model$solution)
-    dt <- .timedependent_POMDP(model)
+    solved <- is_solved_POMDP(model)
+    dt <- is_timedependent_POMDP(model)
     
     if (is.null(belief))
       belief <- start_vector(model)

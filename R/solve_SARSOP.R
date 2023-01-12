@@ -115,7 +115,7 @@ solve_SARSOP <- function(model,
   if (!is.null(discount))
     model$discount <- discount
   
-  if (.timedependent_POMDP(model))
+  if (is_timedependent_POMDP(model))
     stop("the SARSOP solver does not support time dependent models.")
   
   # prepare temp files

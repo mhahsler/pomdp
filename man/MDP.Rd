@@ -3,6 +3,7 @@
 \name{MDP}
 \alias{MDP}
 \alias{MDP2POMDP}
+\alias{is_solved_MDP}
 \title{Define an MDP Problem}
 \usage{
 MDP(
@@ -17,6 +18,8 @@ MDP(
 )
 
 MDP2POMDP(x)
+
+is_solved_MDP(x, stop = FALSE)
 }
 \arguments{
 \item{states}{a character vector specifying the names of the states.}
@@ -40,6 +43,8 @@ horizon.}
 \item{name}{a string to identify the MDP problem.}
 
 \item{x}{a \code{MDP} object.}
+
+\item{stop}{logical; stop with an error.}
 }
 \value{
 The function returns an object of class MDP which is list with

@@ -31,6 +31,9 @@ Reads and write a POMDP file suitable for the \code{pomdp-solve} program.
 POMDP specification. \strong{The original specification is directly used by external solvers.} In addition, the file
 is parsed using an experimental POMDP file parser. The parsed information can be used with auxiliary functions
 in this package that use fields like the transition matrix, the observation matrix and the reward structure.
+
+\strong{Note:} The parser for POMDP files is experimental. Please report
+problems here: \url{https://github.com/mhahsler/pomdp/issues}.
 }
 \examples{
 data(Tiger)

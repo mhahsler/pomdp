@@ -2,6 +2,9 @@
 % Please edit documentation in R/POMDP.R
 \name{POMDP}
 \alias{POMDP}
+\alias{is_solved_POMDP}
+\alias{is_timedependent_POMDP}
+\alias{is_converged_POMDP}
 \alias{O_}
 \alias{T_}
 \alias{R_}
@@ -20,6 +23,12 @@ POMDP(
   start = "uniform",
   name = NA
 )
+
+is_solved_POMDP(x, stop = FALSE)
+
+is_timedependent_POMDP(x)
+
+is_converged_POMDP(x, stop = FALSE)
 
 O_(action = "*", end.state = "*", observation = "*", probability)
 
@@ -63,6 +72,10 @@ reward. It is also used by some solvers. See Details section for more
 information.}
 
 \item{name}{a string to identify the POMDP problem.}
+
+\item{x}{a POMDP.}
+
+\item{stop}{logical; stop with an error.}
 
 \item{action, start.state, end.state, observation, probability, value}{Values
 used in the helper functions \code{O_()}, \code{R_()}, and \code{T_()} to

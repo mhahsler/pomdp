@@ -37,9 +37,24 @@
 #' policy(sol)
 #' # Note: We see that it is initially better to listen till we make a decision in the final epoch. 
 #' @export
-policy <- function(x) x$solution$policy
-
-.policy_MDP_from_POMDP <- function(x) {
+policy <- function(x) {
+  if(inherits(x, "MDP")) { 
+    is_solved_MDP(x, stop = TRUE)
+    return(x$solution$policy)
+    
+  } else
+  is_solved_POMDP(x, stop = TRUE)
+  n <- length(x$solution$pg)
+  
+  policy <- vector("list", n)
+  for (i in seq_len(n)) {
+    policy[[i]] <- cbind(x$solution$alpha[[i]],
+      x$solution$pg[[i]][, "action", drop = FALSE])
+  }
+  return(policy)
+}
+  
+.MDP_policy_from_POMDP <- function(x) {
   pg <- x$solution$pg
   
   ## all observation_probs should be the same!

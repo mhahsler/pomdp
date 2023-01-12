@@ -6,12 +6,14 @@
 * Sparse matrices from package Matrix for matrices with a density below 50%.
 * Added support to parse matrices for POMDP files.
 * Added model normalization.
+* is_solved_POMDP(), is_converged_POMDP(), is_timedependent_POMDP(), and is_solved_MDP() are now exported.
 
 # Changes
 * accessors are now called now transition_val() and observation_val().
 * simulate_POMDP() and simulate_MDP() now return a list.
 * reimplemented round_stochastic() to improve speed.
 * MDP policy now uses factors for actions.
+* estimate_belief_for_nodes() now uses trajectories to estimate beliefs faster.
 
 
 # pomdp 1.0.3 (05/18/2022)

@@ -325,7 +325,7 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
     actions <- action
   
   ## episodes are for time-dependent POMDPs
-  if (.timedependent_POMDP(model)) {
+  if (is_timedependent_POMDP(model)) {
     episode <- as.integer(episode)
     if (episode < 1L ||
         episode > length(model$horizon))
@@ -459,7 +459,7 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
     
     field <- "reward"
     ## episodes are for time-dependent POMDPs
-    if (.timedependent_POMDP(model)) {
+    if (is_timedependent_POMDP(model)) {
       episode <- as.integer(episode)
       if (episode < 1L ||
           episode > length(model$horizon))

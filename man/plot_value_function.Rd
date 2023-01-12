@@ -69,6 +69,7 @@ plot_value_function(sol, epoch = 3, ylim = c(-5, 25))
 }
 \seealso{
 Other policy: 
+\code{\link{estimate_belief_for_nodes}()},
 \code{\link{optimal_action}()},
 \code{\link{policy_graph}()},
 \code{\link{policy}()},
