@@ -4,8 +4,8 @@
 #' trajectory is randomly chosen using the specified belief. The belief is used to choose actions
 #' from the the epsilon-greedy policy and then updated using observations.
 #'
-#' A native R implementation is available (`method = 'r'`) and a faster C++ implementation
-#' (`method = 'cpp'`). 
+#' A native R implementation is available (`engine = 'r'`) and a faster C++ implementation
+#' (`engine = 'cpp'`). 
 #' 
 #' Both implementations support parallel execution using the package
 #' \pkg{foreach}. To enable parallel execution, a parallel backend like
@@ -28,8 +28,8 @@
 #' @param epsilon the probability of random actions for using an epsilon-greedy policy.
 #'  Default for solved models is 0 and for unsolved model 1.
 #' @param digits round probabilities for belief points.
-#' @param method `'cpp'`, `'r'` to perform simulation using a faster C++ or a 
-#'  native R implementation that supports sparse matrices and muli-episode problems.
+#' @param engine `'cpp'`, `'r'` to perform simulation using a faster C++ or a 
+#'  native R implementation that supports sparse matrices and multi-episode problems.
 #' @param verbose report used parameters.
 #' @return A list with elements:
 #'  * `avg_reward`: The average discounted reward.
@@ -87,13 +87,13 @@ simulate_POMDP <-
     return_beliefs = FALSE,
     epsilon = NULL,
     digits = 7,
-    method = "cpp",
+    engine = "cpp",
     verbose = FALSE) {
     time_start <- proc.time()  
     
-    method <- match.arg(tolower(method), c("cpp", "r"))
+    engine <- match.arg(tolower(engine), c("cpp", "r"))
     
-    if (method == "r")
+    if (engine == "r")
       sparse <- NULL ### use the version in the model
     else
       sparse <- FALSE
@@ -128,7 +128,7 @@ simulate_POMDP <-
     if (is.null(disc))
       disc <- 1
     
-    if (method == "cpp") {
+    if (engine == "cpp") {
       if (!dt) {
         ### FIXME: this can be done better
         ### TODO: Add support for sparse matrices
@@ -158,7 +158,7 @@ simulate_POMDP <-
         
         if (verbose) {
           cat("Simulating POMDP trajectories.\n")
-          cat("- method: cpp\n")
+          cat("- engine: cpp\n")
           cat("- horizon:", horizon, "\n")
           cat("- n:",
             n,
@@ -204,8 +204,8 @@ simulate_POMDP <-
         )
         
       } else {
-        message("Using method 'r'. Time-dependent models can only be simulated using method 'r'!")
-        method <- "r"
+        message("Using engine 'r'. Time-dependent models can only be simulated using engine 'r'!")
+        engine <- "r"
       }
     }
     
@@ -245,7 +245,7 @@ simulate_POMDP <-
     
     if (verbose) {
       cat("Simulating POMDP trajectories.\n")
-      cat("- method: r\n")
+      cat("- engine: r\n")
       cat("- horizon:", horizon, "\n")
       cat("- n:",
         n,

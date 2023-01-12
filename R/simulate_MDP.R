@@ -4,8 +4,8 @@
 #' trajectory is randomly chosen using the specified belief. The belief is used to choose actions
 #' from an epsilon-greedy policy and then update the state.
 #'
-#' A native R implementation is available (`method = 'r'`) and the default is a
-#' faster C++ implementation (`method = 'cpp'`).
+#' A native R implementation is available (`engine = 'r'`) and the default is a
+#' faster C++ implementation (`engine = 'cpp'`).
 #'
 #' Both implementations support parallel execution using the package
 #' \pkg{foreach}. To enable parallel execution, a parallel backend like
@@ -25,7 +25,7 @@
 #' @param return_states logical; return visited states.
 #' @param epsilon the probability of random actions  for using an epsilon-greedy policy.
 #'  Default for solved models is 0 and for unsolved model 1.
-#' @param method `'cpp'` or `'r'` to perform simulation using a faster C++
+#' @param engine `'cpp'` or `'r'` to perform simulation using a faster C++
 #'  or a native R implementation which supports sparse matrices.
 #' @param verbose report used parameters.
 #' @return A list with elements:
@@ -73,11 +73,11 @@ simulate_MDP <-
     horizon = NULL,
     return_states = FALSE,
     epsilon = NULL,
-    method = "cpp",
+    engine = "cpp",
     verbose = FALSE) {
-    method <- match.arg(tolower(method), c("cpp", "r"))
+    engine <- match.arg(tolower(engine), c("cpp", "r"))
     
-    if (method == "r")
+    if (engine == "r")
       sparse <- NULL   ### use the version in the model
     else
       sparse <- FALSE
@@ -106,7 +106,7 @@ simulate_MDP <-
     if (is.null(disc))
       disc <- 1
     
-    if (method == "cpp") {
+    if (engine == "cpp") {
       model <- normalize_MDP(model, sparse = FALSE)
       
       if (foreach::getDoParWorkers() == 1 || n * horizon < 100000)
@@ -125,7 +125,7 @@ simulate_MDP <-
       
       if (verbose) {
         cat("Simulating MDP trajectories.\n")
-        cat("- method: cpp \n")
+        cat("- engine: cpp \n")
         cat("- horizon:", horizon, "\n")
         cat("- n:", n, "- parallel workers:", length(ns), "\n")
         cat("- epsilon:", epsilon, "\n")
@@ -178,7 +178,7 @@ simulate_MDP <-
     
     if (verbose) {
       cat("Simulating MDP trajectories.\n")
-      cat("- method:", method, "\n")
+      cat("- engine:", engine, "\n")
       cat("- horizon:", horizon, "\n")
       cat("- n:",
         n,

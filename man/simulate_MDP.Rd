@@ -11,7 +11,7 @@ simulate_MDP(
   horizon = NULL,
   return_states = FALSE,
   epsilon = NULL,
-  method = "cpp",
+  engine = "cpp",
   verbose = FALSE
 )
 }
@@ -31,7 +31,7 @@ horizon for the model is used.}
 \item{epsilon}{the probability of random actions  for using an epsilon-greedy policy.
 Default for solved models is 0 and for unsolved model 1.}
 
-\item{method}{\code{'cpp'} or \code{'r'} to perform simulation using a faster C++
+\item{engine}{\code{'cpp'} or \code{'r'} to perform simulation using a faster C++
 or a native R implementation which supports sparse matrices.}
 
 \item{verbose}{report used parameters.}
@@ -56,8 +56,8 @@ trajectory is randomly chosen using the specified belief. The belief is used to 
 from an epsilon-greedy policy and then update the state.
 }
 \details{
-A native R implementation is available (\code{method = 'r'}) and the default is a
-faster C++ implementation (\code{method = 'cpp'}).
+A native R implementation is available (\code{engine = 'r'}) and the default is a
+faster C++ implementation (\code{engine = 'cpp'}).
 
 Both implementations support parallel execution using the package
 \pkg{foreach}. To enable parallel execution, a parallel backend like
