@@ -70,19 +70,22 @@
 #'
 #' ## Solution
 #' 
-#' **Policy:** Each policy is a data frame where each row representing a
+#' **Policy:** 
+#' Each policy is a data frame where each row representing a
 #' policy graph node with an associated optimal action and a list of node IDs
 #' to go to depending on the observation (specified as the column names). For
 #' the finite-horizon case, the observation specific node IDs refer to nodes in
 #' the next epoch creating a policy tree.  Impossible observations have a
 #' `NA` as the next state.
 #'
-#' **Value function:** The value function is stored as a matrix. Each row is
+#' **Value function:** 
+#' The value function specifies the value of the value function (the expected reward) 
+#' over the belief space. The dimensionality of the belief space is $n-1$ where $n$ is the number of states.
+#' The value function is stored as a matrix. Each row is
 #' associated with a node (row) in the policy graph and represents the
-#' coefficients (alpha vector) of a hyperplane. An alpha vector contains one
-#' value per state and is the value for the belief state that has a probability
+#' coefficients (alpha or V vector) of a hyperplane. It contains one
+#' value per state which is the value for the belief state that has a probability
 #' of 1 for that state and 0s for all others.
-#'
 #'
 #' @family policy
 #' @family solver
@@ -114,14 +117,16 @@
 #' @param verbose logical, if set to `TRUE`, the function provides the
 #' output of the pomdp solver in the R console.
 #' @return The solver returns an object of class POMDP which is a list with the
-#' model specifications (`model`), the solution (`solution`), and the
-#' solver output (`solver_output`). The solution is a list with elements:
+#' model specifications. Solved POMDPs also have an element called `solution` which is a list, and the
+#' solver output (`solver_output`). The solution is a list that contains elements like:
+#' - `method` used solver method.
+#' - `solver_output` output of the solver program.
 #' - `converged` did the solution converge?
-#' - `initial_belief` used initial beliefs.
-#' - `total_expected_reward` reward from the initial beliefs.
+#' - `initial_belief` used initial belief used.
+#' - `total_expected_reward` total expected reward starting from the the initial belief.
 #' - `pg`, `initial_pg_node` the policy graph (see Details section). 
-#' - `belief_points_solver` optional; belief points used by the solver.
 #' - `alpha` value function as hyperplanes representing the nodes in the policy graph (see Details section).
+#' - `belief_points_solver` optional; belief points used by the solver.
 #' @author Hossein Kamalzadeh, Michael Hahsler
 #' @references
 #' Cassandra, A. (2015). pomdp-solve: POMDP Solver Software,
@@ -561,7 +566,7 @@ solve_POMDP <- function(model,
   model$solution$total_expected_reward <- rew$reward
   model$solution$initial_pg_node <- rew$pg_node
   
-  model$solver_output <- structure(solver_output, class = "text")
+  model$solution$solver_output <- structure(solver_output, class = "text")
 
   ### MDP uses policy field
   if(inherits(model, "MDP")) 
