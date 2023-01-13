@@ -509,7 +509,7 @@ print.POMDP <- function(x, ...) {
       sprintf("    Solution converged: %s",
         x$solution$converged),
       sprintf("    # of alpha vectors: %i",
-        sapply(x$solution$alpha, length)),
+        sum(sapply(x$solution$alpha, length))),
       sprintf(
         "    Total expected reward: %f",
         x$solution$total_expected_reward
