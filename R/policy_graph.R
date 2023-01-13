@@ -114,7 +114,10 @@
 #' @export
 policy_graph <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) {
   is_solved_POMDP(x, stop = TRUE)
-  
+
+  if(x$horizon < 2L)
+    stop("No policy graph available for problems with a horizon < 2.")
+    
   if (!is_converged_POMDP(x))
     policy_graph_unconverged(x, belief, show_belief = show_belief, col = col, ...)
   else

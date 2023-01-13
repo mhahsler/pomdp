@@ -64,7 +64,7 @@ estimate_belief_for_nodes <-
       method <- "trajectories"
     
     if (method == "trajectories")
-      if (is_converged_POMDP(x))
+      if (x$horizon == Inf || is_converged_POMDP(x))
         belief <-
       .estimate_belief_for_nodes_trajectories(x, epoch, ...)
     else
