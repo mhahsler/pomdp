@@ -56,15 +56,17 @@ output of the pomdp solver in the R console.}
 }
 \value{
 The solver returns an object of class POMDP which is a list with the
-model specifications (\code{model}), the solution (\code{solution}), and the
-solver output (\code{solver_output}). The solution is a list with elements:
+model specifications. Solved POMDPs also have an element called \code{solution} which is a list, and the
+solver output (\code{solver_output}). The solution is a list that contains elements like:
 \itemize{
+\item \code{method} used solver method.
+\item \code{solver_output} output of the solver program.
 \item \code{converged} did the solution converge?
-\item \code{initial_belief} used initial beliefs.
-\item \code{total_expected_reward} reward from the initial beliefs.
+\item \code{initial_belief} used initial belief used.
+\item \code{total_expected_reward} total expected reward starting from the the initial belief.
 \item \code{pg}, \code{initial_pg_node} the policy graph (see Details section).
-\item \code{belief_points_solver} optional; belief points used by the solver.
 \item \code{alpha} value function as hyperplanes representing the nodes in the policy graph (see Details section).
+\item \code{belief_points_solver} optional; belief points used by the solver.
 }
 }
 \description{
@@ -142,17 +144,21 @@ multiple times (see Example 5).
 
 \subsection{Solution}{
 
-\strong{Policy:} Each policy is a data frame where each row representing a
+\strong{Policy:}
+Each policy is a data frame where each row representing a
 policy graph node with an associated optimal action and a list of node IDs
 to go to depending on the observation (specified as the column names). For
 the finite-horizon case, the observation specific node IDs refer to nodes in
 the next epoch creating a policy tree.  Impossible observations have a
 \code{NA} as the next state.
 
-\strong{Value function:} The value function is stored as a matrix. Each row is
+\strong{Value function:}
+The value function specifies the value of the value function (the expected reward)
+over the belief space. The dimensionality of the belief space is $n-1$ where $n$ is the number of states.
+The value function is stored as a matrix. Each row is
 associated with a node (row) in the policy graph and represents the
-coefficients (alpha vector) of a hyperplane. An alpha vector contains one
-value per state and is the value for the belief state that has a probability
+coefficients (alpha or V vector) of a hyperplane. It contains one
+value per state which is the value for the belief state that has a probability
 of 1 for that state and 0s for all others.
 }
 }
