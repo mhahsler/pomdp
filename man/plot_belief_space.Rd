@@ -89,14 +89,16 @@ plot_belief_space(sol, sample = sol$solution$belief_points_solver)
 # Note that we only use n = 50 to save time.
 plot_belief_space(sol, sample = simulate_POMDP(sol, n = 50, horizon = 100,
   epsilon = 0.1, return_beliefs = TRUE)$belief_states)
-  
+ 
+\dontrun{ 
 # plot a 3-state belief space using ggtern (ggplot2)
-# library(ggtern)
-# samp <- sample_belief_space(sol, n = 1000)
-# df <- cbind(as.data.frame(samp), reward = reward(sol, belief = samp))
-#
-# ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) + 
-#   geom_point(aes(color = reward))
+library(ggtern)
+samp <- sample_belief_space(sol, n = 1000)
+df <- cbind(as.data.frame(samp), reward = reward(sol, belief = samp))
+
+ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) + 
+  geom_point(aes(color = reward), size = 2)
+}
 }
 \seealso{
 Other POMDP: 

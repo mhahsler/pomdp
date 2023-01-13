@@ -60,12 +60,14 @@ plot_value_function(sol, epoch = 1, ylim = c(-5, 25))
 plot_value_function(sol, epoch = 2, ylim = c(-5, 25))
 plot_value_function(sol, epoch = 3, ylim = c(-5, 25))
 
-# using ggplot2
-# library(ggplot2)
-# pol <- policy(sol)[[3]]
-# ggplot(pol) + 
-#   geom_segment(aes(x = 0, y = `tiger-left`, xend=1, yend=`tiger-right`, color = action)) + 
-#   coord_cartesian(ylim = c(-5, 15)) + ylab("Reward") + xlab("Belief")
+\dontrun{
+# using ggplot2 to plot the value function for epoch 3
+library(ggplot2)
+pol <- policy(sol)[[3]]
+ggplot(pol) + 
+ geom_segment(aes(x = 0, y = `tiger-left`, xend = 1, yend = `tiger-right`, color = action)) + 
+ coord_cartesian(ylim = c(-5, 15)) + ylab("Reward") + xlab("Belief")
+}
 }
 \seealso{
 Other policy: 
