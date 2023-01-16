@@ -9,14 +9,12 @@ sample_belief_space(model, projection = NULL, n = 1000, method = "random", ...)
 \arguments{
 \item{model}{a unsolved or solved \link{POMDP}.}
 
-\item{projection}{Sample in a projected belief space. All states not
-included in the projection are held at a belief of 0. \code{NULL} means no
-projection.}
+\item{projection}{Sample in a projected belief space. See \code{\link[=projection]{projection()}} for details.}
 
 \item{n}{size of the sample. For trajectories, it is the number of trajectories.}
 
 \item{method}{character string specifying the sampling strategy. Available
-are \code{"random"}, \code{"regular"}, \code{"vertices"}, and \code{"trajectories"}.}
+are \code{"random"}, \code{"regular"}, and \code{"trajectories"}.}
 
 \item{...}{for the trajectory method, further arguments are passed on to \code{\link[=simulate_POMDP]{simulate_POMDP()}}. Further arguments are ignored for the other methods.}
 }
@@ -37,7 +35,6 @@ after a foreach backend is registered.
 \item \code{'regular'} samples points using a
 regularly spaced grid. This method is only available for projections on 2 or
 3 states.
-\item \code{'vertices'} only samples from the vertices of the belief space.
 \item \code{"trajectories"} returns the belief states encountered in \code{n} trajectories of length \code{horizon} starting at the
 model's initial belief. Thus it returns \code{n} x \code{horizon} belief states and will contain duplicates.
 Projection is not supported for trajectories. Additional
@@ -52,14 +49,24 @@ data("Tiger")
 
 sample_belief_space(Tiger, n = 5)
 sample_belief_space(Tiger, n = 5, method = "regular")
-sample_belief_space(Tiger, n = 5, horizon = 5, method = "trajectories")
+sample_belief_space(Tiger, n = 1, horizon = 5, method = "trajectories")
 
-# sample and calculate the reward for a solved POMDP
+# sample, determine the optimal action and calculate the expected reward for a solved POMDP
+# Note: check.names = FALSE is used to preserve the `-` for the state names in the dataframe.
 sol <- solve_POMDP(Tiger)
 samp <- sample_belief_space(sol, n = 5, method = "regular")
-rew <- reward(sol, belief = samp)
-cbind(samp, rew)
+data.frame(samp, action = optimal_action(sol,  belief = samp), 
+  reward = reward(sol, belief = samp), check.names = FALSE)
+  
+# sample from a 3 state problem
+data(Three_doors)
+Three_doors
 
+sample_belief_space(Three_doors, n = 5)
+sample_belief_space(Three_doors, n = 5, projection = c(`tiger-left` = .1))
+sample_belief_space(Three_doors, n = 9, method = "regular")
+sample_belief_space(Three_doors, n = 9, method = "regular", projection = c(`tiger-left` = .1))
+sample_belief_space(Three_doors, n = 1, horizon = 5, method = "trajectories")
 }
 \references{
 Luc Devroye, Non-Uniform Random Variate Generation, Springer
@@ -70,6 +77,8 @@ Other POMDP:
 \code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
 \code{\link{plot_belief_space}()},
+\code{\link{plot_value_function}()},
+\code{\link{projection}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()},

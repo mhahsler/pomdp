@@ -50,6 +50,7 @@ Collate:
     'policy.R'
     'policy_graph.R'
     'print.text.R'
+    'projection.R'
     'queue.R'
     'read_write_POMDP.R'
     'read_write_pomdp_solve.R'

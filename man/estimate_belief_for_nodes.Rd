@@ -47,9 +47,11 @@ estimate_belief_for_nodes(sol, method = "random")
 \seealso{
 Other policy: 
 \code{\link{optimal_action}()},
+\code{\link{plot_belief_space}()},
 \code{\link{plot_value_function}()},
 \code{\link{policy_graph}()},
 \code{\link{policy}()},
+\code{\link{projection}()},
 \code{\link{reward}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()}

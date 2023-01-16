@@ -341,9 +341,11 @@ iteration: an anytime algorithm for POMDPs. IJCAI'03: Proceedings of the
 Other policy: 
 \code{\link{estimate_belief_for_nodes}()},
 \code{\link{optimal_action}()},
+\code{\link{plot_belief_space}()},
 \code{\link{plot_value_function}()},
 \code{\link{policy_graph}()},
 \code{\link{policy}()},
+\code{\link{projection}()},
 \code{\link{reward}()},
 \code{\link{solve_SARSOP}()}
 
@@ -355,6 +357,8 @@ Other POMDP:
 \code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
 \code{\link{plot_belief_space}()},
+\code{\link{plot_value_function}()},
+\code{\link{projection}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_SARSOP}()},

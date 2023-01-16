@@ -15,15 +15,15 @@ plot_belief_space(
   pch = 20,
   col = NULL,
   jitter = 0,
+  oneD = TRUE,
+  ylim = NULL,
   ...
 )
 }
 \arguments{
 \item{model}{a solved \link{POMDP}.}
 
-\item{projection}{a vector with state IDs or names to project on. Allowed
-are projections on two or three states. \code{NULL} uses the first two or
-three states. All other states are held at a belief of 0 (see\code{\link[=sample_belief_space]{sample_belief_space()}})}
+\item{projection}{Sample in a projected belief space. See \code{\link[=projection]{projection()}} for details.}
 
 \item{epoch}{display this epoch.}
 
@@ -41,7 +41,9 @@ need to increase the plotting region of the plotting device.}
 
 \item{col}{plotting colors.}
 
-\item{jitter}{y jitter amount for 2D belief spaces (good values are between 0 and 4).}
+\item{jitter}{jitter amount for 2D belief spaces (good values are between 0 and 4).}
+
+\item{oneD}{plot projections on two states in one dimension.}
 
 \item{...}{additional arguments are passed on to \code{plot} for 2D or
 \code{TerneryPlot} for 3D.}
@@ -61,8 +63,9 @@ data("Tiger")
 sol <- solve_POMDP(Tiger)
 
 plot_belief_space(sol)
+plot_belief_space(sol, oneD = FALSE)
 plot_belief_space(sol, n = 10)
-plot_belief_space(sol, n = 10, sample = "random")
+plot_belief_space(sol, n = 100, sample = "random")
 
 # plot the belief points used by the grid-based solver
 plot_belief_space(sol, sample = sol$solution$belief_points_solver)
@@ -78,32 +81,57 @@ sol <- solve_POMDP(Three_doors)
 sol
 
 plot_belief_space(sol)
-plot_belief_space(sol, sample = "random", n = 1000)
-plot_belief_space(sol, what = "pg_node")
+plot_belief_space(sol, n = 10000)
 plot_belief_space(sol, what = "reward", sample = "random", n = 1000)
+plot_belief_space(sol, what = "pg_node", n = 10000)
+
+# holding tiger-left constant at .5 follows this line in the ternary plot 
+Ternary::TernaryLines(list(c(.5, 0, .5), c(.5, .5, 0)), col = "black", lty = 2)
+# we can plot the projection for this line 
+plot_belief_space(sol, what = "pg_node", n = 1000, projection = c("tiger-left" = .5))
 
 # plot the belief points used by the grid-based solver
-plot_belief_space(sol, sample = sol$solution$belief_points_solver)
+plot_belief_space(sol, sample = sol$solution$belief_points_solver, what = "pg_node")
 
 # plot the belief points obtained using simulated trajectories with an epsilon-greedy policy.
 # Note that we only use n = 50 to save time.
 plot_belief_space(sol, sample = simulate_POMDP(sol, n = 50, horizon = 100,
   epsilon = 0.1, return_beliefs = TRUE)$belief_states)
- 
-\dontrun{ 
+
+\dontrun{
 # plot a 3-state belief space using ggtern (ggplot2)
 library(ggtern)
 samp <- sample_belief_space(sol, n = 1000)
-df <- cbind(as.data.frame(samp), reward = reward(sol, belief = samp))
+df <- cbind(as.data.frame(samp), reward_node_action(sol, belief = samp))
+df$pg_node <- factor(df$pg_node)
 
-ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) + 
+ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) +
+  geom_point(aes(color = pg_node), size = 2)
+
+ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) +
+  geom_point(aes(color = action), size = 2)
+
+ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) +
   geom_point(aes(color = reward), size = 2)
 }
 }
 \seealso{
+Other policy: 
+\code{\link{estimate_belief_for_nodes}()},
+\code{\link{optimal_action}()},
+\code{\link{plot_value_function}()},
+\code{\link{policy_graph}()},
+\code{\link{policy}()},
+\code{\link{projection}()},
+\code{\link{reward}()},
+\code{\link{solve_POMDP}()},
+\code{\link{solve_SARSOP}()}
+
 Other POMDP: 
 \code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
+\code{\link{plot_value_function}()},
+\code{\link{projection}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},
@@ -115,4 +143,5 @@ Other POMDP:
 Michael Hahsler
 }
 \concept{POMDP}
+\concept{policy}
 \keyword{hplot}

@@ -54,7 +54,7 @@
 #' # doParallel::registerDoParallel()
 #'
 #' ## Example 1: simulate 10 trajectories
-#' sim <- simulate_POMDP(sol, n = 10, verbose = TRUE)
+#' sim <- simulate_POMDP(sol, n = 100, verbose = TRUE)
 #' sim
 #'
 #' # calculate the percentage that each action is used in the simulation
@@ -64,20 +64,20 @@
 #' hist(sim$reward)
 #'
 #' ## Example 2: look at all belief states in the trajectory starting with an initial start belief.
-#' sim <- simulate_POMDP(sol, n = 1000, belief = c(.5, .5), return_beliefs = TRUE)
+#' sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), return_beliefs = TRUE)
 #' head(sim$belief_states)
 #'
-#' # plot with added density
-#' plot_belief_space(sol, sample = sim$belief_states, ylim = c(0,5), jitter = 1)
-#' lines(density(sim$belief_states[, 1], bw = .02)); axis(2); title(ylab = "Density")
+#' # plot with added density (the x-axis is the probability of the second belief state)
+#' plot_belief_space(sol, sample = sim$belief_states, ylim = c(0,5), jitter = 3)
+#' lines(density(sim$belief_states[, 2], bw = .02)); axis(2); title(ylab = "Density")
 #'
 #'
 #' ## Example 3: simulate trajectories for an unsolved POMDP which uses an epsilon of 1
 #' #             (i.e., all actions are randomized)
-#' sim <- simulate_POMDP(Tiger, n = 1000, horizon = 5, return_beliefs = TRUE, verbose = TRUE)
+#' sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, return_beliefs = TRUE, verbose = TRUE)
 #' sim$avg_reward
 #'
-#' plot_belief_space(sol, sample = sim$belief_states, ylim = c(0,6), jitter = 1)
+#' plot_belief_space(sol, sample = sim$belief_states, ylim = c(0,6), jitter = 3)
 #' lines(density(sim$belief_states[, 1], bw = .05)); axis(2); title(ylab = "Density")
 #' @export
 simulate_POMDP <-

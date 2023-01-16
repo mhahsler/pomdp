@@ -21,8 +21,8 @@ vecprod <- function(A, b) {
     .Call(`_pomdp_vecprod`, A, b)
 }
 
-sample_simplex_cpp <- function(n, d) {
-    .Call(`_pomdp_sample_simplex_cpp`, n, d)
+sample_simplex_cpp <- function(n, states, projection) {
+    .Call(`_pomdp_sample_simplex_cpp`, n, states, projection)
 }
 
 simulate_MDP_cpp <- function(model, n, start, horizon, disc = 1.0, return_states = FALSE, epsilon = 1.0, verbose = FALSE) {

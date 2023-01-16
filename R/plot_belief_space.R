@@ -1,5 +1,3 @@
-# FIXME: Add belief points
-
 #' Plot a 2D or 3D Projection of the Belief Space
 #'
 #' Plots the optimal action, the node in the policy graph or the reward for a
@@ -7,12 +5,11 @@
 #' points are given, points are sampled using a regular arrangement or randomly
 #' from the (projected) belief space.
 #'
+#' @family policy
 #' @family POMDP
 #'
 #' @param model a solved [POMDP].
-#' @param projection a vector with state IDs or names to project on. Allowed
-#' are projections on two or three states. `NULL` uses the first two or
-#' three states. All other states are held at a belief of 0 (see[sample_belief_space()])
+#' @param projection Sample in a projected belief space. See [projection()] for details.
 #' @param epoch display this epoch.
 #' @param sample a matrix with belief points as rows or a character string
 #' specifying the `method` used for [sample_belief_space()].
@@ -22,7 +19,9 @@
 #' need to increase the plotting region of the plotting device.
 #' @param pch plotting symbols.
 #' @param col plotting colors.
-#' @param jitter y jitter amount for 2D belief spaces (good values are between 0 and 4).
+#' @param jitter jitter amount for 2D belief spaces (good values are between 0 and 4).
+#' @param oneD plot projections on two states in one dimension.
+#' @param ylim used to create space in the oneD plot.
 #' @param ...  additional arguments are passed on to `plot` for 2D or
 #' `TerneryPlot` for 3D.
 #' @return Returns invisibly the sampled points.
@@ -34,8 +33,9 @@
 #' sol <- solve_POMDP(Tiger)
 #'
 #' plot_belief_space(sol)
+#' plot_belief_space(sol, oneD = FALSE)
 #' plot_belief_space(sol, n = 10)
-#' plot_belief_space(sol, n = 10, sample = "random")
+#' plot_belief_space(sol, n = 100, sample = "random")
 #'
 #' # plot the belief points used by the grid-based solver
 #' plot_belief_space(sol, sample = sol$solution$belief_points_solver)
@@ -51,25 +51,37 @@
 #' sol
 #'
 #' plot_belief_space(sol)
-#' plot_belief_space(sol, sample = "random", n = 1000)
-#' plot_belief_space(sol, what = "pg_node")
+#' plot_belief_space(sol, n = 10000)
 #' plot_belief_space(sol, what = "reward", sample = "random", n = 1000)
+#' plot_belief_space(sol, what = "pg_node", n = 10000)
+#' 
+#' # holding tiger-left constant at .5 follows this line in the ternary plot 
+#' Ternary::TernaryLines(list(c(.5, 0, .5), c(.5, .5, 0)), col = "black", lty = 2)
+#' # we can plot the projection for this line 
+#' plot_belief_space(sol, what = "pg_node", n = 1000, projection = c("tiger-left" = .5))
 #'
 #' # plot the belief points used by the grid-based solver
-#' plot_belief_space(sol, sample = sol$solution$belief_points_solver)
+#' plot_belief_space(sol, sample = sol$solution$belief_points_solver, what = "pg_node")
 #'
 #' # plot the belief points obtained using simulated trajectories with an epsilon-greedy policy.
 #' # Note that we only use n = 50 to save time.
 #' plot_belief_space(sol, sample = simulate_POMDP(sol, n = 50, horizon = 100,
 #'   epsilon = 0.1, return_beliefs = TRUE)$belief_states)
-#'  
-#' \dontrun{ 
+#'
+#' \dontrun{
 #' # plot a 3-state belief space using ggtern (ggplot2)
 #' library(ggtern)
 #' samp <- sample_belief_space(sol, n = 1000)
-#' df <- cbind(as.data.frame(samp), reward = reward(sol, belief = samp))
+#' df <- cbind(as.data.frame(samp), reward_node_action(sol, belief = samp))
+#' df$pg_node <- factor(df$pg_node)
+#' 
+#' ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) +
+#'   geom_point(aes(color = pg_node), size = 2)
 #'
-#' ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) + 
+#' ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) +
+#'   geom_point(aes(color = action), size = 2)
+#'
+#' ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) +
 #'   geom_point(aes(color = reward), size = 2)
 #' }
 #' @importFrom graphics plot axis legend
@@ -85,33 +97,29 @@ plot_belief_space <-
     pch = 20,
     col = NULL,
     jitter = 0,
+    oneD = TRUE,
+    ylim = NULL,
     ...) {
     # sample: a matrix with belief points or a character string passed on to sample_belief_space as method.
     # E.g., "regular", "random", ...
     
     what <- match.arg(what)
-    if (is.null(projection))
-      projection <- 1:min(length(model$states), 3)
+    projection <- projection(projection, model)
     
     if (is.character(sample))
       sample <-  sample_belief_space(model,
         projection = projection,
         n = n,
         method = sample)
-    else {
-      # a given sample needs to be projected
-      sample[,-projection] <- 0
-      sample <- sample[rowSums(sample) > 0, , drop = FALSE]
-      sample <-
-        sweep(sample,
-          MARGIN = 1,
-          STATS = rowSums(sample),
-          FUN = "/")
-    }
+    else
+      if (any(!is.na(projection)))
+        stop("A given sample cannot be projected!")
     
-    val <- reward_node_action(model, belief = sample, epoch = epoch)[[what]]
-    if (what %in% c("action", "pg_node")) val <- factor(val)
-    
+    val <-
+      reward_node_action(model, belief = sample, epoch = epoch)[[what]]
+    if (what == "pg_node")
+      val <-
+      factor(val, levels = seq_len(nrow(model$solution$pg[[epoch]])))
     
     # col ... palette used for legend
     # cols ... colors for all points
@@ -124,65 +132,63 @@ plot_belief_space <-
       cols <- .get_colors_cont(val, col)
     }
     
-    sample <- sample[, projection]
-    ### remove points that have only 0 in the projection
-    sample <- sample[rowSums(sample) != 0,]
+    sample <- sample[, is.na(projection)]
     
-    if (length(projection) == 3) {
+    if (ncol(sample) == 3) {
       check_installed("Ternary")
-      
+    
       Ternary::TernaryPlot(
         alab = paste(colnames(sample)[1], "\u2192"),
         blab = paste(colnames(sample)[2], "\u2192"),
         clab = paste("\u2190", colnames(sample)[3]),
-        grid.lines = 10,
         grid.lty = 'dotted',
         grid.minor.lines = 1,
         grid.minor.lty = 'dotted',
+        grid.lines = 5,
+        axis.labels = seq(0, 1 - sum(projection, na.rm = TRUE), length.out = 6),
         ...
       )
-      
       Ternary::TernaryPoints(sample, pch = pch, col = cols)
       
-      # if(random) Ternary::TernaryPoints(belief, pch = pch, col = cols)
-      # else {
-      #   values <- rbind(
-      #     x = attr(p$belief, "TernaryTriangleCenters")["x",],
-      #     y = attr(p$belief, "TernaryTriangleCenters")["y",],
-      #     z = val,
-      #     down = attr(p$belief, "TernaryTriangleCenters")["triDown",])
-      #   Ternary::ColourTernary(values, spectrum = col)
-      # }
-      
-    } else if (length(projection) == 2) {
-      args <-  list(...)
-      if (is.null(args$ylim)) args$ylim <- c(0, 4)
-      if (is.null(args$xlab)) args$xlab <- "Belief"
-      if (is.null(args$ylab)) args$ylab <- ""
-      
-      ps <- rep(0, times = nrow(sample))
-      if(jitter > 0) {
-        ps <- jitter(ps, amount = jitter)
-        ps <- ps - min(ps)
-      }
-      
-      do.call(plot, args = c(
-        list(
-          x = sample[, 2],
-          y = ps,
-          xlim = c(0, 1),
+    } else if (ncol(sample) == 2) {
+      if (!oneD) {
+        # diagonal plot
+        if (jitter > 0) {
+          j <- runif(nrow(sample),-jitter, jitter)
+          sample <- sample + j
+        }
+        
+        # line plot
+        plot(
+          sample,
           col = cols,
           pch = pch,
-          axes = FALSE
-        ),
-        args
-      ))
-      
-      axis(1,
-        at = c(0, 1),
-        labels = colnames(sample),
-        xaxs = "i")
-      axis(1, at = .5, .5)
+          xlim = c(0, 1),
+          ylim = c(0, 1),
+          ...
+        )
+      } else {
+        Belief <- ((sample[, 1] * -1 + sample[, 2]) + 1) / 2
+        
+        plot(
+          x = Belief,
+          y = if (jitter <= 0)
+            rep_len(0, nrow(sample))
+          else
+            jitter(rep_len(0, nrow(sample)), amount = jitter)
+            ,
+          col = cols,
+          pch = pch,
+          xlim = c(0, 1),
+          ylim = if(is.null(ylim)) c(0, 1) else ylim,
+          axes = FALSE,
+          ylab = "",
+          ...
+        )
+        axis(1,
+          at = c(0, 1, .5),
+          labels = c(colnames(sample), NA))
+      }
       
     } else
       stop("projection needs to be 2d or 3d.")

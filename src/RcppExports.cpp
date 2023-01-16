@@ -74,14 +74,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // sample_simplex_cpp
-NumericMatrix sample_simplex_cpp(int n, int d);
-RcppExport SEXP _pomdp_sample_simplex_cpp(SEXP nSEXP, SEXP dSEXP) {
+NumericMatrix sample_simplex_cpp(int n, CharacterVector states, NumericVector projection);
+RcppExport SEXP _pomdp_sample_simplex_cpp(SEXP nSEXP, SEXP statesSEXP, SEXP projectionSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    Rcpp::traits::input_parameter< int >::type d(dSEXP);
-    rcpp_result_gen = Rcpp::wrap(sample_simplex_cpp(n, d));
+    Rcpp::traits::input_parameter< CharacterVector >::type states(statesSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type projection(projectionSEXP);
+    rcpp_result_gen = Rcpp::wrap(sample_simplex_cpp(n, states, projection));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -129,7 +130,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_pomdp_round_stochastic_cpp", (DL_FUNC) &_pomdp_round_stochastic_cpp, 2},
     {"_pomdp_veccrossprod", (DL_FUNC) &_pomdp_veccrossprod, 2},
     {"_pomdp_vecprod", (DL_FUNC) &_pomdp_vecprod, 2},
-    {"_pomdp_sample_simplex_cpp", (DL_FUNC) &_pomdp_sample_simplex_cpp, 2},
+    {"_pomdp_sample_simplex_cpp", (DL_FUNC) &_pomdp_sample_simplex_cpp, 3},
     {"_pomdp_simulate_MDP_cpp", (DL_FUNC) &_pomdp_simulate_MDP_cpp, 8},
     {"_pomdp_simulate_POMDP_cpp", (DL_FUNC) &_pomdp_simulate_POMDP_cpp, 9},
     {NULL, NULL, 0}

@@ -22,4 +22,8 @@ expect_equal(Tiger_norm[fields], Tiger2_norm[fields])
 # Note: the POMDP format does not include horizon.
 sol <- solve_POMDP(Tiger)
 sol2 <- solve_POMDP(Tiger2)
+
+sol$solution$solver_output <- NULL
+sol2$solution$solver_output <- NULL
+
 expect_equal(sol$solution, sol2$solution)
