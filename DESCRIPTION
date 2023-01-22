@@ -46,6 +46,7 @@ Collate:
     'foreach_helper.R'
     'optimal_action.R'
     'plot_belief_space.R'
+    'plot_policy_graph.R'
     'plot_value_function.R'
     'policy.R'
     'policy_graph.R'
@@ -63,4 +64,3 @@ Collate:
     'solve_POMDP.R'
     'solve_SARSOP.R'
     'update_belief.R'
-    'visNetwork.R'

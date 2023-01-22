@@ -5,7 +5,7 @@
 #'
 #' `estimate_belief_for_nodes()` can estimate the belief in several ways:
 #' 1. **Use belief points explored by the solver.** Some solvers return explored belief points.
-#'   We assign the belief points to the nodes and average each nodes belief.
+#'   We assign the belief points to the nodes and average each nodes belief. 
 #' 2. **Follow trajectories** (breadth first) till all policy graph nodes have been visited and
 #'   return the encountered belief. This implementation returns the first (i.e., shallowest) belief point
 #'   that is encountered is used and no averaging is performed. parameter `n` can be used to
@@ -30,7 +30,7 @@
 #'  or `"regular_sample"`. Auto uses
 #'  solver points if available and follows trajectories otherwise.
 #' @param verbose logical; show which method is used.
-#' @param ... parameters are passed on to `sample_belief_space()`.
+#' @param ... parameters are passed on to `sample_belief_space()` or the code that follows trajectories. 
 #'
 #' @returns
 #' returns a list with matrices with a belief for each policy graph node. The list elements are the epochs and converged solutions
@@ -131,7 +131,7 @@ estimate_belief_for_nodes <-
         (nrow(belief) < nrow(x$solution$pg[[1L]]) ||
             any(is.na(belief))))
       warning(
-        "Not enough points were sampled to estimate beliefs for all policy graph nodes. Some nodes may be redundant. Increasing n may help for sampling."
+        "No belief points found for some policy graph nodes. You can change the estimation method or increase n."
       )
     
     # unconverged solutions return a list
@@ -142,7 +142,7 @@ estimate_belief_for_nodes <-
           any(is.na(b))
       )))
         warning(
-          "Not enough points were sampled to estimate beliefs for all policy graph nodes. Some nodes may be redundant. Increasing n may help for sampling."
+          "No belief points found for some policy graph nodes. You can change the estimation method or increase n."
         )
     }
     

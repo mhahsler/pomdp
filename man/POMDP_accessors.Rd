@@ -71,7 +71,7 @@ normalize_MDP(x, sparse = TRUE)
 \item{action}{name or index of an action.}
 
 \item{episode, epoch}{Episode or epoch used for time-dependent POMDPs. Epoch are internally converted
-to the correct episode.}
+to the episode using the model horizon.}
 
 \item{sparse}{logical; use sparse matrices when the density is below 50\% . \code{NULL} returns the
 representation stored in the problem description.}

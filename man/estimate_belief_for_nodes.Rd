@@ -16,7 +16,7 @@ solver points if available and follows trajectories otherwise.}
 
 \item{verbose}{logical; show which method is used.}
 
-\item{...}{parameters are passed on to \code{sample_belief_space()}.}
+\item{...}{parameters are passed on to \code{sample_belief_space()} or the code that follows trajectories.}
 }
 \value{
 returns a list with matrices with a belief for each policy graph node. The list elements are the epochs and converged solutions
@@ -70,6 +70,7 @@ estimate_belief_for_nodes(sol)
 Other policy: 
 \code{\link{optimal_action}()},
 \code{\link{plot_belief_space}()},
+\code{\link{plot_policy_graph}()},
 \code{\link{plot_value_function}()},
 \code{\link{policy_graph}()},
 \code{\link{policy}()},

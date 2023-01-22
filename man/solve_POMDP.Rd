@@ -350,6 +350,7 @@ Other policy:
 \code{\link{estimate_belief_for_nodes}()},
 \code{\link{optimal_action}()},
 \code{\link{plot_belief_space}()},
+\code{\link{plot_policy_graph}()},
 \code{\link{plot_value_function}()},
 \code{\link{policy_graph}()},
 \code{\link{policy}()},

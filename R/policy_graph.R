@@ -1,8 +1,7 @@
 #' POMDP Policy Graphs
 #'
-#' The function creates and plots the POMDP policy graph in a converged POMDP solution and the 
+#' The function creates the POMDP policy graph in a converged POMDP solution and the 
 #' policy tree for a finite-horizon solution.
-#' uses `plot` in \pkg{igraph} with appropriate plotting options.
 #'
 #' Each policy graph node is represented by an alpha vector specifying a hyper plane segment. The convex hull of
 #' the set of hyperplanes represents the the value function. 
@@ -127,7 +126,7 @@ policy_graph <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) 
 policy_graph_converged <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) { 
    
   ### this is for sarsop...
-  if (ncol(x$solution$pg[[1]]) <= 2) {
+  if (ncol(x$solution$pg[[1L]]) <= 2L) {
     pg_complete <- .infer_policy_graph_converged(x, ...)
     x$solution$central_belief <- pg_complete$central_belief
     x$solution$pg <- pg_complete$pg
@@ -143,12 +142,12 @@ policy_graph_converged <- function(x, belief = NULL, show_belief = TRUE, col = N
       bp <- estimate_belief_for_nodes(x, belief = belief, ...)[[1L]]
     
     # missing belief points?
-    missing_bp <- which(apply(is.na(bp), MARGIN = 1, any))
-    if (length(missing_bp) > 0)
-      warning(
-        "No belief points available/sampled for policy graph node(s): ",
-        paste(missing_bp, collapse = ", ")
-      )
+    # missing_bp <- which(apply(is.na(bp), MARGIN = 1, any))
+    # if (length(missing_bp) > 0)
+    #   message(
+    #     "policy_graph: No belief points available/sampled for policy graph node(s): ",
+    #     paste(missing_bp, collapse = ", ")
+    #   )
   }
   
   # producing a list containing arcs
@@ -329,80 +328,6 @@ policy_graph_unconverged <- function(x, belief = NULL, show_belief = TRUE, col =
   policy_graph <- add_layout_(policy_graph, as_tree()) 
   
   policy_graph
-}
-
-
-# estimate central beliefs for each alpha vector (infinite horizon)
-# sample points and then average over each alpha vector.
-# TODO: we could also calculate this with some linear algebra
-
-#' @rdname policy_graph
-#' @export
-plot_policy_graph <- function(x,
-  belief = NULL,
-  show_belief = TRUE,
-  legend = TRUE,
-  engine = c("igraph", "visNetwork"),
-  col = NULL,
-  ...) {
-  
-  engine <- match.arg(engine)
-  switch(
-    engine,
-    igraph = .plot.igraph(x, belief, show_belief = show_belief, legend = legend, col = col, ...),
-    visNetwork = .plot.visNetwork(x, belief, show_belief = show_belief, legend = legend, col = col, ...)
-  )
-}
-
-
-.plot.igraph <-
-  function(x, belief = NULL, show_belief, legend, col, edge.curved = NULL, ...) {
-    pg <- policy_graph(x, belief, show_belief = show_belief, col = col, ...)
-    
-    if (is.null(edge.curved))
-      edge.curved <- .curve_multiple_directed(pg)
-    
-    plot.igraph(pg, edge.curved = edge.curved, ...)
-    
-    if (legend && show_belief && !is.null(vertex_attr(pg)$pie)) {
-      legend(
-        "topright",
-        legend = x$states,
-        title = "Belief",
-        #horiz = TRUE,
-        bty = "n",
-        col = vertex_attr(pg)$pie.color[[1]],
-        pch = 15
-      )
-    }
-  }
-
-### fix the broken curve_multiple for directed graphs (igraph_1.2.2)
-.curve_multiple_directed <- function(graph, start = 0.3) {
-  el <-  as_edgelist(graph, names = FALSE)
-  o <- apply(el, 1, order)[1,]
-  el <-
-    apply(
-      el,
-      1,
-      FUN = function(x)
-        paste(sort(x), collapse = ":")
-    )
-  cu <- stats::ave(
-    rep(NA, length(el)),
-    el,
-    FUN = function(x) {
-      if (length(x) == 1) {
-        return(0)
-      }
-      else {
-        return(seq(-start, start, length = length(x)))
-      }
-    }
-  )
-  
-  cu[o == 2] <- cu[o == 2] * -1
-  cu
 }
 
 
