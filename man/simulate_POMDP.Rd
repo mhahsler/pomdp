@@ -97,7 +97,7 @@ sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), return_beliefs = TRUE)
 head(sim$belief_states)
 
 # plot with added density (the x-axis is the probability of the second belief state)
-plot_belief_space(sol, sample = sim$belief_states, ylim = c(0,5), jitter = 3)
+plot_belief_space(sol, sample = sim$belief_states, jitter = 2, ylim = c(0, 6))
 lines(density(sim$belief_states[, 2], bw = .02)); axis(2); title(ylab = "Density")
 
 
@@ -106,7 +106,7 @@ lines(density(sim$belief_states[, 2], bw = .02)); axis(2); title(ylab = "Density
 sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, return_beliefs = TRUE, verbose = TRUE)
 sim$avg_reward
 
-plot_belief_space(sol, sample = sim$belief_states, ylim = c(0,6), jitter = 3)
+plot_belief_space(sol, sample = sim$belief_states, jitter = 2, ylim = c(0, 6))
 lines(density(sim$belief_states[, 1], bw = .05)); axis(2); title(ylab = "Density")
 }
 \seealso{

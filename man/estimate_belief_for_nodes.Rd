@@ -4,33 +4,50 @@
 \alias{estimate_belief_for_nodes}
 \title{Estimate the Belief for Policy Graph Nodes}
 \usage{
-estimate_belief_for_nodes(x, method = "auto", epoch = 1, ...)
+estimate_belief_for_nodes(x, method = "auto", verbose = FALSE, ...)
 }
 \arguments{
 \item{x}{object of class \link{POMDP} containing a solved and converged POMDP problem.}
 
-\item{method}{character string specifying the estimation method.}
+\item{method}{character string specifying the estimation method. Methods include
+\code{"auto"}, reuse \code{"solver_points"}, follow \code{"trajectories"}, sample \code{"random_sample"}
+or \code{"regular_sample"}. Auto uses
+solver points if available and follows trajectories otherwise.}
 
-\item{epoch}{estimate the belief for nodes in this epoch. Use 1 for converged policies.}
+\item{verbose}{logical; show which method is used.}
 
 \item{...}{parameters are passed on to \code{sample_belief_space()}.}
 }
 \value{
-returns a matrix with a belief for each policy graph node.
+returns a list with matrices with a belief for each policy graph node. The list elements are the epochs and converged solutions
+only have a single element.
 }
 \description{
-Estimate a belief for each alpha vector which represents a node in the policy graph.
+Estimate a belief for each alpha vector (segment of the value function) which represents
+a node in the policy graph.
 }
 \details{
 \code{estimate_belief_for_nodes()} can estimate the belief in several ways:
 \enumerate{
-\item \strong{Follow trajectories} till all policy graph nodes have been visited and return the encountered belief.
-If some nodes are not reachable from the initial belief, then a NAs will be returned with a warning.
-\item \strong{Sample a large set} of possible belief points, assigning them to the segments and then averaging
-the belief over the points assigned to each segment. This will return a central belief for the node.
+\item \strong{Use belief points explored by the solver.} Some solvers return explored belief points.
+We assign the belief points to the nodes and average each nodes belief.
+\item \strong{Follow trajectories} (breadth first) till all policy graph nodes have been visited and
+return the encountered belief. This implementation returns the first (i.e., shallowest) belief point
+that is encountered is used and no averaging is performed. parameter \code{n} can be used to
+limit the number of nodes searched.
+\item \strong{Sample a large set} of possible belief points, assigning them to the nodes and then averaging
+the belief over the points assigned to each node. This will return a central belief for the node.
 Additional parameters like \code{method} and the sample size \code{n} are passed on to \code{\link[=sample_belief_space]{sample_belief_space()}}.
 If no belief point is generated for a segment, then a
 warning is produced. In this case, the number of sampled points can be increased.
+}
+
+\strong{Notes:}
+\itemize{
+\item Each method may return a different answer. The only thing that is guaranteed is that the returned belief falls
+in the range where the value function segment is maximal.
+\item If some nodes not belief points are sampled, or the node is not reachable from the initial belief,
+then a vector with all \code{NaN}s will be returned with a warning.
 }
 }
 \examples{
@@ -40,9 +57,14 @@ data("Tiger")
 sol <- solve_POMDP(model = Tiger)
 sol
 
-estimate_belief_for_nodes(sol)
+estimate_belief_for_nodes(sol, verbose = TRUE)
+estimate_belief_for_nodes(sol, method = "trajectories", verbose = TRUE)
+estimate_belief_for_nodes(sol, method = "random", verbose = TRUE)
 
-estimate_belief_for_nodes(sol, method = "random")
+# Finite horizon example with three epochs
+sol <- solve_POMDP(model = Tiger, horizon = 3)
+sol
+estimate_belief_for_nodes(sol)
 }
 \seealso{
 Other policy: 

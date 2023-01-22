@@ -163,6 +163,9 @@ of 1 for that state and 0s for all others.
 }
 }
 \examples{
+# display available solver options which can be passed on to pomdp-solve as parameters.
+solve_POMDP_parameter()
+
 ################################################################
 # Example 1: Solving the simple infinite-horizon Tiger problem
 data("Tiger")
@@ -178,7 +181,7 @@ sol <- solve_POMDP(model = Tiger)
 sol
 
 # look at solver output
-sol$solver_output
+sol$solution$solver_output
 
 # look at the solution
 sol$solution
@@ -191,9 +194,6 @@ plot_policy_graph(sol)
 
 # value function
 plot_value_function(sol, ylim = c(0,20))
-
-# display available solver options which can be passed on to the solver as parameters.
-solve_POMDP_parameter()
 
 ################################################################
 # Example 2: Solve a problem specified as a POMDP file
@@ -212,12 +212,20 @@ sol
 
 # look at the policy tree
 policy(sol)
+plot_policy_graph(sol)
 # note: it does not make sense to open the door in epochs 1 or 2 if you only have 3 epochs.
 
-reward(sol) # listen twice and then open the door or listen 3 times
-reward(sol, belief = c(1,0)) # listen twice (-2) and then open-left (10)
-reward(sol, belief = c(1,0), epoch = 3) # just open the right door (10)
-reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (95\% chance)
+# Expected reward for listen twice and then open the door or listen 3 times
+reward(sol)
+
+# Expected reward for listen twice (-2) and then open-left (-1 + (-1) + 10 = 8)
+reward(sol, belief = c(1,0)) 
+
+# Expected reward for just opening the right door (10)
+reward(sol, belief = c(1,0), epoch = 3)
+ 
+# Expected reward for just opening the right door (0.5 * -100 + 0.95 * 10 = 4.5)
+reward(sol, belief = c(.95,.05), epoch = 3) 
 
 ################################################################
 # Example 3: Using terminal values (state-dependent utilities after the final epoch)

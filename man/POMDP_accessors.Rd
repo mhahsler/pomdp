@@ -13,43 +13,72 @@
 \alias{normalize_MDP}
 \title{Access to Parts of the POMDP Description}
 \usage{
-transition_matrix(x, episode = 1, action = NULL, sparse = TRUE)
+transition_matrix(
+  x,
+  action = NULL,
+  episode = NULL,
+  epoch = NULL,
+  sparse = TRUE
+)
 
-transition_val(x, action, start.state, end.state, episode = 1)
+transition_val(x, action, start.state, end.state, episode = NULL, epoch = NULL)
 
-observation_matrix(x, episode = 1, action = NULL, sparse = TRUE)
+observation_matrix(
+  x,
+  action = NULL,
+  episode = NULL,
+  epoch = NULL,
+  sparse = TRUE
+)
 
-observation_val(x, action, end.state, observation, episode = 1)
+observation_val(
+  x,
+  action,
+  end.state,
+  observation,
+  episode = NULL,
+  epoch = NULL
+)
 
 reward_matrix(
   x,
-  episode = 1,
   action = NULL,
   start.state = NULL,
+  episode = NULL,
+  epoch = NULL,
   sparse = FALSE
 )
 
-reward_val(x, action, start.state, end.state, observation, episode = 1)
+reward_val(
+  x,
+  action,
+  start.state,
+  end.state,
+  observation,
+  episode = NULL,
+  epoch = NULL
+)
 
 start_vector(x)
 
-normalize_POMDP(x, episode = 1, sparse = TRUE)
+normalize_POMDP(x, sparse = TRUE)
 
-normalize_MDP(x, episode = 1, sparse = TRUE)
+normalize_MDP(x, sparse = TRUE)
 }
 \arguments{
 \item{x}{A \link{POMDP} or \link{MDP} object.}
 
-\item{episode}{Episode used for time-dependent POMDPs.}
+\item{action}{name or index of an action.}
 
-\item{action}{only return the matrix/value for a given action.}
+\item{episode, epoch}{Episode or epoch used for time-dependent POMDPs. Epoch are internally converted
+to the correct episode.}
 
 \item{sparse}{logical; use sparse matrices when the density is below 50\% . \code{NULL} returns the
 representation stored in the problem description.}
 
-\item{start.state, end.state}{name of the state.}
+\item{start.state, end.state}{name or index of the state.}
 
-\item{observation}{name of observation.}
+\item{observation}{name or index of observation.}
 }
 \value{
 A list or a list of lists of matrices.
@@ -81,18 +110,19 @@ data("Tiger")
 # List of |A| transition matrices. One per action in the from states x states
 Tiger$transition_prob
 transition_matrix(Tiger)
-transition_val(Tiger, action = "listen", start.state = "tiger-left")
+transition_val(Tiger, action = "listen", start.state = "tiger-left", end.state = "tiger-left")
 
 # List of |A| observation matrices. One per action in the from states x observations
 Tiger$observation_prob
 observation_matrix(Tiger)
-observation_val(Tiger, action = "listen", end.state = "tiger-left")
+observation_val(Tiger, action = "listen", end.state = "tiger-left", observation = "tiger-left")
 
 # List of list of reward matrices. 1st level is action and second level is the
 #  start state in the form end state x observation
 Tiger$reward
 reward_matrix(Tiger)
-reward_val(Tiger, action = "listen", start.state = "tiger")
+reward_val(Tiger, action = "open-right", start.state = "tiger-left", end.state = "tiger-left", 
+  observation = "tiger-left")
 
 # Translate the initial belief vector
 Tiger$start
@@ -104,7 +134,7 @@ Tiger_norm$transition_prob
 
 ## Visualize transition matrix for action 'open-left'
 library("igraph")
-g <- graph_from_adjacency_matrix(transition_matrix(Tiger)$"open-left", weighted = TRUE)
+g <- graph_from_adjacency_matrix(transition_matrix(Tiger, action = "open-left"), weighted = TRUE)
 edge_attr(g, "label") <- edge_attr(g, "weight")
 
 igraph.options("edge.curved" = TRUE)
@@ -122,6 +152,8 @@ trans <- function(action, end.state, start.state) {
 }
 
 Tiger$transition_prob <- trans
+
+# transition_matrix evaluates the function
 transition_matrix(Tiger)
 }
 \seealso{

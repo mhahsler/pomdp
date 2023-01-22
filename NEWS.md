@@ -1,6 +1,6 @@
-# pomdp 1.0.3-1 (xx/xx/2022)
+# pomdp 1.1.0-0 (xx/xx/2023)
 
-# New Features
+## New Features
 * Added C++ (Rcpp) support. Speed up for simulate_POMDP, sample_belief_space, reward, ... 
 * simulate_POMDP and sample_belief_space have now parallel (foreach) support.
 * Sparse matrices from package Matrix for matrices with a density below 50%.
@@ -8,12 +8,13 @@
 * Added model normalization.
 * is_solved_POMDP(), is_converged_POMDP(), is_timedependent_POMDP(), and is_solved_MDP() are now exported.
 
-# Changes
+## Changes
 * accessors are now called now transition_val() and observation_val().
 * simulate_POMDP() and simulate_MDP() now return a list.
 * reimplemented round_stochastic() to improve speed.
 * MDP policy now uses factors for actions.
-* estimate_belief_for_nodes() now uses trajectories to estimate beliefs faster.
+* estimate_belief_for_nodes() now can also use trajectories to estimate beliefs faster.
+* cleaned up the interface for episodes and epochs.
 
 
 # pomdp 1.0.3 (05/18/2022)

@@ -16,7 +16,6 @@ plot_belief_space(
   col = NULL,
   jitter = 0,
   oneD = TRUE,
-  ylim = NULL,
   ...
 )
 }
@@ -41,7 +40,7 @@ need to increase the plotting region of the plotting device.}
 
 \item{col}{plotting colors.}
 
-\item{jitter}{jitter amount for 2D belief spaces (good values are between 0 and 4).}
+\item{jitter}{jitter amount for 2D belief spaces (good values are between 0 and 1, while using \code{ylim = c(0,1)}).}
 
 \item{oneD}{plot projections on two states in one dimension.}
 

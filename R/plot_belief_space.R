@@ -19,9 +19,8 @@
 #' need to increase the plotting region of the plotting device.
 #' @param pch plotting symbols.
 #' @param col plotting colors.
-#' @param jitter jitter amount for 2D belief spaces (good values are between 0 and 4).
+#' @param jitter jitter amount for 2D belief spaces (good values are between 0 and 1, while using `ylim = c(0,1)`).
 #' @param oneD plot projections on two states in one dimension.
-#' @param ylim used to create space in the oneD plot.
 #' @param ...  additional arguments are passed on to `plot` for 2D or
 #' `TerneryPlot` for 3D.
 #' @return Returns invisibly the sampled points.
@@ -98,7 +97,6 @@ plot_belief_space <-
     col = NULL,
     jitter = 0,
     oneD = TRUE,
-    ylim = NULL,
     ...) {
     # sample: a matrix with belief points or a character string passed on to sample_belief_space as method.
     # E.g., "regular", "random", ...
@@ -175,12 +173,12 @@ plot_belief_space <-
           y = if (jitter <= 0)
             rep_len(0, nrow(sample))
           else
-            jitter(rep_len(0, nrow(sample)), amount = jitter)
+            abs(jitter(rep_len(0, nrow(sample)), amount = jitter))
             ,
           col = cols,
           pch = pch,
           xlim = c(0, 1),
-          ylim = if(is.null(ylim)) c(0, 1) else ylim,
+          #ylim = c(0, 1),
           axes = FALSE,
           ylab = "",
           ...

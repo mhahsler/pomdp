@@ -85,7 +85,7 @@
 #' ## changes labels
 #' plot(pg,
 #'   edge.label = abbreviate(E(pg)$label),
-#'   vertex.label = V(pg)$label,
+#'   vertex.label = vertex_attr(pg)$label,
 #'   vertex.size = 20)
 #'
 #' ## plot interactive graphs using the visNetwork library.
@@ -115,7 +115,7 @@
 policy_graph <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) {
   is_solved_POMDP(x, stop = TRUE)
 
-  if(x$horizon < 2L)
+  if(sum(x$horizon) < 2L)
     stop("No policy graph available for problems with a horizon < 2.")
     
   if (!is_converged_POMDP(x))
@@ -128,27 +128,26 @@ policy_graph_converged <- function(x, belief = NULL, show_belief = TRUE, col = N
    
   ### this is for sarsop...
   if (ncol(x$solution$pg[[1]]) <= 2) {
-    pg_complete <- .add_policy_graph(x, ...)
+    pg_complete <- .infer_policy_graph_converged(x, ...)
     x$solution$central_belief <- pg_complete$central_belief
     x$solution$pg <- pg_complete$pg
   }
     
   # create policy graph and belief proportions (average belief for each alpha vector)
-  pg <- x$solution$pg[[1]]
+  pg <- x$solution$pg[[1L]]
   
   if (show_belief) {
     if (!is.null(x$solution$central_belief))
-      bp <- x$solution$central_belief[[1]]
+      bp <- x$solution$central_belief[[1L]]
     else
-      bp <- estimate_belief_for_nodes(x, ...)
+      bp <- estimate_belief_for_nodes(x, belief = belief, ...)[[1L]]
     
     # missing belief points?
     missing_bp <- which(apply(is.na(bp), MARGIN = 1, any))
     if (length(missing_bp) > 0)
       warning(
-        "No belief points sampled for policy graph node(s): ",
-        paste(missing_bp, collapse = ", "),
-        ". Increase the number for parameter belief (number of sampled points)."
+        "No belief points available/sampled for policy graph node(s): ",
+        paste(missing_bp, collapse = ", ")
       )
   }
   
@@ -185,7 +184,7 @@ policy_graph_converged <- function(x, belief = NULL, show_belief = TRUE, col = N
   init <- rep(":   ", nrow(pg))
   init[initial_pg_node] <- ": initial belief"
   
-  V(policy_graph)$label <- paste0(pg$node, init, "\n", pg$action)
+  vertex_attr(policy_graph, "label") <- paste0(pg$node, init, "\n", pg$action)
   
   # add belief proportions
   ### FIXME: Add gray for missing points instead of a uniform distribution
@@ -194,27 +193,27 @@ policy_graph_converged <- function(x, belief = NULL, show_belief = TRUE, col = N
       lapply(
         seq_len(nrow(bp)),
         FUN = function(i)
-          if (any(is.na(bp[i, ])))
-            structure(rep(1 / ncol(bp), times = ncol(bp)), names = colnames(bp))
-        else
           bp[i, ]
       )
     
     ### Set1 from Colorbrewer
     col <- .get_colors_descrete(length(x$states), col)
     
-    V(policy_graph)$shape <- "pie"
-    V(policy_graph)$pie = pie_values
-    V(policy_graph)$pie.color = list(col)
+    # plot unkown beliefs as white circles
+    vertex_attr(policy_graph, "shape") <- sapply(pie_values, FUN = function(i) if (any(is.na(i))) "circle" else "pie")
+    vertex_attr(policy_graph, "color") <- "white"
+    vertex_attr(policy_graph, "pie") <- pie_values
+    vertex_attr(policy_graph, "pie.color") <- list(col)
   }
   
-  V(policy_graph)$size <- 40
-  E(policy_graph)$arrow.size  <- .5
+  vertex_attr(policy_graph, "size") <- 40
+  edge_attr(policy_graph, "arrow.size")  <- .5
   
   policy_graph
 }
 
-policy_graph_unconverged <- function(x, belief = NULL, show_belief = TRUE, col = NULL, ...) {
+policy_graph_unconverged <- function(x, belief = NULL, show_belief = TRUE, col = NULL, 
+  unreachable_nodes = FALSE, ...) {
   pg <- x$solution$pg
   
   if (ncol(pg[[1]]) <= 2)
@@ -242,15 +241,18 @@ policy_graph_unconverged <- function(x, belief = NULL, show_belief = TRUE, col =
     initial_pg_node <- reward_node_action(x, belief = belief)$pg_node
   
   ## remove unreached nodes
-  used <- paste0("1-", initial_pg_node)
-  for(i in seq(epochs)) {
-    used <- append(used, unlist(pg[pg[["epoch"]] == i & pg[["node"]] %in% used, observations]))
-  }
+  if (!unreachable_nodes) {
+    used <- paste0("1-", initial_pg_node)
+    for(i in seq(epochs)) {
+      used <- append(used, unlist(pg[pg[["epoch"]] == i & pg[["node"]] %in% used, observations]))
+    }
+    
+    used <- pg[["node"]] %in% used
+    pg <- pg[used, , drop = FALSE]
+  } else
+    used <- seq_len(nrow(pg)) 
   
-  used <- pg[["node"]] %in% used
-  pg <- pg[used,]
   num_nodes <- nrow(pg)
-  
   #pg[["node"]] <- factor(pg[["node"]])
   #for(o in observations) 
   #  pg[[o]] <- factor(pg[[o]], levels = levels(pg[["node"]]))
@@ -285,20 +287,15 @@ policy_graph_unconverged <- function(x, belief = NULL, show_belief = TRUE, col =
   #init <- rep(":   ", nrow(pg))
   #init[1] <- ": initial belief"
   
-  m <- match(vertex_attr(policy_graph)$name, pg[["node"]]) 
-  vertex_attr(policy_graph)$name <- paste0(vertex_attr(policy_graph)$name, ":\n", pg[["action"]][m])
+  m <- match(vertex_attr(policy_graph, "name"), pg[["node"]]) 
+  vertex_attr(policy_graph, "name") <- paste0(vertex_attr(policy_graph, "name"), ":\n", pg[["action"]][m])
   
   # add belief proportions
   ### FIXME: Add gray for missing points instead of a uniform distribution
   if (show_belief) {
-    bp <-
-      lapply(
-        seq(epochs),
-        FUN = function(e)
-          estimate_belief_for_nodes(x, epoch = e, ...)
-      )
+    bp <- estimate_belief_for_nodes(x,belief = belief, ...)
     bp <- do.call(rbind, bp)
-    bp <- bp[used, ]
+    bp <- bp[used, , drop = FALSE]
     
     # missing belief points?
     missing_bp <- which(apply(is.na(bp), MARGIN = 1, any))
@@ -313,23 +310,22 @@ policy_graph_unconverged <- function(x, belief = NULL, show_belief = TRUE, col =
       lapply(
         seq_len(nrow(bp)),
         FUN = function(i)
-          if (any(is.na(bp[i, ])))
-            structure(rep(1 / ncol(bp), times = ncol(bp)), names = colnames(bp))
-        else
           bp[i, ]
       )
+    pie_values <- pie_values[m]
     
     ### Set1 from Colorbrewer
     number_of_states <- length(x$states)
     col <- .get_colors_descrete(number_of_states, col)
     
-    vertex_attr(policy_graph)$shape <- rep("pie", times = num_nodes)
-    vertex_attr(policy_graph)$pie = pie_values[m]
-    vertex_attr(policy_graph)$pie.color = rep(list(col), times = num_nodes)
+    vertex_attr(policy_graph, "shape") <- sapply(pie_values, FUN = function(i) if (any(is.na(i))) "circle" else "pie")
+    vertex_attr(policy_graph, "color") <- "white"
+    vertex_attr(policy_graph, "pie") <- pie_values
+    vertex_attr(policy_graph, "pie.color") <- rep(list(col), times = num_nodes)
   }
   
-  vertex_attr(policy_graph)$size <- rep(40, times = num_nodes)
-  edge_attr(policy_graph)$arrow.size  <- rep(.5, times = num_edges)
+  vertex_attr(policy_graph, "size") <- rep(40, times = num_nodes)
+  edge_attr(policy_graph, "arrow.size") <- rep(.5, times = num_edges)
   policy_graph <- add_layout_(policy_graph, as_tree()) 
   
   policy_graph
@@ -368,14 +364,14 @@ plot_policy_graph <- function(x,
     
     plot.igraph(pg, edge.curved = edge.curved, ...)
     
-    if (legend && show_belief && !is.null(V(pg)$pie)) {
+    if (legend && show_belief && !is.null(vertex_attr(pg)$pie)) {
       legend(
         "topright",
         legend = x$states,
         title = "Belief",
         #horiz = TRUE,
         bty = "n",
-        col = V(pg)$pie.color[[1]],
+        col = vertex_attr(pg)$pie.color[[1]],
         pch = 15
       )
     }
@@ -410,13 +406,41 @@ plot_policy_graph <- function(x,
 }
 
 
-
+### This is used to infer a policy graph for SARSOP
 ### returns a list with central_beliefs and a completed pg 
 ### this currently only works for converged solutions
-.add_policy_graph <- function(model, ...) {
+.infer_policy_graph_converged <- function(model, ...) {
   if (!is.null(model$solution) && length(model$solution$pg) != 1L)
     stop("policy graph inference is currently only available for converges solutions!")
   
+  # find central beliefs and use them to create the policy graph
+  central_beliefs <- estimate_belief_for_nodes(model, ...)[[1L]]
+  if (nrow(central_beliefs) < nrow(model$solution$pg[[1L]]))
+    stop("Unable to estimate all central beliefs.")
+  
+  pg <- model$solution$pg[[1L]]
+  pg_to <-
+    t(sapply(
+      seq_len(nrow(central_beliefs)),
+      FUN = function(i)
+        reward_node_action(
+          model,
+          update_belief(model, belief = central_beliefs[i, ], action = pg$action[i])
+        )$pg_node
+    ))
+  colnames(pg_to) <- model$observations
+  
+  pg <- cbind(pg, pg_to)
+  
+  list(central_beliefs = list(central_beliefs),
+    pg = list(pg))
+}
+
+
+### TODO: find the policy graph edges between episodes... 
+.infer_policy_graph_unconverged <- function(model, ...) {
+  stop("TODO!!!")
+ 
   # find central beliefs and use them to create the policy graph
   central_beliefs <- estimate_belief_for_nodes(model, ...)
   if (nrow(central_beliefs) < nrow(model$solution$pg[[1]]))

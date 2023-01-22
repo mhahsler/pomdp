@@ -1,6 +1,8 @@
 # Updating the belief state: update for a single belief vector, one action, and one observation.
 # $$b'(s') = \eta O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)$$
 # $$\eta = 1/ \sum_{s' \in S}[ O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)]$$
+#
+# Impossbile beliefs are all NaN
 .update_belief <-
   function(belief,
     action,
@@ -11,7 +13,7 @@
     belief <-
       as.vector(Ob[[action]][, observation, drop = FALSE] * crossprod(Tr[[action]], cbind(belief)))
     belief <- belief / sum(belief)
-   
+  
     belief <- round_stochastic_int(belief, digits)
     
     drop(belief)
@@ -89,7 +91,7 @@ update_belief <-
     b <- t(.update_belief_vec(belief, g[, 1], g[, 2], Tr, Ob, digits))
     rownames(b) <- apply(g, MARGIN = 1, paste, collapse = "+")
     colnames(b) <- as.character(model$states)
-    
+  
     if (drop)
       b <- drop(b)
     b

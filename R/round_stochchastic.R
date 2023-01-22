@@ -42,6 +42,10 @@ round_stochastic <- function(x, digits = 7) {
 
 # Round a stochastic vector
 round_stochastic_int <- function(x, digits = 7) {
+  # handle impossible beliefs
+  if (any(is.na(x)))
+    return (x)
+  
   x[x<0] <- 0
   
   #x / sum(x)

@@ -109,7 +109,7 @@ plot(pg,
 ## changes labels
 plot(pg,
   edge.label = abbreviate(E(pg)$label),
-  vertex.label = V(pg)$label,
+  vertex.label = vertex_attr(pg)$label,
   vertex.size = 20)
 
 ## plot interactive graphs using the visNetwork library.

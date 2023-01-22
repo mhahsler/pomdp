@@ -23,10 +23,11 @@
 #' @name POMDP_accessors
 #'
 #' @param x A [POMDP] or [MDP] object.
-#' @param episode Episode used for time-dependent POMDPs.
-#' @param action only return the matrix/value for a given action.
-#' @param start.state,end.state name of the state.
-#' @param observation name of observation.
+#' @param action name or index of an action.
+#' @param start.state,end.state name or index of the state.
+#' @param observation name or index of observation.
+#' @param episode,epoch Episode or epoch used for time-dependent POMDPs. Epoch are internally converted 
+#'  to the episode using the model horizon. 
 #' @param sparse logical; use sparse matrices when the density is below 50% . `NULL` returns the
 #'   representation stored in the problem description.
 #' @return A list or a list of lists of matrices.
@@ -37,18 +38,19 @@
 #' # List of |A| transition matrices. One per action in the from states x states
 #' Tiger$transition_prob
 #' transition_matrix(Tiger)
-#' transition_val(Tiger, action = "listen", start.state = "tiger-left")
+#' transition_val(Tiger, action = "listen", start.state = "tiger-left", end.state = "tiger-left")
 #'
 #' # List of |A| observation matrices. One per action in the from states x observations
 #' Tiger$observation_prob
 #' observation_matrix(Tiger)
-#' observation_val(Tiger, action = "listen", end.state = "tiger-left")
+#' observation_val(Tiger, action = "listen", end.state = "tiger-left", observation = "tiger-left")
 #'
 #' # List of list of reward matrices. 1st level is action and second level is the
 #' #  start state in the form end state x observation
 #' Tiger$reward
 #' reward_matrix(Tiger)
-#' reward_val(Tiger, action = "listen", start.state = "tiger")
+#' reward_val(Tiger, action = "open-right", start.state = "tiger-left", end.state = "tiger-left", 
+#'   observation = "tiger-left")
 #'
 #' # Translate the initial belief vector
 #' Tiger$start
@@ -60,7 +62,7 @@
 #'
 #' ## Visualize transition matrix for action 'open-left'
 #' library("igraph")
-#' g <- graph_from_adjacency_matrix(transition_matrix(Tiger)$"open-left", weighted = TRUE)
+#' g <- graph_from_adjacency_matrix(transition_matrix(Tiger, action = "open-left"), weighted = TRUE)
 #' edge_attr(g, "label") <- edge_attr(g, "weight")
 #'
 #' igraph.options("edge.curved" = TRUE)
@@ -78,13 +80,23 @@
 #' }
 #'
 #' Tiger$transition_prob <- trans
+#' 
+#' # transition_matrix evaluates the function
 #' transition_matrix(Tiger)
 #' @export
 transition_matrix <-
   function(x,
-    episode = 1,
     action = NULL,
+    episode = NULL,
+    epoch = NULL,
     sparse = TRUE) {
+    if (is.null(episode)) {
+      if (is.null(epoch))
+        episode <- 1L
+      else
+        episode <- epoch_to_episode(x, epoch)
+    }
+    
     .translate_probabilities(
       x,
       field = "transition_prob",
@@ -97,6 +109,7 @@ transition_matrix <-
   }
 
 ## TODO: make the access functions more efficient for a single value
+## NOTE: missing propagation does not work for sparse Matrix...
 
 #' @rdname POMDP_accessors
 #' @export
@@ -105,22 +118,32 @@ transition_val <-
     action,
     start.state,
     end.state,
-    episode = 1) {
+    episode = NULL,
+    epoch = NULL) {
     transition_matrix(x,
-      episode = 1,
       action = action,
-      sparse = FALSE)[start.state, end.state]
+      episode = episode,
+      epoch = epoch,
+      sparse = NULL)[start.state, end.state]
   }
 
 #' @rdname POMDP_accessors
 #' @export
 observation_matrix <-
   function(x,
-    episode = 1,
     action = NULL,
+    episode = NULL,
+    epoch = NULL,
     sparse = TRUE) {
     if (is.null(x$observation_prob))
       stop("model is not a complete POMDP, no observation probabilities specified!")
+    
+    if (is.null(episode)) {
+      if (is.null(epoch))
+        episode <- 1L
+      else
+        episode <- epoch_to_episode(x, epoch)
+    }
     
     ## action list of s' x o matrices
     .translate_probabilities(
@@ -141,31 +164,49 @@ observation_val <-
     action,
     end.state,
     observation,
-    episode = 1) {
+    episode = NULL,
+    epoch = NULL) {
     observation_matrix(x,
-      episode = 1,
       action = action,
-      sparse = FALSE)[end.state, observation]
+      episode = episode,
+      epoch = epoch,
+      sparse = NULL)[end.state, observation]
   }
 
 #' @rdname POMDP_accessors
 #' @export
 reward_matrix <-
   function(x,
-    episode = 1,
     action = NULL,
     start.state = NULL,
+    episode = NULL,
+    epoch = NULL,
     sparse = FALSE) {
     ## action list of s' x o matrices
     ## action list of s list of s' x o matrices
     ## if not observations are available then it is a s' vector
-    .translate_reward(
+    if (is.null(episode)) {
+      if (is.null(epoch))
+        episode <- 1L
+      else
+        episode <- epoch_to_episode(x, epoch)
+    }
+    
+    mat <- .translate_reward(
       x,
       episode = episode,
       action = action,
       start.state = start.state,
       sparse = sparse
     )
+    
+    ### unpack if we have a single action/start state
+    if (length(mat) == 1L)
+      mat <- mat[[1]]
+    if (length(mat) == 1L)
+      mat <- mat[[1]]
+      
+   mat 
   }
 
 #' @rdname POMDP_accessors
@@ -176,13 +217,15 @@ reward_val <-
     start.state,
     end.state,
     observation,
-    episode = 1) {
+    episode = NULL,
+    epoch = NULL) {
     reward_matrix(
       x,
-      episode = 1,
       action = action,
       start.state = start.state,
-      sparse = FALSE
+      episode = episode,
+      epoch = epoch,
+      sparse = NULL
     )[end.state, observation]
   }
 
@@ -194,23 +237,46 @@ start_vector <- function(x) {
 
 #' @rdname POMDP_accessors
 #' @export
-normalize_POMDP <- function(x, episode = 1, sparse = TRUE) {
+normalize_POMDP <- function(x, sparse = TRUE) {
   x$start <- start_vector(x)
-  x$transition_prob <-
-    transition_matrix(x, episode, sparse = sparse)
-  x$observation_prob <-
-    observation_matrix(x, episode, sparse = sparse)
-  x$reward <- reward_matrix(x, episode, sparse = sparse)
+  
+  if (.is_timedependent_field(x, "transition_prob")) {
+    for (i in seq_along(x$transition_prob))
+      x$transition_prob[[i]] <-
+        transition_matrix(x, episode = i, sparse = sparse)
+  } else
+    x$transition_prob <-
+      transition_matrix(x, sparse = sparse)
+  
+  if (.is_timedependent_field(x, "observation_prob")) {
+    for (i in seq_along(x$observation_prob))
+      x$observation_prob[[i]] <-
+        observation_matrix(x, episode = i, sparse = sparse)
+  } else
+    x$observation_prob <-
+      observation_matrix(x, sparse = sparse)
+  
+  if (.is_timedependent_field(x, "reward")) {
+    for (i in seq_along(x$reward))
+      x$reward[[i]] <-
+        reward_matrix(x, episode = i, sparse = sparse)
+  } else
+    x$reward <-
+      reward_matrix(x, sparse = sparse)
+  
   x
 }
 
+### TODO: MDP has not time-dependent implementation
+
 #' @rdname POMDP_accessors
 #' @export
-normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
+normalize_MDP <- function(x, sparse = TRUE) {
+  
   x$start <- start_vector(x)
   x$transition_prob <-
-    transition_matrix(x, episode, sparse = sparse)
-  x$reward <- reward_matrix(x, episode, sparse = sparse)
+    transition_matrix(x, sparse = sparse)
+  x$reward <- reward_matrix(x, sparse = sparse)
   x
 }
 
@@ -331,7 +397,7 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
         episode > length(model$horizon))
       stop("Requested episode does not exit in horizon specification.")
     
-    if (.is_timedependent(model, field)) {
+    if (.is_timedependent_field(model, field)) {
       prob <- model[[field]][[episode]]
       if (is.null(prob))
         stop(
@@ -444,59 +510,40 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
     action = NULL,
     start.state = NULL,
     sparse = FALSE) {
-    if (is.null(start.state))
-      states <- model$states
-    else
-      states <- start.state
+    field <- "reward"
     
+    states <- model$states
+    observations <- model$observations
     if (is.null(action))
       actions <- model$actions
     else
-      actions <- action
+      actions <- .get_names(action, model$actions)
     
-    ## note: observations does not exist for MDPs
-    observations <- model$observations
+    if (is.null(start.state))
+      start.state <- states
+    else
+      start.state <- .get_names(start.state, states)
     
-    field <- "reward"
     ## episodes are for time-dependent POMDPs
-    if (is_timedependent_POMDP(model)) {
-      episode <- as.integer(episode)
-      if (episode < 1L ||
-          episode > length(model$horizon))
-        stop("Requested episode does not exit.")
-      
-      if (.is_timedependent(model, field))
-        reward <- model[[field]][[episode]]
-      else
-        reward <-  model[[field]]
-      
-    } else {
-      if (episode != 1)
-        stop("POMDP is not time-dependent. There is only a single episode.")
-      
+    if (.is_timedependent_field(model, field))
+      reward <- model[[field]][[episode]]
+    else
       reward <-  model[[field]]
-    }
-    
-    if (is.null(reward))
+      
+    if (is.null(reward)) {
       stop(
         "Field ",
         field,
         " is not available. Parsing some fields is not implemented for models read with read_POMDP!"
       )
-    
-    # no reward available (e.g., for reading POMDP files)
-    if (is.null(reward)) {
-      warning(
-        "Reward is not specified in the model description (e.g., when a POMDP model file is read)."
-      )
       return (NULL)
     }
-    
+      
     if (is.data.frame(reward)) {
-      reward[[1]] <- .get_names(reward[[1]], actions)
-      reward[[2]] <- .get_names(reward[[2]], states)
-      reward[[3]] <- .get_names(reward[[3]], states)
-      reward[[4]] <- .get_names(reward[[4]], observations)
+      reward[[1L]] <- .get_names(reward[[1L]], model$actions)
+      reward[[2L]] <- .get_names(reward[[2L]], states) # start state
+      reward[[3L]] <- .get_names(reward[[3L]], states) # end state
+      reward[[4L]] <- .get_names(reward[[4L]], observations)
       
       # allocate the memory
       if (inherits(model, "POMDP")) {
@@ -504,7 +551,7 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
           actions,
           FUN = function(a)
             sapply(
-              states,
+              start.state,
               FUN = function(s)
                 if (!is.null(sparse) && sparse) {
                   m <- spMatrix(nrow = length(states),
@@ -525,22 +572,26 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
         )
         
         for (i in seq_len(nrow(reward))) {
-          acts <- reward[i, 1]
+          acts <- reward[i, 1L]
           if (is.na(acts))
             acts <- actions
           else
             if (is.null(mat[[acts]]))
               next
-          ss_from <- reward[i , 2]
+          ss_from <- reward[i, 2L]
           if (is.na(ss_from))
             ss_from <- states
-          ss_to <- reward[i , 3]
+          ss_from <- intersect(ss_from, start.state)
+          if (length(ss_from) == 0L)
+            next
+          
+          ss_to <- reward[i , 3L]
           if (is.na(ss_to))
             ss_to <- states
-          os <- reward[i, 4]
+          os <- reward[i, 4L]
           if (is.na(os))
             os <- observations
-          val <- reward[i, 5]
+          val <- reward[i, 5L]
           
           for (a in acts)
             for (s_from in ss_from)
@@ -552,7 +603,7 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
           actions,
           FUN = function(a)
             sapply(
-              states,
+              start.state,
               FUN = function(s) {
                 v <- numeric(length(states))
                 names(v) <- states
@@ -564,17 +615,20 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
         )
         
         for (i in seq_len(nrow(reward))) {
-          acts <- reward[i, 1]
+          acts <- reward[i, 1L]
           if (is.na(acts))
             acts <- actions
-          ss_from <- reward[i, 2]
+          ss_from <- reward[i, 2L]
           if (is.na(ss_from))
             ss_from <- states
-          ss_to <- reward[i, 3]
+          ss_from <- intersect(ss_from, start.state)
+          if (length(ss_from) == 0L)
+            next
+          
+          ss_to <- reward[i, 3L]
           if (is.na(ss_to))
             ss_to <- states
-          val <- reward[i, 5]
-          
+          val <- reward[i, 5L]
           
           for (a in acts)
             for (s_from in ss_from)
@@ -591,7 +645,7 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
         actions,
         FUN = function(a)
           sapply(
-            states,
+            start.state,
             FUN = function(s) {
               p <- outer(
                 states,
@@ -622,12 +676,6 @@ normalize_MDP <- function(x, episode = 1, sparse = TRUE) {
     if (!inherits(model, "MDP")) {
         reward <- lapply(reward, lapply, .sparsify, sparse)
     }
-    
-    if (!is.null(action) && length(action) == 1)
-      reward <- reward[[1]]
-    
-    if (!is.null(start.state) && length(start.state) == 1)
-      reward <- reward[[1]]
     
     reward
   }

@@ -157,6 +157,9 @@
 #' 18th international joint conference on Artificial Intelligence. Pages
 #' 1025-1030.
 #' @examples
+#' # display available solver options which can be passed on to pomdp-solve as parameters.
+#' solve_POMDP_parameter()
+#'
 #' ################################################################
 #' # Example 1: Solving the simple infinite-horizon Tiger problem
 #' data("Tiger")
@@ -172,7 +175,7 @@
 #' sol
 #'
 #' # look at solver output
-#' sol$solver_output
+#' sol$solution$solver_output
 #'
 #' # look at the solution
 #' sol$solution
@@ -185,9 +188,6 @@
 #'
 #' # value function
 #' plot_value_function(sol, ylim = c(0,20))
-#'
-#' # display available solver options which can be passed on to the solver as parameters.
-#' solve_POMDP_parameter()
 #'
 #' ################################################################
 #' # Example 2: Solve a problem specified as a POMDP file
@@ -206,12 +206,20 @@
 #'
 #' # look at the policy tree
 #' policy(sol)
+#' plot_policy_graph(sol)
 #' # note: it does not make sense to open the door in epochs 1 or 2 if you only have 3 epochs.
 #'
-#' reward(sol) # listen twice and then open the door or listen 3 times
-#' reward(sol, belief = c(1,0)) # listen twice (-2) and then open-left (10)
-#' reward(sol, belief = c(1,0), epoch = 3) # just open the right door (10)
-#' reward(sol, belief = c(.95,.05), epoch = 3) # just open the right door (95% chance)
+#' # Expected reward for listen twice and then open the door or listen 3 times
+#' reward(sol)
+#'
+#' # Expected reward for listen twice (-2) and then open-left (-1 + (-1) + 10 = 8)
+#' reward(sol, belief = c(1,0)) 
+#' 
+#' # Expected reward for just opening the right door (10)
+#' reward(sol, belief = c(1,0), epoch = 3)
+#'  
+#' # Expected reward for just opening the right door (0.5 * -100 + 0.95 * 10 = 4.5)
+#' reward(sol, belief = c(.95,.05), epoch = 3) 
 #'
 #' ################################################################
 #' # Example 3: Using terminal values (state-dependent utilities after the final epoch)
@@ -525,8 +533,9 @@ solve_POMDP <- function(model,
     }
    
     ## make transitions in last epoch NA for non converged solutions
-    if (!converged)
-      pg[[1L]][, as.character(model$observations)] <- NA 
+    # we need this for timedependent POMDPs
+    #if (!converged)
+      #pg[[1L]][, as.character(model$observations)] <- NA 
     
     ## order by epoch
     alpha <- rev(alpha)
@@ -582,34 +591,6 @@ print.POMDP_solution <- function(x, ...) {
 }
 
 
-# is a field time-dependent? For time-dependence we have a list of
-# matrices/data.frames or for observation_prob we have a list of a list
-.is_timedependent <- function(x, field = NULL) {
-  if (is.null(field))
-    field <- "horizon"
-  
-  m <- x[[field]]
-  
-  if (is.null(m))
-    stop("Field ", field, " does not exist.")
-  
-  if (!is.list(m) || is.data.frame(m))
-    return(FALSE)
-  
-  # it is a list. time dependent is a list (episodes) of lists
-  if (!is.list(m[[1]]))
-    return(FALSE)
-  
-  if (length(m) != length(x$horizon))
-    stop(
-      "Inconsistent POMDP specification. Field ",
-      field,
-      " does not contain data for the appropriate number of episodes."
-    )
-  
-  TRUE
-}
-
 # solve time-dependent POMDP
 # we can have different transition_probs, observation_probs or rewards
 .solve_POMDP_time_dependent <-
@@ -626,9 +607,9 @@ print.POMDP_solution <- function(x, ...) {
     n <- length(horizon)
     
     # check what is time-dependent
-    do_trans <- .is_timedependent(model, "transition_prob")
-    do_obs <- .is_timedependent(model, "observation_prob")
-    do_reward <- .is_timedependent(model, "reward")
+    do_trans <- .is_timedependent_field(model, "transition_prob")
+    do_obs <- .is_timedependent_field(model, "observation_prob")
+    do_reward <- .is_timedependent_field(model, "reward")
     
     if (verbose) {
       if (do_trans)
@@ -722,7 +703,10 @@ print.POMDP_solution <- function(x, ...) {
         FUN = function(x)
           x$solution$total_expected_reward
       ))
-    
+   
+    # we do not support belief_points
+    model$solution$belief_points_solver <- NULL
+     
     model
   }
 

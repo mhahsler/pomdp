@@ -108,7 +108,6 @@ solve_SARSOP <- function(model,
   if (!is.null(horizon))
     model$horizon <- horizon
   
-  
   if (!is.infinite(model$horizon))
     stop("the SARSOP solver only supports infinite time horizon problems.")
   

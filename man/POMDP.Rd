@@ -4,6 +4,7 @@
 \alias{POMDP}
 \alias{is_solved_POMDP}
 \alias{is_timedependent_POMDP}
+\alias{epoch_to_episode}
 \alias{is_converged_POMDP}
 \alias{O_}
 \alias{T_}
@@ -24,11 +25,13 @@ POMDP(
   name = NA
 )
 
-is_solved_POMDP(x, stop = FALSE)
+is_solved_POMDP(x, stop = FALSE, message = "")
 
 is_timedependent_POMDP(x)
 
-is_converged_POMDP(x, stop = FALSE)
+epoch_to_episode(x, epoch)
+
+is_converged_POMDP(x, stop = FALSE, message = "")
 
 O_(action = "*", end.state = "*", observation = "*", probability)
 
@@ -76,6 +79,11 @@ information.}
 \item{x}{a POMDP.}
 
 \item{stop}{logical; stop with an error.}
+
+\item{message}{a error message to be displayed displayed}
+
+\item{epoch}{integer; an epoch that should be converted to the corresponding episode in a time-dependent
+POMDP.}
 
 \item{action, start.state, end.state, observation, probability, value}{Values
 used in the helper functions \code{O_()}, \code{R_()}, and \code{T_()} to
@@ -196,13 +204,13 @@ distribution over all states.
 \strong{Time-dependent POMDPs}
 
 Time dependence of transition probabilities, observation probabilities and
-reward structure can be modeled by considering a set of episodes
-representing epoch with the same settings. The length of each episode is
+reward structure can be modeled by considering a set of \strong{episodes}
+representing \strong{epoch} with the same settings. The length of each episode is
 specified as a vector for \code{horizon}, where the length is the number of
 episodes and each value is the length of the episode in epochs. Transition
 probabilities, observation probabilities and/or reward structure can contain
-a list with the values for each episode. See \code{\link[=solve_POMDP]{solve_POMDP()}} for
-more details and an example.
+a list with the values for each episode. The helper function \code{epoch_to_episode()} converts
+an epoch to the episode it belongs to.
 }
 \examples{
 ## Defining the Tiger Problem (it is also available via data(Tiger), see ? Tiger)
@@ -241,7 +249,7 @@ Tiger <- POMDP(
 
 Tiger
 
-# Defining the Tiger problem using functions
+### Defining the Tiger problem using functions
 
 trans_f <- function(action, start.state, end.state) {
   if(action == 'listen')
@@ -281,6 +289,28 @@ Tiger_func <- POMDP(
 )
 
 Tiger_func
+
+# Defining a Time-dependent version of the Tiger Problem called Scared Tiger
+
+# The tiger reacts normally for 3 epochs (goes randomly two one
+# of the two doors when a door was opened). After 3 epochs he gets
+# scared and when a door is opened then he always goes to the other door.
+
+# specify the horizon for each of the two different episodes
+Tiger_time_dependent <- Tiger
+Tiger_time_dependent$name <- "Scared Tiger Problem"
+Tiger_time_dependent$horizon <- c(normal_tiger = 3, scared_tiger = 3)
+Tiger_time_dependent$transition_prob <- list(
+  normal_tiger = list(
+    "listen" = "identity",
+    "open-left" = "uniform",
+    "open-right" = "uniform"),
+  scared_tiger = list(
+    "listen" = "identity",
+    "open-left" = rbind(c(0, 1), c(0, 1)),
+    "open-right" = rbind(c(1, 0), c(1, 0))
+  )
+)
 }
 \references{
 pomdp-solve website: \url{http://www.pomdp.org}
