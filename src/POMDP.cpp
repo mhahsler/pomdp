@@ -16,7 +16,7 @@ DataFrame reward_cpp(const NumericMatrix& belief, const NumericMatrix& alpha) {
   NumericVector rew(belief.nrow());
   IntegerVector pg_node(belief.nrow());
   
-  for (int i = 0; i < rew.size(); ++i) {
+  for (R_xlen_t i = 0; i < rew.size(); ++i) {
     NumericVector rews = vecprod(alpha, belief(i, _ ));
     //rew[i] = max(rews);
     pg_node[i] = which_max(rews);
