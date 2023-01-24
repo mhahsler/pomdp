@@ -1,4 +1,4 @@
-# pomdp 1.1.0-0 (xx/xx/2023)
+# pomdp 1.1.0 (01/23/2023)
 
 ## New Features
 * Added C++ (Rcpp) support. Speed up for simulate_POMDP, sample_belief_space, reward, ... 
