@@ -120,7 +120,6 @@ Other policy:
 \code{\link{optimal_action}()},
 \code{\link{plot_policy_graph}()},
 \code{\link{plot_value_function}()},
-\code{\link{policy_graph}()},
 \code{\link{policy}()},
 \code{\link{projection}()},
 \code{\link{reward}()},
