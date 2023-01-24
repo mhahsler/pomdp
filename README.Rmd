@@ -1,5 +1,6 @@
 ---
 output: github_document
+bibliography: pomdp.bib
 ---
 
 ```{r echo=FALSE, results = 'asis'}
@@ -15,14 +16,14 @@ a variety of algorithms.
 The package provides access to the following algorithms:
 
 * Exact value iteration
-  - __Enumeration algorithm__ (Sondik 1971, Mohan 1982).
-  - __Two pass algorithm__ (Sondik 1971).
-  - __Witness algorithm__ (Littman, Cassandra, Kaelbling 1996).
-  - __Incremental pruning algorithm__ (Zhang and Liu 1996, Cassandra et al 1997).
+  - __Enumeration algorithm__ [@Sondik1971; @Monahan1982].
+  - __Two pass algorithm__ [@Sondik1971].
+  - __Witness algorithm__ [@Littman1995].
+  - __Incremental pruning algorithm__ [@Zhang1996; @Cassandra1997].
 
 * Approximate value iteration
-  - __Finite grid algorithm__ (Cassandra 2015), a variation of point-based value iteration to solve larger POMDPs (__PBVI__; see Pineau 2003) without dynamic belief set expansion.
-  - __SARSOP__ (Kurniawati, Hsu and Lee 2008), point-based algorithm that approximates optimally reachable belief spaces for infinite-horizon problems (via package [sarsop](https://github.com/boettiger-lab/sarsop)).
+  - __Finite grid algorithm__ [@Cassandra2015], a variation of point-based value iteration to solve larger POMDPs (__PBVI__; see [@Pineau2003] without dynamic belief set expansion.
+  - __SARSOP__ [@Pineau2003], point-based algorithm that approximates optimally reachable belief spaces for infinite-horizon problems (via package [sarsop](https://github.com/boettiger-lab/sarsop)).
 
 ```{r echo=FALSE, results = 'asis'}
 pkg_install(pkg)
@@ -42,27 +43,22 @@ sol <- solve_POMDP(model = Tiger)
 sol
 ```
 
+Display the value function.
+
 ```{r value_function, fig.height=4}
 plot_value_function(sol, ylim = c(0, 20))
 ```
 
+Display the policy graph.
+
 ```{r policy_graph, fig.height=7}
 plot_policy_graph(sol)
 ```
-
-## References
-
-* Cassandra, A. (2015). pomdp-solve: POMDP Solver Software, http://www.pomdp.org.
-* Sondik, E. (1971). The Optimal Control of Partially Observable Markov Processes. Ph.D. Dissertation, Stanford University.
-* Cassandra, A., Littman M.L., Zhang L. (1997). Incremental Pruning: A Simple, Fast, Exact Algorithm for Partially Observable Markov Decision Processes. UAI'97: Proceedings of the Thirteenth conference on Uncertainty in artificial intelligence, August 1997, pp. 54-61.
-* Monahan, G. E. (1982). A survey of partially observable Markov decision processes: Theory, models, and algorithms. Management Science 28(1):1-16.
-* Littman, M. L.; Cassandra, A. R.; and Kaelbling, L. P. (1996). Efficient dynamic-programming updates in partially observable Markov decision processes. Technical Report CS-95-19, Brown University, Providence, RI.
-* Zhang, N. L., and Liu, W. (1996). Planning in stochastic domains: Problem characteristics and approximation. Technical Report HKUST-CS96-31, Department of Computer Science, Hong Kong University of Science and Technology.
-* Pineau, J., Gordon, G.J., Thrun, S.B. (2003). Point-based value iteration: an anytime algorithm for POMDPs. IJCAI'03: Proceedings of the 18th international joint conference on Artificial Intelligence. Pages 1025-1030.
-* Kurniawati, H., Hsu, D., and Lee, W.S. (2008). SARSOP: Efficient point-based POMDP planning by approximating optimally reachable belief spaces. In Proc. Robotics: Science and Systems.
 
 ## Acknowledgments
 
 Development of this package was supported in part by 
 National Institute of Standards and Technology (NIST) under grant number 
 [60NANB17D180](https://www.nist.gov/ctl/pscr/safe-net-integrated-connected-vehicle-computing-platform).
+
+## References
