@@ -130,8 +130,8 @@ estimate_belief_for_nodes <-
     if (!is.list(belief) &&
         (nrow(belief) < nrow(x$solution$pg[[1L]]) ||
             any(is.na(belief))))
-      warning(
-        "No belief points found for some policy graph nodes. You can change the estimation method or increase n."
+      message(
+        "estimate_belief_for_nodes: No belief points found for some policy graph nodes. You can change the estimation method or increase n. The nodes may also be not reachable or redundant."
       )
     
     # unconverged solutions return a list
