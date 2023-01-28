@@ -34,9 +34,9 @@
 #' If `NULL` then the belief is taken from the model definition.
 #' @param show_belief logical; show estimated belief proportions as a pie chart in each node?
 #' @param legend logical; display a legend for colors used belief proportions?
-#' @param engine The plotting engine to be used. For `"visNetwork"`, `flip.y = FALSE` can be used
-#'   to show the root node on top.
+#' @param engine The plotting engine to be used. For `"visNetwork"`.
 #' @param col colors used for the states.
+#' @param simplify_observations combine parallel observation arcs into a single arc.
 #' @param ... parameters are passed on to `policy_graph()`, [estimate_belief_for_nodes()] and the functions
 #'   they use. Also, plotting options are passed on to the plotting engine [igraph::plot.igraph()]
 #'   or [visNetwork::visIgraph()].
@@ -61,7 +61,10 @@
 #' ## use a different graph layout (circle and manual; needs igraph)
 #' library("igraph")
 #' plot_policy_graph(sol, layout = layout.circle)
-#' plot_policy_graph(sol, layout = rbind(c(1,1), c(1,-1), c(0,0), c(-1,-1), c(-1,1)))
+#' plot_policy_graph(sol, layout = rbind(c(1,1), c(1,-1), c(0,0), c(-1,-1), c(-1,1)), margin = .2)
+#' plot_policy_graph(sol, 
+#'   layout = rbind(c(1,0), c(.5,0), c(0,0), c(-.5,0), c(-1,0)), rescale = FALSE, 
+#'   vertex.size = 15, edge.curved = 2)
 #'
 #' ## hide labels and legend
 #' plot_policy_graph(sol, edge.label = NA, vertex.label = NA, legend = FALSE)
@@ -72,20 +75,20 @@
 #' ## custom larger vertex labels (A, B, ...)
 #' plot_policy_graph(sol,
 #'   vertex.label = LETTERS[1:nrow(policy(sol)[[1]])],
+#'   vertex.size = 60,
 #'   vertex.label.cex = 2,
+#'   edge.label.cex = .5,
 #'   vertex.label.color = "white")
 #'
 #' ## plotting the igraph object directly
-#' ## (e.g., using the graph in the layout and to change the edge curvature)
-#' pg <- policy_graph(sol)
-#' plot(pg,
-#'   layout = layout_as_tree(pg, root = 3, mode = "out"),
-#'   edge.curved = curve_multiple(pg, .2))
+#' ## (e.g., using a tree layout)
+#' pg <- policy_graph(sol, simplify_observations = TRUE)
+#' plot(pg, layout = layout_as_tree(pg, root = 3, mode = "out"))
 #'
-#' ## changes labels
+#' ## change labels (abbreviate observations and use only actions to label the vertices)
 #' plot(pg,
 #'   edge.label = abbreviate(E(pg)$label),
-#'   vertex.label = vertex_attr(pg)$label,
+#'   vertex.label = V(pg)$action,
 #'   vertex.size = 20)
 #'
 #' ## plot interactive graphs using the visNetwork library.
@@ -109,8 +112,10 @@
 #' # Plotting a larger graph (see ? igraph.plotting for plotting options)
 #' sol <- solve_POMDP(model = Tiger, horizon = 10, method = "incprune")
 #'
-#' plot_policy_graph(sol, vertex.size = 8, edge.arrow.size = .1,
+#' plot_policy_graph(sol, edge.arrow.size = .1,
 #'   vertex.label.cex = .5, edge.label.cex = .5)
+#'
+#' plot_policy_graph(sol, engine = "visNetwork")
 #' @export
 plot_policy_graph <- function(x,
   belief = NULL,
@@ -118,6 +123,7 @@ plot_policy_graph <- function(x,
   legend = TRUE,
   engine = c("igraph", "visNetwork"),
   col = NULL,
+  simplify_observations = TRUE,
   ...) {
   engine <- match.arg(engine)
   switch(
@@ -128,6 +134,7 @@ plot_policy_graph <- function(x,
       show_belief = show_belief,
       legend = legend,
       col = col,
+      simplify_observations = simplify_observations,
       ...
     ),
     visNetwork = .plot.visNetwork(
@@ -136,6 +143,7 @@ plot_policy_graph <- function(x,
       show_belief = show_belief,
       legend = legend,
       col = col,
+      simplify_observations = simplify_observations,
       ...
     )
   )
@@ -148,10 +156,11 @@ plot_policy_graph <- function(x,
     show_belief,
     legend,
     col,
+    simplify_observations,
     edge.curved = NULL,
     ...) {
     pg <-
-      policy_graph(x, belief, show_belief = show_belief, col = col, ...)
+      policy_graph(x, belief, show_belief = show_belief, col = col, simplify_observations = simplify_observations, ...)
     
     if (is.null(edge.curved))
       edge.curved <- .curve_multiple_directed(pg)
@@ -208,8 +217,10 @@ plot_policy_graph <- function(x,
     show_belief = TRUE,
     legend = NULL,
     col = NULL,
+    simplify_observations,
     smooth = list(type = "continuous"),
     layout = NULL,
+    
     ...) {
     check_installed("visNetwork")
     
@@ -220,7 +231,7 @@ plot_policy_graph <- function(x,
       ifelse(unconverged, "layout_as_tree", "layout_nicely")
     
     pg <-
-      policy_graph(x, belief, show_belief = show_belief, col = col)
+      policy_graph(x, belief, show_belief = show_belief, col = col, simplify_observations = simplify_observations)
     
     ### add tooltip
     #V(pg)$title <- paste(htmltools::tags$b(V(pg)$label)
@@ -253,13 +264,27 @@ plot_policy_graph <- function(x,
       #  do.call(hsv, as.list(rgb2hsv(col2rgb(V(pg)$pie.color[[1]])) %*% V(pg)$pie[[i]])))
     }
     
+    # tree layout needs flip.y
+    if (layout == "layout_as_tree")
     visNetwork::visIgraph(pg,
       idToLabel = FALSE,
       layout = layout,
       smooth = smooth,
+      flip.y = FALSE,
       ...) %>%
       visNetwork::visOptions(
         highlightNearest = list(enabled = TRUE, degree = 0),
         nodesIdSelection = TRUE
       )
+    else
+      visNetwork::visIgraph(pg,
+        idToLabel = FALSE,
+        layout = layout,
+        smooth = smooth,
+        ...) %>%
+      visNetwork::visOptions(
+        highlightNearest = list(enabled = TRUE, degree = 0),
+        nodesIdSelection = TRUE
+      )
+      
   }

@@ -12,10 +12,18 @@ plot_policy_graph(
   legend = TRUE,
   engine = c("igraph", "visNetwork"),
   col = NULL,
+  simplify_observations = TRUE,
   ...
 )
 
-policy_graph(x, belief = NULL, show_belief = TRUE, col = NULL, ...)
+policy_graph(
+  x,
+  belief = NULL,
+  show_belief = TRUE,
+  col = NULL,
+  simplify_observations = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{object of class \link{POMDP} containing a solved and converged POMDP problem.}
@@ -28,10 +36,11 @@ If \code{NULL} then the belief is taken from the model definition.}
 
 \item{legend}{logical; display a legend for colors used belief proportions?}
 
-\item{engine}{The plotting engine to be used. For \code{"visNetwork"}, \code{flip.y = FALSE} can be used
-to show the root node on top.}
+\item{engine}{The plotting engine to be used. For \code{"visNetwork"}.}
 
 \item{col}{colors used for the states.}
+
+\item{simplify_observations}{combine parallel observation arcs into a single arc.}
 
 \item{...}{parameters are passed on to \code{policy_graph()}, \code{\link[=estimate_belief_for_nodes]{estimate_belief_for_nodes()}} and the functions
 they use. Also, plotting options are passed on to the plotting engine \code{\link[igraph:plot.igraph]{igraph::plot.igraph()}}
@@ -85,7 +94,10 @@ plot_policy_graph(sol)
 ## use a different graph layout (circle and manual; needs igraph)
 library("igraph")
 plot_policy_graph(sol, layout = layout.circle)
-plot_policy_graph(sol, layout = rbind(c(1,1), c(1,-1), c(0,0), c(-1,-1), c(-1,1)))
+plot_policy_graph(sol, layout = rbind(c(1,1), c(1,-1), c(0,0), c(-1,-1), c(-1,1)), margin = .2)
+plot_policy_graph(sol, 
+  layout = rbind(c(1,0), c(.5,0), c(0,0), c(-.5,0), c(-1,0)), rescale = FALSE, 
+  vertex.size = 15, edge.curved = 2)
 
 ## hide labels and legend
 plot_policy_graph(sol, edge.label = NA, vertex.label = NA, legend = FALSE)
@@ -96,20 +108,20 @@ plot_policy_graph(sol, main = sol$name)
 ## custom larger vertex labels (A, B, ...)
 plot_policy_graph(sol,
   vertex.label = LETTERS[1:nrow(policy(sol)[[1]])],
+  vertex.size = 60,
   vertex.label.cex = 2,
+  edge.label.cex = .5,
   vertex.label.color = "white")
 
 ## plotting the igraph object directly
-## (e.g., using the graph in the layout and to change the edge curvature)
-pg <- policy_graph(sol)
-plot(pg,
-  layout = layout_as_tree(pg, root = 3, mode = "out"),
-  edge.curved = curve_multiple(pg, .2))
+## (e.g., using a tree layout)
+pg <- policy_graph(sol, simplify_observations = TRUE)
+plot(pg, layout = layout_as_tree(pg, root = 3, mode = "out"))
 
-## changes labels
+## change labels (abbreviate observations and use only actions to label the vertices)
 plot(pg,
   edge.label = abbreviate(E(pg)$label),
-  vertex.label = vertex_attr(pg)$label,
+  vertex.label = V(pg)$action,
   vertex.size = 20)
 
 ## plot interactive graphs using the visNetwork library.
@@ -133,8 +145,10 @@ plot_policy_graph(sol, belief = c(0.9, 0.1))
 # Plotting a larger graph (see ? igraph.plotting for plotting options)
 sol <- solve_POMDP(model = Tiger, horizon = 10, method = "incprune")
 
-plot_policy_graph(sol, vertex.size = 8, edge.arrow.size = .1,
+plot_policy_graph(sol, edge.arrow.size = .1,
   vertex.label.cex = .5, edge.label.cex = .5)
+
+plot_policy_graph(sol, engine = "visNetwork")
 }
 \seealso{
 Other policy: 
