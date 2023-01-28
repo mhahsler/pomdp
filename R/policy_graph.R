@@ -240,9 +240,9 @@ policy_graph_unconverged <-
     
     m <- match(vertex_attr(policy_graph, "name"), pg[["node"]])
     vertex_attr(policy_graph, "name") <-
-      paste0(vertex_attr(policy_graph, "name"), ":\n", pg[["action"]][m])
+      paste0(vertex_attr(policy_graph, "name"), "\n", pg[["action"]][m])
     
-    vertex_attr(policy_graph, "id") <- pg$node[m]
+    vertex_attr(policy_graph, "id") <- pg[["node"]][m]
     vertex_attr(policy_graph, "epoch") <- pg[["epoch"]][m]
     vertex_attr(policy_graph, "action") <-
       as.character(pg[["action"]][m])

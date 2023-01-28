@@ -62,8 +62,8 @@
 #' library("igraph")
 #' plot_policy_graph(sol, layout = layout.circle)
 #' plot_policy_graph(sol, layout = rbind(c(1,1), c(1,-1), c(0,0), c(-1,-1), c(-1,1)), margin = .2)
-#' plot_policy_graph(sol, 
-#'   layout = rbind(c(1,0), c(.5,0), c(0,0), c(-.5,0), c(-1,0)), rescale = FALSE, 
+#' plot_policy_graph(sol,
+#'   layout = rbind(c(1,0), c(.5,0), c(0,0), c(-.5,0), c(-1,0)), rescale = FALSE,
 #'   vertex.size = 15, edge.curved = 2)
 #'
 #' ## hide labels and legend
@@ -77,7 +77,7 @@
 #'   vertex.label = LETTERS[1:nrow(policy(sol)[[1]])],
 #'   vertex.size = 60,
 #'   vertex.label.cex = 2,
-#'   edge.label.cex = .5,
+#'   edge.label.cex = .7,
 #'   vertex.label.color = "white")
 #'
 #' ## plotting the igraph object directly
@@ -160,7 +160,14 @@ plot_policy_graph <- function(x,
     edge.curved = NULL,
     ...) {
     pg <-
-      policy_graph(x, belief, show_belief = show_belief, col = col, simplify_observations = simplify_observations, ...)
+      policy_graph(
+        x,
+        belief,
+        show_belief = show_belief,
+        col = col,
+        simplify_observations = simplify_observations,
+        ...
+      )
     
     if (is.null(edge.curved))
       edge.curved <- .curve_multiple_directed(pg)
@@ -183,7 +190,7 @@ plot_policy_graph <- function(x,
 ### fix the broken curve_multiple for directed graphs (igraph_1.2.2)
 .curve_multiple_directed <- function(graph, start = 0.3) {
   el <-  as_edgelist(graph, names = FALSE)
-  o <- apply(el, 1, order)[1, ]
+  o <- apply(el, 1, order)[1,]
   el <-
     apply(
       el,
@@ -231,17 +238,39 @@ plot_policy_graph <- function(x,
       ifelse(unconverged, "layout_as_tree", "layout_nicely")
     
     pg <-
-      policy_graph(x, belief, show_belief = show_belief, col = col, simplify_observations = simplify_observations)
+      policy_graph(
+        x,
+        belief,
+        show_belief = show_belief,
+        col = col,
+        simplify_observations = simplify_observations
+      )
     
     ### add tooltip
     #V(pg)$title <- paste(htmltools::tags$b(V(pg)$label)
-    vertex_attr(pg, "title") <- paste(vertex_attr(pg, "label"),
+    if (!is.null(vertex_attr(pg, "epoch")))
+      ep <-
+      paste(htmltools::tags$b("epoch:"),
+        vertex_attr(pg, "epoch"),
+        htmltools::tags$br())
+    else
+      ep <- ""
+    
+    vertex_attr(pg, "title") <- paste(
+      htmltools::tags$b("node id:"),
+      vertex_attr(pg, "id"),
+      htmltools::tags$br(),
+      ep,
+      htmltools::tags$b("action:"),
+      vertex_attr(pg, "action"),
+      htmltools::tags$p(),
       lapply(
         vertex_attr(pg, "pie"),
         FUN = function(b) {
           knitr::kable(cbind(belief = b), digits = 3, format = "html")
         }
-      ))
+      )
+    )
     
     ### colors
     if (show_belief) {
@@ -254,7 +283,8 @@ plot_policy_graph <- function(x,
         FUN = function(i) {
           mix <-
             t(grDevices::col2rgb(vertex_attr(pg, "pie.color")[[1]]) %*% vertex_attr(pg, "pie")[[i]])
-          if(any(is.na(mix))) mix <- cbind(255, 255, 255)
+          if (any(is.na(mix)))
+            mix <- cbind(255, 255, 255)
           grDevices::rgb(mix, maxColorValue = 255)
         }
       )
@@ -266,12 +296,14 @@ plot_policy_graph <- function(x,
     
     # tree layout needs flip.y
     if (layout == "layout_as_tree")
-    visNetwork::visIgraph(pg,
-      idToLabel = FALSE,
-      layout = layout,
-      smooth = smooth,
-      flip.y = FALSE,
-      ...) %>%
+      visNetwork::visIgraph(
+        pg,
+        idToLabel = FALSE,
+        layout = layout,
+        smooth = smooth,
+        flip.y = FALSE,
+        ...
+      ) %>%
       visNetwork::visOptions(
         highlightNearest = list(enabled = TRUE, degree = 0),
         nodesIdSelection = TRUE
@@ -286,5 +318,5 @@ plot_policy_graph <- function(x,
         highlightNearest = list(enabled = TRUE, degree = 0),
         nodesIdSelection = TRUE
       )
-      
+    
   }

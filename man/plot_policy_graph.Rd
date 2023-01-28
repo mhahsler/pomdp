@@ -95,8 +95,8 @@ plot_policy_graph(sol)
 library("igraph")
 plot_policy_graph(sol, layout = layout.circle)
 plot_policy_graph(sol, layout = rbind(c(1,1), c(1,-1), c(0,0), c(-1,-1), c(-1,1)), margin = .2)
-plot_policy_graph(sol, 
-  layout = rbind(c(1,0), c(.5,0), c(0,0), c(-.5,0), c(-1,0)), rescale = FALSE, 
+plot_policy_graph(sol,
+  layout = rbind(c(1,0), c(.5,0), c(0,0), c(-.5,0), c(-1,0)), rescale = FALSE,
   vertex.size = 15, edge.curved = 2)
 
 ## hide labels and legend
@@ -110,7 +110,7 @@ plot_policy_graph(sol,
   vertex.label = LETTERS[1:nrow(policy(sol)[[1]])],
   vertex.size = 60,
   vertex.label.cex = 2,
-  edge.label.cex = .5,
+  edge.label.cex = .7,
   vertex.label.color = "white")
 
 ## plotting the igraph object directly
