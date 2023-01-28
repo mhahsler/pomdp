@@ -5,7 +5,7 @@
 #'
 #' `estimate_belief_for_nodes()` can estimate the belief in several ways:
 #' 1. **Use belief points explored by the solver.** Some solvers return explored belief points.
-#'   We assign the belief points to the nodes and average each nodes belief. 
+#'   We assign the belief points to the nodes and average each nodes belief.
 #' 2. **Follow trajectories** (breadth first) till all policy graph nodes have been visited and
 #'   return the encountered belief. This implementation returns the first (i.e., shallowest) belief point
 #'   that is encountered is used and no averaging is performed. parameter `n` can be used to
@@ -29,8 +29,9 @@
 #'  `"auto"`, reuse `"solver_points"`, follow `"trajectories"`, sample `"random_sample"`
 #'  or `"regular_sample"`. Auto uses
 #'  solver points if available and follows trajectories otherwise.
+#' @param belief start belief used for method trajectories. `NULL` uses the start belief specified in the model.
 #' @param verbose logical; show which method is used.
-#' @param ... parameters are passed on to `sample_belief_space()` or the code that follows trajectories. 
+#' @param ... parameters are passed on to `sample_belief_space()` or the code that follows trajectories.
 #'
 #' @returns
 #' returns a list with matrices with a belief for each policy graph node. The list elements are the epochs and converged solutions
@@ -55,6 +56,7 @@
 estimate_belief_for_nodes <-
   function(x,
     method = "auto",
+    belief = NULL,
     verbose = FALSE,
     ...) {
     method <-
@@ -82,8 +84,6 @@ estimate_belief_for_nodes <-
       ))
     }
     
-    belief <- NULL
-    
     if (method == "auto") {
       if (!is.null(x$solution$belief_points_solver))
         method <- "solver_points"
@@ -108,7 +108,7 @@ estimate_belief_for_nodes <-
     
     if (method == "trajectories") {
       belief <-
-        .estimate_belief_for_nodes_trajectories(x, ...)
+        .estimate_belief_for_nodes_trajectories(x, belief = belief, ...)
     }
     
     # use sampling
@@ -127,24 +127,20 @@ estimate_belief_for_nodes <-
     }
     
     # converged solutions return a matrix
-    if (!is.list(belief) &&
-        (nrow(belief) < nrow(x$solution$pg[[1L]]) ||
-            any(is.na(belief))))
-      message(
-        "estimate_belief_for_nodes: No belief points found for some policy graph nodes. You can change the estimation method or increase n. The nodes may also be not reachable or redundant."
-      )
-    
     # unconverged solutions return a list
-    if (is.list(belief)) {
-      if (any(sapply(
-        belief,
-        FUN = function(b)
-          any(is.na(b))
-      )))
+    if (verbose) 
+      if (!is.list(belief) &&
+          (nrow(belief) < nrow(x$solution$pg[[1L]]) ||
+              any(is.na(belief))) ||
+          is.list(belief) &&
+          any(sapply(
+            belief,
+            FUN = function(b)
+              any(is.na(b))
+          )))
         warning(
-          "No belief points found for some policy graph nodes. You can change the estimation method or increase n."
+          "estimate_belief_for_nodes: No belief points found for some policy graph nodes. You can change the estimation method or increase n. The nodes may also be not reachable or redundant."
         )
-    }
     
     belief
   }
@@ -154,10 +150,11 @@ estimate_belief_for_nodes <-
 ## Follow trajectories till we have all belief states
 .estimate_belief_for_nodes_trajectories <-
   function(x,
+    belief = NULL,
     n = 100000L,
     ...) {
     if (!is_converged_POMDP(x))
-      return(.estimate_belief_for_nodes_trajectories_unconverged(x, n = n, ...))
+      return(.estimate_belief_for_nodes_trajectories_unconverged(x, belief = belief, n = n, ...))
     
     pg <- x$solution$pg[[1]]
     found <- logical(nrow(pg)) ### all are FALSE
@@ -165,8 +162,10 @@ estimate_belief_for_nodes <-
       matrix(NA, nrow = nrow(pg), ncol = length(x$states))
     
     # start with the initial belief and mark it found
+    if (is.null(belief))
+      belief <- start_vector(x)
     queue <- new.queue()
-    enqueue(queue,  start_vector(x))
+    enqueue(queue,  belief)
     
     tries <- n
     while (!all(found)) {
@@ -176,18 +175,15 @@ estimate_belief_for_nodes <-
         break
       }
       
-      if (!queue.empty(queue))
-        belief_state <- dequeue(queue)
-      else {
-        warning("Some states are not reachable from the start state.")
+      if (queue.empty(queue))
         break
-      }
-      
+        
+      belief_state <- dequeue(queue)
       rna <- reward_node_action(x, belief_state)
       if (found[rna$pg_node])
         next
       
-      a_belief[rna$pg_node, ] <- rna$belief
+      a_belief[rna$pg_node,] <- rna$belief
       found[rna$pg_node] <- TRUE
       
       # go down the tree and add to the queue
@@ -204,8 +200,11 @@ estimate_belief_for_nodes <-
     
     delete.queue(queue)
     
-    colnames(a_belief) <- x$states
+    # if (!all(found))
+    #   warning("The following states are not reachable from the start state: ", paste(which(!found), collapse = ", "), 
+    #     "\n belief for these states is 'NA'")
     
+    colnames(a_belief) <- x$states
     list(a_belief)
   }
 
@@ -215,6 +214,7 @@ estimate_belief_for_nodes <-
 
 .estimate_belief_for_nodes_trajectories_unconverged <-
   function(x,
+    belief = NULL,
     n = 100000L,
     ...) {
     a_belief <- lapply(
@@ -232,9 +232,12 @@ estimate_belief_for_nodes <-
       )
     
     # start with the initial belief and mark it found
+    if (is.null(belief))
+      belief <- start_vector(x)
+    queue <- new.queue()
     epoch <- 1L
     queue <- new.queue()
-    enqueue(queue,  list(belief = start_vector(x), epoch = epoch))
+    enqueue(queue,  list(belief = belief, epoch = epoch))
     
     tries <- n
     while (!all(unlist(found))) {
@@ -244,20 +247,18 @@ estimate_belief_for_nodes <-
         break
       }
       
-      if (!queue.empty(queue)) {
-        be <- dequeue(queue)
-        belief_state <- be[[1]]
-        epoch <- be[[2]]
-      } else {
-        warning("Some states are not reachable from the start state.")
+      if (queue.empty(queue))
         break
-      }
+      
+      be <- dequeue(queue)
+      belief_state <- be[[1]]
+      epoch <- be[[2]]
       
       rna <- reward_node_action(x, belief_state, epoch = epoch)
       if (found[[epoch]][rna$pg_node])
         next
       
-      a_belief[[epoch]][rna$pg_node, ] <- rna$belief
+      a_belief[[epoch]][rna$pg_node,] <- rna$belief
       found[[epoch]][rna$pg_node] <- TRUE
       
       if (epoch >= sum(x$horizon))
@@ -278,6 +279,10 @@ estimate_belief_for_nodes <-
     }
     
     delete.queue(queue)
+    
+    # if (!all(unlist(found)))
+    #   warning("The following states are not reachable from the start state: ", paste(which(!unlist(found)), collapse = ", "), 
+    #     "\n The returned belief for these states is 'NA'")
     
     for (i in seq_along(a_belief))
       colnames(a_belief[[i]]) <- x$states

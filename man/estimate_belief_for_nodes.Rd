@@ -4,7 +4,13 @@
 \alias{estimate_belief_for_nodes}
 \title{Estimate the Belief for Policy Graph Nodes}
 \usage{
-estimate_belief_for_nodes(x, method = "auto", verbose = FALSE, ...)
+estimate_belief_for_nodes(
+  x,
+  method = "auto",
+  belief = NULL,
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{object of class \link{POMDP} containing a solved and converged POMDP problem.}
@@ -13,6 +19,8 @@ estimate_belief_for_nodes(x, method = "auto", verbose = FALSE, ...)
 \code{"auto"}, reuse \code{"solver_points"}, follow \code{"trajectories"}, sample \code{"random_sample"}
 or \code{"regular_sample"}. Auto uses
 solver points if available and follows trajectories otherwise.}
+
+\item{belief}{start belief used for method trajectories. \code{NULL} uses the start belief specified in the model.}
 
 \item{verbose}{logical; show which method is used.}
 
