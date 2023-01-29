@@ -1,15 +1,17 @@
 
 
 
+
 #' @include plot_policy_graph.R
 #' @rdname plot_policy_graph
 #' @export
 policy_graph <-
   function(x,
     belief = NULL,
-    show_belief = TRUE,
-    col = NULL,
+    show_belief = FALSE,
+    belief_col = NULL,
     simplify_observations = FALSE,
+    remove_unreachable_nodes = FALSE,
     ...) {
     is_solved_POMDP(x, stop = TRUE)
     
@@ -17,17 +19,23 @@ policy_graph <-
       stop("No policy graph available for problems with a horizon < 2.")
     
     if (!is_converged_POMDP(x))
-      policy_graph <- policy_graph_unconverged(x,
+      policy_graph <- policy_graph_unconverged(
+        x,
         belief,
+        belief_col = belief_col,
         show_belief = show_belief,
-        col = col,
-        ...)
+        remove_unreachable_nodes =  remove_unreachable_nodes,
+        ...
+      )
     else
-      policy_graph <- policy_graph_converged(x,
+      policy_graph <- policy_graph_converged(
+        x,
         belief,
         show_belief = show_belief,
-        col = col,
-        ...)
+        belief_col = belief_col,
+        remove_unreachable_nodes = remove_unreachable_nodes,
+        ...
+      )
     
     if (simplify_observations)
       policy_graph <-
@@ -36,6 +44,9 @@ policy_graph <-
           edge.attr.comb = list(
             label = function(x)
               paste(x, collapse = "/\n"),
+            observation = function(x)
+              paste(x, collapse = "/\n"),
+            arrow.size = function(x) mean(x),
             "ignore"
           ),
           remove.loops = FALSE
@@ -48,8 +59,11 @@ policy_graph_converged <-
   function(x,
     belief = NULL,
     show_belief = TRUE,
-    col = NULL,
+    belief_col = NULL,
+    remove_unreachable_nodes = FALSE,
     ...) {
+    ## TODO: Implement remove_unreachable_nodes !!!
+    
     ### this is for sarsop...
     if (ncol(x$solution$pg[[1L]]) <= 2L) {
       pg_complete <- .infer_policy_graph_converged(x, ...)
@@ -93,7 +107,7 @@ policy_graph_converged <-
     )
     
     l <- do.call(rbind, l)
-    l <- l[!is.na(l$to), ] # remove links to nowhere ('-' in pg)
+    l <- l[!is.na(l$to),] # remove links to nowhere ('-' in pg)
     
     # creating graph
     policy_graph <- graph.edgelist(as.matrix(l[, 1:2]))
@@ -125,11 +139,12 @@ policy_graph_converged <-
         lapply(
           seq_len(nrow(bp)),
           FUN = function(i)
-            bp[i, ]
+            bp[i,]
         )
       
       ### Set1 from Colorbrewer
-      col <- .get_colors_descrete(length(x$states), col)
+      belief_col <-
+        .get_colors_descrete(length(x$states), belief_col)
       
       # plot unknown beliefs as white circles
       vertex_attr(policy_graph, "shape") <-
@@ -143,7 +158,7 @@ policy_graph_converged <-
         )
       vertex_attr(policy_graph, "color") <- "white"
         vertex_attr(policy_graph, "pie") <- pie_values
-        vertex_attr(policy_graph, "pie.color") <- list(col)
+        vertex_attr(policy_graph, "pie.color") <- list(belief_col)
     }
     
     # visuals
@@ -157,8 +172,8 @@ policy_graph_unconverged <-
   function(x,
     belief = NULL,
     show_belief = TRUE,
-    col = NULL,
-    unreachable_nodes = FALSE,
+    belief_col = NULL,
+    remove_unreachable_nodes = FALSE,
     ...) {
     pg <- x$solution$pg
     
@@ -189,7 +204,7 @@ policy_graph_unconverged <-
       reward_node_action(x, belief = belief)$pg_node
     
     ## remove unreached nodes
-    if (!unreachable_nodes) {
+    if (remove_unreachable_nodes) {
       used <- paste0("1-", initial_pg_node)
       for (i in seq(epochs)) {
         used <-
@@ -226,7 +241,7 @@ policy_graph_unconverged <-
     )
     
     l <- do.call(rbind, l)
-    l <- l[!is.na(l$to), ] # remove links to nowhere ('-' in pg)
+    l <- l[!is.na(l$to),] # remove links to nowhere ('-' in pg)
     num_edges <- nrow(l)
     
     # creating the initial graph
@@ -267,13 +282,14 @@ policy_graph_unconverged <-
         lapply(
           seq_len(nrow(bp)),
           FUN = function(i)
-            bp[i, ]
+            bp[i,]
         )
       pie_values <- pie_values[m]
       
       ### Set1 from Colorbrewer
       number_of_states <- length(x$states)
-      col <- .get_colors_descrete(number_of_states, col)
+      belief_col <-
+        .get_colors_descrete(number_of_states, belief_col)
       
       vertex_attr(policy_graph, "shape") <-
         sapply(
@@ -287,7 +303,7 @@ policy_graph_unconverged <-
       vertex_attr(policy_graph, "color") <- "white"
         vertex_attr(policy_graph, "pie") <- pie_values
         vertex_attr(policy_graph, "pie.color") <-
-          rep(list(col), times = num_nodes)
+          rep(list(belief_col), times = num_nodes)
     }
     
     # visuals
@@ -319,7 +335,7 @@ policy_graph_unconverged <-
       FUN = function(i)
         reward_node_action(
           model,
-          update_belief(model, belief = central_beliefs[i, ], action = pg$action[i])
+          update_belief(model, belief = central_beliefs[i,], action = pg$action[i])
         )$pg_node
     ))
   colnames(pg_to) <- model$observations
@@ -347,7 +363,7 @@ policy_graph_unconverged <-
       FUN = function(i)
         reward_node_action(
           model,
-          update_belief(model, belief = central_beliefs[i, ], action = pg$action[i])
+          update_belief(model, belief = central_beliefs[i,], action = pg$action[i])
         )$pg_node
     ))
   colnames(pg_to) <- model$observations
