@@ -18,7 +18,8 @@ transition_matrix(
   action = NULL,
   episode = NULL,
   epoch = NULL,
-  sparse = TRUE
+  sparse = TRUE,
+  drop = TRUE
 )
 
 transition_val(x, action, start.state, end.state, episode = NULL, epoch = NULL)
@@ -28,7 +29,8 @@ observation_matrix(
   action = NULL,
   episode = NULL,
   epoch = NULL,
-  sparse = TRUE
+  sparse = TRUE,
+  drop = TRUE
 )
 
 observation_val(
@@ -46,7 +48,8 @@ reward_matrix(
   start.state = NULL,
   episode = NULL,
   epoch = NULL,
-  sparse = FALSE
+  sparse = FALSE,
+  drop = TRUE
 )
 
 reward_val(
@@ -75,6 +78,8 @@ to the episode using the model horizon.}
 
 \item{sparse}{logical; use sparse matrices when the density is below 50\% . \code{NULL} returns the
 representation stored in the problem description.}
+
+\item{drop}{logical; drop the action list if a single action is requested?}
 
 \item{start.state, end.state}{name or index of the state.}
 

@@ -3,7 +3,8 @@
 ## Changes
 * plot_policy_graph(): The parameter order has slightly changed.
 * policy() gained parameters alpha and action.
-* color pallets are now exported.
+* color palettes are now exported.
+* POMPD accessors gain parameter drop.
 
 
 # pomdp 1.1.0 (01/23/2023)

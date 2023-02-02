@@ -6,6 +6,7 @@
 \usage{
 transition_graph(
   x,
+  action = NULL,
   episode = NULL,
   epoch = NULL,
   state_col = NULL,
@@ -14,6 +15,8 @@ transition_graph(
 }
 \arguments{
 \item{x}{object of class \link{POMDP} or \link{MDP}.}
+
+\item{action}{the name or id of an action or a set of actions. Bey default the transition model for all actions is returned.}
 
 \item{episode, epoch}{Episode or epoch used for time-dependent POMDPs. Epochs are internally converted to the episode using the model horizon.}
 
@@ -42,7 +45,7 @@ plot(g)
 
 # plot with a fixed layout and curved edges
 plot(g,
- layout = layout.norm(rbind(c(-1, 0), c(1, 0))),  
+ layout = rbind(c(-1, 0), c(1, 0)), rescale = FALSE,
  edge.curved = curve_multiple_directed(g, .8),
  edge.loop.angle = -pi / 4,
  vertex.size = 60
@@ -63,17 +66,18 @@ visNetwork(nodes, edges)  \%>\%
   visNodes(physics = FALSE) \%>\% 
   visEdges(smooth = list(type = "curvedCW", roundness = .6), arrows = "to")
 } 
+ 
+## Plot an individual graph for each actions
+for (a in Tiger$actions) {
+ g <- transition_graph(Tiger, action = a)
 
-## Do not simplify graph
-g <- transition_graph(Tiger, simplify = FALSE)
-
-# plot with a fixed layout and curved edges and try to spread out the self loops.
-plot(g,
- layout = layout.norm(rbind(c(-1, 0), c(1, 0))),  
- edge.curved = curve_multiple_directed(g, .8),
- edge.loop.angle = cumsum(which_loop(g)) *  (-pi / 8),
- vertex.size = 60
+ plot(g,
+  layout = rbind(c(-1, 0), c(1, 0)), rescale = FALSE,  
+  edge.curved = curve_multiple_directed(g, .8),
+  edge.loop.angle = cumsum(which_loop(g)) *  (-pi / 8),
+  vertex.size = 60
  )
+}
 }
 \seealso{
 Other POMDP: 

@@ -11,6 +11,7 @@
 #' @import igraph
 #'
 #' @param x object of class [POMDP] or [MDP].
+#' @param action the name or id of an action or a set of actions. Bey default the transition model for all actions is returned.
 #' @param episode,epoch  Episode or epoch used for time-dependent POMDPs. Epochs are internally converted to the episode using the model horizon.
 #' @param state_col colors used to represent the states.
 #' @param simplify_transitions logical; combine parallel transition arcs into a single arc.
@@ -27,7 +28,7 @@
 #' 
 #' # plot with a fixed layout and curved edges
 #' plot(g,
-#'  layout = layout.norm(rbind(c(-1, 0), c(1, 0))),  
+#'  layout = rbind(c(-1, 0), c(1, 0)), rescale = FALSE,
 #'  edge.curved = curve_multiple_directed(g, .8),
 #'  edge.loop.angle = -pi / 4,
 #'  vertex.size = 60
@@ -48,23 +49,24 @@
 #'   visNodes(physics = FALSE) %>% 
 #'   visEdges(smooth = list(type = "curvedCW", roundness = .6), arrows = "to")
 #' } 
+#'  
+#' ## Plot an individual graph for each actions
+#' for (a in Tiger$actions) {
+#'  g <- transition_graph(Tiger, action = a)
 #' 
-#' ## Do not simplify graph
-#' g <- transition_graph(Tiger, simplify = FALSE)
-#' 
-#' # plot with a fixed layout and curved edges and try to spread out the self loops.
-#' plot(g,
-#'  layout = layout.norm(rbind(c(-1, 0), c(1, 0))),  
-#'  edge.curved = curve_multiple_directed(g, .8),
-#'  edge.loop.angle = cumsum(which_loop(g)) *  (-pi / 8),
-#'  vertex.size = 60
+#'  plot(g,
+#'   layout = rbind(c(-1, 0), c(1, 0)), rescale = FALSE,  
+#'   edge.curved = curve_multiple_directed(g, .8),
+#'   edge.loop.angle = cumsum(which_loop(g)) *  (-pi / 8),
+#'   vertex.size = 60
 #'  )
+#' }
 #' @export
-transition_graph <- function(x, episode = NULL, epoch = NULL, state_col = NULL, simplify_transitions = TRUE) {
-  m <- transition_matrix(x, episode = episode, epoch = epoch, sparse = FALSE)
-  
+transition_graph <- function(x, action = NULL, episode = NULL, epoch = NULL, state_col = NULL, simplify_transitions = TRUE) {
   state_col <-
     colors_discrete(length(x$states), state_col)
+  
+  m <- transition_matrix(x, action = action, episode = episode, epoch = epoch, sparse = FALSE, drop = FALSE)
   
   gs <- lapply(
     names(m),

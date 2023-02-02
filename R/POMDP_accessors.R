@@ -30,6 +30,7 @@
 #'  to the episode using the model horizon. 
 #' @param sparse logical; use sparse matrices when the density is below 50% . `NULL` returns the
 #'   representation stored in the problem description.
+#' @param drop logical; drop the action list if a single action is requested? 
 #' @return A list or a list of lists of matrices.
 #' @author Michael Hahsler
 #' @examples
@@ -89,7 +90,8 @@ transition_matrix <-
     action = NULL,
     episode = NULL,
     epoch = NULL,
-    sparse = TRUE) {
+    sparse = TRUE,
+    drop = TRUE) {
     if (is.null(episode)) {
       if (is.null(epoch))
         episode <- 1L
@@ -104,7 +106,8 @@ transition_matrix <-
       to = "states",
       episode = episode,
       action = action,
-      sparse = sparse
+      sparse = sparse,
+      drop = drop
     )
   }
 
@@ -134,7 +137,8 @@ observation_matrix <-
     action = NULL,
     episode = NULL,
     epoch = NULL,
-    sparse = TRUE) {
+    sparse = TRUE,
+    drop = TRUE) {
     if (is.null(x$observation_prob))
       stop("model is not a complete POMDP, no observation probabilities specified!")
     
@@ -153,7 +157,8 @@ observation_matrix <-
       to = "observations",
       episode = episode,
       action = action,
-      sparse = sparse
+      sparse = sparse,
+      drop = drop
     )
   }
 
@@ -181,7 +186,8 @@ reward_matrix <-
     start.state = NULL,
     episode = NULL,
     epoch = NULL,
-    sparse = FALSE) {
+    sparse = FALSE,
+    drop = TRUE) {
     ## action list of s' x o matrices
     ## action list of s list of s' x o matrices
     ## if not observations are available then it is a s' vector
@@ -201,9 +207,9 @@ reward_matrix <-
     )
     
     ### unpack if we have a single action/start state
-    if (length(mat) == 1L)
+    if (drop && length(mat) == 1L)
       mat <- mat[[1]]
-    if (length(mat) == 1L)
+    if (drop && length(mat) == 1L)
       mat <- mat[[1]]
       
    mat 
@@ -384,7 +390,8 @@ normalize_MDP <- function(x, sparse = TRUE) {
   to = "states",
   episode = 1,
   action = NULL,
-  sparse = TRUE) {
+  sparse = TRUE,
+  drop = TRUE) {
   if (is.null(action))
     actions <- model$actions
   else
@@ -496,7 +503,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
   } else
     stop("Unknown ", field, " matrix format.\n")
   
-  if (!is.null(action) && length(action) == 1)
+  if (drop && !is.null(action) && length(action) == 1)
     prob <- prob[[1]]
   
   prob
@@ -504,6 +511,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
 
 
 ## reward is action -> start.state -> end.state x observation
+## drop is done in the calling function
 .translate_reward <-
   function(model,
     episode = 1,
