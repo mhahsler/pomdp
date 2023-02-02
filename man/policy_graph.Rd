@@ -8,7 +8,7 @@ policy_graph(
   x,
   belief = NULL,
   show_belief = FALSE,
-  belief_col = NULL,
+  state_col = NULL,
   simplify_observations = FALSE,
   remove_unreachable_nodes = FALSE,
   ...
@@ -23,7 +23,7 @@ If \code{NULL} then the belief is taken from the model definition.}
 
 \item{show_belief}{logical; show estimated belief proportions as a pie chart or color in each node?}
 
-\item{belief_col}{colors used to represent the belief in each node. Only used if \code{show_belief} is \code{TRUE}.}
+\item{state_col}{colors used to represent the belief over the states in each node. Only used if \code{show_belief} is \code{TRUE}.}
 
 \item{simplify_observations}{combine parallel observation arcs into a single arc.}
 

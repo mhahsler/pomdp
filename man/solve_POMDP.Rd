@@ -180,9 +180,6 @@ Tiger$reward
 sol <- solve_POMDP(model = Tiger)
 sol
 
-# look at solver output
-sol$solution$solver_output
-
 # look at the solution
 sol$solution
 
@@ -203,6 +200,7 @@ sol <- solve_POMDP("http://www.pomdp.org/examples/cheese.95.POMDP",
 sol
 
 policy(sol)
+plot_policy_graph(sol)
 
 # Example 3: Solving a finite-horizon POMDP using the incremental
 #            pruning method (without discounting)
@@ -213,7 +211,7 @@ sol
 # look at the policy tree
 policy(sol)
 plot_policy_graph(sol)
-# note: it does not make sense to open the door in epochs 1 or 2 if you only have 3 epochs.
+# note: only open the door in epoch 3 if you get twice the same observation.
 
 # Expected reward for listen twice and then open the door or listen 3 times
 reward(sol)
@@ -275,6 +273,13 @@ sol
 
 policy(sol)
 
+# note that the default method to estimate the belief for nodes is following a 
+#  trajectory which uses only the first belief reached for each node. Random sampling
+#  can find a better estimate of the central belief of the segment (see nodes 4-1 to 6-3 
+#  in the plots below).
+plot_policy_graph(sol)
+plot_policy_graph(sol, method = "random_sample")
+
 ################################################################
 # Example 5: Alternative method to solve time-dependent POMDPs
 
@@ -305,9 +310,9 @@ policy(sol)
 # Example 6: PBVI with a custom grid
 
 # Create a search grid by sampling from the belief space in
-#   10 regular intervals
-custom_grid <- sample_belief_space(Tiger, n = 10, method = "regular")
-custom_grid
+#   100 regular intervals
+custom_grid <- sample_belief_space(Tiger, n = 100, method = "regular")
+head(custom_grid)
 
 # Visualize the search grid
 plot_belief_space(sol, sample = custom_grid)
@@ -315,6 +320,11 @@ plot_belief_space(sol, sample = custom_grid)
 # Solve the POMDP using the grid for approximation
 sol <- solve_POMDP(Tiger, method = "grid", parameter = list(grid = custom_grid))
 policy(sol)
+plot_policy_graph(sol)
+
+# note that plot_policy_graph() automatically remove nodes that are unreachable from the 
+#  initial node. This behavior can be switched off.
+plot_policy_graph(sol, remove_unreachable_nodes = FALSE)
 }
 \references{
 Cassandra, A. (2015). pomdp-solve: POMDP Solver Software,

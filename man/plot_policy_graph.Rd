@@ -10,7 +10,7 @@ plot_policy_graph(
   belief = NULL,
   engine = c("igraph", "visNetwork"),
   show_belief = TRUE,
-  belief_col = NULL,
+  state_col = NULL,
   legend = TRUE,
   simplify_observations = TRUE,
   remove_unreachable_nodes = TRUE,
@@ -30,7 +30,7 @@ If \code{NULL} then the belief is taken from the model definition.}
 
 \item{show_belief}{logical; show estimated belief proportions as a pie chart or color in each node?}
 
-\item{belief_col}{colors used to represent the belief in each node. Only used if \code{show_belief} is \code{TRUE}.}
+\item{state_col}{colors used to represent the belief over states in each node. Only used if \code{show_belief} is \code{TRUE}.}
 
 \item{legend}{logical; display a legend for colors used belief proportions?}
 

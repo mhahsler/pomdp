@@ -1,7 +1,8 @@
 # pomdp 1.1.0-1 (xx/xx/2023)
 
 ## Changes
-* plot_policy_graph(): The parameter order has slightly changed.
+* plot_policy_graph(): The parameter order has slightly changed; belief_col is now called state_col; 
+    unreachable state are now suppressed.
 * policy() gained parameters alpha and action.
 * color palettes are now exported.
 * POMPD accessors gain parameter drop.

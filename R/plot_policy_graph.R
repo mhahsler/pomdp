@@ -45,7 +45,7 @@
 #' If `NULL` then the belief is taken from the model definition.
 #' @param engine The plotting engine to be used.
 #' @param show_belief logical; show estimated belief proportions as a pie chart or color in each node?
-#' @param belief_col colors used to represent the belief in each node. Only used if `show_belief` is `TRUE`.
+#' @param state_col colors used to represent the belief over states in each node. Only used if `show_belief` is `TRUE`.
 #' @param legend logical; display a legend for colors used belief proportions?
 #' @param simplify_observations combine parallel observation arcs into a single arc.
 #' @param remove_unreachable_nodes logical; remove nodes that are not reachable from the start state? Currently only implemented for policy trees for unconverged finite-time horizon POMDPs.
@@ -152,7 +152,7 @@ plot_policy_graph <- function(x,
   belief = NULL,
   engine = c("igraph", "visNetwork"),
   show_belief = TRUE,
-  belief_col = NULL,
+  state_col = NULL,
   legend = TRUE,
   simplify_observations = TRUE,
   remove_unreachable_nodes = TRUE,
@@ -164,7 +164,7 @@ plot_policy_graph <- function(x,
       x,
       belief,
       show_belief = show_belief,
-      belief_col = belief_col,
+      state_col = state_col,
       legend = legend,
       simplify_observations = simplify_observations,
       remove_unreachable_nodes = remove_unreachable_nodes,
@@ -175,7 +175,7 @@ plot_policy_graph <- function(x,
       belief,
       show_belief = show_belief,
       legend = legend,
-      belief_col = belief_col,
+      state_col = state_col,
       simplify_observations = simplify_observations,
       remove_unreachable_nodes = remove_unreachable_nodes,
       ...
@@ -188,7 +188,7 @@ plot_policy_graph <- function(x,
   function(x,
     belief = NULL,
     show_belief,
-    belief_col,
+    state_col,
     legend,
     simplify_observations,
     remove_unreachable_nodes,
@@ -199,7 +199,7 @@ plot_policy_graph <- function(x,
         x,
         belief,
         show_belief = show_belief,
-        belief_col = belief_col,
+        state_col = state_col,
         simplify_observations = simplify_observations,
         remove_unreachable_nodes = remove_unreachable_nodes,
         ...
@@ -262,7 +262,7 @@ curve_multiple_directed <- function(graph, start = 0.3) {
   function(x,
     belief = NULL,
     show_belief = TRUE,
-    belief_col = NULL,
+    state_col = NULL,
     legend = NULL,
     simplify_observations,
     remove_unreachable_nodes,
@@ -283,7 +283,7 @@ curve_multiple_directed <- function(graph, start = 0.3) {
         x,
         belief,
         show_belief = show_belief,
-        belief_col = belief_col,
+        state_col = state_col,
         simplify_observations = simplify_observations,
         remove_unreachable_nodes = remove_unreachable_nodes
       )

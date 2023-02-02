@@ -24,7 +24,7 @@
 #' grave of a converged solution and to identify the root node in a policy graph for a finite-horizon solution.
 #' If `NULL` then the belief is taken from the model definition.
 #' @param show_belief logical; show estimated belief proportions as a pie chart or color in each node?
-#' @param belief_col colors used to represent the belief in each node. Only used if `show_belief` is `TRUE`.
+#' @param state_col colors used to represent the belief over the states in each node. Only used if `show_belief` is `TRUE`.
 #' @param simplify_observations combine parallel observation arcs into a single arc.
 #' @param remove_unreachable_nodes logical; remove nodes that are not reachable from the start state? Currently only implemented for policy trees for unconverged finite-time horizon POMDPs.
 #' @param ... parameters are passed on to [estimate_belief_for_nodes()].
@@ -53,7 +53,7 @@ policy_graph <-
   function(x,
     belief = NULL,
     show_belief = FALSE,
-    belief_col = NULL,
+    state_col = NULL,
     simplify_observations = FALSE,
     remove_unreachable_nodes = FALSE,
     ...) {
@@ -66,7 +66,7 @@ policy_graph <-
       policy_graph <- policy_graph_unconverged(
         x,
         belief,
-        belief_col = belief_col,
+        state_col = state_col,
         show_belief = show_belief,
         remove_unreachable_nodes =  remove_unreachable_nodes,
         ...
@@ -76,7 +76,7 @@ policy_graph <-
         x,
         belief,
         show_belief = show_belief,
-        belief_col = belief_col,
+        state_col = state_col,
         remove_unreachable_nodes = remove_unreachable_nodes,
         ...
       )
@@ -103,10 +103,9 @@ policy_graph_converged <-
   function(x,
     belief = NULL,
     show_belief = TRUE,
-    belief_col = NULL,
+    state_col = NULL,
     remove_unreachable_nodes = FALSE,
     ...) {
-    ## TODO: Implement remove_unreachable_nodes !!!
     
     ### this is for sarsop...
     if (ncol(x$solution$pg[[1L]]) <= 2L) {
@@ -187,8 +186,8 @@ policy_graph_converged <-
         )
       
       ### Set1 from Colorbrewer
-      belief_col <-
-        colors_discrete(length(x$states), belief_col)
+      state_col <-
+        colors_discrete(length(x$states), state_col)
       
       # plot unknown beliefs as white circles
       vertex_attr(policy_graph, "shape") <-
@@ -202,13 +201,17 @@ policy_graph_converged <-
         )
       vertex_attr(policy_graph, "color") <- "white"
         vertex_attr(policy_graph, "pie") <- pie_values
-        vertex_attr(policy_graph, "pie.color") <- list(belief_col)
+        vertex_attr(policy_graph, "pie.color") <- list(state_col)
     }
     
     # visuals
     edge_attr(policy_graph, "arrow.size")  <- .5
     vertex_attr(policy_graph, "size") <- 100 / nrow(pg) ^ .5
     
+    if (remove_unreachable_nodes)
+      policy_graph <- igraph::delete_vertices(policy_graph, setdiff(seq_along(V(policy_graph)), 
+        igraph::dfs(policy_graph, root = initial_pg_node, unreach = FALSE)$order))
+
     policy_graph
   }
 
@@ -216,7 +219,7 @@ policy_graph_unconverged <-
   function(x,
     belief = NULL,
     show_belief = TRUE,
-    belief_col = NULL,
+    state_col = NULL,
     remove_unreachable_nodes = FALSE,
     ...) {
     pg <- x$solution$pg
@@ -332,8 +335,8 @@ policy_graph_unconverged <-
       
       ### Set1 from Colorbrewer
       number_of_states <- length(x$states)
-      belief_col <-
-        colors_discrete(number_of_states, belief_col)
+      state_col <-
+        colors_discrete(number_of_states, state_col)
       
       vertex_attr(policy_graph, "shape") <-
         sapply(
@@ -347,7 +350,7 @@ policy_graph_unconverged <-
       vertex_attr(policy_graph, "color") <- "white"
         vertex_attr(policy_graph, "pie") <- pie_values
         vertex_attr(policy_graph, "pie.color") <-
-          rep(list(belief_col), times = num_nodes)
+          rep(list(state_col), times = num_nodes)
     }
     
     # visuals
