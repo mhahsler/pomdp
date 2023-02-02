@@ -188,7 +188,7 @@ policy_graph_converged <-
       
       ### Set1 from Colorbrewer
       belief_col <-
-        .get_colors_descrete(length(x$states), belief_col)
+        colors_discrete(length(x$states), belief_col)
       
       # plot unknown beliefs as white circles
       vertex_attr(policy_graph, "shape") <-
@@ -333,7 +333,7 @@ policy_graph_unconverged <-
       ### Set1 from Colorbrewer
       number_of_states <- length(x$states)
       belief_col <-
-        .get_colors_descrete(number_of_states, belief_col)
+        colors_discrete(number_of_states, belief_col)
       
       vertex_attr(policy_graph, "shape") <-
         sapply(

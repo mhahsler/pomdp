@@ -133,7 +133,8 @@ Other solver:
 Other MDP: 
 \code{\link{MDP}()},
 \code{\link{POMDP_accessors}},
-\code{\link{simulate_MDP}()}
+\code{\link{simulate_MDP}()},
+\code{\link{transition_graph}()}
 }
 \author{
 Michael Hahsler

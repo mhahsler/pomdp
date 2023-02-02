@@ -99,7 +99,8 @@ table(sim$states)
 Other MDP: 
 \code{\link{MDP}()},
 \code{\link{POMDP_accessors}},
-\code{\link{solve_MDP}()}
+\code{\link{solve_MDP}()},
+\code{\link{transition_graph}()}
 }
 \author{
 Michael Hahsler

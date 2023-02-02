@@ -123,11 +123,11 @@ plot_belief_space <-
     # cols ... colors for all points
     if (is.factor(val)) {
       # actions and pg_node are factor
-      col <- .get_colors_descrete(length(levels(val)), col)
+      col <- colors_discrete(length(levels(val)), col)
       cols <- col[as.integer(val)]
     } else {
-      col <- .get_colors_cont(seq(0, 1, length.out = 11), col)
-      cols <- .get_colors_cont(val, col)
+      col <- colors_continuous(seq(0, 1, length.out = 11), col)
+      cols <- colors_continuous(val, col)
     }
     
     sample <- sample[, is.na(projection)]

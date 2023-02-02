@@ -102,7 +102,7 @@ plot_value_function <-
       alpha <- alpha[[epoch]]
       pg <- pg[[epoch]]
      
-      col <- .get_colors_descrete(nrow(alpha), col)
+      col <- colors_discrete(nrow(alpha), col)
       lwd <- rep(lwd, length.out = nrow(alpha))
       lty <- rep(lty, length.out = nrow(alpha))
     

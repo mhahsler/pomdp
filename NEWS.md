@@ -3,6 +3,7 @@
 ## Changes
 * plot_policy_graph(): The parameter order has slightly changed.
 * policy() gained parameters alpha and action.
+* color pallets are now exported.
 
 
 # pomdp 1.1.0 (01/23/2023)

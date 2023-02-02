@@ -70,7 +70,7 @@ normalize_MDP(x, sparse = TRUE)
 
 \item{action}{name or index of an action.}
 
-\item{episode, epoch}{Episode or epoch used for time-dependent POMDPs. Epoch are internally converted
+\item{episode, epoch}{Episode or epoch used for time-dependent POMDPs. Epochs are internally converted
 to the episode using the model horizon.}
 
 \item{sparse}{logical; use sparse matrices when the density is below 50\% . \code{NULL} returns the
@@ -166,13 +166,15 @@ Other POMDP:
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()},
+\code{\link{transition_graph}()},
 \code{\link{update_belief}()},
 \code{\link{write_POMDP}()}
 
 Other MDP: 
 \code{\link{MDP}()},
 \code{\link{simulate_MDP}()},
-\code{\link{solve_MDP}()}
+\code{\link{solve_MDP}()},
+\code{\link{transition_graph}()}
 }
 \author{
 Michael Hahsler

@@ -116,7 +116,8 @@ plot_value_function(sol2)
 Other MDP: 
 \code{\link{POMDP_accessors}},
 \code{\link{simulate_MDP}()},
-\code{\link{solve_MDP}()}
+\code{\link{solve_MDP}()},
+\code{\link{transition_graph}()}
 }
 \author{
 Michael Hahsler

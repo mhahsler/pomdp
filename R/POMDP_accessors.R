@@ -26,7 +26,7 @@
 #' @param action name or index of an action.
 #' @param start.state,end.state name or index of the state.
 #' @param observation name or index of observation.
-#' @param episode,epoch Episode or epoch used for time-dependent POMDPs. Epoch are internally converted 
+#' @param episode,epoch Episode or epoch used for time-dependent POMDPs. Epochs are internally converted 
 #'  to the episode using the model horizon. 
 #' @param sparse logical; use sparse matrices when the density is below 50% . `NULL` returns the
 #'   representation stored in the problem description.

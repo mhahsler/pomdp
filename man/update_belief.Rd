@@ -68,6 +68,7 @@ Other POMDP:
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()},
+\code{\link{transition_graph}()},
 \code{\link{write_POMDP}()}
 }
 \author{

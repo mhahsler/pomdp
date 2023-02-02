@@ -1,7 +1,22 @@
-# color helper
-
-.get_colors_descrete <- function(n, col = NULL) {
-  if (is.null(col)) {
+#' Default Colors for Visualization in Package pomdp
+#'
+#' Default discrete and continuous colors used in pomdp for states (nodes), beliefs and values.
+#'
+#' @name colors
+#'
+#' @param n number of states.
+#' @param col custom color palette. `colors_discrete()` uses the first n colors.  
+#'  `colors_continuous()` uses these colors to calculate a palette (see [grDevices::colorRamp()])
+#'
+#' @returns `colors_discrete()` returns a color palette and 
+#'  `colors_continuous()` returns the colors associated with the supplied values.
+#' @examples
+#' colors_discrete(5)
+#'
+#' colors_continuous(runif(10))
+#' @export
+colors_discrete <- function(n, col = NULL) {
+  if (is.null(col))
     # colorbrewer Set 1
     col <-
       c(
@@ -15,19 +30,19 @@
         "#F781BF",
         "#999999"
       )
-    if (n <= 9)
-      col <- col[1:n]
-    else
-      col <- grDevices::rainbow(n)
-  }
   
-  if (length(col) != n)
-    stop("Number of colors does not match.")
+  if (n <= length(col))
+    col <- col[1:n]
+  else
+    col <- grDevices::rainbow(n)
   
   col
 }
 
-.get_colors_cont <- function(val, col = NULL) {
+#' @rdname colors
+#' @param val a vector with values to be translated to colors.
+#' @export
+colors_continuous <- function(val, col = NULL) {
   if (is.null(col))
     col <- c("#377EB8", "#E41A1C") # blue -> red
   grDevices::rgb(grDevices::colorRamp(col, space = "Lab")((val - min(val, na.rm = TRUE)) / (

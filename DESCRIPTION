@@ -63,4 +63,5 @@ Collate:
     'solve_MDP.R'
     'solve_POMDP.R'
     'solve_SARSOP.R'
+    'transition_graph.R'
     'update_belief.R'
