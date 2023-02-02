@@ -1,9 +1,53 @@
-
-
-
-
-#' @include plot_policy_graph.R
-#' @rdname plot_policy_graph
+#' POMDP Policy Graphs
+#'
+#' The function creates a POMDP policy graph for converged POMDP solution and the
+#' policy tree for a finite-horizon solution.
+#' The graph is represented as an \pkg{igraph} object.
+#'
+#' Each policy graph node is represented by an alpha vector specifying a hyper plane segment. The convex hull of
+#' the set of hyperplanes represents the the value function.
+#' The policy specifies for each node an optimal action which is printed together with the node ID inside the node.
+#' The arcs are labeled with observations.
+#' Infinite-horizon converged solutions from a single policy graph. 
+#' For finite-horizon solution a policy tree is produced.
+#' The levels of the tree and the first number in the node label represent the epochs. 
+#' 
+#' The parameters `show_belief`, `remove_unreachable_nodes`, and `simplify_observations` are 
+#' used by [plot_policy_graph()] (see there for details) to reduce clutter and make the visualization more readable. 
+#' These options are disabled by default for `policy_graph()`.
+#' @family policy
+#'
+#' @import igraph
+#'
+#' @param x object of class [POMDP] containing a solved and converged POMDP problem.
+#' @param belief the initial belief is used to mark the initial belief state in the
+#' grave of a converged solution and to identify the root node in a policy graph for a finite-horizon solution.
+#' If `NULL` then the belief is taken from the model definition.
+#' @param show_belief logical; show estimated belief proportions as a pie chart or color in each node?
+#' @param belief_col colors used to represent the belief in each node. Only used if `show_belief` is `TRUE`.
+#' @param simplify_observations combine parallel observation arcs into a single arc.
+#' @param remove_unreachable_nodes logical; remove nodes that are not reachable from the start state? Currently only implemented for policy trees for unconverged finite-time horizon POMDPs.
+#' @param ... parameters are passed on to [estimate_belief_for_nodes()].
+#'
+#' @returns returns the policy graph as an igraph object.
+#' @examples
+#' data("Tiger")
+#'
+#' ### Policy graphs for converged solutions
+#' sol <- solve_POMDP(model = Tiger)
+#' sol
+#'
+#' policy_graph(sol)
+#'
+#' ## visualization
+#' plot_policy_graph(sol)
+#'
+#' ### Policy trees for finite-horizon solutions
+#' sol <- solve_POMDP(model = Tiger, horizon = 4, method = "incprune")
+#'
+#' policy_graph(sol)
+#' plot_policy_graph(sol)
+#' # Note: the first number in the node id is the epoch.
 #' @export
 policy_graph <-
   function(x,

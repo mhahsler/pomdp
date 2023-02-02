@@ -1,5 +1,9 @@
 # pomdp 1.1.0-1 (xx/xx/2023)
 
+## Changes
+* plot_policy_graph(): The parameter order has slightly changed.
+* policy() gained parameters alpha and action.
+
 
 # pomdp 1.1.0 (01/23/2023)
 
