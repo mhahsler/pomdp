@@ -166,7 +166,7 @@ solve_SARSOP <- function(model,
       discount = model$discount,
       converged = length(grep("precision reached", res$end_condition)) == 1,
       total_expected_reward = NA,
-      initial_belief = NA,
+      initial_belief = model$start,
       initial_pg_node = NA,
       #  terminal_values = if(!is.null(terminal_values)) terminal_values else 0,
       #belief_states = belief,
@@ -178,6 +178,7 @@ solve_SARSOP <- function(model,
   )
   
   model$solution$total_expected_reward = reward(model, model$start)
+  model$solution$initial_pg_node <- reward_node_action(model)$pg_node
   
   model
 }
