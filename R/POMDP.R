@@ -25,10 +25,10 @@
 #'
 #' State names, actions and observations can be specified as strings or index numbers
 #' (e.g., `start.state` can be specified as the index of the state in `states`).
-#' For the specification as data.frames below, `'*'` or `NA` can be used to mean
-#' any  `start.state`, `end.state`, `action` or `observation`. Note that `'*'` is internally
-#' always represented as an `NA`.
-#'
+#' For the specification as data.frames below, `NA` can be used to mean
+#' any  `start.state`, `end.state`, `action` or `observation`. Note that some POMDP solvers and the POMDP
+#' file format use `'*'` for this purpose. 
+#' 
 #' The specification below map to the format used by pomdp-solve
 #' (see \url{http://www.pomdp.org}).
 #'
@@ -180,7 +180,7 @@
 #'   ),
 #'
 #'   # the reward helper expects: action, start.state, end.state, observation, value
-#'   # missing arguments default to '*' matching any value.
+#'   # missing arguments default to NA which matches any value (often denoted as * in POMDPs).
 #'   reward = rbind(
 #'     R_("listen",                    v =   -1),
 #'     R_("open-left",  "tiger-left",  v = -100),
@@ -687,7 +687,7 @@ print.POMDP <- function(x, ...) {
         x$solution$converged),
       sprintf("    # of alpha vectors: %i",
         sum(sapply(
-          x$solution$alpha, length
+          x$solution$alpha, nrow
         ))),
       sprintf(
         "    Total expected reward: %f",
@@ -821,9 +821,9 @@ is_converged_POMDP <- function(x, stop = FALSE, message = "") {
 #' @rdname POMDP
 #' @export
 O_ <-
-  function(action = "*",
-    end.state = "*",
-    observation = "*",
+  function(action = NA,
+    end.state = NA,
+    observation = NA,
     probability)
     data.frame(
       action = action,
@@ -836,9 +836,9 @@ O_ <-
 #' @rdname POMDP
 #' @export
 T_ <-
-  function(action = "*",
-    start.state = "*",
-    end.state = "*",
+  function(action = NA,
+    start.state = NA,
+    end.state = NA,
     probability)
     data.frame(
       action = action,
@@ -851,10 +851,10 @@ T_ <-
 #' @rdname POMDP
 #' @export
 R_ <-
-  function(action = "*",
-    start.state = "*",
-    end.state = "*",
-    observation = "*",
+  function(action = NA,
+    start.state = NA,
+    end.state = NA,
+    observation = NA,
     value)
     data.frame(
       action = action,

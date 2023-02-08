@@ -126,7 +126,7 @@ observation_val(Tiger, action = "listen", end.state = "tiger-left", observation 
 #  start state in the form end state x observation
 Tiger$reward
 reward_matrix(Tiger)
-reward_val(Tiger, action = "open-right", start.state = "tiger-left", end.state = "tiger-left", 
+reward_val(Tiger, action = "open-right", start.state = "tiger-left", end.state = "tiger-left",
   observation = "tiger-left")
 
 # Translate the initial belief vector

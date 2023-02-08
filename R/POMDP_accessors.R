@@ -26,11 +26,11 @@
 #' @param action name or index of an action.
 #' @param start.state,end.state name or index of the state.
 #' @param observation name or index of observation.
-#' @param episode,epoch Episode or epoch used for time-dependent POMDPs. Epochs are internally converted 
-#'  to the episode using the model horizon. 
+#' @param episode,epoch Episode or epoch used for time-dependent POMDPs. Epochs are internally converted
+#'  to the episode using the model horizon.
 #' @param sparse logical; use sparse matrices when the density is below 50% . `NULL` returns the
 #'   representation stored in the problem description.
-#' @param drop logical; drop the action list if a single action is requested? 
+#' @param drop logical; drop the action list if a single action is requested?
 #' @return A list or a list of lists of matrices.
 #' @author Michael Hahsler
 #' @examples
@@ -50,7 +50,7 @@
 #' #  start state in the form end state x observation
 #' Tiger$reward
 #' reward_matrix(Tiger)
-#' reward_val(Tiger, action = "open-right", start.state = "tiger-left", end.state = "tiger-left", 
+#' reward_val(Tiger, action = "open-right", start.state = "tiger-left", end.state = "tiger-left",
 #'   observation = "tiger-left")
 #'
 #' # Translate the initial belief vector
@@ -81,7 +81,7 @@
 #' }
 #'
 #' Tiger$transition_prob <- trans
-#' 
+#'
 #' # transition_matrix evaluates the function
 #' transition_matrix(Tiger)
 #' @export
@@ -123,11 +123,13 @@ transition_val <-
     end.state,
     episode = NULL,
     epoch = NULL) {
-    transition_matrix(x,
+    transition_matrix(
+      x,
       action = action,
       episode = episode,
       epoch = epoch,
-      sparse = NULL)[start.state, end.state]
+      sparse = NULL
+    )[start.state, end.state]
   }
 
 #' @rdname POMDP_accessors
@@ -171,11 +173,13 @@ observation_val <-
     observation,
     episode = NULL,
     epoch = NULL) {
-    observation_matrix(x,
+    observation_matrix(
+      x,
       action = action,
       episode = episode,
       epoch = epoch,
-      sparse = NULL)[end.state, observation]
+      sparse = NULL
+    )[end.state, observation]
   }
 
 #' @rdname POMDP_accessors
@@ -211,8 +215,8 @@ reward_matrix <-
       mat <- mat[[1]]
     if (drop && length(mat) == 1L)
       mat <- mat[[1]]
-      
-   mat 
+    
+    mat
   }
 
 #' @rdname POMDP_accessors
@@ -278,7 +282,6 @@ normalize_POMDP <- function(x, sparse = TRUE) {
 #' @rdname POMDP_accessors
 #' @export
 normalize_MDP <- function(x, sparse = TRUE) {
-  
   x$start <- start_vector(x)
   x$transition_prob <-
     transition_matrix(x, sparse = sparse)
@@ -305,6 +308,92 @@ normalize_MDP <- function(x, sparse = TRUE) {
     return(as.matrix(x))
 }
 
+# build sparse matrix using triplet format
+.sparse_from_vectors <- function(i, j, x, from, to) {
+  ### expand NAs
+  i_NA <- is.na(i)
+  j_NA <- is.na(j)
+  
+  if (any(i_NA) || any(j_NA)) {
+    both_NA <- sum(i_NA & j_NA)
+    i_NA <- sum(i_NA) - both_NA
+    j_NA <- sum(j_NA) - both_NA
+    
+    nlen <- length(i) + i_NA * (length(to) - 1L) +
+      j_NA * (length(from) - 1L) +
+      both_NA * (length(to) + length(from) - 1L)
+    
+    i_n <- integer(nlen)
+    j_n <- integer(nlen)
+    x_n <- numeric(nlen)
+    
+    ii_n <- 1L
+    for (ii in seq_along(i)) {
+      ## this case makes it into a dense matrix!!!
+      if (is.na(i[ii]) && is.na(j[ii])) {
+        for (kk in seq_along(from)) {
+          for (kkk in seq_along(to)) {
+            i_n[ii_n] <- kk
+            j_n[ii_n] <- kkk
+            x_n[ii_n] <- x[ii]
+            ii_n <- ii_n + 1L
+          }
+        }
+      } else if (is.na(i[ii])) {
+        for (kk in seq_along(from)) {
+          i_n[ii_n] <- kk
+          j_n[ii_n] <- j[ii]
+          x_n[ii_n] <- x[ii]
+          ii_n <- ii_n + 1L
+        }
+      } else if (is.na(j[ii])) {
+        for (kk in seq_along(to)) {
+          i_n[ii_n] <- i[ii]
+          j_n[ii_n] <- kk
+          x_n[ii_n] <- x[ii]
+          ii_n <- ii_n + 1L
+        }
+      } else {
+        i_n[ii_n] <- i[ii]
+        j_n[ii_n] <- j[ii]
+        x_n[ii_n] <- x[ii]
+        ii_n <- ii_n + 1L
+      }
+      
+      
+      
+      if (is.na(i[ii])) {
+        
+      } else {
+        
+      }
+    }
+    
+    i <- i_n
+    j <- j_n
+    x <- x_n
+  }
+  
+  dd <- duplicated(cbind(i, j), fromLast = TRUE)
+  
+  if(any(dd)) {
+    i <- i[!dd]
+    j <- j[!dd]
+    x <- x[!dd]
+  }
+  
+  m <-
+    new(
+      "dgTMatrix",
+      i = rev(as.integer(i) - 1L),
+      j = rev(as.integer(j) - 1L),
+      x = rev(as.numeric(x)),
+      Dim = c(length(from), length(to))
+    )
+  dimnames(m) <- list(from, to)
+  m
+}
+
 # df needs to have 3 columns: from, to, and val
 .df2matrix <-
   function(model,
@@ -315,41 +404,14 @@ normalize_MDP <- function(x, sparse = TRUE) {
     # default is sparse
     if (is.null(sparse))
       sparse <- TRUE
+
+    m <- .sparse_from_vectors(i = as.integer(df[, 1]),
+      j = as.integer(df[, 2]),
+      x = as.numeric(df[, 3]),
+      from = as.character(model[[from]]), 
+      to = as.character(model[[to]]))
     
-    from <- as.character(model[[from]])
-    to <- as.character(model[[to]])
-    
-    ### make sure we have character in from/to (pre R 4.0)
-    
-    df[, 1] <- .get_names(df[, 1], from)
-    df[, 2] <- .get_names(df[, 2], to)
-    
-    # build sparse matrix using tiplet format
-    if (sparse) {
-      m <- spMatrix(nrow = length(from), ncol = length(to))
-      dimnames(m) <- list(from, to)
-    } else {
-      m <- matrix(
-        0,
-        nrow = length(from),
-        ncol = length(to),
-        dimnames = list(from, to)
-      )
-    }
-    
-    for (i in 1:nrow(df)) {
-      if (is.na(df[i, 1]) && is.na(df[i, 2]))
-        m[] <- df[i, 3]
-      else if (is.na(df[i, 1]))
-        m[, df[i, 2]] <- df[i, 3]
-      else if (is.na(df[i, 2]))
-        m[df[i, 1],] <- df[i, 3]
-      else
-        m[df[i, 1], df[i, 2]] <- df[i, 3]
-    }
-    
-    # this will make the triplet matrix into a dgCMatrix or a dense matrix
-    .sparsify(m, sparse)
+    .sparsify(m, sparse = sparse)
   }
 
 # df needs to have 2 columns: to and val
@@ -373,15 +435,15 @@ normalize_MDP <- function(x, sparse = TRUE) {
   }
 
 
-### translate ids to names
+### translate ids to names (factor)
 .get_names <- function(x, names) {
   x[x == "*"] <- NA
   x <- type.convert(x, as.is = TRUE)
   
   if (!is.numeric(x))
-    as.character(x)
+    factor(x, levels = names)
   else
-    as.character(factor(x, levels = seq_along(names), labels = names))
+    factor(x, levels = seq_along(names), labels = names)
 }
 
 .translate_probabilities <- function(model,
@@ -472,7 +534,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
           tr <- switch(
             tr,
             identity = {
-              if (is.null(sparse) || sparse) 
+              if (is.null(sparse) || sparse)
                 Matrix::Diagonal(length(from))
               else
                 diag(length(from))
@@ -537,7 +599,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
       reward <- model[[field]][[episode]]
     else
       reward <-  model[[field]]
-      
+    
     if (is.null(reward)) {
       stop(
         "Field ",
@@ -546,7 +608,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
       )
       return (NULL)
     }
-      
+    
     if (is.data.frame(reward)) {
       reward[[1L]] <- .get_names(reward[[1L]], model$actions)
       reward[[2L]] <- .get_names(reward[[2L]], states) # start state
@@ -682,7 +744,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
     
     ### MDPs have vectors not matrices here!
     if (!inherits(model, "MDP")) {
-        reward <- lapply(reward, lapply, .sparsify, sparse)
+      reward <- lapply(reward, lapply, .sparsify, sparse)
     }
     
     reward

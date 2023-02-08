@@ -97,10 +97,12 @@ write_POMDP <- function(x, file, digits = 7) {
         if (is.numeric(start)) {
           if (length(start) == length(states) && sum1(start)) {
             preamble <-
-              paste0(preamble,
+              paste0(
+                preamble,
                 "start: ",
                 format_fixed(round_stochastic(start, digits), digits, "start"),
-                "\n")
+                "\n"
+              )
           } else {
             ## this should be indices (pomdp_solve starts with 0)
             start_ids <- as.integer(abs(start)) - 1L
@@ -377,21 +379,31 @@ read_POMDP <- function(file, parse = TRUE) {
   reward <- NULL
   
   if (parse) {
+    transition_prob <- NULL
     try(transition_prob <-
-        parse_POMDP_matrix(problem,
-          field = "T",
-          actions,
-          states,
-          observations,
-          sparse = TRUE))
+        parse_POMDP_df(problem,
+          field = "T"))
+    if (is.null(transition_prob))
+      try(transition_prob <-
+          parse_POMDP_matrix(problem,
+            field = "T",
+            actions,
+            states,
+            observations,
+            sparse = TRUE))
     
+    observation_prob <- NULL
     try(observation_prob <-
-        parse_POMDP_matrix(problem,
-          field = "O",
-          actions,
-          states,
-          observations,
-          sparse = TRUE))
+        parse_POMDP_df(problem,
+          field = "O"))
+    if (is.null(observation_prob))
+      try(observation_prob <-
+          parse_POMDP_matrix(problem,
+            field = "O",
+            actions,
+            states,
+            observations,
+            sparse = TRUE))
     
     ### FIXME: If reward is a dataframe then we will leave it like this!
     reward <- NULL
@@ -428,23 +440,15 @@ read_POMDP <- function(file, parse = TRUE) {
 
 # helpers to parse transition matrices, observation matrices and reward matrices
 
-# Convert states/observations to labels or 1-based indices
+# Convert states/observations to labels or 1-based indices. Also converts asterisks to NA
 idx <- function(x) {
+  x[x == "*"] <- NA
   x <- type.convert(x, as.is = TRUE)
   if (is.integer(x))
     x <- x + 1L
   x
 }
 
-idx_asterisk <- function(x) {
-  x_non_asterisk <- x[x != "*"]
-  
-  x_non_asterisk <- type.convert(x_non_asterisk, as.is = TRUE)
-  if (is.integer(x_non_asterisk))
-    x_non_asterisk <- x_non_asterisk + 1L
-  x[x != "*"] <- x_non_asterisk
-  x
-}
 
 parse_POMDP_df <- function(problem,
   field = c("T", "O", "R"),
@@ -473,26 +477,28 @@ parse_POMDP_df <- function(problem,
   
   dat <- switch(
     field,
-    R = do.call(rbind, lapply(
-      field_values,
-      FUN = function(fv)
-        R_(fv[2], fv[3], fv[4], fv[5], fv[6])
-    )),
-    T = do.call(rbind, lapply(
-      field_values,
-      FUN = function(fv)
-        T_(fv[2], fv[3], fv[4], fv[5])
-    )),
-    O = do.call(rbind, lapply(
-      field_values,
-      FUN = function(fv)
-        O_(fv[2], fv[3], fv[4], fv[5])
-    ))
+    R = R_(
+      action = idx(sapply(field_values, "[", 2L)),
+      start.state = idx(sapply(field_values, "[", 3L)),
+      end.state = idx(sapply(field_values, "[", 4L)),
+      observation = idx(sapply(field_values, "[", 5L)),
+      value = as.numeric(sapply(field_values, "[", 6L))
+    ),
+    
+    T =  T_(
+      action = idx(sapply(field_values, "[", 2L)),
+      start.state = idx(sapply(field_values, "[", 3L)),
+      end.state = idx(sapply(field_values, "[", 4L)),
+      probability = as.numeric(sapply(field_values, "[", 5L))
+    ),
+    
+    O = O_(
+      action = idx(sapply(field_values, "[", 2L)),
+      end.state = idx(sapply(field_values, "[", 3L)),
+      observation = idx(sapply(field_values, "[", 4L)),
+      probability = as.numeric(sapply(field_values, "[", 5L))
+    )
   )
-  
-  # translate integer ids to names
-  for (i in 1:(ncol(dat) - 1L))
-    dat[[i]] <- idx_asterisk(dat[[i]])
   
   dat
 }
@@ -551,6 +557,8 @@ parse_POMDP_matrix <-
     ind <- grep(label, problem)
     
     for (i in ind) {
+      # cat("Parsing line ", i, "\n")
+      
       vals <- sub("\\s*#.*$", "", problem[i])
       vals <- trimws(sub(label, "", vals))
       vals <- strsplit(vals, "\\s*:\\s*")[[1]]
@@ -567,17 +575,16 @@ parse_POMDP_matrix <-
       start <- idx(vals[2])
       end <- idx(vals[3])
       
-      acts <- vals[1]
-      if (acts == "*")
+      acts <- idx(vals[1])
+      if (is.na(acts))
         acts <- actions
       for (action in acts) {
-        # Case: T: <action> : <start-state> : <end-state> %f
         if (length(vals) == 4L) {
-          if (start == '*' && end == '*')
+          if (is.na(start) && is.na(end))
             trans[[action]][] <- as.numeric(vals[4])
-          else if (start == '*')
+          else if (is.na(start))
             trans[[action]][, end] <- as.numeric(vals[4])
-          else if (end == '*')
+          else if (is.na(end))
             trans[[action]][start, ] <- as.numeric(vals[4])
           else
             trans[[action]][start, end] <- as.numeric(vals[4])
@@ -586,11 +593,11 @@ parse_POMDP_matrix <-
         # Case: T: <action> : <start-state> : <end-state>
         # %f
         if (length(vals) == 3L) {
-          if (start == '*' && end == '*')
+          if (is.na(start) && is.na(end))
             trans[[action]][] <- read_val_line(i + 1L)
-          else if (start == '*')
+          else if (is.na(start))
             trans[[action]][, end] <- read_val_line(i + 1L)
-          else if (end == '*')
+          else if (is.na(end))
             trans[[action]][start, ] <- read_val_line(i + 1L)
           else
             trans[[action]][start, end] <- read_val_line(i + 1L)
@@ -599,7 +606,7 @@ parse_POMDP_matrix <-
         # Case: T: <action> : <start-state>
         #       %f %f ... %f
         if (length(vals) == 2L) {
-          if (start == '*')
+          if (is.na(start))
             for (k in seq_along(rows))
               trans[[action]][k, ] <- read_val_line(i + 1L)
           else
