@@ -170,7 +170,8 @@ simulate_POMDP <-
           cat("- epsilon:", epsilon, "\n")
           cat("- discount factor:", disc, "\n")
           cat("- starting belief:\n")
-          print(belief)
+          print(head(belief, n = 10))
+          if (length(belief) > 10) cat('(Remaining belief components supressed)')
           cat("\n")
         }
        
@@ -217,11 +218,10 @@ simulate_POMDP <-
     n_obs <- length(obs)
     actions <- as.character(model$actions)
     
-    trans_m <- transition_matrix(model, sparse = sparse)
-    obs_m <- observation_matrix(model, sparse = sparse)
-    rew_m <- reward_matrix(model, sparse = sparse)
     
     # precompute matrix lists for time-dependent POMDPs
+    current_episode <- 1L
+    
     if (dt) {
       dt_horizon <- model$horizon
       dt_episodes <- cumsum(c(1, head(model$horizon,-1)))
@@ -237,12 +237,24 @@ simulate_POMDP <-
           FUN = function(ep)
             observation_matrix(model, ep)
         )
-      dt_rew_m <-
-        lapply(
-          1:length(dt_horizon),
-          FUN = function(ep)
-            reward_matrix(model, ep)
-        )
+      ## we keep the reward matrix as is to save memory.
+      # dt_rew_m <-
+      #   lapply(
+      #     1:length(dt_horizon),
+      #     FUN = function(ep)
+      #       reward_matrix(model, ep)
+      #   )
+      
+      trans_m <- dt_trans_m[[current_episode]]
+      obs_m <- dt_obs_m[[current_episode]]
+      
+    } else { ### not time-dependent case
+    
+      trans_m <- transition_matrix(model, sparse = sparse)
+      obs_m <- observation_matrix(model, sparse = sparse)
+    
+      ## we keep the reward matrix as is to save memory.
+      ## rew_m <- reward_matrix(model, sparse = sparse)
     }
     
     if (verbose) {
@@ -259,11 +271,14 @@ simulate_POMDP <-
         cat("- time-dependent:", length(dt_horizon), "episodes", "\n")
       cat("- discount factor:", disc, "\n")
       cat("- starting belief:\n")
-      print(belief)
+      print(head(belief, n = 10))
+      if (length(belief) > 10) cat('(Remaining belief components supressed)')
       cat("\n")
     }
     
     #bs <- replicate(n, expr = {
+    ### run once for debugging
+    #sim <- { cat("debugging on!!!\n")
     sim <- times(n) %dopar% {
       # initialize replication
       s <- sample(states, 1L, prob = belief)
@@ -291,12 +306,12 @@ simulate_POMDP <-
       for (j in 1:horizon) {
         # change matrices for time-dependent POMDPs
         if (dt) {
-          if (length(new_ep <- which(j == dt_episodes)) == 1L) {
+          if (length(current_episode <- which(j == dt_episodes)) == 1L) {
             if (verbose)
-              cat("- Switching to episode" , new_ep, "at epoch", j, "\n")
-            obs_m <- dt_obs_m[[new_ep]]
-            trans_m <- dt_trans_m[[new_ep]]
-            rew_m <- dt_rew_m[[new_ep]]
+              cat("- Switching to episode" , current_episode, "at epoch", j, "\n")
+            obs_m <- dt_obs_m[[current_episode]]
+            trans_m <- dt_trans_m[[current_episode]]
+            #rew_m <- dt_rew_m[[current_episode]]
           }
         }
         
@@ -326,7 +341,8 @@ simulate_POMDP <-
         state_cnt[s] <- state_cnt[s] + 1L
         obs_cnt[o] <- obs_cnt[o] + 1L
         
-        rew <- rew + rew_m[[a]][[s_prev]][s, o] * disc ^ (j - 1L)
+        # rew <- rew + rew_m[[a]][[s_prev]][s, o] * disc ^ (j - 1L)
+        rew <- rew + reward_val(model, a, s_prev, s, o, episode = current_episode) * disc ^ (j - 1L)
         #cat(j, ":", s_prev , "->", s, "- a:", a, "- o:", o, "- rew:", rew_m[[a]][[s_prev]][s, o], "\n")
         
         # update belief

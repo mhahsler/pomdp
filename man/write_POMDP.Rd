@@ -32,7 +32,8 @@ POMDP specification. \strong{The original specification is directly used by exte
 is parsed using an experimental POMDP file parser. The parsed information can be used with auxiliary functions
 in this package that use fields like the transition matrix, the observation matrix and the reward structure.
 
-\strong{Note:} The parser for POMDP files is experimental. Please report
+\strong{Notes:}
+The parser for POMDP files is experimental. Please report
 problems here: \url{https://github.com/mhahsler/pomdp/issues}.
 }
 \examples{

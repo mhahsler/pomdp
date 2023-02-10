@@ -9,7 +9,8 @@ on.exit(file.remove("Tiger.POMDP"))
 write_POMDP(Tiger, "Tiger.POMDP")
 Tiger2 <- read_POMDP("Tiger.POMDP", parse = TRUE)
 
-fields <- c("states", "observations", "actions", "start", "discount")
+fields <- c("states", "observations", "actions", "start", "discount", "horizon", 
+  "transition_prob", "observation_prob", "reward")
 expect_equal(Tiger[fields], Tiger2[fields])
 
 fields <- c("transition_prob", "observation_prob", "reward")

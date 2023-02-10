@@ -50,11 +50,18 @@ round_stochastic_int <- function(x, digits = 7) {
   
   #x / sum(x)
   xr <- round(x, digits = digits)
+  
+  # the sum can now be less
   s <- sum(xr)
   if (s != 1) {
-    inc_id <- which.max(x - xr)
+    #inc_id <- which.max(x - xr)
+    ### take it from the largest
+    inc_id <- which.max(xr)
     xr[inc_id] <- xr[inc_id] + 1 - s
   }
+  
+  if (any(xr < 0) || !sum1(xr))
+    stop("Stochastic rounding failed!")
   
   xr
 }

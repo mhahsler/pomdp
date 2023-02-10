@@ -11,7 +11,8 @@ NumericVector round_stochastic_cpp(const NumericVector& x, int digits) {
   NumericVector xr = round(x, digits);
   double s = sum(xr);
   if (s != 1.0)
-    xr[which_max(x - xr)] += 1 - s;
+    //xr[which_max(x - xr)] += 1 - s;
+    xr[which_max(xr)] += 1 - s;
   
   return xr;
 }

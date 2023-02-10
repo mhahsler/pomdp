@@ -23,7 +23,8 @@ format_fixed <- function(x, digits = 7, debug = "unknown") {
 #' is parsed using an experimental POMDP file parser. The parsed information can be used with auxiliary functions
 #' in this package that use fields like the transition matrix, the observation matrix and the reward structure.
 #'
-#' **Note:** The parser for POMDP files is experimental. Please report
+#' **Notes:**
+#' The parser for POMDP files is experimental. Please report
 #' problems here: \url{https://github.com/mhahsler/pomdp/issues}.
 #'
 #' @family POMDP
@@ -46,7 +47,15 @@ write_POMDP <- function(x, file, digits = 7) {
   if (!inherits(x, "POMDP"))
     stop("model needs to be a POMDP model use POMDP()!")
   
+  # we write the problem field if we have it
+  #if(!is.null(x$problem)) {
+  #  cat(x$problem, file = file)
+  #  return()
+  #}
+  
   x <- check_and_fix_MDP(x)
+  
+  file <- file(file, "w")
   
   with(x,
     {
@@ -64,6 +73,7 @@ write_POMDP <- function(x, file, digits = 7) {
         observation_prob <- observation_matrix(x, sparse = FALSE)
       if (is.function(reward))
         reward <- reward_matrix(x, sparse = FALSE)
+      
       
       ### POMDP file
       preamble <-  paste0(
@@ -145,58 +155,71 @@ write_POMDP <- function(x, file, digits = 7) {
                 "\n")
       }
       
-      preamble <- paste0(preamble, "\n")
+      cat(preamble, file = file)
+      cat("\n", file = file)
       
       ### write preamble
-      cat(preamble, file = file)
       
       format_POMDP_df <-
         function(x,
+          file,
           type = c("T", "R", "O"),
           digits = 7) {
           type <- match.arg(type)
-          code <- ""
           
-          var_cols <- seq_len(ncol(x) - 1L)
-          value_col <- ncol(x)
-          
-          # fix indexing and convert factor to character
-          x[x == "*"] <- NA
-          x <- type.convert(x, as.is = T)
-          for (j in var_cols) {
-            if (is.numeric(x[[j]]))
-              x[[j]] <- as.integer(x[[j]]) - 1L
-            else if (is.factor(x[[j]]))
-              x[[j]] <- as.character(x[[j]])
-          }
-          x[is.na(x)] <- "*"
-          
-          # write lines
-          for (i in 1:nrow(x)) {
-            code <- paste0(
-              code,
-              type,
-              ": ",
-              paste(x[i, var_cols], collapse = " : "),
-              " ",
-              format_fixed(x[i, value_col], digits = digits, type),
-              "\n"
+          if (type == 'R')
+            cat(
+              paste0(
+                type,
+                ": ",
+                to_0_idx(x[[1L]]),
+                " : ",
+                to_0_idx(x[[2L]]),
+                " : ",
+                to_0_idx(x[[3L]]),
+                " : ",
+                to_0_idx(x[[4L]]),
+                " ",
+                sprintf(paste0("%.", digits, "f"), x[[5L]]),
+                collapse = "\n"
+              ),
+              file = file,
+              append = TRUE
             )
-          }
-          paste0(code, "\n")
+          
+          else
+            cat(
+              paste0(
+                type,
+                ": ",
+                to_0_idx(x[[1L]]),
+                " : ",
+                to_0_idx(x[[2L]]),
+                " : ",
+                to_0_idx(x[[3L]]),
+                " ",
+                sprintf(paste0("%.", digits, "f"), x[[4L]]),
+                collapse = "\n"
+              ),
+              file = file,
+              append = TRUE
+            )
+          cat("\n", file = file)
+          
         }
       
       format_POMDP_matrix <-
         function(x,
+          file,
           type = c("T", "R", "O"),
           action,
           start = NULL,
           digits = 7) {
+          type <- match.arg(type)
+          
           ### sparse?
           if (inherits(x, "Matrix"))
-            return(format_POMDP_dgc(x, type, action, start, digits))
-          
-          type <- match.arg(type)
+            return(format_POMDP_dgc(x, file, type, action, start, digits))
           
           if (type == "R")
             code <- paste0(type, ": ", action, " : ", start, "\n")
@@ -204,20 +227,22 @@ write_POMDP <- function(x, file, digits = 7) {
             code <- paste0(type, ": ", action, "\n")
           
           if (is.character(x) && length(x) == 1)
-            code <- paste0(code, x, "\n\n")
+            code <- paste0(code, x, "\n")
           else
             code <-
             paste0(code,
               format_fixed(x,
                 digits,
                 type),
-              "\n\n")
+              "\n")
           
-          code
+          cat(code, file = file, append = TRUE)
+          cat("\n", file = file)
         }
       
       format_POMDP_dgc <-
         function(x,
+          file,
           type = c("T", "R", "O"),
           action,
           start = NULL,
@@ -248,17 +273,16 @@ write_POMDP <- function(x, file, digits = 7) {
             " ",
             sprintf(paste0("%.", digits, "f"), x@x))
           
-          code <- paste0(paste0(code, collapse = "\n"), "\n\n")
-          return (code)
+          code <- paste0(code, collapse = "\n")
+          
+          cat(code, file = file, append = TRUE)
+          cat("\n\n", file = file)
         }
       
       ### Transition Probabilities
       if (is.data.frame(transition_prob)) {
-        cat(
-          format_POMDP_df(transition_prob, "T", digits),
-          file = file,
-          append = TRUE
-        )
+        format_POMDP_df(transition_prob, file, "T", digits)
+        
         
       } else{
         # list of matrices
@@ -269,18 +293,12 @@ write_POMDP <- function(x, file, digits = 7) {
         
         # writing the transition probability matrices
         for (a in names(transition_prob)) {
-          cat(paste0(
-            format_POMDP_matrix(transition_prob[[a]], "T", a, digits = digits)
-          ),
-            file = file,
-            append = TRUE)
+          format_POMDP_matrix(transition_prob[[a]], file, "T", a, digits = digits)
         }
       }
       ### Observation Probabilities
       if (is.data.frame(observation_prob)) {
-        cat(paste0(format_POMDP_df(observation_prob, "O", digits)),
-          file = file,
-          append = TRUE)
+        format_POMDP_df(observation_prob, file, "O", digits)
       } else{
         if (!identical(names(observation_prob), '*') &&
             !setequal(names(observation_prob), actions))
@@ -288,19 +306,13 @@ write_POMDP <- function(x, file, digits = 7) {
         
         # writing the observation probability matrices
         for (a in names(observation_prob)) {
-          cat(paste0(
-            format_POMDP_matrix(observation_prob[[a]], "O", a, digits = digits)
-          ),
-            file = file,
-            append = TRUE)
+          format_POMDP_matrix(observation_prob[[a]], file, "O", a, digits = digits)
         }
       }
       
       ### Rewards/Costs
       if (is.data.frame(reward)) {
-        cat(paste0(format_POMDP_df(reward, "R", digits)),
-          file = file,
-          append = TRUE)
+        format_POMDP_df(reward, file, "R", digits)
       } else {
         if (!identical(names(reward), '*') &&
             !setequal(names(reward), actions))
@@ -312,16 +324,15 @@ write_POMDP <- function(x, file, digits = 7) {
             stop("names of the second level of the rewards list do not match the states!")
           
           for (s in names(reward[[a]])) {
-            cat(paste0(
-              format_POMDP_matrix(reward[[a]][[s]], "R", a, s, digits = digits)
-            ),
-              file = file,
-              append = TRUE)
+            format_POMDP_matrix(reward[[a]][[s]], file, "R", a, s, digits = digits)
           }
         }
       }
       
     })
+  
+  
+  close(file)
 }
 
 
@@ -441,11 +452,17 @@ read_POMDP <- function(file, parse = TRUE) {
 # helpers to parse transition matrices, observation matrices and reward matrices
 
 # Convert states/observations to labels or 1-based indices. Also converts asterisks to NA
-idx <- function(x) {
+from_0_idx <- function(x) {
   x[x == "*"] <- NA
   x <- type.convert(x, as.is = TRUE)
   if (is.integer(x))
     x <- x + 1L
+  x
+}
+
+to_0_idx <- function(x) {
+  x <- as.character(as.integer(x) - 1L)
+  x[is.na(x)] <- '*'
   x
 }
 
@@ -478,24 +495,24 @@ parse_POMDP_df <- function(problem,
   dat <- switch(
     field,
     R = R_(
-      action = idx(sapply(field_values, "[", 2L)),
-      start.state = idx(sapply(field_values, "[", 3L)),
-      end.state = idx(sapply(field_values, "[", 4L)),
-      observation = idx(sapply(field_values, "[", 5L)),
+      action = from_0_idx(sapply(field_values, "[", 2L)),
+      start.state = from_0_idx(sapply(field_values, "[", 3L)),
+      end.state = from_0_idx(sapply(field_values, "[", 4L)),
+      observation = from_0_idx(sapply(field_values, "[", 5L)),
       value = as.numeric(sapply(field_values, "[", 6L))
     ),
     
     T =  T_(
-      action = idx(sapply(field_values, "[", 2L)),
-      start.state = idx(sapply(field_values, "[", 3L)),
-      end.state = idx(sapply(field_values, "[", 4L)),
+      action = from_0_idx(sapply(field_values, "[", 2L)),
+      start.state = from_0_idx(sapply(field_values, "[", 3L)),
+      end.state = from_0_idx(sapply(field_values, "[", 4L)),
       probability = as.numeric(sapply(field_values, "[", 5L))
     ),
     
     O = O_(
-      action = idx(sapply(field_values, "[", 2L)),
-      end.state = idx(sapply(field_values, "[", 3L)),
-      observation = idx(sapply(field_values, "[", 4L)),
+      action = from_0_idx(sapply(field_values, "[", 2L)),
+      end.state = from_0_idx(sapply(field_values, "[", 3L)),
+      observation = from_0_idx(sapply(field_values, "[", 4L)),
       probability = as.numeric(sapply(field_values, "[", 5L))
     )
   )
@@ -572,10 +589,10 @@ parse_POMDP_matrix <-
       # For debugging
       # cat("Processing", field, "at line", i, "-", paste(vals, collapse = ";"), "\n")
       
-      start <- idx(vals[2])
-      end <- idx(vals[3])
+      start <- from_0_idx(vals[2])
+      end <- from_0_idx(vals[3])
       
-      acts <- idx(vals[1])
+      acts <- from_0_idx(vals[1])
       if (is.na(acts))
         acts <- actions
       for (action in acts) {
@@ -585,7 +602,7 @@ parse_POMDP_matrix <-
           else if (is.na(start))
             trans[[action]][, end] <- as.numeric(vals[4])
           else if (is.na(end))
-            trans[[action]][start, ] <- as.numeric(vals[4])
+            trans[[action]][start,] <- as.numeric(vals[4])
           else
             trans[[action]][start, end] <- as.numeric(vals[4])
         }
@@ -598,7 +615,7 @@ parse_POMDP_matrix <-
           else if (is.na(start))
             trans[[action]][, end] <- read_val_line(i + 1L)
           else if (is.na(end))
-            trans[[action]][start, ] <- read_val_line(i + 1L)
+            trans[[action]][start,] <- read_val_line(i + 1L)
           else
             trans[[action]][start, end] <- read_val_line(i + 1L)
         }
@@ -608,26 +625,26 @@ parse_POMDP_matrix <-
         if (length(vals) == 2L) {
           if (is.na(start))
             for (k in seq_along(rows))
-              trans[[action]][k, ] <- read_val_line(i + 1L)
+              trans[[action]][k,] <- read_val_line(i + 1L)
           else
-            trans[[action]][start,] <- read_val_line(i + 1L)
+            trans[[action]][start, ] <- read_val_line(i + 1L)
         }
         
         # Case: T: <action>
         # %f %f ... %f
         # %f %f ... %f
+        # %f %f ... %f
         #...
         # %f %f ... %f
+        # or
+        # [uniform/identity]
         if (length(vals) == 1L) {
           special <- pmatch(problem[i + 1], c("identity", "uniform"))
           if (is.na(special)) {
             for (j in seq_along(rows))
-              trans[[action]][j, ] <- read_val_line(i + j)
-          } else if (special == 1) {
-            trans[[action]][] <- 0
-            diag(trans[[action]]) <- 1
-          } else if (special == 2) {
-            trans[[action]][] <- 1 / length(cols)
+              trans[[action]][j,] <- read_val_line(i + j)
+          } else {
+            trans[[action]] <- c("identity", "uniform")[special]
           }
         }
       }
@@ -703,10 +720,10 @@ parse_POMDP_matrix <-
       # For debugging
       #cat("Processing (", i, ")", paste(vals, collapse = ";"), "\n")
       
-      end <- idx(vals[3])
-      obs <- idx(vals[4])
+      end <- from_0_idx(vals[3])
+      obs <- from_0_idx(vals[4])
       
-      starts <- idx(vals[2])
+      starts <- from_0_idx(vals[2])
       acts <- vals[1]
       if (acts == "*")
         acts <- actions
@@ -725,7 +742,7 @@ parse_POMDP_matrix <-
               matrix_list[[action]][[start]][, obs] <-
                 as.numeric(vals[5])
             else if (obs == '*')
-              matrix_list[[action]][[start]][end, ] <-
+              matrix_list[[action]][[start]][end,] <-
                 as.numeric(vals[5])
             else
               matrix_list[[action]][[start]][end, obs] <-
@@ -742,7 +759,7 @@ parse_POMDP_matrix <-
               matrix_list[[action]][[start]][, obs] <-
                 read_val_line(i + 1L)
             else if (obs == '*')
-              matrix_list[[action]][[start]][end, ] <-
+              matrix_list[[action]][[start]][end,] <-
                 read_val_line(i + 1L)
             else
               matrix_list[[action]][[start]][end, obs] <-
@@ -754,10 +771,10 @@ parse_POMDP_matrix <-
           if (length(vals) == 3L) {
             if (end == '*')
               for (k in seq_along(states))
-                matrix_list[[action]][[start]][k, ] <-
+                matrix_list[[action]][[start]][k,] <-
                   read_val_line(i + 1L)
             else
-              matrix_list[[action]][[start]][end,] <-
+              matrix_list[[action]][[start]][end, ] <-
                 read_val_line(i + 1L)
           }
           
@@ -768,7 +785,7 @@ parse_POMDP_matrix <-
           # %f %f ... %f
           if (length(vals) == 2L) {
             for (j in seq_along(states))
-              matrix_list[[action]][[start]][j, ] <-
+              matrix_list[[action]][[start]][j,] <-
                 read_val_line(i + j)
           }
         }

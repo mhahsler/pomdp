@@ -229,6 +229,32 @@ reward_val <-
     observation,
     episode = NULL,
     epoch = NULL) {
+    if (is.numeric(action))
+      action <- x$actions[action]
+    if (is.numeric(start.state))
+      start.state <- x$states[start.state]
+    if (is.numeric(end.state))
+      end.state <- x$states[end.state]
+    if (is.numeric(observation))
+      observation <- x$observations[observation]
+    
+    rew <- x$reward
+    
+    ### direct access for data.frame
+    if (is.data.frame(x$reward)) {
+      rew <- rew[(rew$action == action | is.na(rew$action)) &
+          (rew$start.state == start.state |
+              is.na(rew$start.state)) &
+          (rew$end.state == end.state | is.na(rew$end.state)) &
+          (rew$observation == observation | is.na(rew$observation))
+        , , drop = FALSE]
+      
+      if (nrow(rew) == 0L)
+        return(0)
+      else
+        return(rew$value[nrow(rew)])
+    }
+    
     reward_matrix(
       x,
       action = action,
@@ -295,8 +321,12 @@ normalize_MDP <- function(x, sparse = TRUE) {
 .sparsify <- function(x,
   sparse = TRUE,
   max_density = .5) {
-  # NULL mans as is
+  # NULL means as is
   if (is.null(sparse))
+    return(x)
+  
+  # We keep special keywords
+  if(is.character(x))
     return(x)
   
   if (!sparse)
@@ -376,7 +406,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
   
   dd <- duplicated(cbind(i, j), fromLast = TRUE)
   
-  if(any(dd)) {
+  if (any(dd)) {
     i <- i[!dd]
     j <- j[!dd]
     x <- x[!dd]
@@ -404,12 +434,14 @@ normalize_MDP <- function(x, sparse = TRUE) {
     # default is sparse
     if (is.null(sparse))
       sparse <- TRUE
-
-    m <- .sparse_from_vectors(i = as.integer(df[, 1]),
+    
+    m <- .sparse_from_vectors(
+      i = as.integer(df[, 1]),
       j = as.integer(df[, 2]),
       x = as.numeric(df[, 3]),
-      from = as.character(model[[from]]), 
-      to = as.character(model[[to]]))
+      from = as.character(model[[from]]),
+      to = as.character(model[[to]])
+    )
     
     .sparsify(m, sparse = sparse)
   }
@@ -457,7 +489,10 @@ normalize_MDP <- function(x, sparse = TRUE) {
   if (is.null(action))
     actions <- model$actions
   else
-    actions <- action
+    actions <- as.character(.get_names(action, model$actions))
+  
+  if (any(is.na(actions)))
+    stop("Unknown action!")
   
   ## episodes are for time-dependent POMDPs
   if (is_timedependent_POMDP(model)) {
@@ -486,8 +521,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
       " is not available. ",
       "Note: Parsing some fields may be disabled with read_POMDP!"
     )
-  
-  
+
   ## translate from dataframes
   if (is.data.frame(prob)) {
     prob <- sapply(actions, function(a) {
@@ -519,9 +553,9 @@ normalize_MDP <- function(x, sparse = TRUE) {
   } else if (is.list(prob)) {
     ## fix order in list
     if (is.null(names(prob)))
-      names(prob) <- actions
-    else
-      prob <- prob[actions]
+      names(prob) <- model$actions
+      
+    prob <- prob[actions]
     
     ## translate to matrix and fix order or rows and columns
     from <- as.character(model[[from]])
@@ -587,12 +621,12 @@ normalize_MDP <- function(x, sparse = TRUE) {
     if (is.null(action))
       actions <- model$actions
     else
-      actions <- .get_names(action, model$actions)
+      actions <- as.character(.get_names(action, model$actions))
     
     if (is.null(start.state))
-      start.state <- states
+      start.states <- states
     else
-      start.state <- .get_names(start.state, states)
+      start.states <- .get_names(start.state, states)
     
     ## episodes are for time-dependent POMDPs
     if (.is_timedependent_field(model, field))
@@ -609,7 +643,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
       return (NULL)
     }
     
-    if (is.data.frame(reward)) {
+    else if (is.data.frame(reward)) {
       reward[[1L]] <- .get_names(reward[[1L]], model$actions)
       reward[[2L]] <- .get_names(reward[[2L]], states) # start state
       reward[[3L]] <- .get_names(reward[[3L]], states) # end state
@@ -621,7 +655,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
           actions,
           FUN = function(a)
             sapply(
-              start.state,
+              start.states,
               FUN = function(s)
                 if (!is.null(sparse) && sparse) {
                   m <- spMatrix(nrow = length(states),
@@ -651,7 +685,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
           ss_from <- reward[i, 2L]
           if (is.na(ss_from))
             ss_from <- states
-          ss_from <- intersect(ss_from, start.state)
+          ss_from <- intersect(ss_from, start.states)
           if (length(ss_from) == 0L)
             next
           
@@ -673,7 +707,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
           actions,
           FUN = function(a)
             sapply(
-              start.state,
+              start.states,
               FUN = function(s) {
                 v <- numeric(length(states))
                 names(v) <- states
@@ -691,7 +725,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
           ss_from <- reward[i, 2L]
           if (is.na(ss_from))
             ss_from <- states
-          ss_from <- intersect(ss_from, start.state)
+          ss_from <- intersect(ss_from, start.states)
           if (length(ss_from) == 0L)
             next
           
@@ -715,7 +749,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
         actions,
         FUN = function(a)
           sapply(
-            start.state,
+            start.states,
             FUN = function(s) {
               p <- outer(
                 states,
@@ -735,13 +769,18 @@ normalize_MDP <- function(x, sparse = TRUE) {
           ),
         simplify = FALSE
       )
-    }
-    
+    } else {
     ### FIXME: missing. Also version without observations!
     ## translate from list of matrices (fix names, and deal with "identity", et al)
     ##} else if (is.list(reward)) {
     ##}
-    
+    ## should be a list of list of matrices
+      if(is.null(action) && is.null(start.state))
+        reward <- model$reward
+      else 
+        reward <- sapply(actions, FUN = function(a) model$reward[[a]][start.states], simplify = FALSE, USE.NAMES = TRUE)
+    }
+      
     ### MDPs have vectors not matrices here!
     if (!inherits(model, "MDP")) {
       reward <- lapply(reward, lapply, .sparsify, sparse)
