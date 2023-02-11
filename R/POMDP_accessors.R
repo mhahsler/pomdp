@@ -315,30 +315,25 @@ normalize_MDP <- function(x, sparse = TRUE) {
   x
 }
 
-# translate different specifications of transitions, observations and rewards
-# into a list of matrices
-
+# make a matrix sparse if it is of low density
 .sparsify <- function(x,
   sparse = TRUE,
   max_density = .5) {
-  # NULL means as is
-  if (is.null(sparse))
-    return(x)
-  
-  # We keep special keywords
-  if(is.character(x))
+  # NULL means as is, we also keep special keywords
+  if (is.null(sparse) || is.character(x))
     return(x)
   
   if (!sparse)
     return(as.matrix(x))
-  
+ 
+  ### make sparse 
   if (nnzero(x) / length(x) < max_density)
     return(as(x , "CsparseMatrix"))
   else
     return(as.matrix(x))
 }
 
-# build sparse matrix using triplet format
+# build a sparse triplet matrix from POMDP data.table (deals with NAs)
 .sparse_from_vectors <- function(i, j, x, from, to) {
   ### expand NAs
   i_NA <- is.na(i)
@@ -413,7 +408,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
   }
   
   m <-
-    new(
+    methods::new(
       "dgTMatrix",
       i = rev(as.integer(i) - 1L),
       j = rev(as.integer(j) - 1L),
@@ -446,27 +441,6 @@ normalize_MDP <- function(x, sparse = TRUE) {
     .sparsify(m, sparse = sparse)
   }
 
-# df needs to have 2 columns: to and val
-.df2vector <-
-  function(model, df, from = "states") {
-    from <- as.character(model[[from]])
-    
-    df[, 1] <- .get_names(df[, 1], from)
-    
-    v <- numeric(length(from))
-    names(v) <- from
-    
-    for (i in 1:nrow(df)) {
-      if (is.na(df[i, 1]))
-        v[] <- df[i, 2]
-      else
-        v[df[i, 1]] <- df[i, 2]
-    }
-    
-    v
-  }
-
-
 ### translate ids to names (factor)
 .get_names <- function(x, names) {
   x[x == "*"] <- NA
@@ -478,6 +452,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
     factor(x, levels = seq_along(names), labels = names)
 }
 
+# converts any description into a matrix and fixes it up
 .translate_probabilities <- function(model,
   field = "transition_prob",
   from = "states",

@@ -116,7 +116,7 @@
   for (i in seq(nrow(alpha)))
     cat(
       "0",
-      paste0(format_fixed(alpha[i, ], digits = digits), collapse = " "),
+      paste0(.format_number_fixed(alpha[i, ], digits = digits), collapse = " "),
       "",
       file = filename,
       sep = "\n",
@@ -174,6 +174,6 @@
     belief <- rbind(belief)
   
   
-  cat(format_fixed(belief, digits), file = filename)
+  cat(.format_number_fixed(belief, digits), file = filename)
   filename
 }

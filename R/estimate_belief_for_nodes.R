@@ -153,9 +153,11 @@ estimate_belief_for_nodes <-
     belief = NULL,
     n = 100000L,
     ...) {
-    if (!is_converged_POMDP(x))
+    
+    if (.has_policy_tree(x))
       return(.estimate_belief_for_nodes_trajectories_unconverged(x, belief = belief, n = n, ...))
     
+    ## policy graph
     pg <- x$solution$pg[[1]]
     found <- logical(nrow(pg)) ### all are FALSE
     a_belief <-

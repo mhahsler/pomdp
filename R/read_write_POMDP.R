@@ -1,19 +1,3 @@
-# FIXME: we should use pomdp:::round_stochastic here!
-
-format_fixed <- function(x, digits = 7, debug = "unknown") {
-  if (is.null(x))
-    stop("missing field ", debug)
-  
-  if (is.vector(x)) {
-    if (!is.numeric(x))
-      stop("Write_POMDP expects numbers, but got: ", dQuote(paste(x, collapse = ", ")))
-    paste(sprintf(paste0("%.", digits, "f"), x), collapse = " ")
-  } else if (is.matrix(x)) {
-    paste(apply(x, MARGIN = 1, format_fixed, digits = digits), collapse = "\n")
-  } else
-    stop("formating not implemented for ", class(x), " in field ", debug)
-}
-
 #' Read and write a POMDP Model to a File in POMDP Format
 #'
 #' Reads and write a POMDP file suitable for the `pomdp-solve` program.
@@ -55,7 +39,10 @@ write_POMDP <- function(x, file, digits = 7) {
   
   x <- check_and_fix_MDP(x)
   
-  file <- file(file, "w")
+  if (is.character(file)) {
+    file <- file(file, "w")
+    on.exit(close(file))
+  }
   
   with(x,
     {
@@ -106,26 +93,21 @@ write_POMDP <- function(x, file, digits = 7) {
         ## if the starting beliefs are given by enumerating the probabilities for each state
         if (is.numeric(start)) {
           if (length(start) == length(states) && sum1(start)) {
-            preamble <-
-              paste0(
-                preamble,
-                "start: ",
-                format_fixed(round_stochastic(start, digits), digits, "start"),
-                "\n"
-              )
+            preamble_start <-
+              paste0("start: ",
+                .format_number_fixed(round_stochastic(start, digits), digits, "start"),
+                "\n")
           } else {
             ## this should be indices (pomdp_solve starts with 0)
             start_ids <- as.integer(abs(start)) - 1L
             if (all(start < 0))
-              preamble <-
-                paste0(preamble,
-                  "start include: ",
+              preamble_start <-
+                paste0("start include: ",
                   paste(start_ids, collapse = " "),
                   "\n")
             if (all(start > 0))
-              preamble <-
-                paste0(preamble,
-                  "start exclude: ",
+              preamble_start <-
+                paste0("start exclude: ",
                   paste(start_ids, collapse = " "),
                   "\n")
             else
@@ -138,25 +120,22 @@ write_POMDP <- function(x, file, digits = 7) {
         } else if (is.character(start))
           ## if the starting beliefs are given by a uniform distribution over all states
           if (length(start) == 1 && start[1] == "uniform") {
-            preamble <-
-              paste0(preamble, "start: ", paste(start, collapse = " "), "\n")
+            preamble_start <-
+              paste0("start: ", paste(start, collapse = " "), "\n")
             
           } else if (start[1] != "-")
-            preamble <-
-              paste0(preamble,
-                "start include: ",
+            preamble_start <-
+              paste0("start include: ",
                 paste(start, collapse = " "),
                 "\n")
           else
-            preamble <-
-              paste0(preamble,
-                "start exclude: ",
+            preamble_start <-
+              paste0("start exclude: ",
                 paste(start[-1], collapse = " "),
                 "\n")
       }
       
-      cat(preamble, file = file)
-      cat("\n", file = file)
+      cat(preamble, preamble_start, "\n", file = file)
       
       ### write preamble
       
@@ -172,13 +151,13 @@ write_POMDP <- function(x, file, digits = 7) {
               paste0(
                 type,
                 ": ",
-                to_0_idx(x[[1L]]),
+                .to_0_idx(x[[1L]]),
                 " : ",
-                to_0_idx(x[[2L]]),
+                .to_0_idx(x[[2L]]),
                 " : ",
-                to_0_idx(x[[3L]]),
+                .to_0_idx(x[[3L]]),
                 " : ",
-                to_0_idx(x[[4L]]),
+                .to_0_idx(x[[4L]]),
                 " ",
                 sprintf(paste0("%.", digits, "f"), x[[5L]]),
                 collapse = "\n"
@@ -192,11 +171,11 @@ write_POMDP <- function(x, file, digits = 7) {
               paste0(
                 type,
                 ": ",
-                to_0_idx(x[[1L]]),
+                .to_0_idx(x[[1L]]),
                 " : ",
-                to_0_idx(x[[2L]]),
+                .to_0_idx(x[[2L]]),
                 " : ",
-                to_0_idx(x[[3L]]),
+                .to_0_idx(x[[3L]]),
                 " ",
                 sprintf(paste0("%.", digits, "f"), x[[4L]]),
                 collapse = "\n"
@@ -230,11 +209,11 @@ write_POMDP <- function(x, file, digits = 7) {
             code <- paste0(code, x, "\n")
           else
             code <-
-            paste0(code,
-              format_fixed(x,
-                digits,
-                type),
-              "\n")
+              paste0(code,
+                .format_number_fixed(x,
+                  digits,
+                  type),
+                "\n")
           
           cat(code, file = file, append = TRUE)
           cat("\n", file = file)
@@ -280,11 +259,9 @@ write_POMDP <- function(x, file, digits = 7) {
         }
       
       ### Transition Probabilities
-      if (is.data.frame(transition_prob)) {
+      if (is.data.frame(transition_prob))
         format_POMDP_df(transition_prob, file, "T", digits)
-        
-        
-      } else{
+      else{
         # list of matrices
         ## if the observation probabilities are given in the form of action dependent matrices
         if (!identical(names(transition_prob), '*') &&
@@ -292,28 +269,27 @@ write_POMDP <- function(x, file, digits = 7) {
           stop("the names of given transition probability matrices do not match the actions!")
         
         # writing the transition probability matrices
-        for (a in names(transition_prob)) {
+        for (a in names(transition_prob))
           format_POMDP_matrix(transition_prob[[a]], file, "T", a, digits = digits)
-        }
       }
+      
       ### Observation Probabilities
-      if (is.data.frame(observation_prob)) {
+      if (is.data.frame(observation_prob))
         format_POMDP_df(observation_prob, file, "O", digits)
-      } else{
+      else{
         if (!identical(names(observation_prob), '*') &&
             !setequal(names(observation_prob), actions))
           stop("the names of given observation probability matrices do not match the actions!")
         
         # writing the observation probability matrices
-        for (a in names(observation_prob)) {
+        for (a in names(observation_prob))
           format_POMDP_matrix(observation_prob[[a]], file, "O", a, digits = digits)
-        }
       }
       
       ### Rewards/Costs
-      if (is.data.frame(reward)) {
+      if (is.data.frame(reward))
         format_POMDP_df(reward, file, "R", digits)
-      } else {
+      else {
         if (!identical(names(reward), '*') &&
             !setequal(names(reward), actions))
           stop("names of the rewards list do not match the actions!")
@@ -323,19 +299,12 @@ write_POMDP <- function(x, file, digits = 7) {
               !setequal(names(reward[[a]]), states))
             stop("names of the second level of the rewards list do not match the states!")
           
-          for (s in names(reward[[a]])) {
+          for (s in names(reward[[a]]))
             format_POMDP_matrix(reward[[a]][[s]], file, "R", a, s, digits = digits)
-          }
         }
       }
-      
     })
-  
-  
-  close(file)
 }
-
-
 
 
 #' @rdname write_POMDP
@@ -378,9 +347,11 @@ read_POMDP <- function(file, parse = TRUE) {
   states <- get_vals("states")
   if (is.integer(states) && length(states == 1L))
     states <- paste0("s", seq_len(states))
+  
   observations <- get_vals("observations")
   if (is.integer(observations) && length(observations == 1L))
     observations <- paste0("o", seq_len(observations))
+  
   actions <- get_vals("actions")
   if (is.integer(actions) && length(actions == 1L))
     actions <- paste0("a", seq_len(actions))
@@ -416,7 +387,6 @@ read_POMDP <- function(file, parse = TRUE) {
             observations,
             sparse = TRUE))
     
-    ### FIXME: If reward is a dataframe then we will leave it like this!
     reward <- NULL
     try(reward <-
         parse_POMDP_df(problem,
@@ -451,8 +421,31 @@ read_POMDP <- function(file, parse = TRUE) {
 
 # helpers to parse transition matrices, observation matrices and reward matrices
 
+# sprintf wrapper for vectors and matrices
+.format_number_fixed <- function(x, digits = 7, debug = "unknown") {
+  if (is.null(x))
+    stop("missing field ", debug)
+  
+  if (is.vector(x)) {
+    if (!is.numeric(x))
+      stop("Write_POMDP expects numbers, but got: ", dQuote(paste(x, collapse = ", ")))
+    paste(sprintf(paste0("%.", digits, "f"), x), collapse = " ")
+  } else if (is.matrix(x)) {
+    paste(apply(
+      x,
+      MARGIN = 1,
+      .format_number_fixed,
+      digits = digits
+    ),
+      collapse = "\n")
+  } else
+    stop("formating not implemented for ", class(x), " in field ", debug)
+}
+
+
+# The POMDP file format uses 0-based indices.
 # Convert states/observations to labels or 1-based indices. Also converts asterisks to NA
-from_0_idx <- function(x) {
+.from_0_idx <- function(x) {
   x[x == "*"] <- NA
   x <- type.convert(x, as.is = TRUE)
   if (is.integer(x))
@@ -460,12 +453,11 @@ from_0_idx <- function(x) {
   x
 }
 
-to_0_idx <- function(x) {
+.to_0_idx <- function(x) {
   x <- as.character(as.integer(x) - 1L)
   x[is.na(x)] <- '*'
   x
 }
-
 
 parse_POMDP_df <- function(problem,
   field = c("T", "O", "R"),
@@ -495,24 +487,24 @@ parse_POMDP_df <- function(problem,
   dat <- switch(
     field,
     R = R_(
-      action = from_0_idx(sapply(field_values, "[", 2L)),
-      start.state = from_0_idx(sapply(field_values, "[", 3L)),
-      end.state = from_0_idx(sapply(field_values, "[", 4L)),
-      observation = from_0_idx(sapply(field_values, "[", 5L)),
+      action = .from_0_idx(sapply(field_values, "[", 2L)),
+      start.state = .from_0_idx(sapply(field_values, "[", 3L)),
+      end.state = .from_0_idx(sapply(field_values, "[", 4L)),
+      observation = .from_0_idx(sapply(field_values, "[", 5L)),
       value = as.numeric(sapply(field_values, "[", 6L))
     ),
     
     T =  T_(
-      action = from_0_idx(sapply(field_values, "[", 2L)),
-      start.state = from_0_idx(sapply(field_values, "[", 3L)),
-      end.state = from_0_idx(sapply(field_values, "[", 4L)),
+      action = .from_0_idx(sapply(field_values, "[", 2L)),
+      start.state = .from_0_idx(sapply(field_values, "[", 3L)),
+      end.state = .from_0_idx(sapply(field_values, "[", 4L)),
       probability = as.numeric(sapply(field_values, "[", 5L))
     ),
     
     O = O_(
-      action = from_0_idx(sapply(field_values, "[", 2L)),
-      end.state = from_0_idx(sapply(field_values, "[", 3L)),
-      observation = from_0_idx(sapply(field_values, "[", 4L)),
+      action = .from_0_idx(sapply(field_values, "[", 2L)),
+      end.state = .from_0_idx(sapply(field_values, "[", 3L)),
+      observation = .from_0_idx(sapply(field_values, "[", 4L)),
       probability = as.numeric(sapply(field_values, "[", 5L))
     )
   )
@@ -589,10 +581,10 @@ parse_POMDP_matrix <-
       # For debugging
       # cat("Processing", field, "at line", i, "-", paste(vals, collapse = ";"), "\n")
       
-      start <- from_0_idx(vals[2])
-      end <- from_0_idx(vals[3])
+      start <- .from_0_idx(vals[2])
+      end <- .from_0_idx(vals[3])
       
-      acts <- from_0_idx(vals[1])
+      acts <- .from_0_idx(vals[1])
       if (is.na(acts))
         acts <- actions
       for (action in acts) {
@@ -602,7 +594,7 @@ parse_POMDP_matrix <-
           else if (is.na(start))
             trans[[action]][, end] <- as.numeric(vals[4])
           else if (is.na(end))
-            trans[[action]][start,] <- as.numeric(vals[4])
+            trans[[action]][start, ] <- as.numeric(vals[4])
           else
             trans[[action]][start, end] <- as.numeric(vals[4])
         }
@@ -615,7 +607,7 @@ parse_POMDP_matrix <-
           else if (is.na(start))
             trans[[action]][, end] <- read_val_line(i + 1L)
           else if (is.na(end))
-            trans[[action]][start,] <- read_val_line(i + 1L)
+            trans[[action]][start, ] <- read_val_line(i + 1L)
           else
             trans[[action]][start, end] <- read_val_line(i + 1L)
         }
@@ -625,9 +617,9 @@ parse_POMDP_matrix <-
         if (length(vals) == 2L) {
           if (is.na(start))
             for (k in seq_along(rows))
-              trans[[action]][k,] <- read_val_line(i + 1L)
+              trans[[action]][k, ] <- read_val_line(i + 1L)
           else
-            trans[[action]][start, ] <- read_val_line(i + 1L)
+            trans[[action]][start,] <- read_val_line(i + 1L)
         }
         
         # Case: T: <action>
@@ -642,7 +634,7 @@ parse_POMDP_matrix <-
           special <- pmatch(problem[i + 1], c("identity", "uniform"))
           if (is.na(special)) {
             for (j in seq_along(rows))
-              trans[[action]][j,] <- read_val_line(i + j)
+              trans[[action]][j, ] <- read_val_line(i + j)
           } else {
             trans[[action]] <- c("identity", "uniform")[special]
           }
@@ -720,10 +712,10 @@ parse_POMDP_matrix <-
       # For debugging
       #cat("Processing (", i, ")", paste(vals, collapse = ";"), "\n")
       
-      end <- from_0_idx(vals[3])
-      obs <- from_0_idx(vals[4])
+      end <- .from_0_idx(vals[3])
+      obs <- .from_0_idx(vals[4])
       
-      starts <- from_0_idx(vals[2])
+      starts <- .from_0_idx(vals[2])
       acts <- vals[1]
       if (acts == "*")
         acts <- actions
@@ -742,7 +734,7 @@ parse_POMDP_matrix <-
               matrix_list[[action]][[start]][, obs] <-
                 as.numeric(vals[5])
             else if (obs == '*')
-              matrix_list[[action]][[start]][end,] <-
+              matrix_list[[action]][[start]][end, ] <-
                 as.numeric(vals[5])
             else
               matrix_list[[action]][[start]][end, obs] <-
@@ -759,7 +751,7 @@ parse_POMDP_matrix <-
               matrix_list[[action]][[start]][, obs] <-
                 read_val_line(i + 1L)
             else if (obs == '*')
-              matrix_list[[action]][[start]][end,] <-
+              matrix_list[[action]][[start]][end, ] <-
                 read_val_line(i + 1L)
             else
               matrix_list[[action]][[start]][end, obs] <-
@@ -771,10 +763,10 @@ parse_POMDP_matrix <-
           if (length(vals) == 3L) {
             if (end == '*')
               for (k in seq_along(states))
-                matrix_list[[action]][[start]][k,] <-
+                matrix_list[[action]][[start]][k, ] <-
                   read_val_line(i + 1L)
             else
-              matrix_list[[action]][[start]][end, ] <-
+              matrix_list[[action]][[start]][end,] <-
                 read_val_line(i + 1L)
           }
           
@@ -785,7 +777,7 @@ parse_POMDP_matrix <-
           # %f %f ... %f
           if (length(vals) == 2L) {
             for (j in seq_along(states))
-              matrix_list[[action]][[start]][j,] <-
+              matrix_list[[action]][[start]][j, ] <-
                 read_val_line(i + j)
           }
         }

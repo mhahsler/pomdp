@@ -174,7 +174,8 @@ Tiger
 # look at the model as a list
 unclass(Tiger)
 
-# inspect an individual field of the model (e.g., the reward)
+# inspect an individual field of the model (e.g., the transition probabilities and the reward)
+Tiger$transition_prob
 Tiger$reward
 
 sol <- solve_POMDP(model = Tiger)
@@ -194,9 +195,9 @@ plot_value_function(sol, ylim = c(0,20))
 
 ################################################################
 # Example 2: Solve a problem specified as a POMDP file
-#            using a grid of size 10
+#            using a grid of size 20
 sol <- solve_POMDP("http://www.pomdp.org/examples/cheese.95.POMDP",
-  method = "grid", parameter = list(fg_points = 10))
+  method = "grid", parameter = list(fg_points = 20))
 sol
 
 policy(sol)
@@ -213,7 +214,8 @@ policy(sol)
 plot_policy_graph(sol)
 # note: only open the door in epoch 3 if you get twice the same observation.
 
-# Expected reward for listen twice and then open the door or listen 3 times
+# Expected reward starting for the models initial belief (uniform):
+#   listen twice and then open the door or listen 3 times
 reward(sol)
 
 # Expected reward for listen twice (-2) and then open-left (-1 + (-1) + 10 = 8)

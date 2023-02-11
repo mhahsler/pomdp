@@ -62,8 +62,11 @@ policy_graph <-
     if (sum(x$horizon) < 2L)
       stop("No policy graph available for problems with a horizon < 2.")
     
-    if (!is_converged_POMDP(x))
-      policy_graph <- policy_graph_unconverged(
+    # infinite horizon and converged finite horizon problems have a policy graph
+    # not converged finite horizon problems have a policy tree
+    
+    if (.has_policy_tree(x))
+      policy_graph <- .policy_tree(
         x,
         belief,
         state_col = state_col,
@@ -72,7 +75,7 @@ policy_graph <-
         ...
       )
     else
-      policy_graph <- policy_graph_converged(
+      policy_graph <- .policy_graph(
         x,
         belief,
         show_belief = show_belief,
@@ -99,7 +102,11 @@ policy_graph <-
     policy_graph
   }
 
-policy_graph_converged <-
+
+.has_policy_tree <- function(x) !(is_converged_POMDP(x) || all(is.infinite(x$horizon)))
+
+
+.policy_graph <-
   function(x,
     belief = NULL,
     show_belief = TRUE,
@@ -109,7 +116,7 @@ policy_graph_converged <-
     
     ### this is for sarsop...
     if (ncol(x$solution$pg[[1L]]) <= 2L) {
-      pg_complete <- .infer_policy_graph_converged(x, ...)
+      pg_complete <- .infer_policy_graph(x, ...)
       x$solution$central_belief <- pg_complete$central_belief
       x$solution$pg <- pg_complete$pg
     }
@@ -215,7 +222,8 @@ policy_graph_converged <-
     policy_graph
   }
 
-policy_graph_unconverged <-
+
+.policy_tree <-
   function(x,
     belief = NULL,
     show_belief = TRUE,
@@ -366,7 +374,7 @@ policy_graph_unconverged <-
 ### This is used to infer a policy graph for SARSOP
 ### returns a list with central_beliefs and a completed pg
 ### this currently only works for converged solutions
-.infer_policy_graph_converged <- function(model, ...) {
+.infer_policy_graph <- function(model, ...) {
   if (!is.null(model$solution) && length(model$solution$pg) != 1L)
     stop("policy graph inference is currently only available for converges solutions!")
   
@@ -395,7 +403,7 @@ policy_graph_unconverged <-
 
 
 ### TODO: find the policy graph edges between episodes...
-.infer_policy_graph_unconverged <- function(model, ...) {
+.infer_policy_tree <- function(model, ...) {
   stop("TODO!!!")
   
   # find central beliefs and use them to create the policy graph
