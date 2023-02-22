@@ -52,6 +52,8 @@ The default is \code{"grid"} implementing the finite grid method.}
 \item{parameter}{a list with parameters passed on to the pomdp-solve
 program.}
 
+\item{timeout}{number of seconds for the solver to run.}
+
 \item{verbose}{logical, if set to \code{TRUE}, the function provides the
 output of the pomdp solver in the R console.}
 }

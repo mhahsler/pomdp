@@ -354,7 +354,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
  
   ### make sparse 
   if (nnzero(x) / length(x) < max_density)
-    return(as(x , "CsparseMatrix"))
+    return(as(as(x, "generalMatrix"), "CsparseMatrix"))
   else
     return(as.matrix(x))
 }

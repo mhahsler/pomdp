@@ -98,6 +98,7 @@ List simulate_POMDP_cpp(const List& model,
     for (int j = 0; j < horizon; ++j) {
 #ifdef DEBUG 
       Rcout << "Epoch: " << j << "\n";
+      Rcout << "State: " << s << "\n";
 #endif
       // find action (if we have no solution then take a random action) and update state and sample obs
       
@@ -131,9 +132,17 @@ List simulate_POMDP_cpp(const List& model,
       NumericVector trans_v = transition_matrix(model, a).row(s);
       s = sample(nstates, 1, false, trans_v, false)[0];
       
+#ifdef DEBUG 
+      Rcout << "New state: " << s << "\n";
+#endif
+      
       //NumericVector obs_v = observation_matrix(model, a)(s, _ );
       NumericVector obs_v = observation_matrix(model, a).row(s);
       o = sample(nobs, 1, false, obs_v, false)[0];
+
+#ifdef DEBUG 
+      Rcout << "Observation: " << o << "\n";
+#endif
       
       action_cnt[a]++;
       state_cnt[s]++;

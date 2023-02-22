@@ -114,6 +114,7 @@
 #' [write_POMDP()]).
 #' @param parameter a list with parameters passed on to the pomdp-solve
 #' program.
+#' @param timeout number of seconds for the solver to run.
 #' @param verbose logical, if set to `TRUE`, the function provides the
 #' output of the pomdp solver in the R console.
 #' @return The solver returns an object of class POMDP which is a list with the
@@ -519,7 +520,8 @@ solve_POMDP <- function(model,
     pomdpSolve::find_pomdp_solve(),
     args = pomdp_args,
     echo = verbose, 
-    timeout = timeout
+    timeout = timeout,
+    error_on_status = FALSE
   )
   
   if (solver_output$status != 0 && !verbose)
