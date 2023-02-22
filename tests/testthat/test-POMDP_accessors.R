@@ -279,13 +279,6 @@ expect_true(inherits(m[[1]], "matrix"))
 expect_true(inherits(m[[2]], "matrix"))
 expect_true(inherits(m[[3]], "matrix"))
 
-
 rm <- reward_matrix(sparsePOMDP, sparse = TRUE)
-expect_equal(names(rm), sparsePOMDP$actions)
-m <- rm[[1]]
-expect_equal(names(m), sparsePOMDP$states)
-#print(rm)
-expect_true(all(sapply(m, inherits, "matrix")))
-
-m <- rm[[2]]
-expect_true(inherits(m[[1]], "Matrix"))
+expect_is(rm, "data.frame")
+expect_equal(levels(rm[[1]]), sparsePOMDP$actions)

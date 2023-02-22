@@ -49,6 +49,13 @@ List simulate_POMDP_cpp(const List& model,
   int k = 0; // index in belief_states
   
   if (verbose) {
+    NumericVector print_belief = belief;
+    std::string more = "";
+    if (belief.size() > 10) {
+      print_belief = head(belief, 10);
+      more = " ...";
+    }
+    
     Rcout << "Simulating POMDP trajectories.\n"
           << "- method: " << "C++ (cpp)" << "\n"
           << "- n: " << n << "\n"
@@ -58,7 +65,7 @@ List simulate_POMDP_cpp(const List& model,
     //    cat("- time-dependent:", length(dt_horizon), "episodes", "\n")
     
     << "- discount factor: " << disc << "\n"
-    << "- starting belief: " << belief << "\n\n";
+    << "- starting belief: " << print_belief << more << "\n\n";
   }
   
   // start with converged values to be faster
@@ -133,10 +140,12 @@ List simulate_POMDP_cpp(const List& model,
       obs_cnt[o]++;
       
 #ifdef DEBUG 
-      Rcout << "reward: " << reward_matrix(model, a, s_prev)(s, o) << " (disc_pow: " << disc_pow << ")\n\n";
+      //Rcout << "reward: " << reward_matrix(model, a, s_prev)(s, o) << " (disc_pow: " << disc_pow << ")\n\n";
+      Rcout << "reward: " << reward_val(model, a, s_prev, s, o) << " (disc_pow: " << disc_pow << ")\n\n";
 #endif
       //rews[i] += reward_matrix(model, a, s_prev)(s, o) * pow(disc, j);
-      rews[i] += reward_matrix(model, a, s_prev)(s, o) * disc_pow;
+      //rews[i] += reward_matrix(model, a, s_prev)(s, o) * disc_pow;
+      rews[i] += reward_val(model, a, s_prev, s, o) * disc_pow;
       disc_pow *= disc;
       
       b = update_belief_cpp(model, b, a, o, digits);

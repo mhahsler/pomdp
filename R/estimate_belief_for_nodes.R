@@ -108,7 +108,7 @@ estimate_belief_for_nodes <-
     
     if (method == "trajectories") {
       belief <-
-        .estimate_belief_for_nodes_trajectories(x, belief = belief, ...)
+        .estimate_belief_for_nodes_trajectories(x, belief = belief, verbose = verbose, ...)
     }
     
     # use sampling
@@ -121,7 +121,7 @@ estimate_belief_for_nodes <-
         lapply(
           x$solution$alpha,
           FUN = function(a)
-            .aggregate_beliefs(sample_belief_space(x, method = method, ...),
+            .aggregate_beliefs(sample_belief_space(x, method = method, verbose = verbose, ...),
               a)
         )
     }
@@ -152,16 +152,21 @@ estimate_belief_for_nodes <-
   function(x,
     belief = NULL,
     n = 100000L,
+    verbose = FALSE,
     ...) {
     
     if (.has_policy_tree(x))
-      return(.estimate_belief_for_nodes_trajectories_unconverged(x, belief = belief, n = n, ...))
+      return(.estimate_belief_for_nodes_trajectories_tree(x, belief = belief, n = n, verbose = verbose, ...))
     
     ## policy graph
+    
     pg <- x$solution$pg[[1]]
     found <- logical(nrow(pg)) ### all are FALSE
     a_belief <-
       matrix(NA, nrow = nrow(pg), ncol = length(x$states))
+    
+    if (verbose)
+      cat("Using policy graph trajectories to find beliefs for nodes.\n\n")
     
     # start with the initial belief and mark it found
     if (is.null(belief))
@@ -187,6 +192,8 @@ estimate_belief_for_nodes <-
       
       a_belief[rna$pg_node,] <- rna$belief
       found[rna$pg_node] <- TRUE
+      if (verbose)
+        cat("\b\rFound", sum(found), "of", length(found), "\n")
       
       # go down the tree and add to the queue
       belief_states <- update_belief(x, belief_state)
@@ -211,14 +218,15 @@ estimate_belief_for_nodes <-
   }
 
 
-
-#.estimate_belief_for_nodes_trajectories_unconverged(sol)
-
-.estimate_belief_for_nodes_trajectories_unconverged <-
+.estimate_belief_for_nodes_trajectories_tree <-
   function(x,
     belief = NULL,
     n = 100000L,
+    verbose = FALSE,
     ...) {
+    if (verbose)
+      cat("Using policy tree trajectories to find beliefs for nodes.\n\n")
+    
     a_belief <- lapply(
       x$solution$pg,
       FUN = function(pg)
@@ -232,6 +240,8 @@ estimate_belief_for_nodes <-
         FUN = function(pg)
           logical(nrow(pg))
       )
+    
+    total <- sum(sapply(found, length))
     
     # start with the initial belief and mark it found
     if (is.null(belief))
@@ -262,10 +272,12 @@ estimate_belief_for_nodes <-
       
       a_belief[[epoch]][rna$pg_node,] <- rna$belief
       found[[epoch]][rna$pg_node] <- TRUE
+      if (verbose)
+        cat("\b\rFound", sum(sapply(found, sum)), "of", total, "\n")
+      
       
       if (epoch >= sum(x$horizon))
         next
-      
       
       # go down the tree and add to the queue
       belief_states <-

@@ -28,8 +28,9 @@
 #' @param observation name or index of observation.
 #' @param episode,epoch Episode or epoch used for time-dependent POMDPs. Epochs are internally converted
 #'  to the episode using the model horizon.
-#' @param sparse logical; use sparse matrices when the density is below 50% . `NULL` returns the
-#'   representation stored in the problem description.
+#' @param sparse logical; use sparse matrices when the density is below 50% and keeps data.frame representation 
+#'  for the reward field. `NULL` returns the
+#'   representation stored in the problem description which saves the time for conversion.
 #' @param drop logical; drop the action list if a single action is requested?
 #' @return A list or a list of lists of matrices.
 #' @author Michael Hahsler
@@ -202,6 +203,15 @@ reward_matrix <-
         episode <- epoch_to_episode(x, epoch)
     }
     
+    ### sparse = NULL will keep data.frame
+    if (.is_timedependent_field(x, "reward"))
+      reward <- x[["reward"]][[episode]]
+    else
+      reward <-  x[["reward"]]
+    
+    if (is.data.frame(reward) && (is.null(sparse) || sparse))
+      return(reward)
+    
     mat <- .translate_reward(
       x,
       episode = episode,
@@ -235,13 +245,29 @@ reward_val <-
       start.state <- x$states[start.state]
     if (is.numeric(end.state))
       end.state <- x$states[end.state]
-    if (is.numeric(observation))
+    if (inherits(x, "POMDP") && is.numeric(observation))
       observation <- x$observations[observation]
     
-    rew <- x$reward
+    if (is.null(episode)) {
+      if (is.null(epoch))
+        episode <- 1L
+      else
+        episode <- epoch_to_episode(x, epoch)
+    }
+    
+   
+    if (.is_timedependent_field(x, "reward"))
+      rew <- x[["reward"]][[episode]]
+    else
+      rew <-  x[["reward"]]
+    
     
     ### direct access for data.frame
-    if (is.data.frame(x$reward)) {
+    if (is.data.frame(rew)) {
+      # FIXME: need episode interface for cpp
+      #rew <- reward_val_from_df_cpp(x, action, start.state, end.state, observation, episode, epoch);  
+      #return(rew)
+      
       rew <- rew[(rew$action == action | is.na(rew$action)) &
           (rew$start.state == start.state |
               is.na(rew$start.state)) &

@@ -134,7 +134,8 @@ simulate_POMDP <-
       if (!dt) {
         ### FIXME: this can be done better
         ### TODO: Add support for sparse matrices
-        model <- normalize_POMDP(model, sparse = FALSE)
+        ##model <- normalize_POMDP(model, sparse = FALSE)
+        model <- normalize_POMDP(model, sparse = TRUE)
         
         if (foreach::getDoParWorkers() == 1 || n * horizon < 100000) {
           res <- simulate_POMDP_cpp(

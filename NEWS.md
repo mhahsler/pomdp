@@ -7,6 +7,10 @@
 * color palettes are now exported.
 * POMPD accessors gain parameter drop.
 
+## New Features
+* Large POMDP descriptions are now handled better by keeping the reward as a data.frame and
+  supporting sparse matices in the C++ code.
+
 
 # pomdp 1.1.0 (01/23/2023)
 

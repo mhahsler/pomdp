@@ -76,8 +76,9 @@ normalize_MDP(x, sparse = TRUE)
 \item{episode, epoch}{Episode or epoch used for time-dependent POMDPs. Epochs are internally converted
 to the episode using the model horizon.}
 
-\item{sparse}{logical; use sparse matrices when the density is below 50\% . \code{NULL} returns the
-representation stored in the problem description.}
+\item{sparse}{logical; use sparse matrices when the density is below 50\% and keeps data.frame representation
+for the reward field. \code{NULL} returns the
+representation stored in the problem description which saves the time for conversion.}
 
 \item{drop}{logical; drop the action list if a single action is requested?}
 

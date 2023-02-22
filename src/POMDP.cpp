@@ -1,12 +1,18 @@
 #include <Rcpp.h>
 #include <numeric>
-#include "math.h"
-#include "model.h"
+
 #include "POMDP.h"
 
 //#define DEBUG
 
 using namespace Rcpp;
+
+// R interface uses 1-based indices
+// [[Rcpp::export]]
+double reward_val_from_df_cpp(const List& model, int action, int start_state, int end_state, int observation){
+  return reward_val(model, action, start_state, end_state, observation, true); // true is for R_index
+}
+
 
 // NOTE: Episodes in time-dependent POMDPs are currently unsupported.
 // NOTE: all are 0-based integer indices

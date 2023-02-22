@@ -10,6 +10,21 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// reward_val_from_df_cpp
+double reward_val_from_df_cpp(const List& model, int action, int start_state, int end_state, int observation);
+RcppExport SEXP _pomdp_reward_val_from_df_cpp(SEXP modelSEXP, SEXP actionSEXP, SEXP start_stateSEXP, SEXP end_stateSEXP, SEXP observationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< int >::type action(actionSEXP);
+    Rcpp::traits::input_parameter< int >::type start_state(start_stateSEXP);
+    Rcpp::traits::input_parameter< int >::type end_state(end_stateSEXP);
+    Rcpp::traits::input_parameter< int >::type observation(observationSEXP);
+    rcpp_result_gen = Rcpp::wrap(reward_val_from_df_cpp(model, action, start_state, end_state, observation));
+    return rcpp_result_gen;
+END_RCPP
+}
 // reward_cpp
 DataFrame reward_cpp(const NumericMatrix& belief, const NumericMatrix& alpha);
 RcppExport SEXP _pomdp_reward_cpp(SEXP beliefSEXP, SEXP alphaSEXP) {
@@ -125,6 +140,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_pomdp_reward_val_from_df_cpp", (DL_FUNC) &_pomdp_reward_val_from_df_cpp, 5},
     {"_pomdp_reward_cpp", (DL_FUNC) &_pomdp_reward_cpp, 2},
     {"_pomdp_update_belief_cpp", (DL_FUNC) &_pomdp_update_belief_cpp, 5},
     {"_pomdp_round_stochastic_cpp", (DL_FUNC) &_pomdp_round_stochastic_cpp, 2},

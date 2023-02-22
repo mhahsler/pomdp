@@ -322,6 +322,7 @@
 #' #  initial node. This behavior can be switched off.
 #' plot_policy_graph(sol, remove_unreachable_nodes = FALSE)
 #' @import pomdpSolve
+#' @importFrom processx run
 #' @export
 solve_POMDP <- function(model,
   horizon = NULL,
@@ -331,6 +332,7 @@ solve_POMDP <- function(model,
   method = "grid",
   digits = 7,
   parameter = NULL,
+  timeout = Inf,
   verbose = FALSE) {
   converged <- NA
   
@@ -430,39 +432,41 @@ solve_POMDP <- function(model,
   
   # construct parameter string
   if (!is.null(parameter)) {
-    paras <- sapply(
+    paras <- as.vector(sapply(
       names(parameter),
       FUN = function(n)
-        paste0("-", n, " ", if (is.logical(parameter[[n]])) {
+        c(paste0("-", n), if (is.logical(parameter[[n]])) {
           if (parameter[[n]])
             "true"
           else
             "false"
         } else
           parameter[[n]])
-    )
+    ))
   } else
-    paras <- ""
+    paras <- NULL
   
   # for verbose it goes directly to the console ("")
   # for finite horizon we need to save all pg and alpha files
   pomdp_args <- c(
-    paste("-pomdp", pomdp_filename),
-    paste("-method", method),
-    ifelse(
-      is.finite(horizon),
-      paste("-horizon", horizon, "-save_all true"),
-      ""
-    ),
-    ifelse(!is.null(discount), paste("-discount", discount), ""),
-    ifelse(
-      !is.null(terminal_values),
-      paste("-terminal_values", terminal_values_filename),
-      ""
-    ),
-    paras,
-    "-fg_save true"
-  )
+    "-pomdp", pomdp_filename,
+    "-method", method,
+    "-fg_save", "true",
+    "-save_all", "true"
+    )
+  
+  if (is.finite(horizon))
+    pomdp_args <- append(pomdp_args, 
+      c("-horizon", horizon))
+    
+  if (!is.null(discount))
+    pomdp_args <- append(pomdp_args, c("-discount", discount))
+    
+  if (!is.null(terminal_values))
+    pomdp_args <- append(pomdp_args, c("-terminal_values", terminal_values_filename))
+
+  if (!is.null(paras))
+    pomdp_args <- append(pomdp_args, paras)
   
   if (verbose)
     cat(
@@ -472,44 +476,54 @@ solve_POMDP <- function(model,
       sep = "\n"
     )
   
-  solver_output <- system2(
+  # solver_output <- system2(
+  #   pomdpSolve::find_pomdp_solve(),
+  #   args = pomdp_args,
+  #   stdout = ifelse(verbose, "", TRUE),
+  #   stderr = ifelse(verbose, "", TRUE),
+  #   wait = TRUE
+  # )
+  
+  # if (!is.null(attr(solver_output, "status")) ||
+  #     (verbose && solver_output != 0)) {
+  #   if (!verbose)
+  #     cat(paste(solver_output, "\n\n"))
+  #   
+  #   # message(
+  #   #   "Note: The action and state index reported by the solver above starts with 0 and not with 1:\n"
+  #   # )
+  #   # 
+  #   # m <- max(
+  #   #   length(model$states),
+  #   #   length(model$actions),
+  #   #   length(model$observations)
+  #   # )
+  #   # 
+  #   # print(
+  #   #   data.frame(
+  #   #     index = (1:m) - 1,
+  #   #     action = model$actions[1:m],
+  #   #     state = model$states[1:m],
+  #   #     observation = model$observations[1:m]
+  #   #   )
+  #   # )
+  #   # cat("\n")
+  #   
+  #   message("Debugging info: The used POMDP definition file can be found at: ", pomdp_filename,
+  #     "\n  use file.show('", pomdp_filename, "') to see the POMDP file.")
+  #   
+  #   stop("POMDP solver returned an error (see above).")
+  # }
+  
+  solver_output <- processx::run(
     pomdpSolve::find_pomdp_solve(),
     args = pomdp_args,
-    stdout = ifelse(verbose, "", TRUE),
-    stderr = ifelse(verbose, "", TRUE),
-    wait = TRUE
+    echo = verbose, 
+    timeout = timeout
   )
   
-  if (!is.null(attr(solver_output, "status")) ||
-      (verbose && solver_output != 0)) {
-    if (!verbose)
-      cat(paste(solver_output, "\n\n"))
-    
-    # message(
-    #   "Note: The action and state index reported by the solver above starts with 0 and not with 1:\n"
-    # )
-    # 
-    # m <- max(
-    #   length(model$states),
-    #   length(model$actions),
-    #   length(model$observations)
-    # )
-    # 
-    # print(
-    #   data.frame(
-    #     index = (1:m) - 1,
-    #     action = model$actions[1:m],
-    #     state = model$states[1:m],
-    #     observation = model$observations[1:m]
-    #   )
-    # )
-    # cat("\n")
-    
-    message("Debugging info: The used POMDP definition file can be found at: ", pomdp_filename,
-      "\n  use file.show('", pomdp_filename, "') to see the POMDP file.")
-    
-    stop("POMDP solver returned an error (see above).")
-  }
+  if (solver_output$status != 0 && !verbose)
+      cat(paste(solver_output$stdout, "\n\n"))
   
   ## converged infinite horizon POMDPs produce a policy graph
   if (!is.finite(horizon)) {

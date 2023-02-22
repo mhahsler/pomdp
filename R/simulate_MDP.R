@@ -168,7 +168,7 @@ simulate_MDP <-
     actions <- as.character(model$actions)
     
     trans_m <- transition_matrix(model, sparse = sparse)
-    rew_m <- reward_matrix(model, sparse = sparse)
+    #rew_m <- reward_matrix(model, sparse = sparse)
     
     # for easier access
     pol <-
@@ -192,8 +192,9 @@ simulate_MDP <-
       cat("\n")
     }
     
-    #st <- replicate(n, expr = {
-    sim <- times(n) %dopar% {
+    #warning("Debug mode on!!!")
+    #sim <- replicate(n, expr = {
+    sim <- foreach(i = 1:n) %dopar% {
       # find a initial state
       s <- sample(states, 1, prob = start)
       
@@ -208,7 +209,7 @@ simulate_MDP <-
       else
         states_visited <- integer()
       
-      for (j in 1:horizon) {
+      for (j in seq_len(horizon)) {
         if (runif(1) < epsilon) {
           a <- sample.int(length(actions), 1L, replace = TRUE)
         } else {
@@ -220,9 +221,12 @@ simulate_MDP <-
         
         s_prev <- s
         s <-
-          sample.int(length(states), 1L, prob = trans_m[[a]][s,])
-       
-        rew <- rew + rew_m[[a]][[s_prev]][s] * disc ^ (j - 1L)
+          sample.int(length(states), 1L, prob = trans_m[[a]][s, ])
+        
+        #rew <- rew + rew_m[[a]][[s_prev]][s] * disc ^ (j - 1L)
+        # MDPs have no observation!
+        rew <-
+          rew + reward_val(model, a, s_prev, s, observation = -1) * disc ^ (j - 1L)
         
         if (return_states)
           states_visited[j] <- s
@@ -234,15 +238,13 @@ simulate_MDP <-
           labels = model$states)
       
       list(
-        list(
-          action_cnt =  action_cnt,
-          state_cnt = state_cnt,
-          reward = rew,
-          states = states_visited
-        )
+        action_cnt =  action_cnt,
+        state_cnt = state_cnt,
+        reward = rew,
+        states = states_visited
       )
     }
-    #, simplify = FALSE)
+    #  , simplify = FALSE)
     
     rew <- Reduce(c, lapply(sim, "[[", "reward"))
     rew <- unname(rew)

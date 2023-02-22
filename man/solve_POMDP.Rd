@@ -14,6 +14,7 @@ solve_POMDP(
   method = "grid",
   digits = 7,
   parameter = NULL,
+  timeout = Inf,
   verbose = FALSE
 )
 

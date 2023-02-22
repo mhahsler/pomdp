@@ -2,7 +2,7 @@
 # $$b'(s') = \eta O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)$$
 # $$\eta = 1/ \sum_{s' \in S}[ O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)]$$
 #
-# Impossbile beliefs are all NaN
+# Impossible beliefs are all NaN
 .update_belief <-
   function(belief,
     action,

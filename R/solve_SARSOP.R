@@ -124,11 +124,13 @@ solve_SARSOP <- function(model,
   log_file <- paste0(tmpf, '.log')
   
   # write model POMDP file
-  if (!is.null(model$problem))
-    writeLines(model$problem, con = model_file)
-  else
-    write_POMDP(model, model_file, digits = digits)
+  if (verbose)
+    cat("Writing POMDP file to", model_file, "\n")
+  write_POMDP(model, model_file, digits = digits)
   
+  
+  if (verbose)
+    cat("Starting Solver\n")
   
   # call SARSOP
   res <- do.call(sarsop::pomdpsol, c(
