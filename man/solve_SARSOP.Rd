@@ -94,12 +94,12 @@ Other policy:
 \code{\link{optimal_action}()},
 \code{\link{plot_belief_space}()},
 \code{\link{plot_policy_graph}()},
-\code{\link{plot_value_function}()},
 \code{\link{policy_graph}()},
 \code{\link{policy}()},
 \code{\link{projection}()},
 \code{\link{reward}()},
-\code{\link{solve_POMDP}()}
+\code{\link{solve_POMDP}()},
+\code{\link{value_function}()}
 
 Other solver: 
 \code{\link{solve_MDP}()},
@@ -109,13 +109,13 @@ Other POMDP:
 \code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
 \code{\link{plot_belief_space}()},
-\code{\link{plot_value_function}()},
 \code{\link{projection}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},
 \code{\link{transition_graph}()},
 \code{\link{update_belief}()},
+\code{\link{value_function}()},
 \code{\link{write_POMDP}()}
 }
 \author{

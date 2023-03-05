@@ -131,7 +131,7 @@ solve_MDP <- function(model,
         U = terminal_values,
         verbose = verbose
       ),
-      policy = stop("Not implemented yet.")
+      policy = stop("Method not implemented yet for finite horizon problems.")
     )
   
 }
@@ -184,7 +184,7 @@ MDP_value_iteration_finite_horizon <-
     S <- model$states
     A <- model$actions
     P <- transition_matrix(model, sparse = TRUE)
-    R <- reward_matrix(model, sparse = TRUE)
+    R <- reward_matrix(model, sparse = FALSE) ## Note sparse leaves it as a data.frame
     GAMMA <- model$discount
     
     horizon <- as.integer(horizon)
@@ -193,7 +193,7 @@ MDP_value_iteration_finite_horizon <-
       U <- rep(0, times = length(S))
     names(U) <- S
     
-    policy <- list()
+    policy <- vector(mode = "list", length = horizon)
     
     for (t in seq(horizon, 1)) {
       if (verbose)

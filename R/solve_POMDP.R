@@ -5,7 +5,7 @@
 #' decision processes (POMDPs). The result is an optimal or approximately
 #' optimal policy.
 #'
-#' ## Parameters 
+#' ## Parameters
 #' `solve_POMDP_parameter()` displays available solver parameter options.
 #'
 #' **Horizon:** Infinite-horizon POMDPs (`horizon = Inf`) converge to a
@@ -69,8 +69,8 @@
 #' multiple times (see Example 5).
 #'
 #' ## Solution
-#' 
-#' **Policy:** 
+#'
+#' **Policy:**
 #' Each policy is a data frame where each row representing a
 #' policy graph node with an associated optimal action and a list of node IDs
 #' to go to depending on the observation (specified as the column names). For
@@ -78,8 +78,8 @@
 #' the next epoch creating a policy tree.  Impossible observations have a
 #' `NA` as the next state.
 #'
-#' **Value function:** 
-#' The value function specifies the value of the value function (the expected reward) 
+#' **Value function:**
+#' The value function specifies the value of the value function (the expected reward)
 #' over the belief space. The dimensionality of the belief space is $n-1$ where $n$ is the number of states.
 #' The value function is stored as a matrix. Each row is
 #' associated with a node (row) in the policy graph and represents the
@@ -90,7 +90,7 @@
 #' @family policy
 #' @family solver
 #' @family POMDP
-#' 
+#'
 #' @param model a POMDP problem specification created with [POMDP()].
 #' Alternatively, a POMDP file or the URL for a POMDP file can be specified.
 #' @param method string; one of the following solution methods: `"grid"`,
@@ -109,7 +109,7 @@
 #' @param terminal_values a vector with the terminal utility values for each state or a
 #' matrix specifying the terminal rewards via a terminal value function (e.g.,
 #' the alpha components produced by [solve_POMDP()]).  If `NULL`, then, if available,
-#' the terminal values specified in `model` will be used or a vector with all 0s otherwise. 
+#' the terminal values specified in `model` will be used or a vector with all 0s otherwise.
 #' @param digits precision used when writing POMDP files (see
 #' [write_POMDP()]).
 #' @param parameter a list with parameters passed on to the pomdp-solve
@@ -125,7 +125,7 @@
 #' - `converged` did the solution converge?
 #' - `initial_belief` used initial belief used.
 #' - `total_expected_reward` total expected reward starting from the the initial belief.
-#' - `pg`, `initial_pg_node` the policy graph (see Details section). 
+#' - `pg`, `initial_pg_node` the policy graph (see Details section).
 #' - `alpha` value function as hyperplanes representing the nodes in the policy graph (see Details section).
 #' - `belief_points_solver` optional; belief points used by the solver.
 #' @author Hossein Kamalzadeh, Michael Hahsler
@@ -214,13 +214,13 @@
 #' reward(sol)
 #'
 #' # Expected reward for listen twice (-2) and then open-left (-1 + (-1) + 10 = 8)
-#' reward(sol, belief = c(1,0)) 
-#' 
+#' reward(sol, belief = c(1,0))
+#'
 #' # Expected reward for just opening the right door (10)
 #' reward(sol, belief = c(1,0), epoch = 3)
-#'  
+#'
 #' # Expected reward for just opening the right door (0.5 * -100 + 0.95 * 10 = 4.5)
-#' reward(sol, belief = c(.95,.05), epoch = 3) 
+#' reward(sol, belief = c(.95,.05), epoch = 3)
 #'
 #' ################################################################
 #' # Example 3: Using terminal values (state-dependent utilities after the final epoch)
@@ -264,15 +264,15 @@
 #'
 #' # Tiger_time_dependent (a higher value for verbose will show more messages)
 #'
-#' sol <- solve_POMDP(model = Tiger_time_dependent, discount = 1,  
+#' sol <- solve_POMDP(model = Tiger_time_dependent, discount = 1,
 #'   method = "incprune", verbose = 1)
 #' sol
 #'
 #' policy(sol)
-#' 
-#' # note that the default method to estimate the belief for nodes is following a 
+#'
+#' # note that the default method to estimate the belief for nodes is following a
 #' #  trajectory which uses only the first belief reached for each node. Random sampling
-#' #  can find a better estimate of the central belief of the segment (see nodes 4-1 to 6-3 
+#' #  can find a better estimate of the central belief of the segment (see nodes 4-1 to 6-3
 #' #  in the plots below).
 #' plot_policy_graph(sol)
 #' plot_policy_graph(sol, method = "random_sample")
@@ -300,7 +300,7 @@
 #'   terminal_values = sol_scared$solution$alpha[[1]])
 #' sol
 #' policy(sol)
-#' # Note: it is optimal to mostly listen till the Tiger gets in the scared mood. Only if 
+#' # Note: it is optimal to mostly listen till the Tiger gets in the scared mood. Only if
 #' #  we are extremely sure in the first epoch, then opening a door is optimal.
 #'
 #' ################################################################
@@ -318,8 +318,8 @@
 #' sol <- solve_POMDP(Tiger, method = "grid", parameter = list(grid = custom_grid))
 #' policy(sol)
 #' plot_policy_graph(sol)
-#' 
-#' # note that plot_policy_graph() automatically remove nodes that are unreachable from the 
+#'
+#' # note that plot_policy_graph() automatically remove nodes that are unreachable from the
 #' #  initial node. This behavior can be switched off.
 #' plot_policy_graph(sol, remove_unreachable_nodes = FALSE)
 #' @import pomdpSolve
@@ -386,7 +386,7 @@ solve_POMDP <- function(model,
       terminal_values == 0)
     terminal_values <- NULL
   model$terminal_values <- terminal_values
-    
+  
   if (is.null(discount))
     discount <- model$discount
   if (is.null(discount)) {
@@ -402,7 +402,8 @@ solve_POMDP <- function(model,
   # write model POMDP file
   if (verbose)
     cat("Writing the problem to", pomdp_filename, "\n")
-  if (is.null(model$transition_prob) || is.null(model$observation_prob) || is.null(model$reward))
+  if (is.null(model$transition_prob) ||
+      is.null(model$observation_prob) || is.null(model$reward))
     writeLines(model$problem, con = pomdp_filename)
   else
     write_POMDP(model, pomdp_filename, digits = digits)
@@ -449,23 +450,26 @@ solve_POMDP <- function(model,
   
   # for verbose it goes directly to the console ("")
   # for finite horizon we need to save all pg and alpha files
-  pomdp_args <- c(
-    "-pomdp", pomdp_filename,
-    "-method", method,
-    "-fg_save", "true",
-    "-save_all", "true"
-    )
+  pomdp_args <- c("-pomdp", pomdp_filename,
+    "-method", method)
+  
+  if (method == "grid")
+    pomdp_args <- append(pomdp_args,
+      c("-fg_save", "true"))
   
   if (is.finite(horizon))
-    pomdp_args <- append(pomdp_args, 
-      c("-horizon", horizon))
-    
+    pomdp_args <- append(pomdp_args,
+      c("-horizon", horizon,
+        "-save_all", "true"))
+  
   if (!is.null(discount))
     pomdp_args <- append(pomdp_args, c("-discount", discount))
-    
+  
   if (!is.null(terminal_values))
-    pomdp_args <- append(pomdp_args, c("-terminal_values", terminal_values_filename))
-
+    pomdp_args <-
+    append(pomdp_args,
+      c("-terminal_values", terminal_values_filename))
+  
   if (!is.null(paras))
     pomdp_args <- append(pomdp_args, paras)
   
@@ -489,17 +493,17 @@ solve_POMDP <- function(model,
   #     (verbose && solver_output != 0)) {
   #   if (!verbose)
   #     cat(paste(solver_output, "\n\n"))
-  #   
+  #
   #   # message(
   #   #   "Note: The action and state index reported by the solver above starts with 0 and not with 1:\n"
   #   # )
-  #   # 
+  #   #
   #   # m <- max(
   #   #   length(model$states),
   #   #   length(model$actions),
   #   #   length(model$observations)
   #   # )
-  #   # 
+  #   #
   #   # print(
   #   #   data.frame(
   #   #     index = (1:m) - 1,
@@ -509,26 +513,47 @@ solve_POMDP <- function(model,
   #   #   )
   #   # )
   #   # cat("\n")
-  #   
+  #
   #   message("Debugging info: The used POMDP definition file can be found at: ", pomdp_filename,
   #     "\n  use file.show('", pomdp_filename, "') to see the POMDP file.")
-  #   
+  #
   #   stop("POMDP solver returned an error (see above).")
   # }
   
   solver_output <- processx::run(
     pomdpSolve::find_pomdp_solve(),
     args = pomdp_args,
-    echo = verbose, 
+    echo = verbose,
     timeout = timeout,
     error_on_status = FALSE
   )
   
   if (solver_output$status != 0 && !verbose)
-      cat(paste(solver_output$stdout, "\n\n"))
+    cat(paste(solver_output$stdout))
+  
+  # solver did not finish (currently only works for infinite horizon)
+  if (solver_output$timeout) {
+    cat(" timeout reached!\n")
+    
+    if (is.finite(horizon))
+      stop("Unfinished solutions cannot be used for finite horizon problems!")
+    
+    ep <- strsplit(solver_output$stdout, "\n")[[1]]
+    ep <- ep[length(ep) - 1]
+    ep <- as.integer(gsub("Epoch: (\\d+).*", "\\1", ep))
+    if (is.na(ep))
+      stop("Could not find a solved epoch. You may need to increase the timeout.")
+    
+    cat("Trying to load last solved epoch: Epoch ", ep, "\n\n")
+    
+    converged <- FALSE
+    alpha <- list(.get_alpha_file(file_prefix, model, ep))
+    pg <- list(.get_pg_file(file_prefix, model, ep))
+  }
+  
   
   ## converged infinite horizon POMDPs produce a policy graph
-  if (!is.finite(horizon)) {
+  else if (!is.finite(horizon)) {
     converged <- TRUE
     alpha <- list(.get_alpha_file(file_prefix, model))
     pg <- list(.get_pg_file(file_prefix, model))
@@ -543,7 +568,8 @@ solve_POMDP <- function(model,
       r <- suppressWarnings(try({
         alpha[[i]] <- .get_alpha_file(file_prefix, model, i)
         pg[[i]] <- .get_pg_file(file_prefix, model, i)
-      }, silent = TRUE))
+      }, silent = TRUE)
+      )
       if (inherits(r, "try-error"))
       {
         if (verbose)
@@ -559,11 +585,11 @@ solve_POMDP <- function(model,
         break
       }
     }
-   
+    
     ## make transitions in last epoch NA for non converged solutions
     # we need this for timedependent POMDPs
     #if (!converged)
-      #pg[[1L]][, as.character(model$observations)] <- NA 
+    #pg[[1L]][, as.character(model$observations)] <- NA
     
     ## order by epoch
     alpha <- rev(alpha)
@@ -603,12 +629,13 @@ solve_POMDP <- function(model,
   model$solution$total_expected_reward <- rew$reward
   model$solution$initial_pg_node <- rew$pg_node
   
-  model$solution$solver_output <- structure(solver_output, class = "text")
-
+  model$solution$solver_output <-
+    structure(solver_output, class = "text")
+  
   ### MDP uses policy field
-  if(inherits(model, "MDP")) 
+  if (inherits(model, "MDP"))
     model$solution$policy <- .MDP_policy_from_POMDP(model)
-   
+  
   model
 }
 
@@ -731,10 +758,10 @@ print.POMDP_solution <- function(x, ...) {
         FUN = function(x)
           x$solution$total_expected_reward
       ))
-   
+    
     # we do not support belief_points
     model$solution$belief_points_solver <- NULL
-     
+    
     model
   }
 

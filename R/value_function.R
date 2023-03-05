@@ -1,13 +1,18 @@
-#' Plot the Value Function of a POMDP Solution
+#' Value Function
+#'
+#' Extracts the value function from a solved model. 
+
+#' Extracts the alpha vectors describing the value function. This is similar to [policy()] which in addition returns the 
+#' action prescribed by the solution.
 #'
 #' Plots the value function of a POMDP solution as a line plot. The solution is
 #' projected on two states (i.e., the belief for the other states is held
-#' constant at zero).
+#' constant at zero). The value function can also be visualized using [plot_belief_space()].
 #'
 #' @family policy
 #' @family POMDP
 #'
-#' @param model a solved [POMDP].
+#' @param model a solved [POMDP] or [MDP].
 #' @param projection Sample in a projected belief space. See [projection()] for details.
 #' @param epoch the value function of what epoch should be plotted? Use 1 for
 #'   converged policies.
@@ -18,7 +23,7 @@
 #' @param lty line type.
 #' @param ... additional arguments are passed on to [stats::line()]`.
 #' 
-#' @returns the function has no return value.
+#' @returns the function as a matrix with alpha vectors as rows.
 #' 
 #' @author Michael Hahsler
 #' @keywords hplot
@@ -27,12 +32,19 @@
 #' sol <- solve_POMDP(model = Tiger)
 #' sol
 #'
+#' value_function(sol)
+#'
 #' plot_value_function(sol, ylim = c(0,20))
 #'
 #' ## finite-horizon
 #' sol <- solve_POMDP(model = Tiger, horizon = 3, discount = 1,
 #'   method = "enum")
 #' sol
+#'
+#' # inspect the value funcitons for all epochs 
+#' value_function(sol, epoch = 1)
+#' value_function(sol, epoch = 2)
+#' value_function(sol, epoch = 3)
 #'
 #' plot_value_function(sol, epoch = 1, ylim = c(-5, 25))
 #' plot_value_function(sol, epoch = 2, ylim = c(-5, 25))
@@ -47,6 +59,20 @@
 #'  coord_cartesian(ylim = c(-5, 15)) + ylab("Reward") + xlab("Belief")
 #' }
 #' @importFrom graphics plot barplot mtext box lines
+#' @export
+value_function <- function(model) {
+  if (inherits(model, "MDP")) {
+    is_solved_MDP(model, stop = TRUE)
+    
+    return(lapply(policy(model), "[[", "U"))
+  } else {
+    is_solved_POMDP(model, stop = TRUE)
+    
+    return(model$solution$alpha)
+  }
+}
+
+#' @rdname value_function
 #' @export
 plot_value_function <-
   function(model,
@@ -167,3 +193,5 @@ plot_value_function <-
     
     invisible(NULL)
   }
+
+

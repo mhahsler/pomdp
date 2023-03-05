@@ -42,8 +42,8 @@ resulting belief states is returned.
 Update the belief given a taken action and observation.
 }
 \details{
-Update the belief state \eqn{b} (\code{belief}) with an action \eqn{a} and observation \eqn{o}. The new
-belief state \eqn{b'} is:
+Update the belief state \eqn{b} (\code{belief}) with an action \eqn{a} and observation \eqn{o} using the update
+\eqn{b' \leftarrow \tau(b, a, o)} defined so that
 
 \deqn{b'(s') = \eta O(o | s',a) \sum_{s \in S} T(s' | s,a) b(s)}
 
@@ -62,13 +62,13 @@ Other POMDP:
 \code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
 \code{\link{plot_belief_space}()},
-\code{\link{plot_value_function}()},
 \code{\link{projection}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()},
 \code{\link{transition_graph}()},
+\code{\link{value_function}()},
 \code{\link{write_POMDP}()}
 }
 \author{

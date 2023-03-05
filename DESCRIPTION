@@ -47,7 +47,6 @@ Collate:
     'optimal_action.R'
     'plot_belief_space.R'
     'plot_policy_graph.R'
-    'plot_value_function.R'
     'policy.R'
     'policy_graph.R'
     'print.text.R'
@@ -65,3 +64,4 @@ Collate:
     'solve_SARSOP.R'
     'transition_graph.R'
     'update_belief.R'
+    'value_function.R'

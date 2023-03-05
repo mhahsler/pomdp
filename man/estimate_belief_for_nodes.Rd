@@ -79,12 +79,12 @@ Other policy:
 \code{\link{optimal_action}()},
 \code{\link{plot_belief_space}()},
 \code{\link{plot_policy_graph}()},
-\code{\link{plot_value_function}()},
 \code{\link{policy_graph}()},
 \code{\link{policy}()},
 \code{\link{projection}()},
 \code{\link{reward}()},
 \code{\link{solve_POMDP}()},
-\code{\link{solve_SARSOP}()}
+\code{\link{solve_SARSOP}()},
+\code{\link{value_function}()}
 }
 \concept{policy}
