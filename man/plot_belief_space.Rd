@@ -132,6 +132,7 @@ Other POMDP:
 \code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
 \code{\link{projection}()},
+\code{\link{regret}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},

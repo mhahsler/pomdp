@@ -78,6 +78,7 @@ Other POMDP:
 \code{\link{POMDP}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
+\code{\link{regret}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()},

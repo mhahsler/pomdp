@@ -16,6 +16,9 @@
 #' represent a member of a set, e.g., \eqn{s} is a specific state. To refer to
 #' the size of a set we will use cardinality, e.g., the number of actions is
 #' \eqn{|A|}.
+#' 
+#' Note that it is also common in the literature to use for the set of observations 
+#' the letter \eqn{Z}.
 #'
 #' **Names used for mathematical symbols in code**
 #'

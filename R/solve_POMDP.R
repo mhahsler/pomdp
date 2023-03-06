@@ -13,20 +13,23 @@
 #' depth equal to the smaller of the horizon or the number of epochs to
 #' convergence.  The policy (and the associated value function) are stored in a
 #' list by epoch. The policy for the first epoch is stored as the first
-#' element.
+#' element. Horizon can also be used to limit the number of epochs used 
+#' for value iteration.
 #'
 #' *Precision:** The POMDP solver uses various epsilon values to control
 #' precision for comparing alpha vectors to check for convergence, and solving
 #' LPs. Overall precision can be changed using
 #' `parameter = list(epsilon = 1e-3)`.
 #'
-#' **Methods:** Several algorithms for dynamic-programming updates are
+#' **Methods:** Several algorithms using exact value iteration are
 #' available:
 #'
 #' * Enumeration (Sondik 1971).
 #' * Two pass (Sondik 1971).
 #' * Witness (Littman, Cassandra, Kaelbling, 1996).
 #' * Incremental pruning (Zhang and Liu, 1996, Cassandra et al 1997).
+#' 
+#' In addition, the following approximate value iteration method is available:
 #' * Grid implements a variation of point-based value iteration
 #'   to solve larger POMDPs (PBVI; see Pineau 2003) without dynamic belief set expansion.
 #'

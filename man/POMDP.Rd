@@ -115,6 +115,9 @@ represent a member of a set, e.g., \eqn{s} is a specific state. To refer to
 the size of a set we will use cardinality, e.g., the number of actions is
 \eqn{|A|}.
 
+Note that it is also common in the literature to use for the set of observations
+the letter \eqn{Z}.
+
 \strong{Names used for mathematical symbols in code}
 \itemize{
 \item \eqn{S, s, s'}: \verb{'states', start.state', 'end.state'}
@@ -320,6 +323,7 @@ Other POMDP:
 \code{\link{POMDP_accessors}},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
+\code{\link{regret}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},
