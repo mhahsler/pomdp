@@ -40,15 +40,20 @@
 #' @examples
 #' data("Tiger")
 #'
-#' ## policy graphs for converged solutions
-#' sol <- solve_POMDP(model = Tiger)
+#' # Infinite horizon case with converged solution
+#' sol <- solve_POMDP(model = Tiger, method = "grid")
 #' sol
 #'
+#' # default method auto uses the belief points used in the algorithm (if available).
 #' estimate_belief_for_nodes(sol, verbose = TRUE)
+#' 
+#' # use belief points obtained from trajectories  
 #' estimate_belief_for_nodes(sol, method = "trajectories", verbose = TRUE)
+#' 
+#' # use a random uniform sample 
 #' estimate_belief_for_nodes(sol, method = "random", verbose = TRUE)
 #'
-#' # Finite horizon example with three epochs
+#' # Finite horizon example with three epochs. 
 #' sol <- solve_POMDP(model = Tiger, horizon = 3)
 #' sol
 #' estimate_belief_for_nodes(sol)

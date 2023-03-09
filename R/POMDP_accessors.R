@@ -3,15 +3,37 @@
 #' Functions to provide uniform access to different parts of the POMDP description.
 #'
 #' Several parts of the POMDP description can be defined in different ways. In particular,
-#' `transition_prob`, `observation_prob`, `reward`, and `start` can be defined using matrices, data frames or
+#' the fields `transition_prob`, `observation_prob`, `reward`, and `start` can be defined using matrices, data frames or
 #' keywords. See [POMDP] for details. The functions provided here, provide unified access to the data in these fields
 #' to make writing code easier.
+#' 
+#' ## Transition Probabilities \eqn{T(s'|s,a)}
+#' `transition_matrix()` returns a list with one element for each action. Each element contains a states x states matrix
+#' with \eqn{s} (`start.state`) as rows and \eqn{s'} (`end.state`) as columns. 
+#' Matrices with a density below 50% can be requested in sparse format (as a [Matrix::dgCMatrix-class])
+#' 
+#' `transition_val()` retrieves a single entry more efficiently. 
+#' 
+#' ## Observation Probabilities \eqn{O(o|s',a)}
+#' `observation_matrix()` returns a list with one element for each action. Each element contains a states x states matrix
+#' with \eqn{s} (`start.state`) as rows and \eqn{s'} (`end.state`) as columns. 
+#' Matrices with a density below 50% can be requested in sparse format (as a [Matrix::dgCMatrix-class])
+#' 
+#' `observation_val()` retrieves a single entry more efficiently. 
+#' 
+#' ## Reward \eqn{R(s,s',o,a)}
+#' `reward_matrix()` returns for the dense representation a list of lists. The list levels are \eqn{a} (`action`)  and \eqn{s} (`start.state`). 
+#' The list elements are matrices with rows representing the end state \eqn{s'}  and columns representing observations \eqn{o}. 
+#' Many reward structures cannot be efficiently stored using a standard sparse matrix since there might be a fixed cost for each action
+#' resulting in no entries with 0. Therefore, the data.frame representation is used as a 'sparse' representation.
 #'
-#' * `start_vector()` translates the initial probability vector into a vector.
-#' * For `transition_prob`, `observation_prob`, `reward`, functions ending in `_matrix()` and `_val()` are
-#'    provided to access the data as lists of matrices, a matrix or a scalar value. For `_matrix()`,
-#'    matrices with a density below 50% can be requested in sparse format (as a [Matrix::dgCMatrix-class]).
-#' * `normalize_POMDP()` returns a new POMDP definition where `transition_prob`,
+#' `observation_val()` retrieves a single entry more efficiently. 
+#' 
+#' ## Initial Belief 
+#' `start_vector()` translates the initial probability vector description into a numeric vector.
+#' 
+#' ## Convert the Complete POMDP Description into a Consistent Form 
+#' `normalize_POMDP()` returns a new POMDP definition where `transition_prob`,
 #'    `observations_prob`, `reward`, and `start` are normalized to (lists of) matrices and vectors to
 #'    make direct access easy.  Also, `states`, `actions`, and `observations` are ordered as given in the problem
 #'    definition to make safe access using numerical indices possible. Normalized POMDP descriptions are used for
@@ -37,7 +59,7 @@
 #' @examples
 #' data("Tiger")
 #'
-#' # List of |A| transition matrices. One per action in the from states x states
+#' # List of |A| transition matrices. One per action in the from start.states x end.states
 #' Tiger$transition_prob
 #' transition_matrix(Tiger)
 #' transition_val(Tiger, action = "listen", start.state = "tiger-left", end.state = "tiger-left")
@@ -53,6 +75,10 @@
 #' reward_matrix(Tiger)
 #' reward_val(Tiger, action = "open-right", start.state = "tiger-left", end.state = "tiger-left",
 #'   observation = "tiger-left")
+#'   
+#' # Note that the reward in the tiger problem only depends on the action and the start.state 
+#' # so we can use:
+#' reward_val(Tiger, action = "open-right", start.state = "tiger-left")
 #'
 #' # Translate the initial belief vector
 #' Tiger$start
@@ -235,10 +261,23 @@ reward_val <-
   function(x,
     action,
     start.state,
-    end.state,
-    observation,
+    end.state = NA,
+    observation = NA,
     episode = NULL,
     epoch = NULL) {
+    if (is.na(end.state) || is.na(observation)) {
+      if (!is.na(end.state) || !is.na(observation))
+        stop("For reward functions which depend only on action and start.state, both, end.state and observation have to be NA! Otherwise you need to specify all four elements.")
+      
+      ### TODO: Checking for matrix format is harder
+      if (is.data.frame(x$reward))
+        if(!all(is.na(x$reward[["end.state"]])) && !all(is.na(x$reward[["observation"]])))
+          stop("The POMDP rewards depend on the end.state or the observation. You need to specify all four.")
+      
+      end.state <- 1L
+      observation <- 1L
+    }
+      
     if (is.numeric(action))
       action <- x$actions[action]
     if (is.numeric(start.state))
@@ -473,9 +512,14 @@ normalize_MDP <- function(x, sparse = TRUE) {
   x <- type.convert(x, as.is = TRUE)
   
   if (!is.numeric(x))
-    factor(x, levels = names)
+    y <- factor(x, levels = names)
   else
-    factor(x, levels = seq_along(names), labels = names)
+    y <- factor(x, levels = seq_along(names), labels = names)
+  
+  if (any(is.na(y) & !is.na(x)))
+    stop("Unknown action, state or observation label(s): ", paste(x[is.na(y) & !is.na(x)], collapse = ", "))
+  
+  y
 }
 
 # converts any description into a matrix and fixes it up
@@ -619,15 +663,14 @@ normalize_MDP <- function(x, sparse = TRUE) {
     
     states <- model$states
     observations <- model$observations
+    
     if (is.null(action))
-      actions <- model$actions
-    else
-      actions <- as.character(.get_names(action, model$actions))
+      action <- model$actions
+    actions <- as.character(.get_names(action, model$actions))
     
     if (is.null(start.state))
-      start.states <- states
-    else
-      start.states <- .get_names(start.state, states)
+      start.state <- states
+    start.states <- as.character(.get_names(start.state, states))
     
     ## episodes are for time-dependent POMDPs
     if (.is_timedependent_field(model, field))
@@ -681,8 +724,9 @@ normalize_MDP <- function(x, sparse = TRUE) {
           if (is.na(acts))
             acts <- actions
           else
-            if (is.null(mat[[acts]]))
+            if (!(acts %in% actions))
               next
+          
           ss_from <- reward[i, 2L]
           if (is.na(ss_from))
             ss_from <- states

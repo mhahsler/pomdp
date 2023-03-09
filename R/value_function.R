@@ -32,19 +32,18 @@
 #' sol <- solve_POMDP(model = Tiger)
 #' sol
 #'
+#' # value function for the converged solution
 #' value_function(sol)
-#'
+#' 
 #' plot_value_function(sol, ylim = c(0,20))
 #'
-#' ## finite-horizon
+#' ## finite-horizon problem
 #' sol <- solve_POMDP(model = Tiger, horizon = 3, discount = 1,
 #'   method = "enum")
 #' sol
 #'
-#' # inspect the value funcitons for all epochs 
-#' value_function(sol, epoch = 1)
-#' value_function(sol, epoch = 2)
-#' value_function(sol, epoch = 3)
+#' # inspect the value function for all epochs 
+#' value_function(sol)
 #'
 #' plot_value_function(sol, epoch = 1, ylim = c(-5, 25))
 #' plot_value_function(sol, epoch = 2, ylim = c(-5, 25))

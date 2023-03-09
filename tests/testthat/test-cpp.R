@@ -22,14 +22,22 @@ Tiger_norm <- normalize_POMDP(Tiger)
 #pomdp:::update_belief_cpp(Tiger_norm, c(.5, .5), 0, 0)
 #unname(update_belief(Tiger, c(.5, .5), 1, 1))
 
-expect_identical(pomdp:::update_belief_cpp(Tiger_norm, c(.5, .5), 0, 0), 
-  unname(update_belief(Tiger, c(.5, .5), 1, 1)))
+expect_identical(pomdp:::update_belief_cpp(Tiger_norm, c(.5, .5), 0, 0),
+  {
+    u <- update_belief(Tiger, c(.5, .5), 1, 1)
+    attributes(u) <- NULL
+    u
+  })
 
 #pomdp:::update_belief_cpp(Tiger_norm, c(.85, .15), 0, 0)
 #unname(update_belief(Tiger, c(.85, .15), 1, 1))
 
-expect_identical(pomdp:::update_belief_cpp(Tiger_norm, c(.85, .15), 0, 0), 
-  unname(update_belief(Tiger, c(.85, .15), 1, 1)))
+expect_identical(pomdp:::update_belief_cpp(Tiger_norm, c(.85, .15), 0, 0),
+  {
+    u <- update_belief(Tiger, c(.85, .15), 1, 1)
+    attributes(u) <- NULL
+    u
+  })
 
 ## simulate_POMDP
 data(Tiger)
@@ -37,8 +45,20 @@ data(Tiger)
 verb <- FALSE
 
 # unsolved
-simulate_POMDP(Tiger, n = 10, horizon = 10, verbose = verb, engine = "r")
-simulate_POMDP(Tiger, n = 10, horizon = 10, verbose = verb, engine = "cpp")
+simulate_POMDP(
+  Tiger,
+  n = 10,
+  horizon = 10,
+  verbose = verb,
+  engine = "r"
+)
+simulate_POMDP(
+  Tiger,
+  n = 10,
+  horizon = 10,
+  verbose = verb,
+  engine = "cpp"
+)
 
 #simulate_POMDP(Tiger, n = 1000, horizon = 10, engine = "r")$avg
 #simulate_POMDP(Tiger, n = 1000, horizon = 10, engine = "cpp")$avg
@@ -49,19 +69,41 @@ sol <- solve_POMDP(Tiger)
 sol
 policy(sol)
 
-simulate_POMDP(sol, n = 10, horizon = 10, verbose = verb, engine = "r")
-simulate_POMDP(sol, n = 10, horizon = 10, verbose = verb, engine = "cpp")
+simulate_POMDP(
+  sol,
+  n = 10,
+  horizon = 10,
+  verbose = verb,
+  engine = "r"
+)
+simulate_POMDP(
+  sol,
+  n = 10,
+  horizon = 10,
+  verbose = verb,
+  engine = "cpp"
+)
 
 #simulate_POMDP(sol, n = 1000, horizon = 10, engine = "r")$avg
 #simulate_POMDP(sol, n = 1000, horizon = 10, engine = "cpp")$avg
 
 ## fixed horizon solution
-sol <- solve_POMDP(Tiger, horizon = 5, discount = 1, method = "enum")
+sol <-
+  solve_POMDP(Tiger,
+    horizon = 5,
+    discount = 1,
+    method = "enum")
 sol
 policy(sol)
 
-simulate_POMDP(sol, n = 10, verbose = verb, engine = "r")
-simulate_POMDP(sol, n = 10, verbose = verb, engine = "cpp")
+simulate_POMDP(sol,
+  n = 10,
+  verbose = verb,
+  engine = "r")
+simulate_POMDP(sol,
+  n = 10,
+  verbose = verb,
+  engine = "cpp")
 
 #simulate_POMDP(sol, n = 1000, engine = "r")$avg
 #simulate_POMDP(sol, n = 1000, engine = "cpp")$avg
@@ -72,11 +114,37 @@ data(Maze)
 verb <- FALSE
 
 # unsolved MDP
-simulate_MDP(Maze, n = 10, horizon = 10, verbose = verb, engine = "r")
-simulate_MDP(Maze, n = 10, horizon = 10, return_states = TRUE, verbose = verb, engine = "r")
+simulate_MDP(
+  Maze,
+  n = 10,
+  horizon = 10,
+  verbose = verb,
+  engine = "r"
+)
+simulate_MDP(
+  Maze,
+  n = 10,
+  horizon = 10,
+  return_states = TRUE,
+  verbose = verb,
+  engine = "r"
+)
 
-simulate_MDP(Maze, n = 10, horizon = 10, verbose = verb, engine = "cpp")
-simulate_MDP(Maze, n = 10, horizon = 10, return_states = TRUE, verbose = verb, engine = "cpp")
+simulate_MDP(
+  Maze,
+  n = 10,
+  horizon = 10,
+  verbose = verb,
+  engine = "cpp"
+)
+simulate_MDP(
+  Maze,
+  n = 10,
+  horizon = 10,
+  return_states = TRUE,
+  verbose = verb,
+  engine = "cpp"
+)
 
 #microbenchmark::microbenchmark(simulate_MDP(Maze, n = 100, horizon = 10, verbose = FALSE, engine = "r"))
 #microbenchmark::microbenchmark(simulate_MDP(Maze, n = 100, horizon = 10, verbose = FALSE, engine = "cpp"))
@@ -84,4 +152,7 @@ simulate_MDP(Maze, n = 10, horizon = 10, return_states = TRUE, verbose = verb, e
 # solved MDP
 sol <- solve_MDP(Maze, discount = 1)
 
-simulate_MDP(sol, n = 10, horizon = 10, verbose = verb)
+simulate_MDP(sol,
+  n = 10,
+  horizon = 10,
+  verbose = verb)

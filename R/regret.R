@@ -25,7 +25,7 @@
 #' sol_optimal
 #' 
 #' # perform exact value iteration for 10 epochs
-#' sol_quick <- solve_POMDP(Tiger, method = "enum", horiz = 10)
+#' sol_quick <- solve_POMDP(Tiger, method = "enum", horizon = 10)
 #' sol_quick
 #' 
 #' regret(sol_quick, sol_optimal)

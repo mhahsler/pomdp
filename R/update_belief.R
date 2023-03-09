@@ -82,11 +82,12 @@ update_belief <-
     Tr <- transition_matrix(model, episode = episode)
     
     if (is.null(action))
-      action <- as.character(model$actions)
+      action <- factor(seq_along(model$actions), labels = model$actions)
     if (is.null(observation))
-      observation <- as.character(model$observations)
+      observation <- factor(seq_along(model$observations), labels = model$observations)
     
     g <- expand.grid(action, observation, stringsAsFactors = FALSE)
+    colnames(g) <- c("action", "observation")
     
     b <- t(.update_belief_vec(belief, g[, 1], g[, 2], Tr, Ob, digits))
     rownames(b) <- apply(g, MARGIN = 1, paste, collapse = "+")
@@ -94,6 +95,9 @@ update_belief <-
   
     if (drop)
       b <- drop(b)
+    
+    attr(b, "order") <- g
+    
     b
   }
 

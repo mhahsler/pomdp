@@ -9,7 +9,10 @@
 
 ## New Features
 * Large POMDP descriptions are now handled better by keeping the reward as a data.frame and
-  supporting sparse matices in the C++ code.
+  supporting sparse matrices in the C++ code.
+* New function value_function() to access alpha vectors.
+* New function regret() to calculate the regret of a policy.
+* transition_graph() to visualize the transition model.
 
 
 # pomdp 1.1.0 (01/23/2023)

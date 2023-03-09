@@ -129,7 +129,7 @@ policy_graph <-
         bp <- x$solution$central_belief[[1L]]
       else
         bp <-
-          estimate_belief_for_nodes(x, belief = belief, ...)[[1L]]
+          suppressWarnings(estimate_belief_for_nodes(x, belief = belief, ...)[[1L]])
       
       # missing belief points?
       # missing_bp <- which(apply(is.na(bp), MARGIN = 1, any))
@@ -143,7 +143,6 @@ policy_graph <-
     # producing a list containing arcs
     l <- list()
     list_of_arcs <- NULL
-    #observations <- colnames(pg)[-c(1,2)]
     observations <- x$observations
     
     l <- lapply(
@@ -320,7 +319,7 @@ policy_graph <-
     # add belief proportions
     ### FIXME: Add gray for missing points instead of a uniform distribution
     if (show_belief) {
-      bp <- estimate_belief_for_nodes(x, belief = belief, ...)
+      bp <- suppressWarnings(estimate_belief_for_nodes(x, belief = belief, ...))
       bp <- do.call(rbind, bp)
       bp <- bp[used, , drop = FALSE]
       

@@ -89,7 +89,10 @@
 #' coefficients (alpha or V vector) of a hyperplane. It contains one
 #' value per state which is the value for the belief state that has a probability
 #' of 1 for that state and 0s for all others.
-#'
+#' 
+#' ## Temporary Files 
+#' All temporary solver files are stored in the directory returned by `tempdir()`.
+#' 
 #' @family policy
 #' @family solver
 #' @family POMDP
@@ -310,8 +313,8 @@
 #' # Example 6: PBVI with a custom grid
 #'
 #' # Create a search grid by sampling from the belief space in
-#' #   100 regular intervals
-#' custom_grid <- sample_belief_space(Tiger, n = 100, method = "regular")
+#' #   10 regular intervals
+#' custom_grid <- sample_belief_space(Tiger, n = 10, method = "regular")
 #' head(custom_grid)
 #'
 #' # Visualize the search grid

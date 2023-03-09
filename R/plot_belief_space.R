@@ -37,7 +37,7 @@
 #' plot_belief_space(sol, n = 100, sample = "random")
 #'
 #' # plot the belief points used by the grid-based solver
-#' plot_belief_space(sol, sample = sol$solution$belief_points_solver)
+#' plot_belief_space(sol, sample = sol $solution$belief_points_solver)
 #'
 #' # plot different measures
 #' plot_belief_space(sol, what = "pg_node")
