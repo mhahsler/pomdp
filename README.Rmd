@@ -25,6 +25,9 @@ The package provides access to the following algorithms:
   - __Finite grid algorithm__ [@Cassandra2015], a variation of point-based value iteration to solve larger POMDPs (__PBVI__; see [@Pineau2003] without dynamic belief set expansion.
   - __SARSOP__ [@Pineau2003], point-based algorithm that approximates optimally reachable belief spaces for infinite-horizon problems (via package [sarsop](https://github.com/boettiger-lab/sarsop)).
 
+If you are new to POMDPs then start with the [POMDP Tutorial](https://pomdp.org/tutorial/).
+
+
 ```{r echo=FALSE, results = 'asis'}
 pkg_install(pkg)
 ```

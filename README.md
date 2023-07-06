@@ -4,7 +4,7 @@
 [![CRAN
 version](http://www.r-pkg.org/badges/version/pomdp)](https://CRAN.R-project.org/package=pomdp)
 [![stream r-universe
-status](https://mhahsler.r-universe.dev/badges/pomdp)](https://mhahsler.r-universe.dev/ui#package:pomdp)
+status](https://mhahsler.r-universe.dev/badges/pomdp)](https://mhahsler.r-universe.dev/pomdp)
 [![CRAN RStudio mirror
 downloads](http://cranlogs.r-pkg.org/badges/pomdp)](https://CRAN.R-project.org/package=pomdp)
 
@@ -33,6 +33,9 @@ The package provides access to the following algorithms:
     infinite-horizon problems (via package
     [sarsop](https://github.com/boettiger-lab/sarsop)).
 
+If you are new to POMDPs then start with the [POMDP
+Tutorial](https://pomdp.org/tutorial/).
+
 ## Installation
 
 **Stable CRAN version:** Install from within R with
@@ -42,7 +45,7 @@ install.packages("pomdp")
 ```
 
 **Current development version:** Install from
-[r-universe.](https://mhahsler.r-universe.dev/ui#package:pomdp)
+[r-universe.](https://mhahsler.r-universe.dev/pomdp)
 
 ``` r
 install.packages("pomdp", repos = "https://mhahsler.r-universe.dev")
