@@ -8,14 +8,26 @@ status](https://mhahsler.r-universe.dev/badges/pomdp)](https://mhahsler.r-univer
 [![CRAN RStudio mirror
 downloads](http://cranlogs.r-pkg.org/badges/pomdp)](https://CRAN.R-project.org/package=pomdp)
 
-Provides the infrastructure to define and analyze the solutions of
-optimal control problems formulated as Partially Observable Markov
-Decision Processes (POMDP). The package uses the solvers from
-[pomdp-solve](http://www.pomdp.org/code/) (Cassandra, 2015) available in
-the R package [**pomdpSolve**](https://github.com/mhahsler/pomdpSolve)
-to solve POMDPs using a variety of algorithms.
+## Introduction
 
-The package provides access to the following algorithms:
+A partially observable Markov decision process (POMDP) models an agent
+decision process where the agent cannot directly observe the
+environment’s state, but has to rely on observations. The goal is to
+find an optimal policy to guide the agent’s actions.
+
+The `pomdp` package provides the infrastructure to define and analyze
+the solutions of optimal control problems formulated as Partially
+Observable Markov Decision Processes (POMDP). The package uses the
+solvers from [pomdp-solve](http://www.pomdp.org/code/) (Cassandra, 2015)
+available in the companion R package
+[**pomdpSolve**](https://github.com/mhahsler/pomdpSolve) to solve POMDPs
+using a variety of exact and approximate algorithms.
+
+The package provides fast functions (using C++, sparse matrix
+representation, and parallelization with `foreach`) to perform
+experiments (sample from the belief space, simulate trajectories, belief
+update, calculate the regret of a policy). The package also interfaces
+to the following algorithms:
 
 - Exact value iteration
   - **Enumeration algorithm** (Sondik 1971; Monahan 1982).
@@ -35,6 +47,20 @@ The package provides access to the following algorithms:
 
 If you are new to POMDPs then start with the [POMDP
 Tutorial](https://pomdp.org/tutorial/).
+
+To cite package ‘pomdp’ in publications use:
+
+> Hahsler M (2023). *pomdp: Infrastructure for Partially Observable
+> Markov Decision Processes (POMDP)*. R package version 1.1.0-1,
+> <https://github.com/mhahsler/pomdp>.
+
+    @Manual{,
+      title = {pomdp: Infrastructure for Partially Observable Markov Decision Processes (POMDP)},
+      author = {Michael Hahsler},
+      year = {2023},
+      note = {R package version 1.1.0-1},
+      url = {https://github.com/mhahsler/pomdp},
+    }
 
 ## Installation
 
@@ -83,7 +109,7 @@ sol
     ##   Solved:
     ##     Method: grid
     ##     Solution converged: TRUE
-    ##     # of alpha vectors: 10
+    ##     # of alpha vectors: 5
     ##     Total expected reward: 1.933439
     ## 
     ##   List components: 'name', 'discount', 'horizon', 'states', 'actions',
