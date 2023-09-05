@@ -7,7 +7,7 @@
 \usage{
 write_POMDP(x, file, digits = 7)
 
-read_POMDP(file, parse = TRUE)
+read_POMDP(file, parse = TRUE, normalize = TRUE)
 }
 \arguments{
 \item{x}{an object of class \link{POMDP}.}
@@ -19,6 +19,8 @@ point).}
 
 \item{parse}{logical; try to parse the model matrices.
 Solvers still work with unparsed matrices, but helpers for simulation are not available.}
+
+\item{normalize}{logical; should the description be normalized for faster access (see \code{\link[=normalize_POMDP]{normalize_POMDP()}})?}
 }
 \value{
 \code{read_POMDP()} returns a \link{POMDP} object.

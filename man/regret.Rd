@@ -7,8 +7,7 @@
 regret(policy, benchmark, belief = NULL)
 }
 \arguments{
-\item{policy}{to calculate the regret for. Can be a solved POMDP, a matrix containing a value_function (see value_function()),
-or a policy (see \code{\link[=policy]{policy()}}).}
+\item{policy}{a POMDP containing the policy to calculate the regret for.}
 
 \item{benchmark}{a solved POMDP with the (optimal) policy. Regret is calculated relative to this
 policy.}

@@ -88,7 +88,8 @@ Tiger_func <- POMDP(
   
   transition_prob = trans_f,
   observation_prob = obs_f,
-  reward = rew_f
+  reward = rew_f,
+  normalize = FALSE
 )
 
 tm_func <- transition_matrix(Tiger_func)
@@ -173,7 +174,8 @@ objPOMDP <- POMDP(
     O_("End", "A-plus-2-state", "A-plus-1-state", 0.1), #(3, 2)
     O_("End", "A-plus-2-state", "A-plus-2-state", 0.9) #(3, 3)
     
-  )
+  ),
+  normalize = FALSE
 )
 
 #compare this
@@ -229,7 +231,8 @@ sparsePOMDP <- POMDP(
       c(.2, .2, .2, .2, .2), 
       c(.2, .2, .2, .2, .2) 
     )
-  )
+  ),
+  normalize = FALSE
 )
 
 densePOMDP <- normalize_POMDP(sparsePOMDP, sparse = FALSE)

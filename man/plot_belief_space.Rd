@@ -79,6 +79,8 @@ data("Three_doors")
 sol <- solve_POMDP(Three_doors)
 sol
 
+# plotting needs the suggested package Ternary
+if ("Ternary" \%in\% installed.packages()) {
 plot_belief_space(sol)
 plot_belief_space(sol, n = 10000)
 plot_belief_space(sol, what = "reward", sample = "random", n = 1000)
@@ -97,9 +99,10 @@ plot_belief_space(sol, sample = sol$solution$belief_points_solver, what = "pg_no
 plot_belief_space(sol, 
   sample = simulate_POMDP(sol, n = 50, horizon = 100,
     epsilon = 0.1, return_beliefs = TRUE)$belief_states)
+}
 
-\dontrun{
 # plot a 3-state belief space using ggtern (ggplot2)
+\dontrun{
 library(ggtern)
 samp <- sample_belief_space(sol, n = 1000)
 df <- cbind(as.data.frame(samp), reward_node_action(sol, belief = samp))

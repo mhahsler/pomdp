@@ -88,7 +88,7 @@ reward_node_action <- function(x, belief = NULL, epoch = 1) {
   if (!is.matrix(belief))
     belief <- rbind(belief)
   
-  r <- reward_cpp(belief, alpha)
+  r <- reward_alpha_cpp(alpha, belief)
   
   # r <- apply(
   #   belief,

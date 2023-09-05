@@ -145,6 +145,7 @@
 #' (default) can be used.  The belief is used to calculate the total expected cumulative
 #' reward. It is also used by some solvers. See Details section for more
 #' information.
+#' @param normalize logical; should the description be normalized for faster access (see [normalize_POMDP()])?
 #' @param name a string to identify the POMDP problem.
 #' @param action,start.state,end.state,observation,probability,value Values
 #' used in the helper functions `O_()`, `R_()`, and `T_()` to
@@ -268,6 +269,7 @@ POMDP <- function(states,
   horizon = Inf,
   terminal_values = NULL,
   start = "uniform",
+  normalize = TRUE,
   name = NA) {
   ### unsolved pomdp model
   x <- list(
@@ -285,7 +287,12 @@ POMDP <- function(states,
   )
   
   class(x) <- c("POMDP", "list")
-  check_and_fix_MDP(x)
+  x <- check_and_fix_MDP(x)
+  
+  if(normalize)
+    x <- normalize_POMDP(x)
+  
+  x
 }
 
 
@@ -692,11 +699,16 @@ print.POMDP <- function(x, ...) {
       paste(x$horizon, collapse = " + ")))
   
   writeLines(sprintf(
-    "  Size: %d states / %d actions / %d obs.\n",
+    "  Size: %d states / %d actions / %d obs.",
     length(x$states),
     length(x$actions),
     length(x$observations)
   ))
+  
+  if (!is.null(x$normalized) && x$normalized)
+    writeLines(c("  Normalized: TRUE", ""))
+  else
+    writeLines(c("  Normalized: FALSE", ""))
   
   if (is_solved_POMDP(x))
     writeLines(c(
@@ -715,6 +727,10 @@ print.POMDP <- function(x, ...) {
       ),
       ""
     ))
+  else
+    writeLines(c(
+      "  Solved: FALSE\n"))
+  
   
   writeLines(strwrap(
     paste("List components:", paste(sQuote(names(

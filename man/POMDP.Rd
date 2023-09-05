@@ -22,6 +22,7 @@ POMDP(
   horizon = Inf,
   terminal_values = NULL,
   start = "uniform",
+  normalize = TRUE,
   name = NA
 )
 
@@ -73,6 +74,8 @@ probability for each state is supplied. Also the string \code{'uniform'}
 (default) can be used.  The belief is used to calculate the total expected cumulative
 reward. It is also used by some solvers. See Details section for more
 information.}
+
+\item{normalize}{logical; should the description be normalized for faster access (see \code{\link[=normalize_POMDP]{normalize_POMDP()}})?}
 
 \item{name}{a string to identify the POMDP problem.}
 

@@ -8,7 +8,7 @@
 
 using namespace Rcpp;
 
-// NOTE: Episodes in time-dependent POMDPs are currently unsupported.
+// NOTE: Episodes in time-dependent POMDPs are currently not supported.
 // NOTE: all are 0-based integer indices
 
 // epsilon -1 means 0 for solved models and 1 for unsolved models

@@ -465,8 +465,11 @@ solve_POMDP <- function(model,
   
   if (is.finite(horizon))
     pomdp_args <- append(pomdp_args,
-      c("-horizon", horizon,
-        "-save_all", "true"))
+      c("-horizon", horizon))
+  
+  if (timeout || is.finite(horizon))
+    pomdp_args <- append(pomdp_args,
+      c("-save_all", "true"))
   
   if (!is.null(discount))
     pomdp_args <- append(pomdp_args, c("-discount", discount))
@@ -550,7 +553,7 @@ solve_POMDP <- function(model,
     if (is.na(ep))
       stop("Could not find a solved epoch. You may need to increase the timeout.")
     
-    cat("Trying to load last solved epoch: Epoch ", ep, "\n\n")
+    cat("Load last solved epoch: Epoch ", ep, "\n\n")
     
     converged <- FALSE
     alpha <- list(.get_alpha_file(file_prefix, model, ep))

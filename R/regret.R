@@ -8,8 +8,7 @@
 #'
 #' @family POMDP
 #'
-#' @param policy to calculate the regret for. Can be a solved POMDP, a matrix containing a value_function (see value_function()), 
-#'    or a policy (see [policy()]). 
+#' @param policy a POMDP containing the policy to calculate the regret for. 
 #' @param benchmark a solved POMDP with the (optimal) policy. Regret is calculated relative to this
 #'    policy.
 #' @param belief the used start belief. If NULL then the start belief of the `benchmark` is used.  
@@ -33,23 +32,16 @@
 regret <- function(policy, benchmark, belief = NULL) {
   if (!inherits(benchmark, "POMDP") || !is_solved_POMDP(benchmark))
     stop("benchmark needs to be a solved POMDP.")
-    
+  
+  if (!inherits(policy, "POMDP") || !is_solved_POMDP(policy))
+    stop("policy needs to be a solved POMDP.")
+  
   belief <- .translate_belief(belief, benchmark)
   if (is.null(belief))
     stop("belief needs to be specified if val_optimal is not a solved POMDP object with a start belief vector!")
     
-  benchmark_fv <- value_function(benchmark)[[1]]
-    
-  if (inherits(policy, "POMDP"))
-    policy_fv <- value_function(policy)[[1]]
-  else if (is.data.frame(policy))
-    policy_fv <- as.matrix(policy[[1]][, -ncol(policy[[1]]), drop = FALSE])
-  else
-    policy_fv <- policy
-  
-  
-  r_bench <- reward_cpp(rbind(belief), benchmark_fv)$reward
-  r_pol <- reward_cpp(rbind(belief), policy_fv)$reward
+  r_bench <- reward_cpp(benchmark, rbind(belief))$reward
+  r_pol <- reward_cpp(policy, rbind(belief))$reward
   
   r_bench - r_pol
 }

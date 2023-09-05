@@ -1,4 +1,4 @@
-# pomdp 1.1.0-1 (xx/xx/2023)
+# pomdp 1.1.1 09/04/2023)
 
 ## Changes
 * plot_policy_graph(): The parameter order has slightly changed; belief_col is now called state_col; 
@@ -6,6 +6,8 @@
 * policy() gained parameters alpha and action.
 * color palettes are now exported.
 * POMPD accessors gain parameter drop.
+* POMDP constructor and read_POMDP gained parameter normalize and by default normalize
+  the POMDP definition.
 
 ## New Features
 * Large POMDP descriptions are now handled better by keeping the reward as a data.frame and

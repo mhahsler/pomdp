@@ -41,7 +41,7 @@ model <- POMDP(
  actions = 2,
  observations = 2,
  transition_prob = list("identity","identity"),
- observation_prob = list("identity","identity"),
+ observation_prob = list("uniform","uniform"),
  reward = rbind(R_(value = 1))
 )
 

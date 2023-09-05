@@ -54,8 +54,12 @@
 #' 
 #' sample_belief_space(Three_doors, n = 5)
 #' sample_belief_space(Three_doors, n = 5, projection = c(`tiger-left` = .1))
+#' 
+#' if ("Ternary" %in% installed.packages()) {
 #' sample_belief_space(Three_doors, n = 9, method = "regular")
 #' sample_belief_space(Three_doors, n = 9, method = "regular", projection = c(`tiger-left` = .1))
+#' }
+#' 
 #' sample_belief_space(Three_doors, n = 1, horizon = 5, method = "trajectories")
 #' @export
 sample_belief_space <-

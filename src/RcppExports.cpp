@@ -25,15 +25,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// reward_cpp
-DataFrame reward_cpp(const NumericMatrix& belief, const NumericMatrix& alpha);
-RcppExport SEXP _pomdp_reward_cpp(SEXP beliefSEXP, SEXP alphaSEXP) {
+// reward_alpha_cpp
+DataFrame reward_alpha_cpp(const NumericMatrix& alpha, const NumericMatrix& belief);
+RcppExport SEXP _pomdp_reward_alpha_cpp(SEXP alphaSEXP, SEXP beliefSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type belief(beliefSEXP);
     Rcpp::traits::input_parameter< const NumericMatrix& >::type alpha(alphaSEXP);
-    rcpp_result_gen = Rcpp::wrap(reward_cpp(belief, alpha));
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type belief(beliefSEXP);
+    rcpp_result_gen = Rcpp::wrap(reward_alpha_cpp(alpha, belief));
+    return rcpp_result_gen;
+END_RCPP
+}
+// reward_cpp
+DataFrame reward_cpp(const List& model, const NumericMatrix& belief);
+RcppExport SEXP _pomdp_reward_cpp(SEXP modelSEXP, SEXP beliefSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const List& >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type belief(beliefSEXP);
+    rcpp_result_gen = Rcpp::wrap(reward_cpp(model, belief));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -141,6 +153,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_pomdp_reward_val_from_df_cpp", (DL_FUNC) &_pomdp_reward_val_from_df_cpp, 5},
+    {"_pomdp_reward_alpha_cpp", (DL_FUNC) &_pomdp_reward_alpha_cpp, 2},
     {"_pomdp_reward_cpp", (DL_FUNC) &_pomdp_reward_cpp, 2},
     {"_pomdp_update_belief_cpp", (DL_FUNC) &_pomdp_update_belief_cpp, 5},
     {"_pomdp_round_stochastic_cpp", (DL_FUNC) &_pomdp_round_stochastic_cpp, 2},

@@ -7,7 +7,7 @@ data(Tiger)
 
 on.exit(file.remove("Tiger.POMDP"))
 write_POMDP(Tiger, "Tiger.POMDP")
-Tiger2 <- read_POMDP("Tiger.POMDP", parse = TRUE)
+Tiger2 <- read_POMDP("Tiger.POMDP", parse = TRUE, normalize = FALSE)
 
 fields <- c("states", "observations", "actions", "start", "discount", "horizon", 
   "transition_prob", "observation_prob", "reward")

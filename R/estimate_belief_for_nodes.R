@@ -151,14 +151,19 @@ estimate_belief_for_nodes <-
   }
 
 
-## find a belief state for each alpha vector (we may need to remove redundant vectors first)
-## Follow trajectories till we have all belief states
+## find a belief state for each alpha vector by DFS of the trajectories 
+##
+## TODO: 
+## * reimplement in C++
 .estimate_belief_for_nodes_trajectories <-
   function(x,
     belief = NULL,
     n = 100000L,
     verbose = FALSE,
     ...) {
+    
+    if (verbose)
+      x <- normalize_POMDP(x)
     
     if (.has_policy_tree(x))
       return(.estimate_belief_for_nodes_trajectories_tree(x, belief = belief, n = n, verbose = verbose, ...))
@@ -176,8 +181,10 @@ estimate_belief_for_nodes <-
     # start with the initial belief and mark it found
     if (is.null(belief))
       belief <- start_vector(x)
-    queue <- new.queue()
-    enqueue(queue,  belief)
+    #queue <- new.queue()
+    #enqueue(queue,  belief)
+    frontier <- new.stack()
+    push.stack(frontier, belief)
     
     tries <- n
     while (!all(found)) {
@@ -187,11 +194,15 @@ estimate_belief_for_nodes <-
         break
       }
       
-      if (queue.empty(queue))
+      #if (queue.empty(queue))
+      if (empty.stack(frontier))
         break
         
-      belief_state <- dequeue(queue)
+      #belief_state <- dequeue(queue)
+      belief_state <- pop.stack(frontier)
       rna <- reward_node_action(x, belief_state)
+      
+      # check if we already have a belief for the associated alpha vector.
       if (found[rna$pg_node])
         next
       
@@ -199,8 +210,8 @@ estimate_belief_for_nodes <-
       found[rna$pg_node] <- TRUE
       if (verbose)
         cat("\b\rFound", sum(found), "of", length(found), "\n")
-      
-      # go down the tree and add to the queue
+        
+      # go down the tree
       belief_states <- update_belief(x, belief_state)
       
       # skip impossible states and duplicates
@@ -209,10 +220,12 @@ estimate_belief_for_nodes <-
         belief_states[!duplicated(belief_states), , drop = FALSE]
       
       for (i in seq_len(nrow(belief_states)))
-        enqueue(queue, belief_states[i, , drop = TRUE])
+        #enqueue(queue, belief_states[i, , drop = TRUE])
+        push.stack(frontier, belief_states[i, , drop = TRUE])
     }
     
-    delete.queue(queue)
+    #delete.queue(queue)
+    delete.stack(frontier)
     
     # if (!all(found))
     #   warning("The following states are not reachable from the start state: ", paste(which(!found), collapse = ", "), 
@@ -251,10 +264,12 @@ estimate_belief_for_nodes <-
     # start with the initial belief and mark it found
     if (is.null(belief))
       belief <- start_vector(x)
-    queue <- new.queue()
     epoch <- 1L
-    queue <- new.queue()
-    enqueue(queue,  list(belief = belief, epoch = epoch))
+    
+    #queue <- new.queue()
+    #enqueue(queue,  )
+    frontier <- new.stack()
+    push.stack(frontier, list(belief = belief, epoch = epoch))
     
     tries <- n
     while (!all(unlist(found))) {
@@ -264,10 +279,12 @@ estimate_belief_for_nodes <-
         break
       }
       
-      if (queue.empty(queue))
+      #if (queue.empty(queue))
+      if (empty.stack(frontier))
         break
       
-      be <- dequeue(queue)
+      #be <- dequeue(queue)
+      be <- pop.stack(frontier)
       belief_state <- be[[1]]
       epoch <- be[[2]]
       
@@ -294,10 +311,12 @@ estimate_belief_for_nodes <-
         belief_states[!duplicated(belief_states), , drop = FALSE]
       
       for (i in seq_len(nrow(belief_states)))
-        enqueue(queue, list(belief = belief_states[i, , drop = TRUE], epoch = epoch + 1L))
+        #enqueue(queue, list(belief = belief_states[i, , drop = TRUE], epoch = epoch + 1L))
+        push.stack(frontier, list(belief = belief_states[i, , drop = TRUE], epoch = epoch + 1L))
     }
     
-    delete.queue(queue)
+    #delete.queue(queue)
+    delete.stack(frontier)
     
     # if (!all(unlist(found)))
     #   warning("The following states are not reachable from the start state: ", paste(which(!unlist(found)), collapse = ", "), 

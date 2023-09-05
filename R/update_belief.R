@@ -100,4 +100,3 @@ update_belief <-
     
     b
   }
-

@@ -5,8 +5,12 @@ reward_val_from_df_cpp <- function(model, action, start_state, end_state, observ
     .Call(`_pomdp_reward_val_from_df_cpp`, model, action, start_state, end_state, observation)
 }
 
-reward_cpp <- function(belief, alpha) {
-    .Call(`_pomdp_reward_cpp`, belief, alpha)
+reward_alpha_cpp <- function(alpha, belief) {
+    .Call(`_pomdp_reward_alpha_cpp`, alpha, belief)
+}
+
+reward_cpp <- function(model, belief) {
+    .Call(`_pomdp_reward_cpp`, model, belief)
 }
 
 update_belief_cpp <- function(model, belief, action, observation, digits = 7L) {

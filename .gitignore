@@ -4,3 +4,4 @@ inst/doc
 *.so
 *.a
 Work
+.Rhistory

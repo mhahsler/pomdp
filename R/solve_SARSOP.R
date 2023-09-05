@@ -14,10 +14,10 @@
 #' @param model a POMDP problem specification created with [POMDP()].
 #' Alternatively, a POMDP file or the URL for a POMDP file can be specified.
 #' @param method string; there is only one method available called `"sarsop"`.
-#' @param horizon need to be `Inf`.
+#' @param horizon SARSOP only supports `Inf`.
 #' @param discount discount factor in range \eqn{[0, 1]}. If `NULL`, then the
 #' discount factor specified in `model` will be used.
-#' @param terminal_values needs to be `NULL`. SARSOP does not use terminal values.
+#' @param terminal_values `NULL`. SARSOP does not use terminal values.
 #' @param digits precision used when writing POMDP files (see
 #' [write_POMDP()]).
 #' @param parameter a list with parameters passed on to

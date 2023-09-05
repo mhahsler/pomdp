@@ -87,11 +87,15 @@ inline NumericMatrix transition_matrix(const List& model, int action, int episod
   else
     acts = as<List>(model["transition_prob"])[action];
   
+  // dense matrix
   if (is<NumericMatrix>(acts)) 
     return as<NumericMatrix>(acts); 
   
   // dgCMatrix
-  return dgCMatrix(as<S4>(acts)).dense();
+  if (is<S4>(acts))
+    return dgCMatrix(as<S4>(acts)).dense();
+  
+  stop("model needs to be normalized with normalize_POMDP().");
 }
 
 inline double transition_prob(const List& model, int action, int start_state, int end_state, int episode = -1) {
@@ -106,7 +110,10 @@ inline double transition_prob(const List& model, int action, int start_state, in
     return as<NumericMatrix>(acts)(start_state, end_state); 
   
   // dgCMatrix
-  return dgCMatrix(as<S4>(acts)).at(start_state, end_state);
+  if (is<S4>(acts))
+    return dgCMatrix(as<S4>(acts)).at(start_state, end_state);
+  
+  stop("model needs to be normalized with normalize_POMDP().");
 }
 
 inline NumericVector transition_row(const List& model, int action, int start_state, int episode = -1) {
@@ -121,7 +128,10 @@ inline NumericVector transition_row(const List& model, int action, int start_sta
     return as<NumericMatrix>(acts).row(start_state); 
   
   // dgCMatrix
-  return dgCMatrix(as<S4>(acts)).row(start_state);
+  if (is<S4>(acts))
+    return dgCMatrix(as<S4>(acts)).row(start_state);
+  
+  stop("model needs to be normalized with normalize_POMDP().");
 }
 
 inline NumericMatrix observation_matrix(const List& model, int action, int episode = -1) {
@@ -136,7 +146,10 @@ inline NumericMatrix observation_matrix(const List& model, int action, int episo
     return as<NumericMatrix>(acts); 
   
   // dgCMatrix
-  return dgCMatrix(as<S4>(acts)).dense();
+  if (is<S4>(acts))
+    return dgCMatrix(as<S4>(acts)).dense();
+  
+  stop("model needs to be normalized with normalize_POMDP().");
 }
 
 inline double observation_prob(const List& model, int action, int end_state, int observation, int episode = -1) {
@@ -151,7 +164,10 @@ inline double observation_prob(const List& model, int action, int end_state, int
     return as<NumericMatrix>(acts)(end_state, observation); 
   
   // dgCMatrix
-  return dgCMatrix(as<S4>(acts)).at(end_state, observation);
+  if (is<S4>(acts))
+    return dgCMatrix(as<S4>(acts)).at(end_state, observation);
+  
+  stop("model needs to be normalized with normalize_POMDP().");
 }
 
 inline NumericVector observation_row(const List& model, int action, int end_state, int episode = -1) {
@@ -166,7 +182,10 @@ inline NumericVector observation_row(const List& model, int action, int end_stat
     return as<NumericMatrix>(acts).row(end_state); 
   
   // dgCMatrix
-  return dgCMatrix(as<S4>(acts)).row(end_state);
+  if (is<S4>(acts))
+    return dgCMatrix(as<S4>(acts)).row(end_state);
+  
+  stop("model needs to be normalized with normalize_POMDP().");
 }
 
 

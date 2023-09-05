@@ -22,7 +22,7 @@ check_installed <-
 
     if (any(needs_install)) {
       if (!interactive())
-        stop(info)
+        stop(message)
 
       missing_pkgs <- pkg[needs_install]
       missing_pkgs_enum <- paste(missing_pkgs, collapse = ", ")

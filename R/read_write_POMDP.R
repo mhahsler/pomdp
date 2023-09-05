@@ -310,8 +310,9 @@ write_POMDP <- function(x, file, digits = 7) {
 #' @rdname write_POMDP
 #' @param parse logical; try to parse the model matrices.
 #'  Solvers still work with unparsed matrices, but helpers for simulation are not available.
+#' @param normalize logical; should the description be normalized for faster access (see [normalize_POMDP()])?
 #' @export
-read_POMDP <- function(file, parse = TRUE) {
+read_POMDP <- function(file, parse = TRUE, normalize = TRUE) {
   problem <- readLines(file)
   
   get_vals <- function(var) {
@@ -416,6 +417,10 @@ read_POMDP <- function(file, parse = TRUE) {
   
   class(x) <- c("POMDP", "list")
   x <- check_and_fix_MDP(x)
+  
+  if (parse && normalize)
+    x <- normalize_POMDP(x) 
+  
   x
 }
 

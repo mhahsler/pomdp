@@ -339,6 +339,9 @@ start_vector <- function(x) {
 #' @rdname POMDP_accessors
 #' @export
 normalize_POMDP <- function(x, sparse = TRUE) {
+  if (!is.null(x$normalized) && x$normalized)
+    return(x)
+    
   x$start <- start_vector(x)
   
   if (.is_timedependent_field(x, "transition_prob")) {
@@ -364,6 +367,8 @@ normalize_POMDP <- function(x, sparse = TRUE) {
   } else
     x$reward <-
       reward_matrix(x, sparse = sparse)
+  
+  x$normalized <- TRUE
   
   x
 }
