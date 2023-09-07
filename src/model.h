@@ -250,7 +250,7 @@ inline double reward_val(const List& model, int action, int start_state, int end
     IntegerVector actions = df[0], start_states = df[1], end_states = df[2], observations = df[3];
     NumericVector values = df[4]; 
     
-    for (auto i = df.nrows(); i >= 0; --i) {
+    for (auto i = df.nrows()-1; i >= 0; --i) {
       if(
           (IntegerVector::is_na(actions[i]) || actions[i] == action) && 
           (IntegerVector::is_na(start_states[i]) || start_states[i] == start_state) &&

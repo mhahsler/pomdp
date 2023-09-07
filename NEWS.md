@@ -1,12 +1,17 @@
-# pomdp 1.1.1 09/04/2023)
+# pomdp 1.1.2 (09/07/2023)
+
+## Bugfixes
+* Fixed memory access bug in model.h
+
+# pomdp 1.1.1 (09/04/2023)
 
 ## Changes
 * plot_policy_graph(): The parameter order has slightly changed; belief_col is now called state_col; 
-    unreachable state are now suppressed.
+    unreachable states are  now suppressed.
 * policy() gained parameters alpha and action.
 * color palettes are now exported.
 * POMPD accessors gain parameter drop.
-* POMDP constructor and read_POMDP gained parameter normalize and by default normalize
+* POMDP constructor and read_POMDP gained parameter normalize and, by default, normalize
   the POMDP definition.
 
 ## New Features
@@ -15,13 +20,13 @@
 * New function value_function() to access alpha vectors.
 * New function regret() to calculate the regret of a policy.
 * transition_graph() to visualize the transition model.
-
+
 
 # pomdp 1.1.0 (01/23/2023)
 
 ## New Features
 * Added C++ (Rcpp) support. Speed up for simulate_POMDP, sample_belief_space, reward, ... 
-* simulate_POMDP and sample_belief_space have now parallel (foreach) support.
+* simulate_POMDP and sample_belief_space now have parallel (foreach) support.
 * Sparse matrices from package Matrix for matrices with a density below 50%.
 * Added support to parse matrices for POMDP files.
 * Added model normalization.

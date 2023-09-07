@@ -153,7 +153,7 @@ List simulate_POMDP_cpp(const List& model,
       Rcout << "reward: " << reward_val(model, a, s_prev, s, o) << " (disc_pow: " << disc_pow << ")\n\n";
 #endif
       //rews[i] += reward_matrix(model, a, s_prev)(s, o) * pow(disc, j);
-      //rews[i] += reward_matrix(model, a, s_prev)(s, o) * disc_pow;
+      //rews[i] += reward_matrix(model, a, s_prev)(s, o) * disc_pow;  
       rews[i] += reward_val(model, a, s_prev, s, o) * disc_pow;
       disc_pow *= disc;
       
