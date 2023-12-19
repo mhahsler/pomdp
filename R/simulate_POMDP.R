@@ -4,15 +4,21 @@
 #' trajectory is randomly chosen using the specified belief. The belief is used to choose actions
 #' from the the epsilon-greedy policy and then updated using observations.
 #'
-#' A native R implementation is available (`engine = 'r'`) and a faster C++ implementation
-#' (`engine = 'cpp'`). 
+#' Simulates `n` trajectories.
+#' If no simulation horizon is specified the horizon of finite-horizon problems 
+#' is used. For infinite-horizon problems with \eqn{\gamma < 1}, the simulation
+#' horizon \eqn{T} is chosen such that \deqn{abs(\gamma^T R_\text{max}) \le \delta_\text{horizon}.}
 #' 
-#' Both implementations support parallel execution using the package
+#' A native R implementation (`engine = 'r'`) and a faster C++ implementation
+#' (`engine = 'cpp'`) are available. Currently, only the R implementation supports 
+#' multi-episode problems.
+#' 
+#' Both implementations support the simulation of trajectories in parallel using the package
 #' \pkg{foreach}. To enable parallel execution, a parallel backend like
-#' \pkg{doparallel} needs to be available needs to be registered (see
+#' \pkg{doparallel} needs to be registered (see
 #' [doParallel::registerDoParallel()]). 
-#' Note that small simulations are slower using parallelization. Therefore, C++ simulations 
-#' with n * horizon less than 100,000 are always executed using a single worker.
+#' Note that small simulations are slower using parallelization. C++ simulations 
+#' with `n * horizon` less than 100,000 are always executed using a single worker.
 #'
 #' @family POMDP
 #' @importFrom stats runif
@@ -23,13 +29,15 @@
 #'  starting states for the trajectories.
 #'  Defaults to the start belief state specified in the model or "uniform".
 #' @param horizon number of epochs for the simulation. If `NULL` then the
-#'  horizon for the model is used.
+#'  horizon for finite-horizon model is used. For infinite-horizon problems, a horizon is 
+#'  calculated using the discount factor.
 #' @param return_beliefs logical; Return all visited belief states? This requires n x horizon memory.
 #' @param epsilon the probability of random actions for using an epsilon-greedy policy.
 #'  Default for solved models is 0 and for unsolved model 1.
+#' @param delta_horizon precision used to determine the horizon for infinite-horizon problems.
 #' @param digits round probabilities for belief points.
 #' @param engine `'cpp'`, `'r'` to perform simulation using a faster C++ or a 
-#'  native R implementation that supports sparse matrices and multi-episode problems.
+#'  native R implementation.
 #' @param verbose report used parameters.
 #' @param ... further arguments are ignored.
 #' @return A list with elements:
@@ -52,6 +60,7 @@
 #' # (needs package doparallel installed)
 #' 
 #' # doParallel::registerDoParallel()
+#' # foreach::getDoParWorkers()
 #'
 #' ## Example 1: simulate 10 trajectories
 #' sim <- simulate_POMDP(sol, n = 100, verbose = TRUE)
@@ -73,8 +82,9 @@
 #'
 #'
 #' ## Example 3: simulate trajectories for an unsolved POMDP which uses an epsilon of 1
-#' #             (i.e., all actions are randomized)
-#' sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, return_beliefs = TRUE, verbose = TRUE)
+#' #             (i.e., all actions are randomized). The simulation horizon for the 
+#' #             infinite-horizon Tiger problem is calculated. 
+#' sim <- simulate_POMDP(Tiger, n = 100, return_beliefs = TRUE, verbose = TRUE)
 #' sim$avg_reward
 #'
 #' plot_belief_space(sol, sample = sim$belief_states, jitter = 2, ylim = c(0, 6))
@@ -87,6 +97,7 @@ simulate_POMDP <-
     horizon = NULL,
     return_beliefs = FALSE,
     epsilon = NULL,
+    delta_horizon = 1e-3,
     digits = 7,
     engine = "cpp",
     verbose = FALSE,
@@ -95,34 +106,34 @@ simulate_POMDP <-
     
     engine <- match.arg(tolower(engine), c("cpp", "r"))
     
-    if (engine == "r")
-      sparse <- NULL ### use the version in the model
-    else
-      sparse <- FALSE
-    
     solved <- is_solved_POMDP(model)
     dt <- is_timedependent_POMDP(model)
     
     if (is.null(belief))
       belief <- start_vector(model)
     
+    n <- as.integer(n)
+    
     if (is.null(horizon))
       horizon <- model$horizon
-    if (is.null(horizon))
-      stop("The horizon (number of epochs) has to be specified!")
-    if (is.infinite(horizon))
-      stop("Simulation needs a finite simulation horizon.")
-    
-    n <- as.integer(n)
+    if (is.null(horizon) || is.infinite(horizon)) {
+      if (is.null(model$discount) || !(model$discount < 1)) 
+        stop("Simulation needs a finite simulation horizon.")
+      
+      # find a horizon that approximates the reward using 
+      # discount^horizon * max_abs_R <= 0.001
+      max_abs_R <-  max(abs(reward_matrix(model, sparse = TRUE)$value))
+      horizon <- ceiling(log(delta_horizon/max_abs_R)/log(model$discount))
+    }
     horizon <- as.integer(horizon)
     
+    # eps-greedy?
     if (is.null(epsilon)) {
       if (!solved)
         epsilon <- 1
       else
         epsilon <- 0
     }
-    
     if (!solved && epsilon != 1)
       stop("epsilon has to be 1 for unsolved models.")
     
@@ -132,9 +143,7 @@ simulate_POMDP <-
     
     if (engine == "cpp") {
       if (!dt) {
-        ### FIXME: this can be done better
-        ### TODO: Add support for sparse matrices
-        ##model <- normalize_POMDP(model, sparse = FALSE)
+        ### TODO: Add support for time dependence
         model <- normalize_POMDP(model, sparse = TRUE)
         
         if (foreach::getDoParWorkers() == 1 || n * horizon < 100000) {
@@ -157,8 +166,9 @@ simulate_POMDP <-
           return(res)
         }
         
+        ## parallel
         ns <- foreach_split(n)
-        
+      
         if (verbose) {
           cat("Simulating POMDP trajectories.\n")
           cat("- engine: cpp\n")
@@ -219,7 +229,6 @@ simulate_POMDP <-
     n_obs <- length(obs)
     actions <- as.character(model$actions)
     
-    
     # precompute matrix lists for time-dependent POMDPs
     current_episode <- 1L
     
@@ -251,11 +260,11 @@ simulate_POMDP <-
       
     } else { ### not time-dependent case
     
-      trans_m <- transition_matrix(model, sparse = sparse)
-      obs_m <- observation_matrix(model, sparse = sparse)
+      trans_m <- transition_matrix(model, sparse = NULL)
+      obs_m <- observation_matrix(model, sparse = NULL)
     
       ## we keep the reward matrix as is to save memory.
-      ## rew_m <- reward_matrix(model, sparse = sparse)
+      ## rew_m <- reward_matrix(model, sparse = NULL)
     }
     
     if (verbose) {

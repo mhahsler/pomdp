@@ -11,6 +11,7 @@ simulate_MDP(
   horizon = NULL,
   return_states = FALSE,
   epsilon = NULL,
+  delta_horizon = 0.001,
   engine = "cpp",
   verbose = FALSE,
   ...
@@ -32,8 +33,10 @@ horizon for the model is used.}
 \item{epsilon}{the probability of random actions  for using an epsilon-greedy policy.
 Default for solved models is 0 and for unsolved model 1.}
 
+\item{delta_horizon}{precision used to determine the horizon for infinite-horizon problems.}
+
 \item{engine}{\code{'cpp'} or \code{'r'} to perform simulation using a faster C++
-or a native R implementation which supports sparse matrices.}
+or a native R implementation.}
 
 \item{verbose}{report used parameters.}
 
@@ -75,25 +78,33 @@ data(Maze)
 # solve the POMDP for 5 epochs and no discounting
 sol <- solve_MDP(Maze, discount = 1)
 sol
-policy(sol)
-# U in the policy is and estimate of the utility of being in a state when using the optimal policy.
 
-## Example 1: simulate 10 trajectories, only the final belief state is returned
+# U in the policy is and estimate of the utility of being in a state when using the optimal policy.
+policy(sol)
+matrix(policy(sol)[[1]]$action, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
+
+## Example 1: simulate 10 trajectories following the policy, only the final belief state is returned
 sim <- simulate_MDP(sol, n = 100, horizon = 10, verbose = TRUE)
 sim
 
-# Calculate proportion of actions used
+# Note that all simulations start at s_1 and that the simulated avg. reward 
+# is therefore an estimate to the U value for the start state s_1.
+policy(sol)[[1]][1,] 
+
+# Calculate proportion of actions taken in the simulation
 round_stochastic(sim$action_cnt / sum(sim$action_cnt), 2)
 
 # reward distribution
 hist(sim$reward)
 
-## Example 2: simulate starting always in state s_1 and return all visited states
-sim <- simulate_MDP(sol, n = 100, start = "s_1", horizon = 10, return_states = TRUE)
+## Example 2: simulate starting following a uniform distribution over all
+#             states and return all visited states
+sim <- simulate_MDP(sol, n = 100, start = "uniform", horizon = 10, return_states = TRUE)
 sim$avg_reward
 
 # how often was each state visited?
 table(sim$states)
+matrix(table(sim$states),nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
 }
 \seealso{
 Other MDP: 

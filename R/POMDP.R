@@ -17,8 +17,8 @@
 #' the size of a set we will use cardinality, e.g., the number of actions is
 #' \eqn{|A|}.
 #' 
-#' Note that it is also common in the literature to use for the set of observations 
-#' the letter \eqn{Z}.
+#' Note that the observation model is in the literature
+#' often also denoted by the letter \eqn{Z}.
 #'
 #' **Names used for mathematical symbols in code**
 #'
@@ -52,7 +52,7 @@
 #' * A function with the same arguments are `T_()`, but no default values
 #'   that returns the transition probability.
 #'
-#' **Specification of observation probabilities: \eqn{O(o | s', a)}**
+#' **Specification of observation probabilities: \eqn{O(o | a, s')}**
 #'
 #' The POMDP specifies the probability for each observation \eqn{o} given an
 #' action \eqn{a} and that the system transitioned to the end state

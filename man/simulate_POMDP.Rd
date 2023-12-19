@@ -11,6 +11,7 @@ simulate_POMDP(
   horizon = NULL,
   return_beliefs = FALSE,
   epsilon = NULL,
+  delta_horizon = 0.001,
   digits = 7,
   engine = "cpp",
   verbose = FALSE,
@@ -27,17 +28,20 @@ starting states for the trajectories.
 Defaults to the start belief state specified in the model or "uniform".}
 
 \item{horizon}{number of epochs for the simulation. If \code{NULL} then the
-horizon for the model is used.}
+horizon for finite-horizon model is used. For infinite-horizon problems, a horizon is
+calculated using the discount factor.}
 
 \item{return_beliefs}{logical; Return all visited belief states? This requires n x horizon memory.}
 
 \item{epsilon}{the probability of random actions for using an epsilon-greedy policy.
 Default for solved models is 0 and for unsolved model 1.}
 
+\item{delta_horizon}{precision used to determine the horizon for infinite-horizon problems.}
+
 \item{digits}{round probabilities for belief points.}
 
 \item{engine}{\code{'cpp'}, \code{'r'} to perform simulation using a faster C++ or a
-native R implementation that supports sparse matrices and multi-episode problems.}
+native R implementation.}
 
 \item{verbose}{report used parameters.}
 
@@ -59,15 +63,21 @@ trajectory is randomly chosen using the specified belief. The belief is used to 
 from the the epsilon-greedy policy and then updated using observations.
 }
 \details{
-A native R implementation is available (\code{engine = 'r'}) and a faster C++ implementation
-(\code{engine = 'cpp'}).
+Simulates \code{n} trajectories.
+If no simulation horizon is specified the horizon of finite-horizon problems
+is used. For infinite-horizon problems with \eqn{\gamma < 1}, the simulation
+horizon \eqn{T} is chosen such that \deqn{abs(\gamma^T R_\text{max}) \le \delta_\text{horizon}.}
 
-Both implementations support parallel execution using the package
+A native R implementation (\code{engine = 'r'}) and a faster C++ implementation
+(\code{engine = 'cpp'}) are available. Currently, only the R implementation supports
+multi-episode problems.
+
+Both implementations support the simulation of trajectories in parallel using the package
 \pkg{foreach}. To enable parallel execution, a parallel backend like
-\pkg{doparallel} needs to be available needs to be registered (see
+\pkg{doparallel} needs to be registered (see
 \code{\link[doParallel:registerDoParallel]{doParallel::registerDoParallel()}}).
-Note that small simulations are slower using parallelization. Therefore, C++ simulations
-with n * horizon less than 100,000 are always executed using a single worker.
+Note that small simulations are slower using parallelization. C++ simulations
+with \code{n * horizon} less than 100,000 are always executed using a single worker.
 }
 \examples{
 data(Tiger)
@@ -81,6 +91,7 @@ policy(sol)
 # (needs package doparallel installed)
 
 # doParallel::registerDoParallel()
+# foreach::getDoParWorkers()
 
 ## Example 1: simulate 10 trajectories
 sim <- simulate_POMDP(sol, n = 100, verbose = TRUE)
@@ -102,8 +113,9 @@ lines(density(sim$belief_states[, 2], bw = .02)); axis(2); title(ylab = "Density
 
 
 ## Example 3: simulate trajectories for an unsolved POMDP which uses an epsilon of 1
-#             (i.e., all actions are randomized)
-sim <- simulate_POMDP(Tiger, n = 100, horizon = 5, return_beliefs = TRUE, verbose = TRUE)
+#             (i.e., all actions are randomized). The simulation horizon for the 
+#             infinite-horizon Tiger problem is calculated. 
+sim <- simulate_POMDP(Tiger, n = 100, return_beliefs = TRUE, verbose = TRUE)
 sim$avg_reward
 
 plot_belief_space(sol, sample = sim$belief_states, jitter = 2, ylim = c(0, 6))

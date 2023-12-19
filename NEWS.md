@@ -1,3 +1,14 @@
+# pomdp 1.1.3 (xx/xx/2023)
+
+## New Features
+* simulate_POMDP() and simulate_MDP() gained parameter delta_horizon and calculates now the horizon
+  for infinite-horizon problems.
+
+## Changes
+* Changed the action names for the Maze example to the names used in Russell 
+  and Norvig's AIMA book.
+
+
 # pomdp 1.1.2 (09/07/2023)
 
 ## Bugfixes
@@ -20,7 +31,6 @@
 * New function value_function() to access alpha vectors.
 * New function regret() to calculate the regret of a policy.
 * transition_graph() to visualize the transition model.
-
 
 # pomdp 1.1.0 (01/23/2023)
 

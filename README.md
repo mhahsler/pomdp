@@ -40,7 +40,7 @@ to the following algorithms:
     point-based value iteration to solve larger POMDPs (**PBVI**; see
     (Pineau, Gordon, and Thrun 2003) without dynamic belief set
     expansion.
-  - **SARSOP** (Pineau, Gordon, and Thrun 2003), point-based algorithm
+  - **SARSOP** (Kurniawati, Hsu, and Lee 2008), point-based algorithm
     that approximates optimally reachable belief spaces for
     infinite-horizon problems (via package
     [sarsop](https://github.com/boettiger-lab/sarsop)).
@@ -51,15 +51,16 @@ Tutorial](https://pomdp.org/tutorial/).
 To cite package ‘pomdp’ in publications use:
 
 > Hahsler M (2023). *pomdp: Infrastructure for Partially Observable
-> Markov Decision Processes (POMDP)*. R package version 1.1.0-1,
-> <https://github.com/mhahsler/pomdp>.
+> Markov Decision Processes (POMDP)*. R package version 1.1.2,
+> <https://CRAN.R-project.org/package=pomdp>.
 
     @Manual{,
-      title = {pomdp: Infrastructure for Partially Observable Markov Decision Processes (POMDP)},
+      title = {pomdp: Infrastructure for Partially Observable Markov Decision
+    Processes (POMDP)},
       author = {Michael Hahsler},
       year = {2023},
-      note = {R package version 1.1.0-1},
-      url = {https://github.com/mhahsler/pomdp},
+      note = {R package version 1.1.2},
+      url = {https://CRAN.R-project.org/package=pomdp},
     }
 
 ## Installation
@@ -74,7 +75,8 @@ install.packages("pomdp")
 [r-universe.](https://mhahsler.r-universe.dev/pomdp)
 
 ``` r
-install.packages("pomdp", repos = "https://mhahsler.r-universe.dev")
+install.packages("pomdp",
+    repos = c("https://mhahsler.r-universe.dev". "https://cloud.r-project.org/"))
 ```
 
 ## Usage
@@ -91,6 +93,9 @@ Tiger
     ##   Discount factor: 0.75
     ##   Horizon: Inf epochs
     ##   Size: 2 states / 3 actions / 2 obs.
+    ##   Normalized: FALSE
+    ## 
+    ##   Solved: FALSE
     ## 
     ##   List components: 'name', 'discount', 'horizon', 'states', 'actions',
     ##     'observations', 'transition_prob', 'observation_prob', 'reward',
@@ -105,6 +110,7 @@ sol
     ##   Discount factor: 0.75
     ##   Horizon: Inf epochs
     ##   Size: 2 states / 3 actions / 2 obs.
+    ##   Normalized: FALSE
     ## 
     ##   Solved:
     ##     Method: grid
@@ -155,6 +161,14 @@ Cassandra, Anthony R., Michael L. Littman, and Nevin Lianwen Zhang.
 Observable Markov Decision Processes.” In *UAI’97: Proceedings of the
 Thirteenth Conference on Uncertainty in Artificial Intelligence*,
 54--61.
+
+</div>
+
+<div id="ref-Kurniawati2008" class="csl-entry">
+
+Kurniawati, Hanna, David Hsu, and Wee Sun Lee. 2008. “SARSOP: Efficient
+Point-Based POMDP Planning by Approximating Optimally Reachable Belief
+Spaces.” In *In Proc. Robotics: Science and Systems*.
 
 </div>
 

@@ -16,7 +16,7 @@
 #' element. Horizon can also be used to limit the number of epochs used 
 #' for value iteration.
 #'
-#' *Precision:** The POMDP solver uses various epsilon values to control
+#' **Precision:** The POMDP solver uses various epsilon values to control
 #' precision for comparing alpha vectors to check for convergence, and solving
 #' LPs. Overall precision can be changed using
 #' `parameter = list(epsilon = 1e-3)`.
@@ -34,6 +34,14 @@
 #'   to solve larger POMDPs (PBVI; see Pineau 2003) without dynamic belief set expansion.
 #'
 #' Details can be found in (Cassandra, 2015).
+#'
+#' **Note on POMDP problem size:** Finding optimal policies for POMDPs is known to be 
+#' a prohibitively difficult problem because the belief space grows exponentially 
+#' with the number of states. Therefore, exact algorithms can be only used for 
+#' extremely small problems with only a few states. Typically, the researcher 
+#' needs to simplify the problem description (fewer states, actions and observations) 
+#' and choose an approximate algorithm with an acceptable level of 
+#' approximation to make the problem tractable.
 #'
 #' **Note on method grid:** The grid method implements a version of Point
 #' Based Value Iteration (PBVI). The used belief points are by default created

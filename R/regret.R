@@ -8,7 +8,7 @@
 #'
 #' @family POMDP
 #'
-#' @param policy a POMDP containing the policy to calculate the regret for. 
+#' @param policy a solved POMDP containing the policy to calculate the regret for. 
 #' @param benchmark a solved POMDP with the (optimal) policy. Regret is calculated relative to this
 #'    policy.
 #' @param belief the used start belief. If NULL then the start belief of the `benchmark` is used.  

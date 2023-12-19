@@ -118,8 +118,8 @@ represent a member of a set, e.g., \eqn{s} is a specific state. To refer to
 the size of a set we will use cardinality, e.g., the number of actions is
 \eqn{|A|}.
 
-Note that it is also common in the literature to use for the set of observations
-the letter \eqn{Z}.
+Note that the observation model is in the literature
+often also denoted by the letter \eqn{Z}.
 
 \strong{Names used for mathematical symbols in code}
 \itemize{
@@ -153,7 +153,7 @@ Instead of a matrix, also the strings \code{'identity'} or \code{'uniform'} can 
 that returns the transition probability.
 }
 
-\strong{Specification of observation probabilities: \eqn{O(o | s', a)}}
+\strong{Specification of observation probabilities: \eqn{O(o | a, s')}}
 
 The POMDP specifies the probability for each observation \eqn{o} given an
 action \eqn{a} and that the system transitioned to the end state

@@ -37,6 +37,8 @@ simulate_MDP_cpp(sol, 10, start_vector(sol), 20,
 // Note: all are 0-based integer indices
 // epsilon -1 means 0 for solved models and 1 for unsolved models
 
+// TODO: Make sparse
+
 // [[Rcpp::export]]
 List simulate_MDP_cpp(const List& model,
   int n,

@@ -9,18 +9,20 @@
 #'    ######             .8 (action direction)
 #'   3#   +#              ^
 #'   2# # -#              |
-#'   1#    #         .1 <-|-> .1
+#'   1#S   #         .1 <-|-> .1
 #'    ######
 #' }
 #'
-#' We represent the maze states as a matrix with 3 rows (north/south) and 
-#' 4 columns (east/west). The states are labeled `s_1` through `s_12` and are fully observable. 
+#' We represent the maze states as a matrix with 3 rows (up/down) and 
+#' 4 columns (left/right). The states are labeled `s_1` through `s_12` 
+#' (bottom-left to top right) and are fully observable. 
 #' The # (state `s_5`) in the middle of the maze is an obstruction and not reachable.  
 #' Rewards are associated with transitions. The default reward (penalty) is -0.04.
-#' Transitioning to + (state `s_12`) gives a reward of 1.0, transitioning to - (state `s_11`)
+#' The start state marked with `S` is `s_1`.
+#' Transitioning to `+` (state `s_12`) gives a reward of +1.0, transitioning to `-` (state `s_11`)
 #' has a reward of -1.0. States `s_11` and `s_12` are terminal (absorbing) states.
 #' 
-#' Actions are movements (`north`, `south`, `east`, `west`). The actions are unreliable with a .8 chance
+#' Actions are movements (`up`, `down`, `left`, `right`). The actions are unreliable with a .8 chance
 #' to move in the correct direction and a 0.1 chance to instead to move in a 
 #' perpendicular direction leading to a stochastic transition model.
 #' 
@@ -45,7 +47,7 @@
 #' }
 #' rc2s <- function(rc) S[rc[1] + 3 * (rc[2] - 1)]
 #' 
-#' A <- c("north", "south", "east", "west")
+#' A <- c("up", "down", "left", "right")
 #' 
 #' T <- function(action, start.state, end.state) {
 #'   action <- match.arg(action, choices = A)
@@ -55,12 +57,12 @@
 #'     else return(0)
 #'   }
 #'
-#'   if(action %in% c("north", "south")) error_direction <- c("east", "west")
-#'   else error_direction <- c("north", "south")
+#'   if(action %in% c("up", "down")) error_direction <- c("right", "left")
+#'   else error_direction <- c("up", "down")
 #'   
 #'   rc <- s2rc(start.state)
-#'   delta <- list(north = c(+1, 0), south = c(-1, 0), 
-#'                 east = c(0, +1), west = c(0, -1))
+#'   delta <- list(up = c(+1, 0), down = c(-1, 0), 
+#'                 right = c(0, +1), left = c(0, -1))
 #'   P <- matrix(0, nrow = 3, ncol = 4)
 #'   
 #'   add_prob <- function(P, rc, a, value) {
@@ -78,7 +80,7 @@
 #'  P[rbind(s2rc(end.state))]
 #' }
 #' 
-#' T("n", "s_1", "s_2")
+#' T("up", "s_1", "s_2")
 #' 
 #' R <- rbind(
 #'  R_(end.state   = '*',     value = -0.04),
@@ -96,12 +98,16 @@
 #'  horizon = Inf,
 #'  states = S,
 #'  actions = A,
+#'  start = 1,
 #'  transition_prob = T,
 #'  reward = R
 #' ) 
 #'
 #' Maze
 #' str(Maze) 
+#'
+#' # Layout with state names
+#' matrix(Maze$states,nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
 #' 
 #' maze_solved <- solve_MDP(Maze, method = "value")
 #' policy(maze_solved)
