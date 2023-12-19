@@ -120,8 +120,12 @@ print.MDP <- function(x, ...) {
     writeLines(sprintf("  Horizon: %s epochs",
       paste(x$horizon, collapse = " + ")))
   
-  writeLines(sprintf("  Size: %d states / %d actions\n",
+  writeLines(sprintf("  Size: %d states / %d actions",
     length(x$states), length(x$actions)))
+  
+  writeLines(paste0(
+    "  Start: ", shorten(paste(x$start, collapse = ", "), n = -10L)
+  ))
   
   if (is_solved_MDP(x))
     writeLines(c(
@@ -130,6 +134,8 @@ print.MDP <- function(x, ...) {
         x$solution$converged)
       )
     )
+  
+  writeLines("")
   
   writeLines(strwrap(
     paste("List components:", paste(sQuote(names(

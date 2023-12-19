@@ -705,10 +705,14 @@ print.POMDP <- function(x, ...) {
     length(x$observations)
   ))
   
+  writeLines(paste0(
+    "  Start: ", shorten(paste(x$start, collapse = ", "), n = -10L)
+  ))
+  
   if (!is.null(x$normalized) && x$normalized)
-    writeLines(c("  Normalized: TRUE", ""))
+    writeLines(c("  Normalized: TRUE"))
   else
-    writeLines(c("  Normalized: FALSE", ""))
+    writeLines(c("  Normalized: FALSE"))
   
   if (is_solved_POMDP(x))
     writeLines(c(

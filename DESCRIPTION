@@ -35,6 +35,7 @@ Roxygen: list(markdown = TRUE)
 Collate: 
     'AAA_check_installed.R'
     'AAA_pomdp-package.R'
+    'AAA_shorten.R'
     'POMDP.R'
     'MDP.R'
     'Maze.R'
