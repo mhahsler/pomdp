@@ -42,7 +42,17 @@ inline CharacterVector get_actions(const List& model) {
 
 inline double get_discount(const List& model) {
   return model["discount"];
+} 
+
+// NA is inf, we return the sum of episode horizons for now
+inline int get_horizon(const List& model) {
+  NumericVector h = model["horizon"];
+  if (!is_finite(h)[0]) 
+    return R_NaInt;
+  
+  return (int) sum(h);
 }  
+
 
 // get pg and alpha epochs (in case of non converged policies)
 // epochs start with 0
@@ -268,6 +278,17 @@ inline double reward_val(const List& model, int action, int start_state, int end
   return reward_matrix(model, action, start_state, episode)(end_state, observation);
 }  
 
+
+// terminal value
+inline double terminal_val(const List& model, int state) {
+  if (!model.containsElementNamed("terminal_values") || 
+      model["terminal_values"] == R_NilValue)
+    return 0.0;
+  
+  NumericVector terminal_values = model["terminal_values"];
+  
+  return terminal_values[state];
+}
 
 
 

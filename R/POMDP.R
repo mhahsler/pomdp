@@ -108,6 +108,14 @@
 #' The default initial belief is a uniform
 #' distribution over all states.
 #'
+#' **Convergence**
+#' 
+#' A infinite-horizon POMDP needs to converge to provide a valid value 
+#' function and policy.
+#' 
+#' A finite-horizon POMDP may also converging to a infinite horizon solution 
+#' if the horizon is long enough.
+#'
 #' **Time-dependent POMDPs**
 #'
 #' Time dependence of transition probabilities, observation probabilities and
@@ -298,9 +306,9 @@ POMDP <- function(states,
 
 # make sure the definition is complete and everything is in the right order and the right factors
 check_and_fix_MDP <- function(x) {
-  ### TODO: check terminal values
   ### TODO: check function needs to be used!
   ### TODO: keep functions. For now we expand functions into matrices
+  
   check_func <- function(x, func, name) {
     req_formals <- head(names(formals(func)),-1)
     if (!identical(names(formals(x)), req_formals))
@@ -374,7 +382,6 @@ check_and_fix_MDP <- function(x) {
   if (any(x$horizon != floor(x$horizon)))
     stop("horizon needs to be an integer.")
   
-  
   # start
   if (is.numeric(x$start) &&
       length(x$start) == length(x$states)) {
@@ -393,8 +400,6 @@ check_and_fix_MDP <- function(x) {
         "when using characters for start, then it needs to be the keyword 'uniform' or a set of start states."
       )
   }
-  
-  ## TODO: check terminal_values
   
   if ((is.null(x$transition_prob) ||
       (inherits(x, "POMDP") &&
@@ -585,6 +590,27 @@ check_and_fix_MDP <- function(x) {
           }
         }
       }
+    }
+    
+    ### check terminal values (only POMDP for now)
+    if (inherits(x, "POMDP") && !is.null(x$terminal_values)) {
+      if (length(x$terminal_values) != 1L && 
+          length(x$terminal_values) != length(x$states) &&
+          (is.matrix(x$terminal_values) && ncol(x$terminal_values) != length(x$states)))
+        stop("Terminal values are not in the right format.")
+    }
+    
+    ### check solution
+    if (inherits(x, "POMDP") && !is.null(x$solution)) {
+      # alpha
+      if (any(sapply(x$solution$alpha, ncol) != length(x$states)))
+          stop("Alpha vectors do not have the right dimension.")
+      
+      # pg
+      x$solution$pg <- lapply(x$solution$pg, FUN = function(y) {
+        y$action <- factor(y$action, levels = x$actions)
+        y
+      })
     }
     
     if (inherits(x, "POMDP") &&

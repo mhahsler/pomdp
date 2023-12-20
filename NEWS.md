@@ -8,6 +8,8 @@
 * Changed the action names for the Maze example to the names used in Russell 
   and Norvig's AIMA book.
 
+## Bugfixes
+* simulate_POMDP() now adds terminal values.
 
 # pomdp 1.1.2 (09/07/2023)
 

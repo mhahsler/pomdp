@@ -92,13 +92,13 @@
 #' @export
 simulate_POMDP <-
   function(model,
-    n = 100,
+    n = 1000,
     belief = NULL,
     horizon = NULL,
     return_beliefs = FALSE,
     epsilon = NULL,
     delta_horizon = 1e-3,
-    digits = 7,
+    digits = 7L,
     engine = "cpp",
     verbose = FALSE,
     ...) {
@@ -113,6 +113,7 @@ simulate_POMDP <-
       belief <- start_vector(model)
     
     n <- as.integer(n)
+    digits <- as.integer(digits)
     
     if (is.null(horizon))
       horizon <- model$horizon
@@ -146,7 +147,7 @@ simulate_POMDP <-
         ### TODO: Add support for time dependence
         model <- normalize_POMDP(model, sparse = TRUE)
         
-        if (foreach::getDoParWorkers() == 1 || n * horizon < 100000) {
+        if (foreach::getDoParWorkers() == 1 || n * horizon < 100000L) {
           res <- simulate_POMDP_cpp(
             model,
             n,
@@ -361,6 +362,11 @@ simulate_POMDP <-
         
         if (return_beliefs)
           visited_belief_states[j,] <- b
+      }
+      
+      # terminal values
+      if (j == sum(model$horizon) && !is.null(model$terminal_values)) {
+        rew <- rew + model$terminal_values[s] * disc ^ j
       }
       
       rownames(visited_belief_states) <- NULL

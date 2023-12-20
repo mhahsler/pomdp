@@ -207,6 +207,14 @@ distribution over all states.
 The default initial belief is a uniform
 distribution over all states.
 
+\strong{Convergence}
+
+A infinite-horizon POMDP needs to converge to provide a valid value
+function and policy.
+
+A finite-horizon POMDP may also converging to a infinite horizon solution
+if the horizon is long enough.
+
 \strong{Time-dependent POMDPs}
 
 Time dependence of transition probabilities, observation probabilities and
@@ -324,6 +332,7 @@ pomdp-solve website: \url{http://www.pomdp.org}
 \seealso{
 Other POMDP: 
 \code{\link{POMDP_accessors}},
+\code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
 \code{\link{regret}()},

@@ -95,7 +95,8 @@ List simulate_POMDP_cpp(const List& model,
     disc_pow = 1.0;
     
     // horizon epochs  
-    for (int j = 0; j < horizon; ++j) {
+    int j;
+    for (j = 0; j < horizon; ++j) {
 #ifdef DEBUG 
       Rcout << "Epoch: " << j << "\n";
       Rcout << "State: " << s << "\n";
@@ -168,6 +169,15 @@ List simulate_POMDP_cpp(const List& model,
         belief_states(k++, _ ) = b;
       }
     }
+    
+    // add terminal reward
+    if (j == get_horizon(model)) {
+      rews[i] += terminal_val(model, s) * disc_pow;
+#ifdef DEBUG 
+      Rcout << "Adding terminal value for state " << s << 
+        "(" << terminal_val(model, s) << ")" << "\n";
+#endif
+    }  
   }
   
   if (return_beliefs)

@@ -41,6 +41,7 @@ regret(sol_quick, sol_optimal)
 Other POMDP: 
 \code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
+\code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
 \code{\link{sample_belief_space}()},

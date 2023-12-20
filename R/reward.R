@@ -1,24 +1,29 @@
 #' Calculate the Reward for a POMDP Solution
 #'
 #' This function calculates the expected total reward for a POMDP solution
-#' given a starting belief state. The value is calculated using the value function stored 
+#' given a starting belief state. The value is calculated using the value function stored
 #' in the POMDP solution. In addition, the policy graph node that represents the belief state
 #' and the optimal action can also be returned using `reward_node_action()`.
 #'
+#' The reward is typically calculated using the value function (alpha vectors)
+#' of the solution. If these are not available, then [simulate_POMDP()] is 
+#' used instead with a warning.
+#'
 #' @family policy
-#' 
+#'
 #' @param x a solved [POMDP] object.
 #' @param belief specification of the current belief state (see argument start
 #' in [POMDP] for details). By default the belief state defined in
 #' the model as start is used. Multiple belief states can be specified as rows in a matrix.
 #' @param epoch return reward for this epoch. Use 1 for converged policies.
-#' 
+#' @param ... further arguments are passed on.
+#'
 #' @returns `reward()` returns a vector of reward values, one for each belief if a matrix is specified.
-#' 
-#' `reward_node_action()` returns a list with the components 
-#' \item{belief_state}{the belief state specified in `belief`.} 
-#' \item{reward}{the total expected reward given a belief and epoch. } 
-#' \item{pg_node}{the policy node that represents the belief state.} 
+#'
+#' `reward_node_action()` returns a list with the components
+#' \item{belief_state}{the belief state specified in `belief`.}
+#' \item{reward}{the total expected reward given a belief and epoch. }
+#' \item{pg_node}{the policy node that represents the belief state.}
 #' \item{action}{the optimal action.}
 #' @author Michael Hahsler
 #' @examples
@@ -40,7 +45,7 @@
 #' # a uniform belief is played which produces additional reward.
 #'
 #' # return reward, the initial node in the policy graph and the optimal action for
-#' # two beliefs. 
+#' # two beliefs.
 #' reward_node_action(sol, belief = rbind(c(.5, .5), c(.9, .1)))
 #'
 #' # manually combining reward with belief space sampling to show the value function
@@ -49,17 +54,28 @@
 #' rew <- reward_node_action(sol, belief = samp)
 #' plot(rew$belief[,"tiger-right"], rew$reward, col = rew$action, ylim = c(0, 15))
 #' legend(x = "top", legend = levels(rew$action), title = "action", col = 1:3, pch = 1)
-#' 
+#'
 #' # this is the piecewise linear value function from the solution
 #' plot_value_function(sol, ylim = c(0, 10))
 #' @export
-reward <- function(x, belief = NULL, epoch = 1) {
-  reward_node_action(x, belief, epoch)$reward
+reward <- function(x,
+                   belief = NULL,
+                   epoch = 1, ...) {
+  
+  if (!.check_valid_value_function(x)) {
+    if (epoch != 1) 
+      stop("Simulation currently only supports starting at epoch 1.")
+    
+    warning("Using 'simulate_POMDP()' to estimate the reward.")
+    return(simulate_POMDP(x, belief = belief, ...)$avg_reward)
+  }
+  
+  reward_node_action(x, belief, epoch, ...)$reward
 }
 
 #' @rdname reward
 #' @export
-reward_node_action <- function(x, belief = NULL, epoch = 1) {
+reward_node_action <- function(x, belief = NULL, epoch = 1, ...) {
   is_solved_POMDP(x)
   
   if (is.null(belief))
@@ -74,10 +90,13 @@ reward_node_action <- function(x, belief = NULL, epoch = 1) {
   pg <- x$solution$pg[[e]]
   
   vs <- .rew(belief, alpha)
+  reward <- vs$reward
   
+  .check_valid_value_function(x)
+
   list(
     belief = belief,
-    reward = vs$reward,
+    reward = reward,
     pg_node = vs$pg_node,
     action = factor(pg$action[vs$pg_node], levels = x$actions)
   )

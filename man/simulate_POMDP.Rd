@@ -6,13 +6,13 @@
 \usage{
 simulate_POMDP(
   model,
-  n = 100,
+  n = 1000,
   belief = NULL,
   horizon = NULL,
   return_beliefs = FALSE,
   epsilon = NULL,
   delta_horizon = 0.001,
-  digits = 7,
+  digits = 7L,
   engine = "cpp",
   verbose = FALSE,
   ...
@@ -125,6 +125,7 @@ lines(density(sim$belief_states[, 1], bw = .05)); axis(2); title(ylab = "Density
 Other POMDP: 
 \code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
+\code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
 \code{\link{regret}()},

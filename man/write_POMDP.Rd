@@ -51,6 +51,7 @@ POMDP solver website: https://www.pomdp.org
 Other POMDP: 
 \code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
+\code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
 \code{\link{regret}()},

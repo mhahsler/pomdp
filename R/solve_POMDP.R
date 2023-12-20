@@ -612,14 +612,18 @@ solve_POMDP <- function(model,
     alpha <- rev(alpha)
     pg <- rev(pg)
     
-    if (method == "grid" &&
-        !converged &&
-        any(unlist(reward_matrix(model)) < 0))
-      warning(
-        "The grid method for finite horizon did not converge. The value function and the calculated reward values may not be valid with negative reward in the reward matrix. Use method 'simulate_POMDP()' to estimate the reward or use solution method 'incprune'."
-      )
+
     
   }
+  
+  # NOTE: this is now checked in reward_node_action
+  # if (method == "grid" &&
+  #     !converged &&
+  #     is.finite(horizon) &&
+  #     any(unlist(reward_matrix(model)) < 0))
+  #   warning(
+  #     "The grid method for finite horizon did not converge. The value function and the calculated reward values may not be valid with negative reward in the reward matrix. Use method 'simulate_POMDP()' to estimate the reward or use solution method 'incprune'."
+  #   )
   
   # read belief states if available (method: grid)
   belief <- .get_belief_file(file_prefix, model)

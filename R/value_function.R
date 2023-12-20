@@ -1,8 +1,8 @@
 #' Value Function
 #'
-#' Extracts the value function from a solved model. 
+#' Extracts the value function from a solved model.
 
-#' Extracts the alpha vectors describing the value function. This is similar to [policy()] which in addition returns the 
+#' Extracts the alpha vectors describing the value function. This is similar to [policy()] which in addition returns the
 #' action prescribed by the solution.
 #'
 #' Plots the value function of a POMDP solution as a line plot. The solution is
@@ -22,9 +22,9 @@
 #' @param lwd line width.
 #' @param lty line type.
 #' @param ... additional arguments are passed on to [stats::line()]`.
-#' 
+#'
 #' @returns the function as a matrix with alpha vectors as rows.
-#' 
+#'
 #' @author Michael Hahsler
 #' @keywords hplot
 #' @examples
@@ -34,7 +34,7 @@
 #'
 #' # value function for the converged solution
 #' value_function(sol)
-#' 
+#'
 #' plot_value_function(sol, ylim = c(0,20))
 #'
 #' ## finite-horizon problem
@@ -42,19 +42,19 @@
 #'   method = "enum")
 #' sol
 #'
-#' # inspect the value function for all epochs 
+#' # inspect the value function for all epochs
 #' value_function(sol)
 #'
 #' plot_value_function(sol, epoch = 1, ylim = c(-5, 25))
 #' plot_value_function(sol, epoch = 2, ylim = c(-5, 25))
 #' plot_value_function(sol, epoch = 3, ylim = c(-5, 25))
-#' 
+#'
 #' \dontrun{
 #' # using ggplot2 to plot the value function for epoch 3
 #' library(ggplot2)
 #' pol <- policy(sol)[[3]]
-#' ggplot(pol) + 
-#'  geom_segment(aes(x = 0, y = `tiger-left`, xend = 1, yend = `tiger-right`, color = action)) + 
+#' ggplot(pol) +
+#'  geom_segment(aes(x = 0, y = `tiger-left`, xend = 1, yend = `tiger-right`, color = action)) +
 #'  coord_cartesian(ylim = c(-5, 15)) + ylab("Reward") + xlab("Belief")
 #' }
 #' @importFrom graphics plot barplot mtext box lines
@@ -65,24 +65,58 @@ value_function <- function(model) {
     
     return(lapply(policy(model), "[[", "U"))
   } else {
-    is_solved_POMDP(model, stop = TRUE)
+    #is_solved_POMDP(model, stop = TRUE)
+    .check_valid_value_function(model)
     
     return(model$solution$alpha)
   }
 }
 
+.check_valid_value_function <-
+  function(x, warning = TRUE, stop = FALSE) {
+    is_solved_POMDP(x, stop = TRUE)
+    
+    msg_f <- function(...) {}
+    if (warning) 
+      msg_f <- base::warning
+    if (stop) 
+      msg_f <- base::stop
+    
+    if (x$solution$method == "manual" && !x$solution$converged) {
+      msg_f(
+        "Value function (alpha vectors) may not be valid for a manual policy!"
+      )
+      
+      return(FALSE)
+    }
+    
+    if (x$solution$method == "grid" &&
+        is.finite(x$horizon) &&
+        !x$solution$converged &&
+        any(reward_matrix(x, sparse = TRUE)$value < 0)) {
+      msg_f(
+        "Value function (alpha vectors) may not be valid for a finite horizon unconverged solution of method 'grid' with neg. rewards!"
+      )
+      
+      return(FALSE)
+    }
+    
+    return(TRUE)
+  }
+
+
 #' @rdname value_function
 #' @export
 plot_value_function <-
   function(model,
-    projection = NULL,
-    epoch = 1,
-    ylim = NULL,
-    legend = TRUE,
-    col = NULL,
-    lwd = 1,
-    lty = 1,
-    ...) {
+           projection = NULL,
+           epoch = 1,
+           ylim = NULL,
+           legend = TRUE,
+           col = NULL,
+           lwd = 1,
+           lty = 1,
+           ...) {
     if (inherits(model, "MDP")) {
       is_solved_MDP(model, stop = TRUE)
       
@@ -109,8 +143,9 @@ plot_value_function <-
         at = 0
       )
     } else {
-      is_solved_POMDP(model, stop = TRUE)
-     
+      #is_solved_POMDP(model, stop = TRUE)
+      .check_valid_value_function(model)
+      
       projection <- projection(projection, model)
       
       if (sum(is.na(projection)) != 2L)
@@ -126,12 +161,12 @@ plot_value_function <-
         )
       alpha <- alpha[[epoch]]
       pg <- pg[[epoch]]
-     
+      
       col <- colors_discrete(nrow(alpha), col)
       lwd <- rep(lwd, length.out = nrow(alpha))
       lty <- rep(lty, length.out = nrow(alpha))
-    
-      remainder_proj <- 1 - sum(projection, na.rm = TRUE) 
+      
+      remainder_proj <- 1 - sum(projection, na.rm = TRUE)
       plot_dim_ids <- is.na(projection)
       
       bel_left <- projection
@@ -143,7 +178,8 @@ plot_value_function <-
       
       if (is.null(ylim)) {
         ylim <- range(c(val_left, val_right))
-        if (ylim[1] > 0) ylim[1] <- 0
+        if (ylim[1] > 0)
+          ylim[1] <- 0
         ylim <- ylim + c(0, diff(ylim) * .2)
       }
       
@@ -152,15 +188,17 @@ plot_value_function <-
         xlim = c(0, 1),
         ylim = ylim,
         xlab = paste0("Belief space",
-          ifelse(
-            length(projection) < length(model$states),
-            " (projected)",
-            ""
-          )),
+                      ifelse(
+                        length(projection) < length(model$states),
+                        " (projected)",
+                        ""
+                      )),
         ylab = "Reward",
         axes = FALSE
       )
-      axis(1, at = c(0, 1, .5), labels = c(model$states[plot_dim_ids], NA))
+      axis(1,
+           at = c(0, 1, .5),
+           labels = c(model$states[plot_dim_ids], NA))
       axis(2)
       box()
       
@@ -192,5 +230,3 @@ plot_value_function <-
     
     invisible(NULL)
   }
-
-

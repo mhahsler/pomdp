@@ -42,6 +42,7 @@ Collate:
     'POMDP_accessors.R'
     'RcppExports.R'
     'Tiger.R'
+    'add_policy.R'
     'colors.R'
     'estimate_belief_for_nodes.R'
     'foreach_helper.R'

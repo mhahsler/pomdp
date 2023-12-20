@@ -116,9 +116,13 @@ plot_belief_space <-
     else
       if (any(!is.na(projection)))
         stop("A given sample cannot be projected!")
+   
+    # only warn for reward
+    if (what == "reward") 
+      .check_valid_value_function(model)
     
     val <-
-      reward_node_action(model, belief = sample, epoch = epoch)[[what]]
+      suppressWarnings(reward_node_action(model, belief = sample, epoch = epoch))[[what]]
     if (what == "pg_node")
       val <-
       factor(val, levels = seq_len(nrow(model$solution$pg[[epoch]])))

@@ -61,6 +61,7 @@ update_belief(c(.15,.85), action = "listen", observation = "tiger-right", model 
 Other POMDP: 
 \code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
+\code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
 \code{\link{regret}()},

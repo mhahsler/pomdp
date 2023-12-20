@@ -67,7 +67,7 @@ sol <- solve_POMDP(model = Tiger, horizon = 3, discount = 1,
   method = "enum")
 sol
 
-# inspect the value function for all epochs 
+# inspect the value function for all epochs
 value_function(sol)
 
 plot_value_function(sol, epoch = 1, ylim = c(-5, 25))
@@ -78,8 +78,8 @@ plot_value_function(sol, epoch = 3, ylim = c(-5, 25))
 # using ggplot2 to plot the value function for epoch 3
 library(ggplot2)
 pol <- policy(sol)[[3]]
-ggplot(pol) + 
- geom_segment(aes(x = 0, y = `tiger-left`, xend = 1, yend = `tiger-right`, color = action)) + 
+ggplot(pol) +
+ geom_segment(aes(x = 0, y = `tiger-left`, xend = 1, yend = `tiger-right`, color = action)) +
  coord_cartesian(ylim = c(-5, 15)) + ylab("Reward") + xlab("Belief")
 }
 }
@@ -99,6 +99,7 @@ Other policy:
 Other POMDP: 
 \code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
+\code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
 \code{\link{regret}()},

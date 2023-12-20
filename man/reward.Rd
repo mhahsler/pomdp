@@ -5,9 +5,9 @@
 \alias{reward_node_action}
 \title{Calculate the Reward for a POMDP Solution}
 \usage{
-reward(x, belief = NULL, epoch = 1)
+reward(x, belief = NULL, epoch = 1, ...)
 
-reward_node_action(x, belief = NULL, epoch = 1)
+reward_node_action(x, belief = NULL, epoch = 1, ...)
 }
 \arguments{
 \item{x}{a solved \link{POMDP} object.}
@@ -17,6 +17,8 @@ in \link{POMDP} for details). By default the belief state defined in
 the model as start is used. Multiple belief states can be specified as rows in a matrix.}
 
 \item{epoch}{return reward for this epoch. Use 1 for converged policies.}
+
+\item{...}{further arguments are passed on.}
 }
 \value{
 \code{reward()} returns a vector of reward values, one for each belief if a matrix is specified.
@@ -32,6 +34,11 @@ This function calculates the expected total reward for a POMDP solution
 given a starting belief state. The value is calculated using the value function stored
 in the POMDP solution. In addition, the policy graph node that represents the belief state
 and the optimal action can also be returned using \code{reward_node_action()}.
+}
+\details{
+The reward is typically calculated using the value function (alpha vectors)
+of the solution. If these are not available, then \code{\link[=simulate_POMDP]{simulate_POMDP()}} is
+used instead with a warning.
 }
 \examples{
 data("Tiger")
@@ -52,7 +59,7 @@ reward(sol, belief = "tiger-left")
 # a uniform belief is played which produces additional reward.
 
 # return reward, the initial node in the policy graph and the optimal action for
-# two beliefs. 
+# two beliefs.
 reward_node_action(sol, belief = rbind(c(.5, .5), c(.9, .1)))
 
 # manually combining reward with belief space sampling to show the value function
