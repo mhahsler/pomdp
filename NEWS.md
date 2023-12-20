@@ -1,8 +1,9 @@
 # pomdp 1.1.3 (xx/xx/2023)
 
 ## New Features
-* simulate_POMDP() and simulate_MDP() gained parameter delta_horizon and calculates now the horizon
-  for infinite-horizon problems.
+* simulate_POMDP() and simulate_MDP() gained parameter delta_horizon and 
+  calculates now the horizon for infinite-horizon problems.
+* added add_policy() and several consistency checks.
 
 ## Changes
 * Changed the action names for the Maze example to the names used in Russell 
