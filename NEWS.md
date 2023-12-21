@@ -1,4 +1,4 @@
-# pomdp 1.1.3 (xx/xx/2023)
+# pomdp 1.1.3 (12/20/2023)
 
 ## New Features
 * simulate_POMDP() and simulate_MDP() gained parameter delta_horizon and 
