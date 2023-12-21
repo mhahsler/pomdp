@@ -61,3 +61,29 @@ policy(sol)
 
 ## clean up
 unlink("Rplots.pdf")
+
+## test with finite horizon and terminal values
+sol <- solve_POMDP(model = Tiger,
+                   horizon = 3, discount = 1,  
+                   method = "incprune",
+                   terminal_values = c(0, 1000)
+)
+sol
+
+expect_gt(reward(sol), 100)
+expect_gt(simulate_POMDP(sol)$avg_reward, 100)
+expect_gt(simulate_POMDP(sol, engine = "r", n = 100)$avg_reward, 100)
+
+# grid does not converge to a valid value function
+expect_warning(sol <- solve_POMDP(model = Tiger,
+                                  horizon = 3, discount = 1,  
+                                  method = "grid",
+                                  terminal_values = c(0, 1000)
+))
+sol
+
+expect_warning(reward_node_action(sol))
+expect_warning(expect_gt(reward(sol), 100))
+expect_gt(simulate_POMDP(sol)$avg_reward, 100)
+expect_gt(simulate_POMDP(sol, engine = "r", n = 100)$avg_reward, 100)
+
