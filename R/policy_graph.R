@@ -114,12 +114,15 @@ policy_graph <-
     remove_unreachable_nodes = FALSE,
     ...) {
     
-    ### this is for sarsop...
+    ## handle missing graph info
     if (ncol(x$solution$pg[[1L]]) <= 2L) {
-      pg_complete <- .infer_policy_graph(x, ...)
-      x$solution$central_belief <- pg_complete$central_belief
-      x$solution$pg <- pg_complete$pg
-    }
+      if (x$solution$method == "sarsop") {
+        pg_complete <- .infer_policy_graph(x, ...)
+        x$solution$central_belief <- pg_complete$central_belief
+        x$solution$pg <- pg_complete$pg
+      } else
+        stop("Policy graph cannot be extracted!")
+    }      
     
     # create policy graph and belief proportions (average belief for each alpha vector)
     pg <- x$solution$pg[[1L]]
@@ -375,7 +378,7 @@ policy_graph <-
 ### this currently only works for converged solutions
 .infer_policy_graph <- function(model, ...) {
   if (!is.null(model$solution) && length(model$solution$pg) != 1L)
-    stop("policy graph inference is currently only available for converges solutions!")
+    stop("Policy graph inference is currently only available for converges solutions!")
   
   # find central beliefs and use them to create the policy graph
   central_beliefs <- estimate_belief_for_nodes(model, ...)[[1L]]
