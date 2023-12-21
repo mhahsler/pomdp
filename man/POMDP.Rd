@@ -66,7 +66,7 @@ horizon.}
 
 \item{terminal_values}{a vector with the terminal values for each state or a
 matrix specifying the terminal rewards via a terminal value function (e.g.,
-the alpha component produced by solve_POMDP).  A single 0 specifies that all
+the alpha component produced by \code{solve_POMDP()}).  A single 0 specifies that all
 terminal values are zero.}
 
 \item{start}{Specifies the initial belief state of the agent. A vector with the
