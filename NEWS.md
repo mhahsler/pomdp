@@ -1,3 +1,8 @@
+# pomdp 1.1.3.1 (xx/xx/2023)
+
+## Changes
+* simulate_POMDP(): Better calculation of T for infinite-horizon problems.
+
 # pomdp 1.1.3 (12/20/2023)
 
 ## New Features

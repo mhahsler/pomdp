@@ -64,9 +64,15 @@ from the the epsilon-greedy policy and then updated using observations.
 }
 \details{
 Simulates \code{n} trajectories.
-If no simulation horizon is specified the horizon of finite-horizon problems
+If no simulation horizon is specified, the horizon of finite-horizon problems
 is used. For infinite-horizon problems with \eqn{\gamma < 1}, the simulation
-horizon \eqn{T} is chosen such that \deqn{abs(\gamma^T R_\text{max}) \le \delta_\text{horizon}.}
+horizon \eqn{T} is chosen such that
+the worst-case error is no more than \eqn{\delta_\text{horizon}}. That is
+
+\deqn{\gamma^T \frac{R_\text{max}}{\gamma} \le \delta_\text{horizon},}
+
+where \eqn{R_\text{max}} is the largest absolute reward value used as a
+perpetuity starting after \eqn{T}.
 
 A native R implementation (\code{engine = 'r'}) and a faster C++ implementation
 (\code{engine = 'cpp'}) are available. Currently, only the R implementation supports

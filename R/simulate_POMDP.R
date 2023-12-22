@@ -5,9 +5,15 @@
 #' from the the epsilon-greedy policy and then updated using observations.
 #'
 #' Simulates `n` trajectories.
-#' If no simulation horizon is specified the horizon of finite-horizon problems 
+#' If no simulation horizon is specified, the horizon of finite-horizon problems 
 #' is used. For infinite-horizon problems with \eqn{\gamma < 1}, the simulation
-#' horizon \eqn{T} is chosen such that \deqn{abs(\gamma^T R_\text{max}) \le \delta_\text{horizon}.}
+#' horizon \eqn{T} is chosen such that 
+#' the worst-case error is no more than \eqn{\delta_\text{horizon}}. That is
+#' 
+#' \deqn{\gamma^T \frac{R_\text{max}}{\gamma} \le \delta_\text{horizon},}
+#' 
+#' where \eqn{R_\text{max}} is the largest possible absolute reward value used as a
+#' perpetuity starting after \eqn{T}.
 #' 
 #' A native R implementation (`engine = 'r'`) and a faster C++ implementation
 #' (`engine = 'cpp'`) are available. Currently, only the R implementation supports 
@@ -83,10 +89,12 @@
 #'
 #' ## Example 3: simulate trajectories for an unsolved POMDP which uses an epsilon of 1
 #' #             (i.e., all actions are randomized). The simulation horizon for the 
-#' #             infinite-horizon Tiger problem is calculated. 
-#' sim <- simulate_POMDP(Tiger, n = 100, return_beliefs = TRUE, verbose = TRUE)
+#' #             infinite-horizon Tiger problem is calculated using delta_horizon. 
+#' sim <- simulate_POMDP(Tiger, return_beliefs = TRUE, verbose = TRUE)
 #' sim$avg_reward
-#'
+#' 
+#' hist(sim$reward, breaks = 20)
+#' 
 #' plot_belief_space(sol, sample = sim$belief_states, jitter = 2, ylim = c(0, 6))
 #' lines(density(sim$belief_states[, 1], bw = .05)); axis(2); title(ylab = "Density")
 #' @export
@@ -121,10 +129,13 @@ simulate_POMDP <-
       if (is.null(model$discount) || !(model$discount < 1)) 
         stop("Simulation needs a finite simulation horizon.")
       
-      # find a horizon that approximates the reward using 
+      # find a horizon that approximates the reward with a maximal error
+      # of delta. The PV of the perpetuity of max_abs_R starting after t at gamma is 
+      # PV = max_abs_R / gamma * gamma^t. For the PV <= delta, we need to solve
+      # t >= log(delta/max_abs_R) / log(gamma) + 1
       # discount^horizon * max_abs_R <= 0.001
       max_abs_R <-  max(abs(reward_matrix(model, sparse = TRUE)$value))
-      horizon <- ceiling(log(delta_horizon/max_abs_R)/log(model$discount))
+      horizon <- ceiling(log(delta_horizon/max_abs_R)/log(model$discount)) + 1
     }
     horizon <- as.integer(horizon)
     
