@@ -17,10 +17,11 @@
 #' @param epoch the value function of what epoch should be plotted? Use 1 for
 #'   converged policies.
 #' @param ylim the y limits of the plot.
-#' @param legend logical; add a legend?
+#' @param legend logical; add a legend to show the actions?
 #' @param col potting colors.
 #' @param lwd line width.
 #' @param lty line type.
+#' @param ylab label for the y-axis.
 #' @param ... additional arguments are passed on to [stats::line()]`.
 #'
 #' @returns the function as a matrix with alpha vectors as rows.
@@ -116,32 +117,25 @@ plot_value_function <-
            col = NULL,
            lwd = 1,
            lty = 1,
+           ylab = "Reward",
            ...) {
     if (inherits(model, "MDP")) {
       is_solved_MDP(model, stop = TRUE)
       
       policy <- policy(model)[[epoch]]
       
-      barplot(
+      mid <- barplot(
         policy$U,
-        ylab = "Reward",
-        names.arg = paste(model$states, "\n", policy$action),
+        col = col,
+        ylab = ylab,
+        xlab = "State",
+        names.arg = paste(model$states),
         ...
       )
-      mtext(
-        "State",
-        side = 1,
-        line = 0,
-        adj = 1,
-        at = 0
-      )
-      mtext(
-        "Action",
-        side = 1,
-        line = 1,
-        adj = 1,
-        at = 0
-      )
+      
+      if (legend) 
+        text(x = mid, y = 0, labels = policy$action, srt = 90, adj = c(-.1, .5))
+      
     } else {
       #is_solved_POMDP(model, stop = TRUE)
       .check_valid_value_function(model)
@@ -193,7 +187,7 @@ plot_value_function <-
                         " (projected)",
                         ""
                       )),
-        ylab = "Reward",
+        ylab = ylab,
         axes = FALSE
       )
       axis(1,
