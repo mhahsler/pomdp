@@ -99,7 +99,8 @@ Other MDP:
 \code{\link{MDP}()},
 \code{\link{POMDP_accessors}},
 \code{\link{simulate_MDP}()},
-\code{\link{solve_MDP}()}
+\code{\link{solve_MDP}()},
+\code{\link{value_function}()}
 }
 \concept{MDP}
 \concept{POMDP}

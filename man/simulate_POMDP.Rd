@@ -71,7 +71,7 @@ the worst-case error is no more than \eqn{\delta_\text{horizon}}. That is
 
 \deqn{\gamma^T \frac{R_\text{max}}{\gamma} \le \delta_\text{horizon},}
 
-where \eqn{R_\text{max}} is the largest absolute reward value used as a
+where \eqn{R_\text{max}} is the largest possible absolute reward value used as a
 perpetuity starting after \eqn{T}.
 
 A native R implementation (\code{engine = 'r'}) and a faster C++ implementation
@@ -120,9 +120,11 @@ lines(density(sim$belief_states[, 2], bw = .02)); axis(2); title(ylab = "Density
 
 ## Example 3: simulate trajectories for an unsolved POMDP which uses an epsilon of 1
 #             (i.e., all actions are randomized). The simulation horizon for the 
-#             infinite-horizon Tiger problem is calculated. 
-sim <- simulate_POMDP(Tiger, n = 100, return_beliefs = TRUE, verbose = TRUE)
+#             infinite-horizon Tiger problem is calculated using delta_horizon. 
+sim <- simulate_POMDP(Tiger, return_beliefs = TRUE, verbose = TRUE)
 sim$avg_reward
+
+hist(sim$reward, breaks = 20)
 
 plot_belief_space(sol, sample = sim$belief_states, jitter = 2, ylim = c(0, 6))
 lines(density(sim$belief_states[, 1], bw = .05)); axis(2); title(ylab = "Density")

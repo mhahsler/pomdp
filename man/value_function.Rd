@@ -16,6 +16,7 @@ plot_value_function(
   col = NULL,
   lwd = 1,
   lty = 1,
+  ylab = "Reward",
   ...
 )
 }
@@ -29,13 +30,15 @@ converged policies.}
 
 \item{ylim}{the y limits of the plot.}
 
-\item{legend}{logical; add a legend?}
+\item{legend}{logical; add a legend to show the actions?}
 
 \item{col}{potting colors.}
 
 \item{lwd}{line width.}
 
 \item{lty}{line type.}
+
+\item{ylab}{label for the y-axis.}
 
 \item{...}{additional arguments are passed on to \code{\link[stats:line]{stats::line()}}`.}
 }
@@ -110,10 +113,18 @@ Other POMDP:
 \code{\link{transition_graph}()},
 \code{\link{update_belief}()},
 \code{\link{write_POMDP}()}
+
+Other MDP: 
+\code{\link{MDP}()},
+\code{\link{POMDP_accessors}},
+\code{\link{simulate_MDP}()},
+\code{\link{solve_MDP}()},
+\code{\link{transition_graph}()}
 }
 \author{
 Michael Hahsler
 }
+\concept{MDP}
 \concept{POMDP}
 \concept{policy}
 \keyword{hplot}

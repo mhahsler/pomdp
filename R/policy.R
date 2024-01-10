@@ -11,7 +11,7 @@
 #' * Part 2: The last column contains the prescribed action.
 #'
 #' For an MDP, the policy is a data.frame consisting of:
-#' 
+#'
 #' * The state
 #' * The state's discounted expected utility U if the policy is followed
 #' * The prescribed action
@@ -41,21 +41,27 @@
 #'
 #' policy(sol)
 #' # Note: We see that it is initially better to listen till we make a decision in the final epoch.
-#' 
+#'
 #' # MDP policy
 #' data(Maze)
-#' 
+#'
 #' sol <- solve_MDP(Maze)
-#' 
+#'
 #' policy(sol)
 #' @export
 policy <- function(x, alpha = TRUE, action = TRUE) {
-  if (inherits(x, "MDP")) {
-    is_solved_MDP(x, stop = TRUE)
-    return(x$solution$policy)
-    
-  } else
-    is_solved_POMDP(x, stop = TRUE)
+  UseMethod("policy")
+}
+
+#' @export
+policy.MDP <- function(x, alpha = TRUE, action = TRUE) {
+  is_solved_MDP(x, stop = TRUE)
+  x$solution$policy
+}
+
+#' @export
+policy.POMDP <- function(x, alpha = TRUE, action = TRUE) {
+  is_solved_POMDP(x, stop = TRUE)
   n <- length(x$solution$pg)
   
   policy <- vector("list", n)
@@ -67,10 +73,11 @@ policy <- function(x, alpha = TRUE, action = TRUE) {
         x$solution$pg[[i]][, "action", drop = FALSE]
     else
       policy[[i]] <- cbind(x$solution$alpha[[i]],
-        x$solution$pg[[i]][, "action", drop = FALSE])
+                           x$solution$pg[[i]][, "action", drop = FALSE])
   }
   return(policy)
 }
+
 
 .MDP_policy_from_POMDP <- function(x) {
   pg <- x$solution$pg

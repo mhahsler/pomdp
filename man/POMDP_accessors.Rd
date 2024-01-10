@@ -216,7 +216,8 @@ Other MDP:
 \code{\link{MDP}()},
 \code{\link{simulate_MDP}()},
 \code{\link{solve_MDP}()},
-\code{\link{transition_graph}()}
+\code{\link{transition_graph}()},
+\code{\link{value_function}()}
 }
 \author{
 Michael Hahsler
