@@ -328,8 +328,8 @@ approx_MDP_policy_evaluation <-
     
     S <- model$states
     A <- model$actions
-    P <- transition_matrix(model)
-    R <- reward_matrix(model)
+    P <- transition_matrix(model, sparse = TRUE)
+    R <- reward_matrix(model, sparse = FALSE)
     GAMMA <- model$discount
     
     if (is.data.frame(pi))
@@ -356,7 +356,7 @@ MDP_policy_iteration_inf_horizon <-
     S <- model$states
     A <- model$actions
     P <- transition_matrix(model, sparse = TRUE)
-    R <- reward_matrix(model, sparse = TRUE)
+    R <- reward_matrix(model, sparse = FALSE)
     GAMMA <- model$discount
     
     if (is.null(U))
