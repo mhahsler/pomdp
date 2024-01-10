@@ -157,7 +157,8 @@ q_values_MDP <- function(model, U = NULL) {
   S <- model$states
   A <- model$actions
   P <- transition_matrix(model, sparse = TRUE)
-  R <- reward_matrix(model, sparse = TRUE)
+  # FIXME: sparse = TRUE returns a dataframe
+  R <- reward_matrix(model, sparse = FALSE)
   policy <- model$solution$policy[[1]]
   GAMMA <- model$discount
   
@@ -167,9 +168,7 @@ q_values_MDP <- function(model, U = NULL) {
   else
     stop("'model' does not contain state utilities (it is unsolved). You need to specify U.")
   
-  qs <- outer(S, A, .QV_vec, P, R, GAMMA, U)
-  dimnames(qs) <- list(S, A)
-  qs
+  structure(outer(S, A, .QV_vec, P, R, GAMMA, U), dimnames = list(S, A))
 }
 
 # TODO: we could check for convergence

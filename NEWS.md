@@ -3,6 +3,9 @@
 ## Changes
 * simulate_POMDP(): Better calculation of T for infinite-horizon problems.
 
+## Bugfixes
+* q_values_MDP(): Fixed reward representation issue.
+
 # pomdp 1.1.3 (12/20/2023)
 
 ## New Features
