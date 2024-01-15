@@ -2,8 +2,9 @@
 % Please edit documentation in R/MDP.R
 \name{MDP}
 \alias{MDP}
-\alias{MDP2POMDP}
 \alias{is_solved_MDP}
+\alias{absorbing_states}
+\alias{MDP2POMDP}
 \title{Define an MDP Problem}
 \usage{
 MDP(
@@ -17,9 +18,11 @@ MDP(
   name = NA
 )
 
-MDP2POMDP(x)
-
 is_solved_MDP(x, stop = FALSE)
+
+absorbing_states(x, states = NULL)
+
+MDP2POMDP(x)
 }
 \arguments{
 \item{states}{a character vector specifying the names of the states.}
@@ -52,16 +55,23 @@ the model specification. \code{\link[=solve_MDP]{solve_MDP()}} reads the object 
 \code{'solution'}.
 }
 \description{
-Defines all the elements of a MDP problem.
+Defines all the elements of a finite state-space MDP problem.
 }
 \details{
-MDPs are similar to POMDPs, however, states are completely observable and
-observations are not necessary. The model is defined similar to \link{POMDP}
-models, but observations are not specified and the \code{'observations'} column in
-the the reward specification is always \code{'*'}.
+Markov decision processes (MDPs) are discrete-time stochastic control
+process with completely observable states. We implement here
+MDPs with a finite state space. similar to \link{POMDP}
+models, but without the observation model. The \code{'observations'} column in
+the the reward specification is always missing.
 
-\code{MDP2POMDP()} reformulates a MDP as a POMDP with one observation per state
-that reveals the current state. This is achieved by defining identity
+The function \code{absorbing_states()} checks if a state or a set of states are
+absorbing (terminal states) with a reward of zero.
+If no states are specified (\code{states = NULL}), then all model states are
+checked. This information can be used in simulations to end an episode.
+
+\code{MDP2POMDP()} reformulates an MDP as a POMDP by adding an observation
+model with one observation per state
+that reveals the current state. This is achieved by adding identity
 observation probability matrices.
 
 More details on specifying the model components can be found in the documentation
@@ -107,13 +117,14 @@ plot_value_function(sol)
 # convert the MDP into a POMDP and solve
 STiger_POMDP <- MDP2POMDP(STiger)
 sol2 <- solve_POMDP(STiger_POMDP)
-sol2 
+sol2
 
 policy(sol2)
 plot_value_function(sol2)
 }
 \seealso{
 Other MDP: 
+\code{\link{MDP_policy_functions}},
 \code{\link{POMDP_accessors}},
 \code{\link{simulate_MDP}()},
 \code{\link{solve_MDP}()},

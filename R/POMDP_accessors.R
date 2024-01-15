@@ -265,19 +265,30 @@ reward_val <-
     observation = NA,
     episode = NULL,
     epoch = NULL) {
-    if (is.na(end.state) || is.na(observation)) {
-      if (!is.na(end.state) || !is.na(observation))
-        stop("For reward functions which depend only on action and start.state, both, end.state and observation have to be NA! Otherwise you need to specify all four elements.")
-      
+    # we convert NAs to 1L so the subsetting below works!
+    
+    # end.state can be NA of the reward does not depend on it. 
+    if (is.na(end.state)) {
+      if (is.data.frame(x$reward))
+        if(!all(is.na(x$reward[["end.state"]])))
+          stop("The rewards depend on the end.state! Specify the end.state.")
+      end.state <- 1L 
+    }
+    
+    # observations are always NA for MDPs
+    if (inherits(x, "MDP")) {
+      if (!is.na(observation))
+        stop("observation has to be 'NA' for MDPs!")
+    }
+    
+    if (is.na(observation)) {
       ### TODO: Checking for matrix format is harder
       if (is.data.frame(x$reward))
-        if(!all(is.na(x$reward[["end.state"]])) && !all(is.na(x$reward[["observation"]])))
-          stop("The POMDP rewards depend on the end.state or the observation. You need to specify all four.")
-      
-      end.state <- 1L
+        if(!all(is.na(x$reward[["observation"]])))
+          stop("The rewards depend on the observation! Specify the observation.")
       observation <- 1L
     }
-      
+    
     if (is.numeric(action))
       action <- x$actions[action]
     if (is.numeric(start.state))
@@ -294,16 +305,14 @@ reward_val <-
         episode <- epoch_to_episode(x, epoch)
     }
     
-   
     if (.is_timedependent_field(x, "reward"))
       rew <- x[["reward"]][[episode]]
     else
       rew <-  x[["reward"]]
     
-    
     ### direct access for data.frame
     if (is.data.frame(rew)) {
-      # FIXME: need episode interface for cpp
+      # TODO: need episode interface for cpp
       #rew <- reward_val_from_df_cpp(x, action, start.state, end.state, observation, episode, epoch);  
       #return(rew)
       

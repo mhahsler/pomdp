@@ -744,7 +744,7 @@ print.POMDP <- function(x, ...) {
     writeLines(c(
       "  Solved:",
       sprintf("    Method: %s",
-        x$solution$method),
+        sQuote(x$solution$method)),
       sprintf("    Solution converged: %s",
         x$solution$converged),
       sprintf("    # of alpha vectors: %i",

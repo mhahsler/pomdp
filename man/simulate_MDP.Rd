@@ -108,6 +108,7 @@ matrix(table(sim$states),nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
 }
 \seealso{
 Other MDP: 
+\code{\link{MDP_policy_functions}},
 \code{\link{MDP}()},
 \code{\link{POMDP_accessors}},
 \code{\link{solve_MDP}()},

@@ -2,67 +2,73 @@
 % Please edit documentation in R/solve_MDP.R
 \name{solve_MDP}
 \alias{solve_MDP}
-\alias{q_values_MDP}
-\alias{random_MDP_policy}
-\alias{approx_MDP_policy_evaluation}
+\alias{solve_MDP_DP}
+\alias{solve_MDP_TD}
 \title{Solve an MDP Problem}
 \usage{
-solve_MDP(
+solve_MDP(model, method = "value", ...)
+
+solve_MDP_DP(
   model,
+  method = "value_iteration",
   horizon = NULL,
   discount = NULL,
   terminal_values = NULL,
-  method = "value",
   eps = 0.01,
   max_iterations = 1000,
   k_backups = 10,
   verbose = FALSE
 )
 
-q_values_MDP(model, U = NULL)
-
-random_MDP_policy(model, prob = NULL)
-
-approx_MDP_policy_evaluation(pi, model, U = NULL, k_backups = 10)
+solve_MDP_TD(
+  model,
+  method = "q_learning",
+  horizon = NULL,
+  discount = NULL,
+  alpha = 0.1,
+  epsilon = 0.1,
+  N = 100,
+  verbose = FALSE
+)
 }
 \arguments{
-\item{model}{a POMDP problem specification created with \code{\link[=POMDP]{POMDP()}}.
-Alternatively, a POMDP file or the URL for a POMDP file can be specified.}
+\item{model}{an MDP problem specification.}
+
+\item{method}{string; one of the following solution methods: \code{'value_iteration'},
+\code{'policy_iteration'}, \code{'q_learning'}, \code{'sarsa'}, or \code{'expected_sarsa'}.}
+
+\item{...}{further parameters are passed on to the solver function.}
 
 \item{horizon}{an integer with the number of epochs for problems with a
 finite planning horizon. If set to \code{Inf}, the algorithm continues
 running iterations till it converges to the infinite horizon solution. If
-\code{NULL}, then the horizon specified in \code{model} will be used.  For
-time-dependent POMDPs a vector of horizons can be specified (see Details
-section).}
+\code{NULL}, then the horizon specified in \code{model} will be used.}
 
-\item{discount}{discount factor in range \eqn{[0, 1]}. If \code{NULL}, then the
+\item{discount}{discount factor in range \eqn{(0, 1]}. If \code{NULL}, then the
 discount factor specified in \code{model} will be used.}
 
 \item{terminal_values}{a vector with terminal utilities for each state. If
 \code{NULL}, then a vector of all 0s is used.}
 
-\item{method}{string; one of the following solution methods: \code{'value'},
-\code{'policy'}.}
-
 \item{eps}{maximum error allowed in the utility of any state
-(i.e., the maximum policy loss).}
+(i.e., the maximum policy loss) used as the termination criterion for
+the value iteration method.}
 
 \item{max_iterations}{maximum number of iterations allowed to converge. If the
 maximum is reached then the non-converged solution is returned with a
 warning.}
 
 \item{k_backups}{number of look ahead steps used for approximate policy evaluation
-used by method \code{'policy'}.}
+used by the policy iteration method.}
 
 \item{verbose}{logical, if set to \code{TRUE}, the function provides the
-output of the pomdp solver in the R console.}
+output of the solver in the R console.}
 
-\item{U}{a vector with state utilities (expected sum of discounted rewards from that point on).}
+\item{alpha}{step size in \verb{(0, 1]}.}
 
-\item{prob}{probability vector for actions.}
+\item{epsilon}{used for \eqn{\epsilon}-greedy policies.}
 
-\item{pi}{a policy as a data.frame with columns state and action.}
+\item{N}{number of episodes used for learning.}
 }
 \value{
 \code{solve_MDP()} returns an object of class POMDP which is a list with the
@@ -74,45 +80,85 @@ The solution is a list with the elements:
 \item \code{delta} final delta (infinite-horizon only)
 \item \code{iterations} number of iterations to convergence (infinite-horizon only)
 }
-
-\code{q_values_MDP()} returns a state by action matrix specifying the Q-function,
-i.e., the utility value of executing each action in each state.
-
-\code{random_MDP_policy()} returns a data.frame with columns state and action to define a policy.
-
-\code{approx_MDP_policy_evaluation()} is used by the modified policy
-iteration algorithm and returns an approximate utility vector U estimated by evaluating policy \code{pi}.
 }
 \description{
-A simple implementation of value iteration and modified policy iteration.
+Implementation of value iteration, modified policy iteration and other
+methods based on reinforcement learning techniques to solve finite
+state space MDPs.
+}
+\details{
+Implemented are the following dynamic programming methods:
+\itemize{
+\item \strong{Modified Policy Iteration}
+starts with a random policy and iteratively performs
+a sequence of
+\itemize{
+\item approximate policy evaluation (estimate the value function for the
+current policy using \code{k_backups}), and
+\item policy improvement (calculate a greedy policy given the value function).
+The algorithm stops when it converges to a stable policy.
+}
+\item \strong{Value Iteration} starts with
+an arbitraty value function (we use all 0s) and iteratively
+updates the value function using the Bellman equation. The iterations
+are terminated when no state value in the value function changes by more than
+\eqn{\epsilon (1-\gamma) / \gamma} which means that no state value is more than
+\eqn{\epsilon} from the value in the optimal value function. The greedy policy
+is calculated from the value function. Value iteration can be seen as
+policy iteration with truncated policy evaluation.
+}
+
+Implemented are the following temporal difference control methods. Note
+that the MDP transition and reward models are only used to simulate
+the environment for these reinforcement learning methods.
+The algorithms use a step size parameter \eqn{\alpha} (learning rate) for the
+updates and the exploration parameter \eqn{\epsilon} for
+the \eqn{\epsilon}-greedy policy.
+\itemize{
+\item \strong{Q-Learning} is an off-policy temporal difference method that uses
+an \eqn{\epsilon}-greedy behavior policy and learns a greedy target
+policy.
+\item \strong{Sarsa} is an on-policy method that learns an \eqn{\epsilon}-greedy
+policy.
+\item \strong{Expected Sarsa}: We implement an on-policy version that uses
+the expected value under the current policy for the update.
+It moves deterministically in the same direction as Sarsa
+moved in expectation. Because it uses the expectation, we can
+set the step size \eqn{\alpha} to large values and even 1.
+}
 }
 \examples{
 data(Maze)
 Maze
 
 # use value iteration
-maze_solved <- solve_MDP(Maze, method = "value")
+maze_solved <- solve_MDP(Maze, method = "value_iteration")
+maze_solved
 policy(maze_solved)
 
-# value function (utility function U)
+# plot the value function U (with the state labels rotated)
 plot_value_function(maze_solved)
 
-# Q-function (states times action)
-q_values_MDP(maze_solved)
+# Maze solutions can be visualized
+plot_Maze_solution(maze_solved)
 
 # use modified policy iteration
-maze_solved <- solve_MDP(Maze, method = "policy")
+maze_solved <- solve_MDP(Maze, method = "policy_iteration")
 policy(maze_solved)
 
 # finite horizon
-maze_solved <- solve_MDP(Maze, method = "value", horizon = 3)
+maze_solved <- solve_MDP(Maze, method = "value_iteration", horizon = 3)
 policy(maze_solved)
+plot_Maze_solution(maze_solved, epoch = 1)
+plot_Maze_solution(maze_solved, epoch = 2)
+plot_Maze_solution(maze_solved, epoch = 3)
 
 # create a random policy where action n is very likely and approximate
 #  the value function. We change the discount factor to .9 for this.
 Maze_discounted <- Maze
 Maze_discounted$discount <- .9
-pi <- random_MDP_policy(Maze_discounted, prob = c(n = .7, e = .1, s = .1, w = 0.1))
+pi <- random_MDP_policy(Maze_discounted, 
+        prob = c(n = .7, e = .1, s = .1, w = 0.1))
 pi
 
 # compare the utility function for the random policy with the function for the optimal
@@ -124,6 +170,15 @@ approx_MDP_policy_evaluation(policy(maze_solved)[[1]], Maze, k_backup = 100)
 
 # Note that the solver already calculates the utility function and returns it with the policy
 policy(maze_solved)
+
+# Learn a Policy using Q-Learning
+maze_learned <- solve_MDP(Maze, method = "q_learning", N = 100)
+maze_learned
+
+maze_learned$solution
+policy(maze_learned)
+plot_value_function(maze_learned)
+plot_Maze_solution(maze_learned)
 }
 \seealso{
 Other solver: 
@@ -131,6 +186,7 @@ Other solver:
 \code{\link{solve_SARSOP}()}
 
 Other MDP: 
+\code{\link{MDP_policy_functions}},
 \code{\link{MDP}()},
 \code{\link{POMDP_accessors}},
 \code{\link{simulate_MDP}()},

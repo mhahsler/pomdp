@@ -16,7 +16,7 @@ plot_value_function(
   col = NULL,
   lwd = 1,
   lty = 1,
-  ylab = "Reward",
+  ylab = "Value",
   ...
 )
 }
@@ -30,7 +30,7 @@ converged policies.}
 
 \item{ylim}{the y limits of the plot.}
 
-\item{legend}{logical; add a legend to show the actions?}
+\item{legend}{logical; show the actions in the visualization?}
 
 \item{col}{potting colors.}
 
@@ -40,7 +40,8 @@ converged policies.}
 
 \item{ylab}{label for the y-axis.}
 
-\item{...}{additional arguments are passed on to \code{\link[stats:line]{stats::line()}}`.}
+\item{...}{additional arguments are passed on to \code{\link[stats:line]{stats::line()}}
+or \code{\link[graphics:barplot]{graphics::barplot()}}`.}
 }
 \value{
 the function as a matrix with alpha vectors as rows.
@@ -115,6 +116,7 @@ Other POMDP:
 \code{\link{write_POMDP}()}
 
 Other MDP: 
+\code{\link{MDP_policy_functions}},
 \code{\link{MDP}()},
 \code{\link{POMDP_accessors}},
 \code{\link{simulate_MDP}()},

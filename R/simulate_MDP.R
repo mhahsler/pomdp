@@ -240,7 +240,7 @@ simulate_MDP <-
         #rew <- rew + rew_m[[a]][[s_prev]][s] * disc ^ (j - 1L)
         # MDPs have no observation!
         rew <-
-          rew + reward_val(model, a, s_prev, s, observation = -1) * disc ^ (j - 1L)
+          rew + reward_val(model, a, s_prev, s) * disc ^ (j - 1L)
         
         if (return_states)
           states_visited[j] <- s

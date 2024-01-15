@@ -18,12 +18,13 @@
 #' @param epoch the value function of what epoch should be plotted? Use 1 for
 #'   converged policies.
 #' @param ylim the y limits of the plot.
-#' @param legend logical; add a legend to show the actions?
+#' @param legend logical; show the actions in the visualization?
 #' @param col potting colors.
 #' @param lwd line width.
 #' @param lty line type.
 #' @param ylab label for the y-axis.
-#' @param ... additional arguments are passed on to [stats::line()]`.
+#' @param ... additional arguments are passed on to [stats::line()] 
+#'  or [graphics::barplot()]`.
 #'
 #' @returns the function as a matrix with alpha vectors as rows.
 #'
@@ -124,7 +125,7 @@ plot_value_function <- function(model,
                                 col = NULL,
                                 lwd = 1,
                                 lty = 1,
-                                ylab = "Reward",
+                                ylab = "Value",
                                 ...) {
   UseMethod("plot_value_function")
 }
@@ -139,7 +140,8 @@ plot_value_function.MDP <-
            col = NULL,
            lwd = 1,
            lty = 1,
-           ylab = "Reward",
+           ylab = "Value",
+           las = 3,
            ...) {
     is_solved_MDP(model, stop = TRUE)
     
@@ -151,6 +153,7 @@ plot_value_function.MDP <-
       ylab = ylab,
       xlab = "State",
       names.arg = paste(model$states),
+      las = las,
       ...
     )
     
@@ -175,7 +178,7 @@ plot_value_function.POMDP <-
            col = NULL,
            lwd = 1,
            lty = 1,
-           ylab = "Reward",
+           ylab = "Value",
            ...) {
     is_solved_POMDP(model, stop = TRUE)
     .check_valid_value_function(model)

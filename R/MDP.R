@@ -1,14 +1,21 @@
 #' Define an MDP Problem
 #'
-#' Defines all the elements of a MDP problem.
-#' 
-#' MDPs are similar to POMDPs, however, states are completely observable and
-#' observations are not necessary. The model is defined similar to [POMDP]
-#' models, but observations are not specified and the `'observations'` column in
-#' the the reward specification is always `'*'`.
-#' 
-#' `MDP2POMDP()` reformulates a MDP as a POMDP with one observation per state
-#' that reveals the current state. This is achieved by defining identity
+#' Defines all the elements of a finite state-space MDP problem.
+#'
+#' Markov decision processes (MDPs) are discrete-time stochastic control
+#' process with completely observable states. We implement here
+#' MDPs with a finite state space. similar to [POMDP]
+#' models, but without the observation model. The `'observations'` column in
+#' the the reward specification is always missing.
+#'
+#' The function `absorbing_states()` checks if a state or a set of states are
+#' absorbing (terminal states) with a reward of zero.
+#' If no states are specified (`states = NULL`), then all model states are
+#' checked. This information can be used in simulations to end an episode.
+#'
+#' `MDP2POMDP()` reformulates an MDP as a POMDP by adding an observation
+#' model with one observation per state
+#' that reveals the current state. This is achieved by adding identity
 #' observation probability matrices.
 #'
 #' More details on specifying the model components can be found in the documentation
@@ -30,8 +37,8 @@
 #' @param start Specifies in which state the MDP starts.
 #' @param name a string to identify the MDP problem.
 #' @param x a `MDP` object.
-#' 
-#' @return The function returns an object of class MDP which is list with 
+#'
+#' @return The function returns an object of class MDP which is list with
 #'   the model specification. [solve_MDP()] reads the object and adds a list element called
 #' `'solution'`.
 #' @author Michael Hahsler
@@ -68,37 +75,36 @@
 #'
 #' sol <- solve_MDP(STiger, eps = 1e-7)
 #' sol
-#' 
+#'
 #' policy(sol)
 #' plot_value_function(sol)
-#' 
+#'
 #' # convert the MDP into a POMDP and solve
 #' STiger_POMDP <- MDP2POMDP(STiger)
 #' sol2 <- solve_POMDP(STiger_POMDP)
-#' sol2 
-#' 
+#' sol2
+#'
 #' policy(sol2)
 #' plot_value_function(sol2)
 #' @export
 MDP <- function(states,
-  actions,
-  transition_prob,
-  reward,
-  discount = .9,
-  horizon = Inf,
-  start = "uniform",
-  name = NA) {
-  
+                actions,
+                transition_prob,
+                reward,
+                discount = .9,
+                horizon = Inf,
+                start = "uniform",
+                name = NA) {
   ### unsolved pomdp model
   x <- list(
-      name = name,
-      discount = discount,
-      horizon = horizon,
-      states = states,
-      actions = actions,
-      transition_prob = transition_prob,
-      reward = reward,
-      start = start
+    name = name,
+    discount = discount,
+    horizon = horizon,
+    states = states,
+    actions = actions,
+    transition_prob = transition_prob,
+    reward = reward,
+    start = start
   )
   
   class(x) <- list("MDP", "list")
@@ -109,31 +115,35 @@ MDP <- function(states,
 #' @export
 print.MDP <- function(x, ...) {
   writeLines(paste(paste(class(x), collapse = ", "),
-    "-",
-    x$name))
+                   "-",
+                   x$name))
   
   if (!is.null(x$discount))
     writeLines(sprintf("  Discount factor: %s",
-      paste(x$discount, collapse = "+")))
+                       paste(x$discount, collapse = "+")))
   
   if (!is.null(x$horizon))
     writeLines(sprintf("  Horizon: %s epochs",
-      paste(x$horizon, collapse = " + ")))
+                       paste(x$horizon, collapse = " + ")))
   
-  writeLines(sprintf("  Size: %d states / %d actions",
-    length(x$states), length(x$actions)))
-  
-  writeLines(paste0(
-    "  Start: ", shorten(paste(x$start, collapse = ", "), n = -10L)
+  writeLines(sprintf(
+    "  Size: %d states / %d actions",
+    length(x$states),
+    length(x$actions)
   ))
+  
+  writeLines(paste0("  Start: ", shorten(paste(
+    x$start, collapse = ", "
+  ), n = -10L)))
   
   if (is_solved_MDP(x))
     writeLines(c(
       "  Solved:",
+      sprintf("    Method: %s",
+              sQuote(x$solution$method)),
       sprintf("    Solution converged: %s",
-        x$solution$converged)
-      )
-    )
+              x$solution$converged)
+    ))
   
   writeLines("")
   
@@ -144,23 +154,6 @@ print.MDP <- function(x, ...) {
     indent = 2,
     exdent = 4
   ))
-}
-
-#' @rdname MDP
-#' @export
-MDP2POMDP <- function(x) {
-  if (!inherits(x, "MDP"))
-    stop("'x' needs to be of class 'MDP'.")
-  
-  # add an observation for each state and identity observation_probability for all actions ('*') 
-  # (note: pomdp-solve does not support "identity" for observation_probs)
-  x$observations <- x$states
-  ident_matrix <- diag(length(x$states))
-  dimnames(ident_matrix) <- list(x$states, x$observations)
-  
-  x$observation_prob <- sapply(x$actions, FUN = function(x) ident_matrix, simplify = FALSE)
-  class(x) <- c("MDP", "POMDP", "list")
-  x
 }
 
 #' @rdname MDP
@@ -176,18 +169,82 @@ is_solved_MDP <- function(x, stop = FALSE) {
   solved
 }
 
+#' @rdname MDP
+#' @export
+absorbing_states <- function(x,
+                             states = NULL) {
+  is_absorbing <- function(s, x)
+    (all(sapply(
+      x$actions,
+      FUN = function(a)
+        transition_val(
+          x,
+          action = a,
+          start.state = s,
+          end.state = s
+        )
+    ) == 1) &&
+      all(sapply(
+        x$actions,
+        FUN = function(a)
+          reward_val(
+            x,
+            action = a,
+            start.state = s,
+            end.state = s
+          )
+      ) == 0))
+  
+  if (is.null(states))
+    states <- x$states
+  
+  if (is.numeric(states))
+    states <- x$states[states]
+  
+  structure(sapply(
+    states,
+    is_absorbing,
+    x
+  ), names = states)
+}
+
 ## this is .get_pg_index for MDPs
 .get_pol_index <- function(model, epoch) {
-  
   epoch <- as.integer(epoch)
-  if(epoch < 1L) stop("Epoch has to be >= 1")
+  if (epoch < 1L)
+    stop("Epoch has to be >= 1")
   
   ### (converged) infinite horizon POMDPs. We ignore epoch.
-  if (length(model$solution$policy) == 1L) return(1L)
+  if (length(model$solution$policy) == 1L)
+    return(1L)
   
   ### regular epoch for finite/infinite horizon case
-  if (epoch > length(model$solution$policy)) 
-    stop("MDP model has only a policy up to epoch ", length(model$solution$policy))
-      
+  if (epoch > length(model$solution$policy))
+    stop("MDP model has only a policy up to epoch ",
+         length(model$solution$policy))
+  
   return(epoch)
+}
+
+#' @rdname MDP
+#' @export
+MDP2POMDP <- function(x) {
+  if (!inherits(x, "MDP"))
+    stop("'x' needs to be of class 'MDP'.")
+  
+  # add an observation for each state and identity observation_probability for all actions ('*')
+  # (note: pomdp-solve does not support "identity" for observation_probs)
+  x$observations <- x$states
+  ident_matrix <- diag(length(x$states))
+  dimnames(ident_matrix) <- list(x$states, x$observations)
+  
+  x$observation_prob <-
+    sapply(
+      x$actions,
+      FUN = function(x)
+        ident_matrix,
+      simplify = FALSE
+    )
+  class(x) <- c("MDP", "POMDP", "list")
+  x
 }

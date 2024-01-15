@@ -4,9 +4,35 @@
 \name{Maze}
 \alias{Maze}
 \alias{maze}
-\title{Steward Russell's 4x3 Maze MDP}
+\alias{plot_Maze_solution}
+\title{Steward Russell's 4x3 Maze}
 \format{
 An object of class \link{MDP}.
+}
+\usage{
+data(Maze)
+
+plot_Maze_solution(
+  x,
+  epoch = 1L,
+  arrows = TRUE,
+  states = TRUE,
+  main = "Russell's 4x3 Maze",
+  ...
+)
+}
+\arguments{
+\item{x}{a solution of the Maze MDP}
+
+\item{epoch}{epoch for unconverged finite-horizon solutions.}
+
+\item{arrows}{logical; show arrows instead of action names.}
+
+\item{states}{logical; show state names.}
+
+\item{main}{logical; main title.}
+
+\item{...}{further arguments are passed on to \code{\link[graphics:image]{graphics::image()}}.}
 }
 \description{
 The 4x3 maze described in Chapter 17 of the the textbook: "Artificial Intelligence: A Modern Approach" (AIMA).
@@ -56,7 +82,7 @@ A <- c("up", "down", "left", "right")
 
 T <- function(action, start.state, end.state) {
   action <- match.arg(action, choices = A)
-  
+
   if (start.state \%in\% c('s_11', 's_12', 's_5')) {
     if (start.state == end.state) return(1)
     else return(0)
@@ -64,21 +90,21 @@ T <- function(action, start.state, end.state) {
 
   if(action \%in\% c("up", "down")) error_direction <- c("right", "left")
   else error_direction <- c("up", "down")
-  
+
   rc <- s2rc(start.state)
-  delta <- list(up = c(+1, 0), down = c(-1, 0), 
+  delta <- list(up = c(+1, 0), down = c(-1, 0),
                 right = c(0, +1), left = c(0, -1))
   P <- matrix(0, nrow = 3, ncol = 4)
-  
+
   add_prob <- function(P, rc, a, value) {
     new_rc <- rc + delta[[a]]
-    if (new_rc[1] > 3 || new_rc[1] < 1 || new_rc[2] > 4 || new_rc[2] < 1 
+    if (new_rc[1] > 3 || new_rc[1] < 1 || new_rc[2] > 4 || new_rc[2] < 1
       || (new_rc[1] == 2 && new_rc[2]== 2))
       new_rc <- rc
     P[new_rc[1], new_rc[2]] <- P[new_rc[1], new_rc[2]] + value
     P
   }
- 
+
  P <- add_prob(P, rc, action, .8)
  P <- add_prob(P, rc, error_direction[1], .1)
  P <- add_prob(P, rc, error_direction[2], .1)
@@ -106,13 +132,16 @@ Maze <- MDP(
  start = 1,
  transition_prob = T,
  reward = R
-) 
+)
 
 Maze
-str(Maze) 
+str(Maze)
 
 # Layout with state names
 matrix(Maze$states,nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
+
+# find absorbing (terminal) states
+which(absorbing_states(Maze))
 
 maze_solved <- solve_MDP(Maze, method = "value")
 policy(maze_solved)
@@ -120,8 +149,11 @@ policy(maze_solved)
 # show the utilities and optimal actions organized in the maze layout (like in the AIMA textbook)
 matrix(policy(maze_solved)[[1]]$U, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
 matrix(policy(maze_solved)[[1]]$action, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
+# Note: the optimal actions for the states with a utility of 0 are artefacts and should be ignored.
 
-# Note: the optimal actions for the states with a utility of 0 are artefacts and should be ignored. 
+# plot the solution as an image plot. Darker colors represent larger
+# state values.
+plot_Maze_solution(maze_solved)
 }
 \references{
 Russell, S. J. and Norvig, P., & Davis, E. (2021). Artificial intelligence: a modern approach. 4rd ed.

@@ -62,10 +62,14 @@
 #' simulate_POMDP(custom_sol, n = 1000)$avg_reward
 #' @export
 add_policy <- function(model, policy) {
+  UseMethod("add_policy")
+}
+
+#' @export
+add_policy.POMDP <- function(model, policy) {
   if(inherits(policy, "POMDP"))
     policy <- policy(policy)
   
-  # check policy fits the problem description
   solution <- list(
     alpha = lapply(policy, function(x) 
       as.matrix(x[ , -ncol(x), drop = FALSE])),
@@ -80,4 +84,25 @@ add_policy <- function(model, policy) {
    
   model
 }
+
+#' @export
+add_policy.MDP <- function(model, policy) {
+  if(inherits(policy, "MDP"))
+    policy <- policy(policy)
+  
+  if(is.null(policy$U))
+    policy$U <- approx_MDP_policy_evaluation(policy, model)
+  
+  solution <- list(
+    method = "manual",
+    policy = list(policy),
+    converged = NA
+  )
+  
+  model$solution <- solution
+  model <- check_and_fix_MDP(model)
+  
+  model
+}
+
 

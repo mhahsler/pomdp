@@ -213,6 +213,7 @@ Other POMDP:
 \code{\link{write_POMDP}()}
 
 Other MDP: 
+\code{\link{MDP_policy_functions}},
 \code{\link{MDP}()},
 \code{\link{simulate_MDP}()},
 \code{\link{solve_MDP}()},
