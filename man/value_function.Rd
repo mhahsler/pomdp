@@ -5,7 +5,7 @@
 \alias{plot_value_function}
 \title{Value Function}
 \usage{
-value_function(model)
+value_function(model, drop = TRUE)
 
 plot_value_function(
   model,
@@ -22,6 +22,8 @@ plot_value_function(
 }
 \arguments{
 \item{model}{a solved \link{POMDP} or \link{MDP}.}
+
+\item{drop}{logical; drop the list for converged converged, epoch-independent value functions.}
 
 \item{projection}{Sample in a projected belief space. See \code{\link[=projection]{projection()}} for details.}
 
@@ -58,7 +60,7 @@ constant at zero). The value function can also be visualized using \code{\link[=
 }
 \examples{
 data("Tiger")
-sol <- solve_POMDP(model = Tiger)
+sol <- solve_POMDP(Tiger)
 sol
 
 # value function for the converged solution
@@ -81,10 +83,10 @@ plot_value_function(sol, epoch = 3, ylim = c(-5, 25))
 \dontrun{
 # using ggplot2 to plot the value function for epoch 3
 library(ggplot2)
-pol <- policy(sol)[[3]]
-ggplot(pol) +
+pol <- policy(sol)
+ggplot(pol[[3]]) +
  geom_segment(aes(x = 0, y = `tiger-left`, xend = 1, yend = `tiger-right`, color = action)) +
- coord_cartesian(ylim = c(-5, 15)) + ylab("Reward") + xlab("Belief")
+ coord_cartesian(ylim = c(-5, 15)) + ylab("Value") + xlab("Belief space")
 }
 }
 \seealso{

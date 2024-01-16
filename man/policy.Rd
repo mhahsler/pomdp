@@ -4,17 +4,17 @@
 \alias{policy}
 \title{Extract the Policy from a POMDP/MDP}
 \usage{
-policy(x, alpha = TRUE, action = TRUE)
+policy(x, drop = TRUE)
 }
 \arguments{
 \item{x}{A solved \link{POMDP} or \link{MDP} object.}
 
-\item{alpha}{logical; include the parameters of the alpha vector defining the segment (POMDP only).}
-
-\item{action}{logical; include the action for that segment (POMDP only).}
+\item{drop}{logical; drop the list for converged, epoch-independent policies.}
 }
 \value{
-A list with the policy for each epoch.
+A list with the policy for each epoch. Converged policies
+have only one element. If \code{drop = TRUE} then the policy is returned
+without a list.
 }
 \description{
 Extracts the policy from a solved POMDP/MDP.
@@ -25,15 +25,18 @@ For converged, infinite-horizon problems solutions, a list with only the
 converged solution is produced.
 For a POMDP, the policy is a data.frame consisting of:
 \itemize{
-\item Part 1: The value function with one column per state (alpha vectors).
-\item Part 2: The last column contains the prescribed action.
+\item Part 1: The alpha vectors for the belief states (defines also the
+utility of the belief). The columns have
+the names of states.
+\item Part 2: The last column named \code{action} contains the prescribed action.
 }
 
-For an MDP, the policy is a data.frame consisting of:
+For an MDP, the policy is a data.frame with columns for:
 \itemize{
-\item The state
-\item The state's discounted expected utility U if the policy is followed
-\item The prescribed action
+\item \code{state}: The state.
+\item \code{U}: The state's value (discounted expected utility U) if the policy
+is followed
+\item \code{action}: The prescribed action.
 }
 }
 \examples{
@@ -48,11 +51,13 @@ policy(sol)
 plot_value_function(sol)
 
 # Finite horizon (we use incremental pruning because grid does not converge)
-sol <- solve_POMDP(model = Tiger, method = "incprune", horizon = 3, discount = 1)
+sol <- solve_POMDP(model = Tiger, method = "incprune", 
+  horizon = 3, discount = 1)
 sol
 
 policy(sol)
-# Note: We see that it is initially better to listen till we make a decision in the final epoch.
+# Note: We see that it is initially better to listen till we make 
+#       a decision in the final epoch.
 
 # MDP policy
 data(Maze)

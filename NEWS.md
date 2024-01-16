@@ -3,11 +3,13 @@
 ## New Features
 * Policies for the Maze problem can now be visualized
 * Added functions to work with MDP policies (see ? MDP_policy_functions).
-* Added MDP solver functions: Q-leanring, Sarsa, and expected Sarsa
+* Added MDP solver functions: Q-learning, Sarsa, and expected Sarsa
 
 ## Changes
 * simulate_POMDP(): Better calculation of T for infinite-horizon problems.
 * several functions are now generics with methods for POMDP and MDP.
+* policy() lost the parameters alpha and action.
+* policy() and value_function() and gained the parameter drop.
 
 ## Bugfixes
 * q_values_MDP(), solve_MDP(): Fixed reward representation issue.

@@ -63,7 +63,7 @@ Maze
 maze_solved <- solve_MDP(Maze, method = "value_iteration")
 maze_solved
 
-pi_opt <- policy(maze_solved)[[1]]
+pi_opt <- policy(maze_solved)
 
 # calculate the Q-function (action-value function)
 q <- q_values_MDP(maze_solved)

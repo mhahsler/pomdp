@@ -82,7 +82,7 @@
 #'
 #' ## custom larger vertex labels (A, B, ...)
 #' plot_policy_graph(sol,
-#'   vertex.label = LETTERS[1:nrow(policy(sol)[[1]])],
+#'   vertex.label = LETTERS[1:nrow(policy(sol))],
 #'   vertex.size = 60,
 #'   vertex.label.cex = 2,
 #'   edge.label.cex = .7,

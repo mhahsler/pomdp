@@ -147,8 +147,8 @@ maze_solved <- solve_MDP(Maze, method = "value")
 policy(maze_solved)
 
 # show the utilities and optimal actions organized in the maze layout (like in the AIMA textbook)
-matrix(policy(maze_solved)[[1]]$U, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
-matrix(policy(maze_solved)[[1]]$action, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
+matrix(policy(maze_solved)$U, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
+matrix(policy(maze_solved)$action, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
 # Note: the optimal actions for the states with a utility of 0 are artefacts and should be ignored.
 
 # plot the solution as an image plot. Darker colors represent larger

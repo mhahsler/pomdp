@@ -51,7 +51,7 @@
 #' 
 #' # U in the policy is and estimate of the utility of being in a state when using the optimal policy.
 #' policy(sol)
-#' matrix(policy(sol)[[1]]$action, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
+#' matrix(policy(sol)$action, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
 #'
 #' ## Example 1: simulate 10 trajectories following the policy, only the final belief state is returned
 #' sim <- simulate_MDP(sol, n = 100, horizon = 10, verbose = TRUE)
@@ -59,7 +59,7 @@
 #' 
 #' # Note that all simulations start at s_1 and that the simulated avg. reward 
 #' # is therefore an estimate to the U value for the start state s_1.
-#' policy(sol)[[1]][1,] 
+#' policy(sol)[1,] 
 #' 
 #' # Calculate proportion of actions taken in the simulation
 #' round_stochastic(sim$action_cnt / sum(sim$action_cnt), 2)
@@ -74,7 +74,7 @@
 #'
 #' # how often was each state visited?
 #' table(sim$states)
-#' matrix(table(sim$states),nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
+#' matrix(table(sim$states), nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
 #' @export
 simulate_MDP <-
   function(model,

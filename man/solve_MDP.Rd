@@ -87,7 +87,8 @@ methods based on reinforcement learning techniques to solve finite
 state space MDPs.
 }
 \details{
-Implemented are the following dynamic programming methods:
+Implemented are the following dynamic programming methods (following
+Russell and Norvig, 2010):
 \itemize{
 \item \strong{Modified Policy Iteration}
 starts with a random policy and iteratively performs
@@ -108,8 +109,9 @@ is calculated from the value function. Value iteration can be seen as
 policy iteration with truncated policy evaluation.
 }
 
-Implemented are the following temporal difference control methods. Note
-that the MDP transition and reward models are only used to simulate
+Implemented are the following temporal difference control methods
+following Sutton and Barto (2020).
+Note that the MDP transition and reward models are only used to simulate
 the environment for these reinforcement learning methods.
 The algorithms use a step size parameter \eqn{\alpha} (learning rate) for the
 updates and the exploration parameter \eqn{\epsilon} for
@@ -179,6 +181,13 @@ maze_learned$solution
 policy(maze_learned)
 plot_value_function(maze_learned)
 plot_Maze_solution(maze_learned)
+}
+\references{
+Russell, S., Norvig, P. (2021). Artificial Intelligence: A Modern Approach.
+Fourth edition. Prentice Hall.
+
+Sutton, R. S., Barto, A. G. (2020). Reinforcement Learning: An Introduction.
+Second edition. The MIT Press.
 }
 \seealso{
 Other solver: 

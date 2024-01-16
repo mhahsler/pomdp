@@ -32,7 +32,7 @@
 #' @keywords hplot
 #' @examples
 #' data("Tiger")
-#' sol <- solve_POMDP(model = Tiger)
+#' sol <- solve_POMDP(Tiger)
 #' sol
 #'
 #' # value function for the converged solution
@@ -55,30 +55,40 @@
 #' \dontrun{
 #' # using ggplot2 to plot the value function for epoch 3
 #' library(ggplot2)
-#' pol <- policy(sol)[[3]]
-#' ggplot(pol) +
+#' pol <- policy(sol)
+#' ggplot(pol[[3]]) +
 #'  geom_segment(aes(x = 0, y = `tiger-left`, xend = 1, yend = `tiger-right`, color = action)) +
-#'  coord_cartesian(ylim = c(-5, 15)) + ylab("Reward") + xlab("Belief")
+#'  coord_cartesian(ylim = c(-5, 15)) + ylab("Value") + xlab("Belief space")
 #' }
 #' @importFrom graphics plot barplot box lines text
+#' @param drop logical; drop the list for converged converged, epoch-independent value functions.
 #' @export
-value_function <- function(model) {
+value_function <- function(model, drop = TRUE) {
   UseMethod("value_function")
 }
 
 #' @export
-value_function.MDP <- function(model) {
+value_function.MDP <- function(model, drop = TRUE) {
   is_solved_MDP(model, stop = TRUE)
+  val <- lapply(policy(model, drop = FALSE), "[[", "U")
   
-  return(lapply(policy(model), "[[", "U"))
+  if (drop && length(val) == 1L)
+    val <- val[[1]]
+  
+  val
 }
 
 #' @export
-value_function.POMDP <- function(model) {
+value_function.POMDP <- function(model, drop = TRUE) {
   is_solved_POMDP(model, stop = TRUE)
   .check_valid_value_function(model)
   
-  return(model$solution$alpha)
+  val <- model$solution$alpha
+  
+  if (drop && length(val) == 1L)
+    val <- val[[1]]
+  
+  val
 }
 
 
@@ -145,7 +155,7 @@ plot_value_function.MDP <-
            ...) {
     is_solved_MDP(model, stop = TRUE)
     
-    policy <- policy(model)[[epoch]]
+    policy <- policy(model, drop = FALSE)[[epoch]]
     
     mid <- barplot(
       policy$U,

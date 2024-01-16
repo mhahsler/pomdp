@@ -68,7 +68,7 @@ add_policy <- function(model, policy) {
 #' @export
 add_policy.POMDP <- function(model, policy) {
   if(inherits(policy, "POMDP"))
-    policy <- policy(policy)
+    policy <- policy(policy, drop = FALSE)
   
   solution <- list(
     alpha = lapply(policy, function(x) 
