@@ -10,54 +10,71 @@
 #' @param model an MDP problem specification.
 #' @param U a vector with value function representing the state utilities
 #'    (expected sum of discounted rewards from that point on).
-#'    If `model` is a solved model, then the state 
+#'    If `model` is a solved model, then the state
 #'    utilities are taken from the solution.
 #' @param Q an action value function with Q-values as a state by action matrix.
 #' @param s a state.
-#' @param epsilon an `epsilon > 0` creates an epsilon-greedy policies.
+#' @param epsilon an `epsilon > 0` applies an epsilon-greedy policy.
 #'
 #' @examples
 #' data(Maze)
 #' Maze
 #'
-#' # use value iteration
+#' # create several policies:
+#' # 1. optimal policy using value iteration
 #' maze_solved <- solve_MDP(Maze, method = "value_iteration")
 #' maze_solved
-#'
 #' pi_opt <- policy(maze_solved)
+#' pi_opt
+#' plot_Maze_solution(add_policy(Maze, pi_opt), main = "Optimal Policy")
 #'
-#' # calculate the Q-function (action-value function)
-#' q <- q_values_MDP(maze_solved)
-#' q
+#' # 2. a manual policy (go up and in some squares to the right)
+#' acts <- rep("up", times = length(Maze$states))
+#' acts[c(3, 6, 9)] <- "right"
+#' pi_manual <- manual_MDP_policy(Maze, acts)
+#' pi_manual
+#' plot_Maze_solution(add_policy(Maze, pi_manual), main = "Manual Policy")
 #'
-#' # create a random policy for 
+#' # 3. a random policy
 #' pi_random <- random_MDP_policy(Maze)
 #' pi_random
-#' 
-#' # improve the random policy by one policy evaluation and
+#' plot_Maze_solution(add_policy(Maze, pi_random), main = "Random Policy")
+#'
+#' # 4. an improved policy based on one policy evaluation and
 #' #   policy improvement step
 #' u <- approx_MDP_policy_evaluation(pi_random, Maze)
 #' q <- q_values_MDP(Maze, U = u)
 #' pi_greedy <- greedy_MDP_policy(q)
-#' 
-#' # estimate the the value function for policies
+#' pi_greedy
+#' plot_Maze_solution(add_policy(Maze, pi_greedy), , main = "Greedy Policy")
+#'
+#' #' compare the approx. value functions for the policies
 #' rbind(
 #'   random = approx_MDP_policy_evaluation(pi_random, Maze),
+#'   manual = approx_MDP_policy_evaluation(pi_manual, Maze),
 #'   greedy = approx_MDP_policy_evaluation(pi_greedy, Maze),
-#'   opt = approx_MDP_policy_evaluation(pi_opt, Maze)
+#'   optimal = approx_MDP_policy_evaluation(pi_opt, Maze)
 #')
+#'
+#'
+#' # For many functions, we first add the policy to the problem description
+#' #   to create a "solved" MDP
+#' maze_random <- add_policy(Maze, pi_random)
+#' maze_random
+#'
+#' # plotting
+#' plot_value_function(maze_random)
+#' plot_Maze_solution(maze_random)
 #' 
-#' # calculate greedy action for state 1 
+#' # compare to a benchmark
+#' regret(maze_random, maze_solved, start = "s_1")
+#'
+#' # calculate greedy actions for state 1
+#' q <- q_values_MDP(maze_random)
+#' q
 #' greedy_MDP_action(1, q, epsilon = 0, prob = FALSE)
 #' greedy_MDP_action(1, q, epsilon = 0, prob = TRUE)
 #' greedy_MDP_action(1, q, epsilon = .1, prob = TRUE)
-#'
-#' # add the random policy to the maze to create a "solved" MDP
-#' maze_random <- add_policy(Maze, pi_greedy)
-#' maze_random
-#' 
-#' plot_value_function(maze_random)
-#' plot_Maze_solution(maze_random)
 NULL
 
 #' @rdname MDP_policy_functions
@@ -92,7 +109,7 @@ q_values_MDP <- function(model, U = NULL) {
 #' @param pi a policy as a data.frame with at least columns for states and action.
 #' @param k_backups number of look ahead steps used for approximate policy evaluation
 #'    used by the policy iteration method.
-#' @return `approx_MDP_policy_evaluation()` returns a vector with approximate 
+#' @return `approx_MDP_policy_evaluation()` returns a vector with approximate
 #'    state values (U).
 #' @export
 approx_MDP_policy_evaluation <-
@@ -162,15 +179,18 @@ greedy_MDP_action <-
 greedy_MDP_policy <-
   function(Q) {
     A <- colnames(Q)
-    data.frame(state = rownames(Q),
-               U = apply(Q, MARGIN = 1, max),
-               action = A[apply(Q, MARGIN = 1, which.max)], row.names = NULL)
+    data.frame(
+      state = rownames(Q),
+      U = apply(Q, MARGIN = 1, max),
+      action = A[apply(Q, MARGIN = 1, which.max)],
+      row.names = NULL
+    )
   }
 
 
 #' @rdname MDP_policy_functions
 #' @param prob probability vector for random actions for random_MDP_policy().
-#'   a logical indicating if action probabilities should be returned for 
+#'   a logical indicating if action probabilities should be returned for
 #'   `greedy_MDP_action()`.
 #' @return `random_MDP_policy()` returns a data.frame with the columns state and action to define a policy.
 #' @export
@@ -182,18 +202,37 @@ random_MDP_policy <-
     A <- model$actions
     S <- model$states
     
-    data.frame(
-      state = model$states,
-      action = factor(
-        sample(
-          seq_along(A),
-          size = length(S),
-          replace = TRUE,
-          prob = prob
-        ),
-        levels = seq_along(A),
-        labels = A
-      )
-    )
+    data.frame(state = S,
+               action = factor(
+                 sample(
+                   seq_along(A),
+                   size = length(S),
+                   replace = TRUE,
+                   prob = prob
+                 ),
+                 levels = seq_along(A),
+                 labels = A
+               ))
   }
 
+#' @rdname MDP_policy_functions
+#' @param actions a vector with the action (either the action label or the
+#'  numeric id) for each state.
+#' @return `manual_MDP_policy()` returns a data.frame with the columns state and action to define a policy.
+#' @export
+manual_MDP_policy <-
+  function(model, actions) {
+    if (!inherits(model, "MDP"))
+      stop("'model' needs to be of class 'MDP'.")
+    
+    A <- model$actions
+    S <- model$states
+    
+    if (is.numeric(actions))
+      actions <- A[actions]
+    
+    actions <- factor(actions, levels = A)
+    
+    data.frame(state = S,
+               action = actions)
+  }

@@ -131,8 +131,8 @@ lines(density(sim$belief_states[, 1], bw = .05)); axis(2); title(ylab = "Density
 }
 \seealso{
 Other POMDP: 
-\code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
+\code{\link{accessors}},
 \code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},

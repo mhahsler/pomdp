@@ -5,11 +5,12 @@
 #' policies.
 #'
 #' @family POMDP
+#' @family MDP
 #'
-#' @param model a POMDP model description.
-#' @param policy a POMDP policy as a solved POMDP or a policy data.frame.
+#' @param model a POMDP or MDP model description.
+#' @param policy a policy data.frame.
 #'
-#' @return The POMDP model description with the added policy.
+#' @return The model description with the added policy.
 #'
 #' @author Michael Hahsler
 #' @examples

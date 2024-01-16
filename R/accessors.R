@@ -1,8 +1,9 @@
-#' Access to Parts of the POMDP Description
+#' Access to Parts of the Model Description
 #'
-#' Functions to provide uniform access to different parts of the POMDP description.
+#' Functions to provide uniform access to different parts of the POMDP/MDP 
+#' problem description.
 #'
-#' Several parts of the POMDP description can be defined in different ways. In particular,
+#' Several parts of the POMDP/MDP description can be defined in different ways. In particular,
 #' the fields `transition_prob`, `observation_prob`, `reward`, and `start` can be defined using matrices, data frames or
 #' keywords. See [POMDP] for details. The functions provided here, provide unified access to the data in these fields
 #' to make writing code easier.
@@ -42,7 +43,7 @@
 #'
 #' @family POMDP
 #' @family MDP
-#' @name POMDP_accessors
+#' @name accessors
 #'
 #' @param x A [POMDP] or [MDP] object.
 #' @param action name or index of an action.
@@ -141,7 +142,7 @@ transition_matrix <-
 ## TODO: make the access functions more efficient for a single value
 ## NOTE: missing propagation does not work for sparse Matrix...
 
-#' @rdname POMDP_accessors
+#' @rdname accessors
 #' @export
 transition_val <-
   function(x,
@@ -159,7 +160,7 @@ transition_val <-
     )[start.state, end.state]
   }
 
-#' @rdname POMDP_accessors
+#' @rdname accessors
 #' @export
 observation_matrix <-
   function(x,
@@ -191,7 +192,7 @@ observation_matrix <-
     )
   }
 
-#' @rdname POMDP_accessors
+#' @rdname accessors
 #' @export
 observation_val <-
   function(x,
@@ -209,7 +210,7 @@ observation_val <-
     )[end.state, observation]
   }
 
-#' @rdname POMDP_accessors
+#' @rdname accessors
 #' @export
 reward_matrix <-
   function(x,
@@ -255,7 +256,7 @@ reward_matrix <-
     mat
   }
 
-#' @rdname POMDP_accessors
+#' @rdname accessors
 #' @export
 reward_val <-
   function(x,
@@ -339,13 +340,13 @@ reward_val <-
     )[end.state, observation]
   }
 
-#' @rdname POMDP_accessors
+#' @rdname accessors
 #' @export
 start_vector <- function(x) {
   .translate_belief(x$start, model = x)
 }
 
-#' @rdname POMDP_accessors
+#' @rdname accessors
 #' @export
 normalize_POMDP <- function(x, sparse = TRUE) {
   if (!is.null(x$normalized) && x$normalized)
@@ -384,7 +385,7 @@ normalize_POMDP <- function(x, sparse = TRUE) {
 
 ### TODO: MDP has not time-dependent implementation
 
-#' @rdname POMDP_accessors
+#' @rdname accessors
 #' @export
 normalize_MDP <- function(x, sparse = TRUE) {
   x$start <- start_vector(x)

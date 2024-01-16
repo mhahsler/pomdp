@@ -81,8 +81,8 @@ for (a in Tiger$actions) {
 }
 \seealso{
 Other POMDP: 
-\code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
+\code{\link{accessors}},
 \code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
@@ -98,7 +98,9 @@ Other POMDP:
 Other MDP: 
 \code{\link{MDP_policy_functions}},
 \code{\link{MDP}()},
-\code{\link{POMDP_accessors}},
+\code{\link{accessors}},
+\code{\link{add_policy}()},
+\code{\link{regret}()},
 \code{\link{simulate_MDP}()},
 \code{\link{solve_MDP}()},
 \code{\link{value_function}()}

@@ -197,7 +197,9 @@ Other solver:
 Other MDP: 
 \code{\link{MDP_policy_functions}},
 \code{\link{MDP}()},
-\code{\link{POMDP_accessors}},
+\code{\link{accessors}},
+\code{\link{add_policy}()},
+\code{\link{regret}()},
 \code{\link{simulate_MDP}()},
 \code{\link{transition_graph}()},
 \code{\link{value_function}()}

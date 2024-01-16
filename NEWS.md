@@ -1,7 +1,7 @@
 # pomdp 1.1.3.1 (xx/xx/2024)
 
 ## New Features
-* Policies for the Maze problem can now be visualized
+* Policies for the Maze problem can now be visualized.
 * Added functions to work with MDP policies (see ? MDP_policy_functions).
 * Added MDP solver functions: Q-learning, Sarsa, and expected Sarsa
 
@@ -10,6 +10,7 @@
 * several functions are now generics with methods for POMDP and MDP.
 * policy() lost the parameters alpha and action.
 * policy() and value_function() and gained the parameter drop.
+* regret(): renamed parameter belief to start. 
 
 ## Bugfixes
 * q_values_MDP(), solve_MDP(): Fixed reward representation issue.

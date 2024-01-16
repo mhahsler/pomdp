@@ -4,7 +4,7 @@
 \alias{regret}
 \title{Calculate the Regret of a Policy}
 \usage{
-regret(policy, benchmark, belief = NULL)
+regret(policy, benchmark, start = NULL)
 }
 \arguments{
 \item{policy}{a solved POMDP containing the policy to calculate the regret for.}
@@ -12,7 +12,7 @@ regret(policy, benchmark, belief = NULL)
 \item{benchmark}{a solved POMDP with the (optimal) policy. Regret is calculated relative to this
 policy.}
 
-\item{belief}{the used start belief. If NULL then the start belief of the \code{benchmark} is used.}
+\item{start}{the used start (belief) state. If NULL then the start (belief) state of the \code{benchmark} is used.}
 }
 \value{
 the regret as a difference of expected long-term rewards.
@@ -21,8 +21,11 @@ the regret as a difference of expected long-term rewards.
 Calculates the regret of a policy relative to a benchmark policy.
 }
 \details{
-Calculates the regret defined as \eqn{J^{\pi^*}(b_0) - J^{\pi}(b_0)} with \eqn{J^\pi} representing the expected long-term
-reward given the policy \eqn{\pi} and the start belief \eqn{b_0}. Note that for regret usually the optimal policy \eqn{\pi^*} is used as the benchmark.
+Regret is defined as \eqn{V^{\pi^*}(s_0) - V^{\pi}(s_0)} with \eqn{V^\pi} representing the expected long-term
+state value (represented by the value function) given the policy \eqn{\pi} and the start
+state \eqn{s_0}. For POMDPs the start state is the start belief \eqn{b_0}.
+
+Note that for regret usually the optimal policy \eqn{\pi^*} is used as the benchmark.
 Since the optimal policy may not be known, regret relative to the best known policy can be used.
 }
 \examples{
@@ -39,8 +42,8 @@ regret(sol_quick, sol_optimal)
 }
 \seealso{
 Other POMDP: 
-\code{\link{POMDP_accessors}},
 \code{\link{POMDP}()},
+\code{\link{accessors}},
 \code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
@@ -52,8 +55,19 @@ Other POMDP:
 \code{\link{update_belief}()},
 \code{\link{value_function}()},
 \code{\link{write_POMDP}()}
+
+Other MDP: 
+\code{\link{MDP_policy_functions}},
+\code{\link{MDP}()},
+\code{\link{accessors}},
+\code{\link{add_policy}()},
+\code{\link{simulate_MDP}()},
+\code{\link{solve_MDP}()},
+\code{\link{transition_graph}()},
+\code{\link{value_function}()}
 }
 \author{
 Michael Hahsler
 }
+\concept{MDP}
 \concept{POMDP}

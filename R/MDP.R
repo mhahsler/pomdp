@@ -248,3 +248,4 @@ MDP2POMDP <- function(x) {
   class(x) <- c("MDP", "POMDP", "list")
   x
 }
+
