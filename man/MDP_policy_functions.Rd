@@ -3,18 +3,21 @@
 \name{MDP_policy_functions}
 \alias{MDP_policy_functions}
 \alias{q_values_MDP}
-\alias{random_MDP_policy}
 \alias{approx_MDP_policy_evaluation}
 \alias{greedy_MDP_action}
+\alias{greedy_MDP_policy}
+\alias{random_MDP_policy}
 \title{Functions for MDP Policies}
 \usage{
 q_values_MDP(model, U = NULL)
 
-random_MDP_policy(model, prob = NULL)
-
 approx_MDP_policy_evaluation(pi, model, U = NULL, k_backups = 10)
 
 greedy_MDP_action(s, Q, epsilon = 0, prob = FALSE)
+
+greedy_MDP_policy(Q)
+
+random_MDP_policy(model, prob = NULL)
 }
 \arguments{
 \item{model}{an MDP problem specification.}
@@ -23,10 +26,6 @@ greedy_MDP_action(s, Q, epsilon = 0, prob = FALSE)
 (expected sum of discounted rewards from that point on).
 If \code{model} is a solved model, then the state
 utilities are taken from the solution.}
-
-\item{prob}{probability vector for random actions for random_MDP_policy().
-a logical indicating if action probabilities should be returned for
-\code{greedy_MDP_action()}.}
 
 \item{pi}{a policy as a data.frame with at least columns for states and action.}
 
@@ -38,19 +37,26 @@ used by the policy iteration method.}
 \item{Q}{an action value function with Q-values as a state by action matrix.}
 
 \item{epsilon}{an \code{epsilon > 0} creates an epsilon-greedy policies.}
+
+\item{prob}{probability vector for random actions for random_MDP_policy().
+a logical indicating if action probabilities should be returned for
+\code{greedy_MDP_action()}.}
 }
 \value{
 \code{q_values_MDP()} returns a state by action matrix specifying the Q-function,
-i.e., the utility value of executing each action in each state.
+i.e., the action value for executing each action in each state. The Q-values
+are calculated from the value function (U) and the transition model.
 
-\code{random_MDP_policy()} returns a data.frame with columns state and action to define a policy.
-
-\code{approx_MDP_policy_evaluation()} is used by the modified policy
-iteration algorithm and returns an approximate utility vector U estimated by evaluating policy \code{pi}.
+\code{approx_MDP_policy_evaluation()} returns a vector with approximate
+state values (U).
 
 \code{greedy_MDP_action()} returns the action with the highest q-value
-for state \code{s}. If \code{prob = TRUE}, then a probability vector with
+for state \code{s}. If \code{prob = TRUE}, then a vector with
 the probability for each action is returned.
+
+\code{greedy_MDP_policy()} returns the greedy policy given \code{Q}.
+
+\code{random_MDP_policy()} returns a data.frame with the columns state and action to define a policy.
 }
 \description{
 Implementation several functions useful to deal with MDP policies.
@@ -73,9 +79,16 @@ q
 pi_random <- random_MDP_policy(Maze)
 pi_random
 
+# improve the random policy by one policy evaluation and
+#   policy improvement step
+u <- approx_MDP_policy_evaluation(pi_random, Maze)
+q <- q_values_MDP(Maze, U = u)
+pi_greedy <- greedy_MDP_policy(q)
+
 # estimate the the value function for policies
 rbind(
   random = approx_MDP_policy_evaluation(pi_random, Maze),
+  greedy = approx_MDP_policy_evaluation(pi_greedy, Maze),
   opt = approx_MDP_policy_evaluation(pi_opt, Maze)
 )
 
@@ -84,9 +97,8 @@ greedy_MDP_action(1, q, epsilon = 0, prob = FALSE)
 greedy_MDP_action(1, q, epsilon = 0, prob = TRUE)
 greedy_MDP_action(1, q, epsilon = .1, prob = TRUE)
 
-
 # add the random policy to the maze to create a "solved" MDP
-maze_random <- add_policy(Maze, pi_random)
+maze_random <- add_policy(Maze, pi_greedy)
 maze_random
 
 plot_value_function(maze_random)
