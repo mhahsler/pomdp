@@ -7,7 +7,6 @@
 
 using namespace Rcpp;
 
-
 /*** R
 library(pomdp)
 Rcpp::sourceCpp("src/simulate_MDP.cpp", verb = TRUE)
@@ -15,12 +14,18 @@ Rcpp::sourceCpp("src/simulate_MDP.cpp", verb = TRUE)
 data(Maze)
 Maze_norm <- normalize_MDP(Maze)
 
+simulate_MDP(Maze_norm, 10, start_vector(Maze_norm), 10, 
+                 disc = .9, return_trajectories = FALSE, epsilon = 1, verbose = TRUE)
+
+simulate_MDP(Maze_norm, 10, start_vector(Maze_norm), 10, 
+                 disc = .9, return_trajectories = TRUE, epsilon = 1, verbose = TRUE)
+
 # unsolved MDP
 simulate_MDP_cpp(Maze_norm, 10, start_vector(Maze_norm), 10, 
-  disc = .9, return_states = FALSE, epsilon = 1, verbose = TRUE)
+  disc = .9, return_trajectories = FALSE, epsilon = 1, verbose = TRUE)
 
 simulate_MDP_cpp(Maze_norm, 10, start_vector(Maze_norm), 10, 
-  disc = .9, return_states = TRUE, epsilon = 1, verbose = TRUE)
+  disc = .9, return_trajectores = TRUE, epsilon = 1, verbose = TRUE)
 
 # solve MDP
 sol <- solve_MDP(Maze_norm, discount = 1)
@@ -34,29 +39,39 @@ simulate_MDP_cpp(sol, 10, start_vector(sol), 20,
   disc = 1, return_states = TRUE, epsilon = 0, verbose = TRUE)
 */
 
+bool contains(IntegerVector X, int z) { 
+  return std::find(X.begin(), X.end(), z) != X.end(); 
+}
+
 // Note: all are 0-based integer indices
 // epsilon -1 means 0 for solved models and 1 for unsolved models
 
-// TODO: Make sparse
-
 // [[Rcpp::export]]
 List simulate_MDP_cpp(const List& model,
-  int n,
+  const int n,
   const NumericVector& start,
-  int horizon,
-  double disc = 1.0,
-  bool return_states = false,
-  double epsilon = 1.0,
-  bool verbose = false
+  const int horizon,
+  const double disc = 1.0,
+  const bool return_trajectories = false,
+  const double epsilon = 1.0,
+  const bool verbose = false
 ) {
   
-  bool solved = is_solved(model);
+  const bool solved = is_solved(model);
   
   //double disc = get_discount(model); 
-  int nstates = get_states(model).size();
-  int nactions = get_actions(model).size();
+  const int nstates = get_states(model).size();
+  const int nactions = get_actions(model).size();
   
-  // define current state s, action a
+  // absorbing states?
+  Environment pkg = Environment::namespace_env("pomdp");
+  Function R_absorbing_states = pkg["absorbing_states"];
+  LogicalVector absorbing = R_absorbing_states(model);
+  // this is which (starting with 0)
+  IntegerVector abs_states = seq_along(absorbing) - 1;
+  abs_states = abs_states[absorbing];
+   
+  // define current state s, action a (everything is 0-based!)
   int s, s_prev, a;
   double disc_pow; // used for discounting
   
@@ -67,10 +82,13 @@ List simulate_MDP_cpp(const List& model,
   IntegerVector state_cnt(nstates);
   state_cnt.names() = get_states(model);
   
-  IntegerVector states;
-  if (return_states)
-    states = IntegerVector(n * horizon);
-  int k = 0; // index in states
+  // store trajectories
+  std::vector<int> tr_episode;
+  std::vector<int> tr_time;
+  std::vector<int> tr_s;
+  std::vector<int> tr_a;
+  std::vector<double> tr_r;
+  std::vector<int> tr_s_prime;
   
   if (verbose) {
     Rcout << "Simulating MDP trajectories.\n"
@@ -126,17 +144,51 @@ List simulate_MDP_cpp(const List& model,
       state_cnt[s]++;
       
       // reward
-      rews[i] += reward_val_MDP(model, a, s_prev, s) * disc_pow;
+      double r = reward_val_MDP(model, a, s_prev, s);
+      rews[i] += r * disc_pow;
       disc_pow *= disc;
       
-      if (return_states)
-        states[k++] = s + 1;
-    }
+      if (return_trajectories) {
+       tr_episode.push_back(i + 1);
+       tr_time.push_back(j);
+       tr_s.push_back(s_prev + 1);
+       tr_a.push_back(a + 1);
+       tr_r.push_back(r);
+       tr_s_prime.push_back(s + 1);
+      }
+      
+      if (contains(abs_states, s))
+        break;
+      }
   }
   
-  // make states a factor
-  states.attr("class") = "factor";
-  states.attr("levels") = get_states(model);
+  // create factors
+  //states.attr("class") = "factor";
+  //states.attr("levels") = get_states(model);
+  
+  DataFrame trajectories;
+  
+  if (return_trajectories) {
+    IntegerVector s_v = IntegerVector(tr_s.begin(), tr_s.end());
+    s_v.attr("class") = "factor";
+    s_v.attr("levels") = get_states(model);
+    
+    IntegerVector s_prime_v = IntegerVector(tr_s_prime.begin(), tr_s_prime.end());
+    s_prime_v.attr("class") = "factor";
+    s_prime_v.attr("levels") = get_states(model);
+    
+    IntegerVector a_v = IntegerVector(tr_a.begin(), tr_a.end());
+    a_v.attr("class") = "factor";
+    a_v.attr("levels") = get_actions(model);
+    
+    trajectories = DataFrame::create(
+      _["episode"] = tr_episode,
+      _["time"] = tr_time,
+      _["s"] = s_v,
+      _["a"] = a_v,
+      _["r"] = tr_r,
+      _["s_prime"] = s_prime_v);
+  }
   
   double m = mean(rews);
   
@@ -144,7 +196,7 @@ List simulate_MDP_cpp(const List& model,
     _["reward"] = rews,
     _["action_cnt"] = action_cnt,
     _["state_cnt"] = state_cnt,
-    _["states"] = states
+    _["trajectories"] = trajectories
   );
   
   return L;

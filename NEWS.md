@@ -10,10 +10,13 @@
 * several functions are now generics with methods for POMDP and MDP.
 * policy() lost the parameters alpha and action.
 * policy() and value_function() and gained the parameter drop.
-* regret(): renamed parameter belief to start. 
+* regret(): renamed parameter belief to start.
+* simulate_MDP() stops now at absorbing states.
+* simulate_MDP_cpp() works now with sparse model representation.  
 
 ## Bugfixes
 * q_values_MDP(), solve_MDP(): Fixed reward representation issue.
+* reward_val_cpp(): fixed observation matching bug.
 
 # pomdp 1.1.3 (12/20/2023)
 

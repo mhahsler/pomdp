@@ -265,7 +265,7 @@ inline double reward_val(const List& model, int action, int start_state, int end
           (IntegerVector::is_na(actions[i]) || actions[i] == action) && 
           (IntegerVector::is_na(start_states[i]) || start_states[i] == start_state) &&
           (IntegerVector::is_na(end_states[i]) || end_states[i] == end_state) &&
-          (IntegerVector::is_na(end_states[i]) || end_states[i] == observation)
+          (IntegerVector::is_na(observations[i]) || observations[i] == observation)
         )
         return values[i];
         
@@ -294,12 +294,68 @@ inline double terminal_val(const List& model, int state) {
 
 // MDP section
 
-// MDP has a different reward structure (no observations so it is a vector not a matrix)
+// MDP has a different reward structure without observations
+// * in a data.frame observations is always NA
+// * as a matrix it is always a vector instead of a matrix!
 inline NumericVector reward_vector_MDP(const List& model, int action, int start_state) {
-  return as<NumericVector>(as<List>(as<List>(model["reward"])[action])[start_state]);
+  RObject reward = model["reward"];
+
+  if (is<DataFrame>(reward)) {
+    DataFrame df = as<DataFrame>(reward);
+    IntegerVector actions = df[0], start_states = df[1], end_states = df[2];
+    NumericVector values = df[4]; 
+    
+    NumericVector rew(get_states(model).size());
+    
+    for (auto i = 0; i < df.nrows(); ++i) {
+      if(
+        (IntegerVector::is_na(actions[i]) || actions[i] == action) && 
+          (IntegerVector::is_na(start_states[i]) || start_states[i] == start_state)) {
+        
+        if (IntegerVector::is_na(end_states[i])) 
+          std::fill(rew.begin(), rew.end(), values[i]);
+        else
+          rew(end_states[i]) = values[i];
+      }
+    }
+    
+    return rew;
+  }
+
+  // remember it is just a vector not a matrix!
+  return as<NumericVector>(as<List>(as<List>(reward)[action])[start_state]);
 }
 
-inline double reward_val_MDP(const List& model, int action, int start_state, int end_state) {
+// Note: R_index does not apply to episode!!!
+inline double reward_val_MDP(const List& model, int action, int start_state, int end_state,
+                        bool R_index = FALSE) {
+  RObject reward = model["reward"];
+  
+  // data.frame indices are 1-based!!!
+  if (!R_index) {
+    action++; start_state++; end_state++;
+  }
+  
+  if (is<DataFrame>(reward)) {
+    DataFrame df = as<DataFrame>(reward);
+    // find the best matching entry
+    IntegerVector actions = df[0], start_states = df[1], end_states = df[2];
+    NumericVector values = df[4]; 
+    
+    for (auto i = df.nrows()-1; i >= 0; --i) {
+      if(
+        (IntegerVector::is_na(actions[i]) || actions[i] == action) && 
+          (IntegerVector::is_na(start_states[i]) || start_states[i] == start_state) &&
+          (IntegerVector::is_na(end_states[i]) || end_states[i] == end_state)
+      )
+        return values[i];
+      
+    }
+    return 0.0;
+    
+  }
+  
+  // it is not a data.frame so it must be a List of matrices
   return reward_vector_MDP(model, action, start_state)[end_state];
 }  
 

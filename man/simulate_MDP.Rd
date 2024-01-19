@@ -9,7 +9,7 @@ simulate_MDP(
   n = 100,
   start = NULL,
   horizon = NULL,
-  return_states = FALSE,
+  return_trajectories = FALSE,
   epsilon = NULL,
   delta_horizon = 0.001,
   engine = "cpp",
@@ -25,10 +25,11 @@ simulate_MDP(
 \item{start}{probability distribution over the states for choosing the
 starting states for the trajectories. Defaults to "uniform".}
 
-\item{horizon}{number of epochs for the simulation. If \code{NULL} then the
+\item{horizon}{epochs end once an absorbing state is reached or after
+the maximal number of epochs specified via \code{horizon}. If \code{NULL} then the
 horizon for the model is used.}
 
-\item{return_states}{logical; return visited states.}
+\item{return_trajectories}{logical; return the complete trajectories.}
 
 \item{epsilon}{the probability of random actions  for using an epsilon-greedy policy.
 Default for solved models is 0 and for unsolved model 1.}
@@ -49,12 +50,12 @@ A list with elements:
 \item \code{reward}: Reward for each trajectory.
 \item \code{action_cnt}: Action counts.
 \item \code{state_cnt}: State counts.
-\item \code{states}: a vector with state ids.
-Rows represent trajectories.
+\item \code{trajectories}: A data.frame with the trajectories. Each row
+contains the \code{episode} id, the \code{time} step, the state \code{s},
+the chosen action \code{a},
+the reward \code{r}, and the next state \code{s_prime}. Trajectories are
+only returend of \code{return_trajectories = TRUE}.
 }
-
-A vector with state ids (in the final epoch or all). Attributes containing action
-counts, and rewards  for each trajectory may be available.
 }
 \description{
 Simulate trajectories through a MDP. The start state for each
@@ -73,6 +74,9 @@ Note that small simulations are slower using parallelization. Therefore, C++ sim
 with n * horizon less than 100,000 are always executed using a single worker.
 }
 \examples{
+# enable parallel simulation 
+# doParallel::registerDoParallel()
+
 data(Maze)
 
 # solve the POMDP for 5 epochs and no discounting
@@ -83,13 +87,14 @@ sol
 policy(sol)
 matrix(policy(sol)$action, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
 
-## Example 1: simulate 10 trajectories following the policy, only the final belief state is returned
+## Example 1: simulate 100 trajectories following the policy, 
+#             only the final belief state is returned
 sim <- simulate_MDP(sol, n = 100, horizon = 10, verbose = TRUE)
 sim
 
-# Note that all simulations start at s_1 and that the simulated avg. reward 
+# Note that all simulations start at s_1 and that the simulated avg. reward
 # is therefore an estimate to the U value for the start state s_1.
-policy(sol)[1,] 
+policy(sol)[1,]
 
 # Calculate proportion of actions taken in the simulation
 round_stochastic(sim$action_cnt / sum(sim$action_cnt), 2)
@@ -98,13 +103,16 @@ round_stochastic(sim$action_cnt / sum(sim$action_cnt), 2)
 hist(sim$reward)
 
 ## Example 2: simulate starting following a uniform distribution over all
-#             states and return all visited states
-sim <- simulate_MDP(sol, n = 100, start = "uniform", horizon = 10, return_states = TRUE)
-sim$avg_reward
+#             states and return all trajectories
+sim <- simulate_MDP(sol, n = 100, start = "uniform", horizon = 10, 
+  return_trajectories = TRUE)
+head(sim$trajectories)   
+  
 
 # how often was each state visited?
-table(sim$states)
-matrix(table(sim$states), nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
+table(sim$trajectories$s)
+matrix(table(sim$trajectories$s), nrow = 3, 
+  dimnames = list(1:3, 1:4))[3:1, ]
 }
 \seealso{
 Other MDP: 

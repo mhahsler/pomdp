@@ -109,7 +109,6 @@ rbind(
   optimal = approx_MDP_policy_evaluation(pi_opt, Maze)
 )
 
-
 # For many functions, we first add the policy to the problem description
 #   to create a "solved" MDP
 maze_random <- add_policy(Maze, pi_random)
@@ -123,7 +122,7 @@ plot_Maze_solution(maze_random)
 regret(maze_random, maze_solved, start = "s_1")
 
 # calculate greedy actions for state 1
-q <- q_values_MDP(Maze_random)
+q <- q_values_MDP(maze_random)
 q
 greedy_MDP_action(1, q, epsilon = 0, prob = FALSE)
 greedy_MDP_action(1, q, epsilon = 0, prob = TRUE)

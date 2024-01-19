@@ -268,14 +268,6 @@ reward_val <-
     epoch = NULL) {
     # we convert NAs to 1L so the subsetting below works!
     
-    # end.state can be NA of the reward does not depend on it. 
-    if (is.na(end.state)) {
-      if (is.data.frame(x$reward))
-        if(!all(is.na(x$reward[["end.state"]])))
-          stop("The rewards depend on the end.state! Specify the end.state.")
-      end.state <- 1L 
-    }
-    
     # observations are always NA for MDPs
     if (inherits(x, "MDP")) {
       if (!is.na(observation))
@@ -288,6 +280,14 @@ reward_val <-
         if(!all(is.na(x$reward[["observation"]])))
           stop("The rewards depend on the observation! Specify the observation.")
       observation <- 1L
+    }
+    
+    # end.state can be NA of the reward does not depend on it. 
+    if (is.na(end.state)) {
+      if (is.data.frame(x$reward))
+        if(!all(is.na(x$reward[["end.state"]])))
+          stop("The rewards depend on the end.state! Specify the end.state.")
+      end.state <- 1L 
     }
     
     if (is.numeric(action))
@@ -330,14 +330,24 @@ reward_val <-
         return(rew$value[nrow(rew)])
     }
     
-    reward_matrix(
+    if (inherits(x, "POMDP"))
+      reward_matrix(
       x,
       action = action,
       start.state = start.state,
       episode = episode,
       epoch = epoch,
       sparse = NULL
-    )[end.state, observation]
+      )[end.state, observation]
+    else # MDP has no observations!
+      unname(reward_matrix(
+      x,
+      action = action,
+      start.state = start.state,
+      episode = episode,
+      epoch = epoch,
+      sparse = NULL
+      )[end.state])
   }
 
 #' @rdname accessors

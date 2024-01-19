@@ -56,7 +56,6 @@
 #'   optimal = approx_MDP_policy_evaluation(pi_opt, Maze)
 #')
 #'
-#'
 #' # For many functions, we first add the policy to the problem description
 #' #   to create a "solved" MDP
 #' maze_random <- add_policy(Maze, pi_random)

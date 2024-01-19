@@ -114,20 +114,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // simulate_MDP_cpp
-List simulate_MDP_cpp(const List& model, int n, const NumericVector& start, int horizon, double disc, bool return_states, double epsilon, bool verbose);
-RcppExport SEXP _pomdp_simulate_MDP_cpp(SEXP modelSEXP, SEXP nSEXP, SEXP startSEXP, SEXP horizonSEXP, SEXP discSEXP, SEXP return_statesSEXP, SEXP epsilonSEXP, SEXP verboseSEXP) {
+List simulate_MDP_cpp(const List& model, const int n, const NumericVector& start, const int horizon, const double disc, const bool return_trajectories, const double epsilon, const bool verbose);
+RcppExport SEXP _pomdp_simulate_MDP_cpp(SEXP modelSEXP, SEXP nSEXP, SEXP startSEXP, SEXP horizonSEXP, SEXP discSEXP, SEXP return_trajectoriesSEXP, SEXP epsilonSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const List& >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const int >::type n(nSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type start(startSEXP);
-    Rcpp::traits::input_parameter< int >::type horizon(horizonSEXP);
-    Rcpp::traits::input_parameter< double >::type disc(discSEXP);
-    Rcpp::traits::input_parameter< bool >::type return_states(return_statesSEXP);
-    Rcpp::traits::input_parameter< double >::type epsilon(epsilonSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(simulate_MDP_cpp(model, n, start, horizon, disc, return_states, epsilon, verbose));
+    Rcpp::traits::input_parameter< const int >::type horizon(horizonSEXP);
+    Rcpp::traits::input_parameter< const double >::type disc(discSEXP);
+    Rcpp::traits::input_parameter< const bool >::type return_trajectories(return_trajectoriesSEXP);
+    Rcpp::traits::input_parameter< const double >::type epsilon(epsilonSEXP);
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(simulate_MDP_cpp(model, n, start, horizon, disc, return_trajectories, epsilon, verbose));
     return rcpp_result_gen;
 END_RCPP
 }

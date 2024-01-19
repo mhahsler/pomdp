@@ -33,8 +33,8 @@ sample_simplex_cpp <- function(n, states, projection) {
     .Call(`_pomdp_sample_simplex_cpp`, n, states, projection)
 }
 
-simulate_MDP_cpp <- function(model, n, start, horizon, disc = 1.0, return_states = FALSE, epsilon = 1.0, verbose = FALSE) {
-    .Call(`_pomdp_simulate_MDP_cpp`, model, n, start, horizon, disc, return_states, epsilon, verbose)
+simulate_MDP_cpp <- function(model, n, start, horizon, disc = 1.0, return_trajectories = FALSE, epsilon = 1.0, verbose = FALSE) {
+    .Call(`_pomdp_simulate_MDP_cpp`, model, n, start, horizon, disc, return_trajectories, epsilon, verbose)
 }
 
 simulate_POMDP_cpp <- function(model, n, belief, horizon, disc = 1.0, return_beliefs = FALSE, epsilon = 1.0, digits = 7L, verbose = FALSE) {
