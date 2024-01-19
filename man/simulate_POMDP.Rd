@@ -9,10 +9,11 @@ simulate_POMDP(
   n = 1000,
   belief = NULL,
   horizon = NULL,
-  return_beliefs = FALSE,
   epsilon = NULL,
   delta_horizon = 0.001,
   digits = 7L,
+  return_beliefs = FALSE,
+  return_trajectories = FALSE,
   engine = "cpp",
   verbose = FALSE,
   ...
@@ -31,14 +32,16 @@ Defaults to the start belief state specified in the model or "uniform".}
 horizon for finite-horizon model is used. For infinite-horizon problems, a horizon is
 calculated using the discount factor.}
 
-\item{return_beliefs}{logical; Return all visited belief states? This requires n x horizon memory.}
-
 \item{epsilon}{the probability of random actions for using an epsilon-greedy policy.
 Default for solved models is 0 and for unsolved model 1.}
 
 \item{delta_horizon}{precision used to determine the horizon for infinite-horizon problems.}
 
 \item{digits}{round probabilities for belief points.}
+
+\item{return_beliefs}{logical; Return all visited belief states? This requires n x horizon memory.}
+
+\item{return_trajectories}{logical; Return the simulated trajectories as a data.frame?}
 
 \item{engine}{\code{'cpp'}, \code{'r'} to perform simulation using a faster C++ or a
 native R implementation.}
@@ -51,10 +54,13 @@ native R implementation.}
 A list with elements:
 \itemize{
 \item \code{avg_reward}: The average discounted reward.
-\item \code{belief_states}: A matrix with belief states as rows.
 \item \code{action_cnt}: Action counts.
 \item \code{state_cnt}: State counts.
 \item \code{reward}: Reward for each trajectory.
+\item \code{belief_states}: A matrix with belief states as rows.
+\item \code{trajectories}: A data.frame with the \code{episode} id, \code{time}, the state of the
+simulation (\code{simulation_state}), the id of the used alpha vector given the current belief
+(see \code{belief_states} above), the action \code{a} and the reward \code{r}.
 }
 }
 \description{
@@ -99,7 +105,7 @@ policy(sol)
 # doParallel::registerDoParallel()
 # foreach::getDoParWorkers()
 
-## Example 1: simulate 10 trajectories
+## Example 1: simulate 100 trajectories
 sim <- simulate_POMDP(sol, n = 100, verbose = TRUE)
 sim
 

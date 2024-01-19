@@ -23,11 +23,11 @@
 #' @param horizon epochs end once an absorbing state is reached or after 
 #'  the maximal number of epochs specified via `horizon`. If `NULL` then the
 #'  horizon for the model is used.
-#' @param return_trajectories logical; return the complete trajectories.
 #' @param epsilon the probability of random actions  for using an epsilon-greedy policy.
 #'  Default for solved models is 0 and for unsolved model 1.
 #' @param engine `'cpp'` or `'r'` to perform simulation using a faster C++
 #'  or a native R implementation.
+#' @param return_trajectories logical; return the complete trajectories.
 #' @param delta_horizon precision used to determine the horizon for infinite-horizon problems.
 #' @param verbose report used parameters.
 #' @param ... further arguments are ignored.
@@ -88,9 +88,9 @@ simulate_MDP <-
            n = 100,
            start = NULL,
            horizon = NULL,
-           return_trajectories = FALSE,
            epsilon = NULL,
            delta_horizon = 1e-3,
+           return_trajectories = FALSE,
            engine = "cpp",
            verbose = FALSE,
            ...) {
@@ -192,7 +192,8 @@ simulate_MDP <-
       
     }
     
-    ## R implementation starts here
+    ######### R implementation starts here ##############
+    
     states <- as.character(model$states)
     n_states <- length(states)
     states_absorbing <- which(absorbing_states(model))
@@ -313,7 +314,6 @@ simulate_MDP <-
                levels = seq_along(states),
                labels = states)
     }
-    
     
     list(
       avg_reward = mean(rew, na.rm = TRUE),

@@ -132,21 +132,22 @@ BEGIN_RCPP
 END_RCPP
 }
 // simulate_POMDP_cpp
-List simulate_POMDP_cpp(const List& model, int n, const NumericVector& belief, int horizon, double disc, bool return_beliefs, double epsilon, int digits, bool verbose);
-RcppExport SEXP _pomdp_simulate_POMDP_cpp(SEXP modelSEXP, SEXP nSEXP, SEXP beliefSEXP, SEXP horizonSEXP, SEXP discSEXP, SEXP return_beliefsSEXP, SEXP epsilonSEXP, SEXP digitsSEXP, SEXP verboseSEXP) {
+List simulate_POMDP_cpp(const List& model, const int n, const NumericVector& belief, const int horizon, const double disc, const bool return_beliefs, const bool return_trajectories, const double epsilon, const int digits, const bool verbose);
+RcppExport SEXP _pomdp_simulate_POMDP_cpp(SEXP modelSEXP, SEXP nSEXP, SEXP beliefSEXP, SEXP horizonSEXP, SEXP discSEXP, SEXP return_beliefsSEXP, SEXP return_trajectoriesSEXP, SEXP epsilonSEXP, SEXP digitsSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const List& >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const int >::type n(nSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type belief(beliefSEXP);
-    Rcpp::traits::input_parameter< int >::type horizon(horizonSEXP);
-    Rcpp::traits::input_parameter< double >::type disc(discSEXP);
-    Rcpp::traits::input_parameter< bool >::type return_beliefs(return_beliefsSEXP);
-    Rcpp::traits::input_parameter< double >::type epsilon(epsilonSEXP);
-    Rcpp::traits::input_parameter< int >::type digits(digitsSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(simulate_POMDP_cpp(model, n, belief, horizon, disc, return_beliefs, epsilon, digits, verbose));
+    Rcpp::traits::input_parameter< const int >::type horizon(horizonSEXP);
+    Rcpp::traits::input_parameter< const double >::type disc(discSEXP);
+    Rcpp::traits::input_parameter< const bool >::type return_beliefs(return_beliefsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type return_trajectories(return_trajectoriesSEXP);
+    Rcpp::traits::input_parameter< const double >::type epsilon(epsilonSEXP);
+    Rcpp::traits::input_parameter< const int >::type digits(digitsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(simulate_POMDP_cpp(model, n, belief, horizon, disc, return_beliefs, return_trajectories, epsilon, digits, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -161,7 +162,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_pomdp_vecprod", (DL_FUNC) &_pomdp_vecprod, 2},
     {"_pomdp_sample_simplex_cpp", (DL_FUNC) &_pomdp_sample_simplex_cpp, 3},
     {"_pomdp_simulate_MDP_cpp", (DL_FUNC) &_pomdp_simulate_MDP_cpp, 8},
-    {"_pomdp_simulate_POMDP_cpp", (DL_FUNC) &_pomdp_simulate_POMDP_cpp, 9},
+    {"_pomdp_simulate_POMDP_cpp", (DL_FUNC) &_pomdp_simulate_POMDP_cpp, 10},
     {NULL, NULL, 0}
 };
 

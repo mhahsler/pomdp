@@ -3,14 +3,15 @@
 ## New Features
 * Policies for the Maze problem can now be visualized.
 * Added functions to work with MDP policies (see ? MDP_policy_functions).
-* Added MDP solver functions: Q-learning, Sarsa, and expected Sarsa
+* Added MDP solver functions: Q-learning, Sarsa, and expected Sarsa.
+* simulate_MDP() and simulate_POMDP() gained parameter return_trajectories.
 
 ## Changes
 * simulate_POMDP(): Better calculation of T for infinite-horizon problems.
 * several functions are now generics with methods for POMDP and MDP.
 * policy() lost the parameters alpha and action.
 * policy() and value_function() and gained the parameter drop.
-* regret(): renamed parameter belief to start.
+* regret(): renamed parameter belief to start. Regret is now available for MDPs.
 * simulate_MDP() stops now at absorbing states.
 * simulate_MDP_cpp() works now with sparse model representation.  
 

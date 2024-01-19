@@ -37,7 +37,7 @@ simulate_MDP_cpp <- function(model, n, start, horizon, disc = 1.0, return_trajec
     .Call(`_pomdp_simulate_MDP_cpp`, model, n, start, horizon, disc, return_trajectories, epsilon, verbose)
 }
 
-simulate_POMDP_cpp <- function(model, n, belief, horizon, disc = 1.0, return_beliefs = FALSE, epsilon = 1.0, digits = 7L, verbose = FALSE) {
-    .Call(`_pomdp_simulate_POMDP_cpp`, model, n, belief, horizon, disc, return_beliefs, epsilon, digits, verbose)
+simulate_POMDP_cpp <- function(model, n, belief, horizon, disc = 1.0, return_beliefs = FALSE, return_trajectories = FALSE, epsilon = 1.0, digits = 7L, verbose = FALSE) {
+    .Call(`_pomdp_simulate_POMDP_cpp`, model, n, belief, horizon, disc, return_beliefs, return_trajectories, epsilon, digits, verbose)
 }
 

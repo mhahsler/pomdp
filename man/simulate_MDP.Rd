@@ -9,9 +9,9 @@ simulate_MDP(
   n = 100,
   start = NULL,
   horizon = NULL,
-  return_trajectories = FALSE,
   epsilon = NULL,
   delta_horizon = 0.001,
+  return_trajectories = FALSE,
   engine = "cpp",
   verbose = FALSE,
   ...
@@ -29,12 +29,12 @@ starting states for the trajectories. Defaults to "uniform".}
 the maximal number of epochs specified via \code{horizon}. If \code{NULL} then the
 horizon for the model is used.}
 
-\item{return_trajectories}{logical; return the complete trajectories.}
-
 \item{epsilon}{the probability of random actions  for using an epsilon-greedy policy.
 Default for solved models is 0 and for unsolved model 1.}
 
 \item{delta_horizon}{precision used to determine the horizon for infinite-horizon problems.}
+
+\item{return_trajectories}{logical; return the complete trajectories.}
 
 \item{engine}{\code{'cpp'} or \code{'r'} to perform simulation using a faster C++
 or a native R implementation.}

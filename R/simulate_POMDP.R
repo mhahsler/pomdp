@@ -37,21 +37,25 @@
 #' @param horizon number of epochs for the simulation. If `NULL` then the
 #'  horizon for finite-horizon model is used. For infinite-horizon problems, a horizon is 
 #'  calculated using the discount factor.
-#' @param return_beliefs logical; Return all visited belief states? This requires n x horizon memory.
 #' @param epsilon the probability of random actions for using an epsilon-greedy policy.
 #'  Default for solved models is 0 and for unsolved model 1.
 #' @param delta_horizon precision used to determine the horizon for infinite-horizon problems.
 #' @param digits round probabilities for belief points.
+#' @param return_beliefs logical; Return all visited belief states? This requires n x horizon memory.
+#' @param return_trajectories logical; Return the simulated trajectories as a data.frame?
 #' @param engine `'cpp'`, `'r'` to perform simulation using a faster C++ or a 
 #'  native R implementation.
 #' @param verbose report used parameters.
 #' @param ... further arguments are ignored.
 #' @return A list with elements:
 #'  * `avg_reward`: The average discounted reward.
-#'  * `belief_states`: A matrix with belief states as rows.
 #'  * `action_cnt`: Action counts.
 #'  * `state_cnt`: State counts.
 #'  * `reward`: Reward for each trajectory.
+#'  * `belief_states`: A matrix with belief states as rows.
+#'  * `trajectories`: A data.frame with the `episode` id, `time`, the state of the 
+#'    simulation (`simulation_state`), the id of the used alpha vector given the current belief 
+#'    (see `belief_states` above), the action `a` and the reward `r`.
 #' @author Michael Hahsler
 #' @md
 #' @examples
@@ -68,7 +72,7 @@
 #' # doParallel::registerDoParallel()
 #' # foreach::getDoParWorkers()
 #'
-#' ## Example 1: simulate 10 trajectories
+#' ## Example 1: simulate 100 trajectories
 #' sim <- simulate_POMDP(sol, n = 100, verbose = TRUE)
 #' sim
 #'
@@ -103,15 +107,16 @@ simulate_POMDP <-
     n = 1000,
     belief = NULL,
     horizon = NULL,
-    return_beliefs = FALSE,
     epsilon = NULL,
     delta_horizon = 1e-3,
     digits = 7L,
+    return_beliefs = FALSE,
+    return_trajectories = FALSE,
     engine = "cpp",
     verbose = FALSE,
     ...) {
     time_start <- proc.time()  
-    
+     
     engine <- match.arg(tolower(engine), c("cpp", "r"))
     
     solved <- is_solved_POMDP(model)
@@ -154,6 +159,7 @@ simulate_POMDP <-
       disc <- 1
     
     if (engine == "cpp") {
+      
       if (!dt) {
         ### TODO: Add support for time dependence
         model <- normalize_POMDP(model, sparse = TRUE)
@@ -166,6 +172,7 @@ simulate_POMDP <-
             horizon,
             disc,
             return_beliefs,
+            return_trajectories,
             epsilon,
             digits,
             verbose
@@ -208,9 +215,18 @@ simulate_POMDP <-
             horizon,
             disc,
             return_beliefs,
+            return_trajectories,
             epsilon,
             digits,
             verbose = FALSE)
+        
+        
+        # adjust the episode number for parallel processing
+        episode_add <- cumsum(c(0L, ns))
+        for (i in seq_along(sim)) {
+          sim[[i]]$trajectories$episode <-
+            sim[[i]]$trajectories$episode + episode_add[i]
+        }
         
         rew <- Reduce(c,  lapply(sim, "[[", "reward"))
     
@@ -225,7 +241,8 @@ simulate_POMDP <-
             action_cnt = Reduce('+', lapply(sim, "[[" , "action_cnt")),
             state_cnt =  Reduce('+', lapply(sim, "[[", "state_cnt")),
             obs_cnt =    Reduce('+', lapply(sim, "[[", "obs_cnt")),
-            belief_states = Reduce(rbind, lapply(sim, "[[", "belief_states"))
+            belief_states = Reduce(rbind, lapply(sim, "[[", "belief_states")),
+            trajectories = Reduce(rbind, lapply(sim, "[[", "trajectories"))
           )
         )
         
@@ -234,6 +251,8 @@ simulate_POMDP <-
         engine <- "r"
       }
     }
+    
+    ##### use R ############
     
     states <- as.character(model$states)
     n_states <- length(states)
@@ -301,9 +320,9 @@ simulate_POMDP <-
     #bs <- replicate(n, expr = {
     ### run once for debugging
     #sim <- { cat("debugging on!!!\n")
-    sim <- times(n) %dopar% {
+    sim <- foreach(i = 1:n) %dopar% {
       # initialize replication
-      s <- sample(states, 1L, prob = belief)
+      s <- sample.int(length(states), 1L, prob = belief)
       b <- belief
       rew <- 0
       e <- 1L
@@ -325,6 +344,18 @@ simulate_POMDP <-
       else
         visited_belief_states <- matrix(nrow = 0, ncol = 0)
       
+      if (return_trajectories)
+        trajectory <- data.frame(
+          episode = rep(NA_integer_, horizon),
+          time = rep(NA_integer_, horizon),
+          simulation_state = NA_integer_,
+          alpha_vector_id = NA_integer_,
+          a = NA_integer_,
+          r = NA_real_
+        )
+      else
+        trajectory <- NULL
+      
       for (j in 1:horizon) {
         # change matrices for time-dependent POMDPs
         if (dt) {
@@ -343,15 +374,17 @@ simulate_POMDP <-
         } else {
           if (!model$solution$converged)
             e <- .get_pg_index(model, j)
+          
+          alpha_vec_id <- which.max(model$solution$alpha[[e]] %*% b)
           a <-
-            as.integer(model$solution$pg[[e]][["action"]])[which.max(model$solution$alpha[[e]] %*% b)]
+            as.integer(model$solution$pg[[e]][["action"]])[alpha_vec_id]
         }
         
         # debug
         # cat("Episode: ", j, "\n")
         # cat("alpha: ", model$solution$alpha[[e]], "\n")
         # cat("b: ", b , "\n")
-        # cat("alpha %*% : ", model$solution$alpha[[e]] %*% b , "\n")
+        # cat("id of winning alpha vector : ", alpha_vec_id , "\n")
         # cat("a: ", a , "\n\n")
         
         s_prev <- s
@@ -364,7 +397,8 @@ simulate_POMDP <-
         obs_cnt[o] <- obs_cnt[o] + 1L
         
         # rew <- rew + rew_m[[a]][[s_prev]][s, o] * disc ^ (j - 1L)
-        rew <- rew + reward_val(model, a, s_prev, s, o, episode = current_episode) * disc ^ (j - 1L)
+        r <- reward_val(model, a, s_prev, s, o, episode = current_episode)
+        rew <- rew + r * disc ^ (j - 1L)
         #cat(j, ":", s_prev , "->", s, "- a:", a, "- o:", o, "- rew:", rew_m[[a]][[s_prev]][s, o], "\n")
         
         # update belief
@@ -373,6 +407,18 @@ simulate_POMDP <-
         
         if (return_beliefs)
           visited_belief_states[j,] <- b
+        
+        if (return_trajectories)
+          trajectory[j, ] <-
+          data.frame(
+            episode = i,
+            time = j - 1L,
+            simulation_state = s_prev,
+            alpha_vector_id = alpha_vec_id,
+            a = a,
+            r = r
+          )
+        
       }
       
       # terminal values
@@ -382,23 +428,35 @@ simulate_POMDP <-
       
       rownames(visited_belief_states) <- NULL
       
-      list(
         list(
           action_cnt = action_cnt,
           state_cnt = state_cnt,
           obs_cnt = obs_cnt,
           reward = rew,
-          belief_states = visited_belief_states
-        )
+          belief_states = visited_belief_states,
+          trajectory = trajectory
       )
     }
     #, simplify = FALSE)
     
-    rew <- Reduce(c,  lapply(sim, "[[", "reward"))
-    
     time_end <- proc.time()
     if (verbose)
       print(time_end - time_start)
+    
+    rew <- Reduce(c,  lapply(sim, "[[", "reward"))
+    
+    trajectories <- NULL
+    if (return_trajectories) {
+      trajectories <- Reduce(rbind, lapply(sim, "[[", "trajectory"))
+       trajectories$simulation_state <-
+         factor(trajectories$simulation_state,
+                levels = seq_along(states),
+                labels = states)
+      trajectories$a <-
+        factor(trajectories$a,
+               levels = seq_along(actions),
+               labels = actions)
+    }
     
     list(
       avg_reward = mean(rew, na.rm = TRUE),
@@ -406,6 +464,7 @@ simulate_POMDP <-
       state_cnt =  Reduce('+', lapply(sim, "[[", "state_cnt")),
       obs_cnt =    Reduce('+', lapply(sim, "[[", "obs_cnt")),
       reward = rew,
-      belief_states = Reduce(rbind, lapply(sim, "[[", "belief_states"))
+      belief_states = Reduce(rbind, lapply(sim, "[[", "belief_states")),
+      trajectories = trajectories
     )
   }
