@@ -320,8 +320,7 @@ reward_val <-
       rew <- rew[(rew$action == action | is.na(rew$action)) &
           (rew$start.state == start.state |
               is.na(rew$start.state)) &
-          (rew$end.state == end.state | is.na(rew$end.state)) &
-          (rew$observation == observation | is.na(rew$observation))
+          (rew$end.state == end.state | is.na(rew$end.state)) 
         , , drop = FALSE]
       
       if (nrow(rew) == 0L)
@@ -680,7 +679,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
 ## drop is done in the calling function
 .translate_reward <-
   function(model,
-    episode = 1,
+    episode = 1L,
     action = NULL,
     start.state = NULL,
     sparse = FALSE) {
@@ -716,7 +715,8 @@ normalize_MDP <- function(x, sparse = TRUE) {
       reward[[1L]] <- .get_names(reward[[1L]], model$actions)
       reward[[2L]] <- .get_names(reward[[2L]], states) # start state
       reward[[3L]] <- .get_names(reward[[3L]], states) # end state
-      reward[[4L]] <- .get_names(reward[[4L]], observations)
+      if (inherits(model, "POMDP"))
+        reward[[4L]] <- .get_names(reward[[4L]], observations)
       
       # allocate the memory
       if (inherits(model, "POMDP")) {
@@ -802,7 +802,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
           ss_to <- reward[i, 3L]
           if (is.na(ss_to))
             ss_to <- states
-          val <- reward[i, 5L]
+          val <- reward[i, 4L]
           
           for (a in acts)
             for (s_from in ss_from)
@@ -840,7 +840,7 @@ normalize_MDP <- function(x, sparse = TRUE) {
         simplify = FALSE
       )
     } else {
-    ### FIXME: missing. Also version without observations!
+    ### TODO: missing. Also version without observations!
     ## translate from list of matrices (fix names, and deal with "identity", et al)
     ##} else if (is.list(reward)) {
     ##}

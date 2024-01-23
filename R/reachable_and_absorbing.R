@@ -99,9 +99,12 @@ remove_unreachable_states <- function(x) {
   
   keep_states <- function(field, states) {
     if (is.data.frame(field)) {
+      keep_names <- names(which(states))
       field <-
-        field[field$start.state %in% c(NA, states) &
-                field$end.state %in% c(NA, states), , drop = FALSE]
+        field[field$start.state %in% c(NA, keep_names) &
+                field$end.state %in% c(NA, keep_names), , drop = FALSE]
+      field$start.state <- factor(as.character(field$start.state), levels = keep_names)
+      field$end.state <- factor(as.character(field$end.state), levels = keep_names)
     } else {
       ### a list of actions
       field <-
@@ -139,7 +142,7 @@ remove_unreachable_states <- function(x) {
     
   x$states <- x$states[reachable]
   x$transition_prob <- keep_states(x$transition_prob, reachable)
-  x$rewards <- keep_states(x$rewards, reachable)
+  x$reward <- keep_states(x$reward, reachable)
   if(!is.null(x$observations)) 
     x$observations <- keep_states(x$observations, reachable)
   

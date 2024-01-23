@@ -507,9 +507,24 @@ check_and_fix_MDP <- function(x) {
     if (is.function(x$reward))
       x$reward <- reward_matrix(x)
     
-    if (is.data.frame(x$reward))
-      x$reward <- check_df(x, x$reward, R_)
-    else {
+    if (is.data.frame(x$reward)) {
+      if(inherits(x, "POMDP")) 
+        x$reward <- check_df(x, x$reward, R_)
+      else { # MDP has no observations
+        R_MDP <- function(action = NA,
+                          start.state = NA,
+                          end.state = NA,
+                          value)
+          data.frame(
+            action = action,
+            start.state = start.state,
+            end.state = end.state,
+            value = as.numeric(value),
+            stringsAsFactors = FALSE
+          )
+        x$reward <- check_df(x, x$reward, R_MDP)
+      }
+        } else {
       if (is.null(names(x$reward)))
         names(x$reward) <- x$actions
       if (all(names(x$reward) != x$actions))

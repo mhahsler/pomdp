@@ -23,6 +23,7 @@ POMDP(
   terminal_values = NULL,
   start = "uniform",
   normalize = TRUE,
+  info = NULL,
   name = NA
 )
 
@@ -76,6 +77,8 @@ reward. It is also used by some solvers. See Details section for more
 information.}
 
 \item{normalize}{logical; should the description be normalized for faster access (see \code{\link[=normalize_POMDP]{normalize_POMDP()}})?}
+
+\item{info}{A list with additional information.}
 
 \item{name}{a string to identify the POMDP problem.}
 
@@ -335,6 +338,7 @@ Other POMDP:
 \code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
+\code{\link{reachable_and_absorbing}},
 \code{\link{regret}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},

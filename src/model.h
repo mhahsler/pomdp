@@ -295,7 +295,7 @@ inline double terminal_val(const List& model, int state) {
 // MDP section
 
 // MDP has a different reward structure without observations
-// * in a data.frame observations is always NA
+// * in a data.frame observations is missing
 // * as a matrix it is always a vector instead of a matrix!
 inline NumericVector reward_vector_MDP(const List& model, int action, int start_state) {
   RObject reward = model["reward"];
@@ -303,7 +303,7 @@ inline NumericVector reward_vector_MDP(const List& model, int action, int start_
   if (is<DataFrame>(reward)) {
     DataFrame df = as<DataFrame>(reward);
     IntegerVector actions = df[0], start_states = df[1], end_states = df[2];
-    NumericVector values = df[4]; 
+    NumericVector values = df["value"]; 
     
     NumericVector rew(get_states(model).size());
     
@@ -340,7 +340,7 @@ inline double reward_val_MDP(const List& model, int action, int start_state, int
     DataFrame df = as<DataFrame>(reward);
     // find the best matching entry
     IntegerVector actions = df[0], start_states = df[1], end_states = df[2];
-    NumericVector values = df[4]; 
+    NumericVector values = df["value"]; 
     
     for (auto i = df.nrows()-1; i >= 0; --i) {
       if(

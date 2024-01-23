@@ -92,7 +92,11 @@ MDP <- function(states,
                 start = "uniform",
                 info = NULL,
                 name = NA) {
-  ### unsolved pomdp model
+  
+  # MDP does not have observations
+  if (is.data.frame(reward))
+    reward$observation <- NULL
+  
   x <- list(
     name = name,
     discount = discount,
@@ -204,7 +208,16 @@ MDP2POMDP <- function(x) {
         ident_matrix,
       simplify = FALSE
     )
+ 
+  # add missing observations to reward data.frame
+  if(is.data.frame(x$reward))
+    x$reward <- data.frame(action = x$reward$action, 
+                           start.state = x$reward$start.state, 
+                           end.state = x$reward$end.state, 
+                           observation = factor(NA_character_, levels = x$states), 
+                           value = x$reward$value)
+   
   class(x) <- c("MDP", "POMDP", "list")
-  x
+  check_and_fix_MDP(x)
 }
 
