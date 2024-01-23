@@ -79,19 +79,20 @@ maze_solved <- solve_MDP(Maze, method = "value_iteration")
 maze_solved
 pi_opt <- policy(maze_solved)
 pi_opt
-plot_Maze_solution(add_policy(Maze, pi_opt), main = "Optimal Policy")
+gridworld_plot_policy(add_policy(Maze, pi_opt), main = "Optimal Policy")
 
 # 2. a manual policy (go up and in some squares to the right)
-acts <- rep("up", times = length(Maze$states))
-acts[c(3, 6, 9)] <- "right"
+acts <- rep("north", times = length(Maze$states))
+names(acts) <- Maze$states
+acts[c("s(1,1)", "s(1,2)", "s(1,3)")] <- "east"
 pi_manual <- manual_MDP_policy(Maze, acts)
 pi_manual
-plot_Maze_solution(add_policy(Maze, pi_manual), main = "Manual Policy")
+gridworld_plot_policy(add_policy(Maze, pi_manual), main = "Manual Policy")
 
 # 3. a random policy
 pi_random <- random_MDP_policy(Maze)
 pi_random
-plot_Maze_solution(add_policy(Maze, pi_random), main = "Random Policy")
+gridworld_plot_policy(add_policy(Maze, pi_random), main = "Random Policy")
 
 # 4. an improved policy based on one policy evaluation and
 #   policy improvement step
@@ -99,7 +100,7 @@ u <- approx_MDP_policy_evaluation(pi_random, Maze)
 q <- q_values_MDP(Maze, U = u)
 pi_greedy <- greedy_MDP_policy(q)
 pi_greedy
-plot_Maze_solution(add_policy(Maze, pi_greedy), , main = "Greedy Policy")
+gridworld_plot_policy(add_policy(Maze, pi_greedy), , main = "Greedy Policy")
 
 #' compare the approx. value functions for the policies
 rbind(
@@ -116,10 +117,10 @@ maze_random
 
 # plotting
 plot_value_function(maze_random)
-plot_Maze_solution(maze_random)
+gridworld_plot_policy(maze_random)
 
 # compare to a benchmark
-regret(maze_random, maze_solved, start = "s_1")
+regret(maze_random, maze_solved)
 
 # calculate greedy actions for state 1
 q <- q_values_MDP(maze_random)
@@ -131,8 +132,10 @@ greedy_MDP_action(1, q, epsilon = .1, prob = TRUE)
 \seealso{
 Other MDP: 
 \code{\link{MDP}()},
+\code{\link{Maze}},
 \code{\link{accessors}},
 \code{\link{add_policy}()},
+\code{\link{reachable_and_absorbing}},
 \code{\link{regret}()},
 \code{\link{simulate_MDP}()},
 \code{\link{solve_MDP}()},

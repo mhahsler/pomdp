@@ -47,6 +47,7 @@ Other POMDP:
 \code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
+\code{\link{reachable_and_absorbing}},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},
@@ -59,8 +60,10 @@ Other POMDP:
 Other MDP: 
 \code{\link{MDP_policy_functions}},
 \code{\link{MDP}()},
+\code{\link{Maze}},
 \code{\link{accessors}},
 \code{\link{add_policy}()},
+\code{\link{reachable_and_absorbing}},
 \code{\link{simulate_MDP}()},
 \code{\link{solve_MDP}()},
 \code{\link{transition_graph}()},

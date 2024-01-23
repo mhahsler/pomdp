@@ -2,9 +2,9 @@
 #'
 #' Returns the transition model as an \pkg{igraph} object.
 #'
-#' The transition model of a POMDP/MDP is a Markov Chain. This function extracts the transition model as 
-#' an igraph object.  
-#' 
+#' The transition model of a POMDP/MDP is a Markov Chain. This function extracts the transition model as
+#' an igraph object.
+#'
 #' @family POMDP
 #' @family MDP
 #'
@@ -23,9 +23,18 @@
 #' g <- transition_graph(Tiger)
 #' g
 #'
+#' plot_transition_graph(Tiger, vertex.size = 80)
+#' plot_transition_graph(Tiger, vertex.size = 80, edge.label = NA)
+#' 
+#' ## Plot an individual graph for each actions
+#' for (a in Tiger$actions) {
+#'  plot_transition_graph(Tiger, action = a, vertex.size = 60)
+#' }
+#'
+#' ## Plot using the igraph library
 #' library(igraph)
 #' plot(g)
-#' 
+#'
 #' # plot with a fixed layout and curved edges
 #' plot(g,
 #'  layout = rbind(c(-1, 0), c(1, 0)), rescale = FALSE,
@@ -36,66 +45,97 @@
 #'
 #' ## Use visNetwork (if installed)
 #' if(require(visNetwork)) {
-#' 
+#'
 #' g_vn <- toVisNetworkData(g)
 #' nodes <- g_vn$nodes
 #' edges <- g_vn$edges
-#' 
+#'
 #' # add manual layout
 #' nodes$x <- c(-1, 1) * 200
 #' nodes$y <- 0
 #'
-#' visNetwork(nodes, edges)  %>%  
-#'   visNodes(physics = FALSE) %>% 
+#' visNetwork(nodes, edges)  %>%
+#'   visNodes(physics = FALSE) %>%
 #'   visEdges(smooth = list(type = "curvedCW", roundness = .6), arrows = "to")
-#' } 
-#'  
-#' ## Plot an individual graph for each actions
-#' for (a in Tiger$actions) {
-#'  g <- transition_graph(Tiger, action = a)
-#' 
-#'  plot(g,
-#'   layout = rbind(c(-1, 0), c(1, 0)), rescale = FALSE,  
-#'   edge.curved = curve_multiple_directed(g, .8),
-#'   edge.loop.angle = cumsum(which_loop(g)) *  (-pi / 8),
-#'   vertex.size = 60
-#'  )
 #' }
+#'
 #' @export
-transition_graph <- function(x, action = NULL, episode = NULL, epoch = NULL, state_col = NULL, simplify_transitions = TRUE) {
-  state_col <-
-    colors_discrete(length(x$states), state_col)
-  
-  m <- transition_matrix(x, action = action, episode = episode, epoch = epoch, sparse = FALSE, drop = FALSE)
-  
-  gs <- lapply(
-    names(m),
-    FUN = function(a) {
-      g <-
-        graph_from_adjacency_matrix(m[[a]], mode = "directed",  weighted = TRUE)
-      E(g)$label <- a
-      as_data_frame(g)
-    }
+transition_graph <-
+  function(x,
+           action = NULL,
+           episode = NULL,
+           epoch = NULL,
+           state_col = NULL,
+           simplify_transitions = TRUE) {
+    state_col <-
+      colors_discrete(length(x$states), state_col)
+    
+    m <-
+      transition_matrix(
+        x,
+        action = action,
+        episode = episode,
+        epoch = epoch,
+        sparse = FALSE,
+        drop = FALSE
+      )
+    
+    gs <- lapply(
+      names(m),
+      FUN = function(a) {
+        g <-
+          graph_from_adjacency_matrix(m[[a]], mode = "directed",  weighted = TRUE)
+        E(g)$label <- a
+        as_data_frame(g)
+      }
+    )
+    
+    g <-  graph_from_data_frame(do.call(rbind, gs))
+    E(g)$label <- paste0(E(g)$label, " (", round(E(g)$weight, 2), ")")
+    
+    if (simplify_transitions)
+      g <- igraph::simplify(
+        g,
+        edge.attr.comb = list(
+          label = function(x)
+            paste(x, collapse = "/\n"),
+          "ignore"
+        ),
+        remove.loops = FALSE
+      )
+    
+    if (!any(is.na(state_col)))
+      V(g)$color <- state_col
+    
+    g
+  }
+
+#' @rdname transition_graph
+#' @param ... further arguments are passed on to `igraph::plot.igraph()`.
+#' @export
+plot_transition_graph <- function(x,
+                                  action = NULL,
+                                  episode = NULL,
+                                  epoch = NULL,
+                                  state_col = NULL,
+                                  simplify_transitions = TRUE,
+                                  ...) {
+  g <- transition_graph(
+    x,
+    action = action,
+    episode = episode,
+    epoch = epoch,
+    state_col = state_col,
+    simplify_transitions = simplify_transitions
   )
   
-  g <-  graph_from_data_frame(do.call(rbind, gs))
-  E(g)$label <- paste0(E(g)$label, " (", round(E(g)$weight, 2), ")")
+  plot(
+    g,
+    layout = rbind(c(-1, 0), c(1, 0)),
+    rescale = FALSE,
+    edge.curved = curve_multiple_directed(g, .8),
+    edge.loop.angle = -pi / 4,
+    ...
+  )
   
-  if (simplify_transitions)
-    g <- igraph::simplify(
-      g,
-      edge.attr.comb = list(
-        label = function(x)
-          paste(x, collapse = "/\n"),
-        "ignore"
-      ),
-      remove.loops = FALSE
-    )
-  
-  if(!any(is.na(state_col)))
-    V(g)$color <- state_col
-  
-  g
 }
-
-

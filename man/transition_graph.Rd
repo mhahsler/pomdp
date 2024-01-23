@@ -2,6 +2,7 @@
 % Please edit documentation in R/transition_graph.R
 \name{transition_graph}
 \alias{transition_graph}
+\alias{plot_transition_graph}
 \title{Transition Graph}
 \usage{
 transition_graph(
@@ -11,6 +12,16 @@ transition_graph(
   epoch = NULL,
   state_col = NULL,
   simplify_transitions = TRUE
+)
+
+plot_transition_graph(
+  x,
+  action = NULL,
+  episode = NULL,
+  epoch = NULL,
+  state_col = NULL,
+  simplify_transitions = TRUE,
+  ...
 )
 }
 \arguments{
@@ -23,6 +34,8 @@ transition_graph(
 \item{state_col}{colors used to represent the states.}
 
 \item{simplify_transitions}{logical; combine parallel transition arcs into a single arc.}
+
+\item{...}{further arguments are passed on to \code{igraph::plot.igraph()}.}
 }
 \value{
 returns the transition model as an igraph object.
@@ -40,6 +53,15 @@ data("Tiger")
 g <- transition_graph(Tiger)
 g
 
+plot_transition_graph(Tiger, vertex.size = 80)
+plot_transition_graph(Tiger, vertex.size = 80, edge.label = NA)
+
+## Plot an individual graph for each actions
+for (a in Tiger$actions) {
+ plot_transition_graph(Tiger, action = a, vertex.size = 60)
+}
+
+## Plot using the igraph library
 library(igraph)
 plot(g)
 
@@ -62,22 +84,11 @@ edges <- g_vn$edges
 nodes$x <- c(-1, 1) * 200
 nodes$y <- 0
 
-visNetwork(nodes, edges)  \%>\%  
-  visNodes(physics = FALSE) \%>\% 
+visNetwork(nodes, edges)  \%>\%
+  visNodes(physics = FALSE) \%>\%
   visEdges(smooth = list(type = "curvedCW", roundness = .6), arrows = "to")
-} 
- 
-## Plot an individual graph for each actions
-for (a in Tiger$actions) {
- g <- transition_graph(Tiger, action = a)
-
- plot(g,
-  layout = rbind(c(-1, 0), c(1, 0)), rescale = FALSE,  
-  edge.curved = curve_multiple_directed(g, .8),
-  edge.loop.angle = cumsum(which_loop(g)) *  (-pi / 8),
-  vertex.size = 60
- )
 }
+
 }
 \seealso{
 Other POMDP: 
@@ -86,6 +97,7 @@ Other POMDP:
 \code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
+\code{\link{reachable_and_absorbing}},
 \code{\link{regret}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
@@ -98,8 +110,10 @@ Other POMDP:
 Other MDP: 
 \code{\link{MDP_policy_functions}},
 \code{\link{MDP}()},
+\code{\link{Maze}},
 \code{\link{accessors}},
 \code{\link{add_policy}()},
+\code{\link{reachable_and_absorbing}},
 \code{\link{regret}()},
 \code{\link{simulate_MDP}()},
 \code{\link{solve_MDP}()},

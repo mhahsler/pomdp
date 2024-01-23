@@ -82,9 +82,12 @@
 #' # reward distribution
 #' hist(sim$reward)
 #'
-#' ## Example 2: look at all belief states in the trajectory starting with an initial start belief.
-#' sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), return_beliefs = TRUE)
+#' ## Example 2: look at the belief states and the trajectories starting with 
+#' #             an initial start belief.
+#' sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), 
+#'   return_beliefs = TRUE, return_trajectories = TRUE)
 #' head(sim$belief_states)
+#' head(sim$trajectories)
 #'
 #' # plot with added density (the x-axis is the probability of the second belief state)
 #' plot_belief_space(sol, sample = sim$belief_states, jitter = 2, ylim = c(0, 6))
@@ -115,6 +118,9 @@ simulate_POMDP <-
     engine = "cpp",
     verbose = FALSE,
     ...) {
+    
+    # TODO: implement absorbing states
+    
     time_start <- proc.time()  
      
     engine <- match.arg(tolower(engine), c("cpp", "r"))

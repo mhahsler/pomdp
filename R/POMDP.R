@@ -154,6 +154,7 @@
 #' reward. It is also used by some solvers. See Details section for more
 #' information.
 #' @param normalize logical; should the description be normalized for faster access (see [normalize_POMDP()])?
+#' @param info A list with additional information.
 #' @param name a string to identify the POMDP problem.
 #' @param action,start.state,end.state,observation,probability,value Values
 #' used in the helper functions `O_()`, `R_()`, and `T_()` to
@@ -278,6 +279,7 @@ POMDP <- function(states,
   terminal_values = NULL,
   start = "uniform",
   normalize = TRUE,
+  info = NULL,
   name = NA) {
   ### unsolved pomdp model
   x <- list(
@@ -291,7 +293,8 @@ POMDP <- function(states,
     observation_prob = observation_prob,
     reward = reward,
     start = start,
-    terminal_values = terminal_values
+    terminal_values = terminal_values,
+    info = info
   )
   
   class(x) <- c("POMDP", "list")

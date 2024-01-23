@@ -8,11 +8,6 @@
 #' models, but without the observation model. The `'observations'` column in
 #' the the reward specification is always missing.
 #'
-#' The function `absorbing_states()` checks if a state or a set of states are
-#' absorbing (terminal states) with a reward of zero.
-#' If no states are specified (`states = NULL`), then all model states are
-#' checked. This information can be used in simulations to end an episode.
-#'
 #' `MDP2POMDP()` reformulates an MDP as a POMDP by adding an observation
 #' model with one observation per state
 #' that reveals the current state. This is achieved by adding identity
@@ -35,6 +30,7 @@
 #' @param horizon numeric; Number of epochs. `Inf` specifies an infinite
 #' horizon.
 #' @param start Specifies in which state the MDP starts.
+#' @param info A list with additional information.
 #' @param name a string to identify the MDP problem.
 #' @param x a `MDP` object.
 #'
@@ -94,6 +90,7 @@ MDP <- function(states,
                 discount = .9,
                 horizon = Inf,
                 start = "uniform",
+                info = NULL,
                 name = NA) {
   ### unsolved pomdp model
   x <- list(
@@ -104,6 +101,7 @@ MDP <- function(states,
     actions = actions,
     transition_prob = transition_prob,
     reward = reward,
+    info = info,
     start = start
   )
   
@@ -167,45 +165,6 @@ is_solved_MDP <- function(x, stop = FALSE) {
     stop("x needs to be a solved MDP. Use solve_MDP() first.")
   
   solved
-}
-
-#' @rdname MDP
-#' @export
-absorbing_states <- function(x,
-                             states = NULL) {
-  is_absorbing <- function(s, x)
-    (all(sapply(
-      x$actions,
-      FUN = function(a)
-        transition_val(
-          x,
-          action = a,
-          start.state = s,
-          end.state = s
-        )
-    ) == 1) &&
-      all(sapply(
-        x$actions,
-        FUN = function(a)
-          reward_val(
-            x,
-            action = a,
-            start.state = s,
-            end.state = s
-          )
-      ) == 0))
-  
-  if (is.null(states))
-    states <- x$states
-  
-  if (is.numeric(states))
-    states <- x$states[states]
-  
-  structure(sapply(
-    states,
-    is_absorbing,
-    x
-  ), names = states)
 }
 
 ## this is .get_pg_index for MDPs

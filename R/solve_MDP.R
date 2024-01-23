@@ -93,7 +93,7 @@
 #' plot_value_function(maze_solved)
 #'
 #' # Maze solutions can be visualized
-#' plot_Maze_solution(maze_solved)
+#' gridworld_plot_policy(maze_solved)
 #'
 #' # use modified policy iteration
 #' maze_solved <- solve_MDP(Maze, method = "policy_iteration")
@@ -102,9 +102,9 @@
 #' # finite horizon
 #' maze_solved <- solve_MDP(Maze, method = "value_iteration", horizon = 3)
 #' policy(maze_solved)
-#' plot_Maze_solution(maze_solved, epoch = 1)
-#' plot_Maze_solution(maze_solved, epoch = 2)
-#' plot_Maze_solution(maze_solved, epoch = 3)
+#' gridworld_plot_policy(maze_solved, epoch = 1)
+#' gridworld_plot_policy(maze_solved, epoch = 2)
+#' gridworld_plot_policy(maze_solved, epoch = 3)
 #'
 #' # create a random policy where action n is very likely and approximate
 #' #  the value function. We change the discount factor to .9 for this.
@@ -131,7 +131,7 @@
 #' maze_learned$solution
 #' policy(maze_learned)
 #' plot_value_function(maze_learned)
-#' plot_Maze_solution(maze_learned)
+#' gridworld_plot_policy(maze_learned)
 #' @export
 solve_MDP <- function(model, method = "value", ...) {
   methods_DP <- c("value_iteration", "policy_iteration")
@@ -408,7 +408,7 @@ solve_MDP_TD <-
            method = "q_learning",
            horizon = NULL,
            discount = NULL,
-           alpha = 0.1,
+           alpha = 0.5,
            epsilon = 0.1,
            N = 100,
            verbose = FALSE) {

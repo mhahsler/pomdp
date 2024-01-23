@@ -136,6 +136,7 @@ Other POMDP:
 \code{\link{accessors}},
 \code{\link{add_policy}()},
 \code{\link{projection}()},
+\code{\link{reachable_and_absorbing}},
 \code{\link{regret}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},

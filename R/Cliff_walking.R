@@ -1,0 +1,59 @@
+#' Cliff Walking Grid World
+#'
+#' The cliff walking grid world example from Chapter 6 of the textbook 
+#' "Reinforcement Learning: An Introduction."
+#'
+#' The cliff walking grid world has the following layout:
+#'
+#' ![Cliff Walking Grid World](cliff_walking_gridworld.png "Cliff Walking Grid World.")
+#'
+#' The grid world is represented as a 4 x 12 matrix of states. 
+#' The states are labeled `s_1` through `s_48`. The layout is shown in the example code
+#' below. The start state is `s_1` and the goal state is `s_45`.
+#' The cliff covers states `s_5`, `s_9`,  `s_13`, `s_17`, `s_21`, `s_25`, 
+#' `s_29`, `s_33`, `s_37`, and `s_41`.
+#' Each action has a reward of -1, falling off the cliff has a reward of -100 and 
+#' returns the agent back to the start. The episode is finished once the agent 
+#' reaches the goal. No discounting is used (i.e., \eqn{\gamma = 1}).
+#'
+#' @docType data
+#' @name Cliff_walking
+#' @aliases Cliff_walking cliff_walking
+#' @format An object of class [MDP].
+#' @keywords datasets
+#' @family gridworld
+#' @references
+#' Richard S. Sutton and Andrew G. Barto (2018). Reinforcement Learning: An Introduction
+#' Second Edition, MIT Press, Cambridge, MA.
+#' @examples
+#' data(Cliff_walking)
+#' Cliff_walking
+#' 
+#' gridworld_matrix(Cliff_walking)
+#' gridworld_matrix(Cliff_walking, what = "labels")
+#' 
+#' # The Goal is an absorbing state 
+#' which(absorbing_states(Cliff_walking))
+#' 
+#' # visualize the transition graph
+#' gridworld_plot_transition_graph(Cliff_walking)
+#' 
+#' sol <- solve_MDP(Cliff_walking) 
+#' sol
+#' policy(sol)
+#' gridworld_plot_policy(sol)
+#' 
+#' sol <- solve_MDP(Cliff_walking, method = "q_learning", N = 100) 
+#' sol
+#' policy(sol)
+#' gridworld_plot_policy(sol)
+#' 
+#' sol <- solve_MDP(Cliff_walking, method = "sarsa", N = 100) 
+#' sol
+#' policy(sol)
+#' gridworld_plot_policy(sol)
+#' 
+#' sol <- solve_MDP(Cliff_walking, method = "expected_sarsa", N = 100, alpha = 1) 
+#' policy(sol)
+#' gridworld_plot_policy(sol)
+NULL

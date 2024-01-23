@@ -115,9 +115,12 @@ round_stochastic(sim$action_cnt / sum(sim$action_cnt), 2)
 # reward distribution
 hist(sim$reward)
 
-## Example 2: look at all belief states in the trajectory starting with an initial start belief.
-sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), return_beliefs = TRUE)
+## Example 2: look at the belief states and the trajectories starting with 
+#             an initial start belief.
+sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), 
+  return_beliefs = TRUE, return_trajectories = TRUE)
 head(sim$belief_states)
+head(sim$trajectories)
 
 # plot with added density (the x-axis is the probability of the second belief state)
 plot_belief_space(sol, sample = sim$belief_states, jitter = 2, ylim = c(0, 6))
@@ -142,6 +145,7 @@ Other POMDP:
 \code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
+\code{\link{reachable_and_absorbing}},
 \code{\link{regret}()},
 \code{\link{sample_belief_space}()},
 \code{\link{solve_POMDP}()},

@@ -4,38 +4,12 @@
 \name{Maze}
 \alias{Maze}
 \alias{maze}
-\alias{plot_Maze_solution}
-\title{Steward Russell's 4x3 Maze}
+\title{Steward Russell's 4x3 Maze Grid World}
 \format{
 An object of class \link{MDP}.
 }
-\usage{
-data(Maze)
-
-plot_Maze_solution(
-  x,
-  epoch = 1L,
-  arrows = TRUE,
-  states = TRUE,
-  main = "Russell's 4x3 Maze",
-  ...
-)
-}
-\arguments{
-\item{x}{a solution of the Maze MDP}
-
-\item{epoch}{epoch for unconverged finite-horizon solutions.}
-
-\item{arrows}{logical; show arrows instead of action names.}
-
-\item{states}{logical; show state names.}
-
-\item{main}{logical; main title.}
-
-\item{...}{further arguments are passed on to \code{\link[graphics:image]{graphics::image()}}.}
-}
 \description{
-The 4x3 maze described in Chapter 17 of the the textbook: "Artificial Intelligence: A Modern Approach" (AIMA).
+The 4x3 maze described in Chapter 17 of the textbook "Artificial Intelligence: A Modern Approach" (AIMA).
 }
 \details{
 The simple maze has the following layout:
@@ -43,22 +17,25 @@ The simple maze has the following layout:
 \preformatted{
     1234        Transition model:
    ######             .8 (action direction)
-  3#   +#              ^
+  1#   +#              ^
   2# # -#              |
-  1#S   #         .1 <-|-> .1
+  3#S   #         .1 <-|-> .1
    ######
 }
 
-We represent the maze states as a matrix with 3 rows (up/down) and
-4 columns (left/right). The states are labeled \code{s_1} through \code{s_12}
-(bottom-left to top right) and are fully observable.
-The # (state \code{s_5}) in the middle of the maze is an obstruction and not reachable.
+We represent the maze states as a matrix with 3 rows and
+4 columns. The states are labeled \code{s(x,y)} where the
+x coordinate is the matrix row and the y coordinate is the column.
+The # (state \code{s(2,2)}) in the middle of the maze is an obstruction and not reachable.
 Rewards are associated with transitions. The default reward (penalty) is -0.04.
-The start state marked with \code{S} is \code{s_1}.
-Transitioning to \code{+} (state \code{s_12}) gives a reward of +1.0, transitioning to \code{-} (state \code{s_11})
-has a reward of -1.0. States \code{s_11} and \code{s_12} are terminal (absorbing) states.
+The start state marked with \code{S} is \code{s(3,1)}.
+Transitioning to \code{+} (state \code{s(1,4)}) gives a reward of +1.0,
+transitioning to \code{-} (state \code{s_(2,4)})
+has a reward of -1.0. Both these states are absorbing
+(i.e., terminal) states.
 
-Actions are movements (\code{up}, \code{down}, \code{left}, \code{right}). The actions are unreliable with a .8 chance
+Actions are movements (\code{north}, \code{east}, \code{south}, \code{west}). The actions are
+unreliable with a .8 chance
 to move in the correct direction and a 0.1 chance to instead to move in a
 perpendicular direction leading to a stochastic transition model.
 
@@ -70,56 +47,50 @@ converges without discounting (\code{discount = 1}).
 # The problem can be loaded using data(Maze).
 
 # Here is the complete problem definition:
-
-S <- paste0("s_", seq_len(3 * 4))
-s2rc <- function(s) {
-  if(is.character(s)) s <- match(s, S)
-  c((s - 1) \%\% 3 + 1, (s - 1) \%/\% 3 + 1)
-}
-rc2s <- function(rc) S[rc[1] + 3 * (rc[2] - 1)]
-
-A <- c("up", "down", "left", "right")
+gw <- gridworld_init(dim = c(3, 4))
 
 T <- function(action, start.state, end.state) {
-  action <- match.arg(action, choices = A)
-
-  if (start.state \%in\% c('s_11', 's_12', 's_5')) {
+  action <- match.arg(action, choices = gw$actions)
+  
+  # absorbing states
+  if (start.state \%in\% c('s(1,4)', 's(2,4)')) {
     if (start.state == end.state) return(1)
     else return(0)
   }
 
-  if(action \%in\% c("up", "down")) error_direction <- c("right", "left")
-  else error_direction <- c("up", "down")
+  if(action \%in\% c("north", "south")) error_direction <- c("east", "west")
+  else error_direction <- c("north", "south")
 
-  rc <- s2rc(start.state)
-  delta <- list(up = c(+1, 0), down = c(-1, 0),
-                right = c(0, +1), left = c(0, -1))
+  xy <- gridworld_s2xy(start.state)
+  delta <- list(north = c(-1, 0), 
+                south = c(+1, 0),
+                east = c(0, +1), 
+                west = c(0, -1))
   P <- matrix(0, nrow = 3, ncol = 4)
 
-  add_prob <- function(P, rc, a, value) {
-    new_rc <- rc + delta[[a]]
-    if (new_rc[1] > 3 || new_rc[1] < 1 || new_rc[2] > 4 || new_rc[2] < 1
-      || (new_rc[1] == 2 && new_rc[2]== 2))
-      new_rc <- rc
-    P[new_rc[1], new_rc[2]] <- P[new_rc[1], new_rc[2]] + value
+  add_prob <- function(P, xy, a, value) {
+    new_xy <- xy + delta[[a]]
+    if (new_xy[1] > 3 || new_xy[1] < 1 || new_xy[2] > 4 || new_xy[2] < 1
+      || (new_xy[1] == 2 && new_xy[2]== 2))
+      new_xy <- xy
+    P[new_xy[1], new_xy[2]] <- P[new_xy[1], new_xy[2]] + value
     P
   }
 
- P <- add_prob(P, rc, action, .8)
- P <- add_prob(P, rc, error_direction[1], .1)
- P <- add_prob(P, rc, error_direction[2], .1)
- P[rbind(s2rc(end.state))]
+ P <- add_prob(P, xy, action, .8)
+ P <- add_prob(P, xy, error_direction[1], .1)
+ P <- add_prob(P, xy, error_direction[2], .1)
+ P[rbind(gridworld_s2xy(end.state))]
 }
 
-T("up", "s_1", "s_2")
+T("north", "s(1,1)", "s(2,1)")
 
 R <- rbind(
- R_(end.state   = '*',     value = -0.04),
- R_(end.state   = 's_11',  value = -1),
- R_(end.state   = 's_12',  value = +1),
- R_(start.state = 's_11',  value = 0),
- R_(start.state = 's_12',  value = 0),
- R_(start.state = 's_5',  value = 0)
+ R_(end.state   = NA,     value = -0.04),
+ R_(end.state   = 's(2,4)',  value = -1),
+ R_(end.state   = 's(1,4)',  value = +1),
+ R_(start.state = 's(2,4)',  value = 0),
+ R_(start.state = 's(1,4)',  value = 0)
 )
 
 
@@ -127,35 +98,63 @@ Maze <- MDP(
  name = "Stuart Russell's 3x4 Maze",
  discount = 1,
  horizon = Inf,
- states = S,
- actions = A,
- start = 1,
+ states = gw$states,
+ actions = gw$actions,
+ start = "s(3,1)",
  transition_prob = T,
- reward = R
+ reward = R,
+ info = list(gridworld_dim = c(3, 4),
+             gridworld_labels = list(
+                "s(3,1)" = "Start",
+                "s(2,4)" = "-1",
+                "s(1,4)" = "Goal: +1"
+                )
+             )
 )
 
 Maze
+
+# remove the unreachable state s(2,2)
+Maze <- remove_unreachable_states(Maze)
+Maze
+
 str(Maze)
 
-# Layout with state names
-matrix(Maze$states,nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
+gridworld_matrix(Maze)
+gridworld_matrix(Maze, what = "labels")
 
 # find absorbing (terminal) states
 which(absorbing_states(Maze))
 
-maze_solved <- solve_MDP(Maze, method = "value")
+maze_solved <- solve_MDP(Maze)
 policy(maze_solved)
 
-# show the utilities and optimal actions organized in the maze layout (like in the AIMA textbook)
-matrix(policy(maze_solved)$U, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
-matrix(policy(maze_solved)$action, nrow = 3, dimnames = list(1:3, 1:4))[3:1, ]
-# Note: the optimal actions for the states with a utility of 0 are artefacts and should be ignored.
+gridworld_matrix(maze_solved, what = "values")
+gridworld_matrix(maze_solved, what = "actions")
 
-# plot the solution as an image plot. Darker colors represent larger
-# state values.
-plot_Maze_solution(maze_solved)
+gridworld_plot_policy(maze_solved)
 }
 \references{
-Russell, S. J. and Norvig, P., & Davis, E. (2021). Artificial intelligence: a modern approach. 4rd ed.
+Russell,9 S. J. and Norvig, P. (2020). Artificial Intelligence:
+A modern approach. 4rd ed.
 }
+\seealso{
+Other MDP: 
+\code{\link{MDP_policy_functions}},
+\code{\link{MDP}()},
+\code{\link{accessors}},
+\code{\link{add_policy}()},
+\code{\link{reachable_and_absorbing}},
+\code{\link{regret}()},
+\code{\link{simulate_MDP}()},
+\code{\link{solve_MDP}()},
+\code{\link{transition_graph}()},
+\code{\link{value_function}()}
+
+Other gridworld: 
+\code{\link{Cliff_walking}},
+\code{\link{gridworld}}
+}
+\concept{MDP}
+\concept{gridworld}
 \keyword{datasets}

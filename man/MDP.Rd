@@ -3,7 +3,6 @@
 \name{MDP}
 \alias{MDP}
 \alias{is_solved_MDP}
-\alias{absorbing_states}
 \alias{MDP2POMDP}
 \title{Define an MDP Problem}
 \usage{
@@ -15,12 +14,11 @@ MDP(
   discount = 0.9,
   horizon = Inf,
   start = "uniform",
+  info = NULL,
   name = NA
 )
 
 is_solved_MDP(x, stop = FALSE)
-
-absorbing_states(x, states = NULL)
 
 MDP2POMDP(x)
 }
@@ -43,6 +41,8 @@ horizon.}
 
 \item{start}{Specifies in which state the MDP starts.}
 
+\item{info}{A list with additional information.}
+
 \item{name}{a string to identify the MDP problem.}
 
 \item{x}{a \code{MDP} object.}
@@ -63,11 +63,6 @@ process with completely observable states. We implement here
 MDPs with a finite state space. similar to \link{POMDP}
 models, but without the observation model. The \code{'observations'} column in
 the the reward specification is always missing.
-
-The function \code{absorbing_states()} checks if a state or a set of states are
-absorbing (terminal states) with a reward of zero.
-If no states are specified (\code{states = NULL}), then all model states are
-checked. This information can be used in simulations to end an episode.
 
 \code{MDP2POMDP()} reformulates an MDP as a POMDP by adding an observation
 model with one observation per state
@@ -125,8 +120,10 @@ plot_value_function(sol2)
 \seealso{
 Other MDP: 
 \code{\link{MDP_policy_functions}},
+\code{\link{Maze}},
 \code{\link{accessors}},
 \code{\link{add_policy}()},
+\code{\link{reachable_and_absorbing}},
 \code{\link{regret}()},
 \code{\link{simulate_MDP}()},
 \code{\link{solve_MDP}()},
