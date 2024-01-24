@@ -2,11 +2,39 @@
 #'
 #' Implementation several functions useful to deal with MDP policies.
 #'
+#' Implemented functions are:
+#' 
+#' * `q_values_MDP()` calculates (approximates) 
+#'   Q-values for a given model using the Bellman 
+#'   optimality equation: 
+#'  
+#'   \deqn{q(s,a) = \sum_{s'} T(s'|s,a) [R(s,a) + \gamma U(s')]}
+#'
+#'   Q-values can be used as the input for several other functions.
+#'
+#' * `MDP_policy_evaluation()` evaluates a policy \eqn{\pi} for a model and returns 
+#'   (approximate) state values by applying the Bellman equation as an update 
+#'   rule for each state and iteration \eqn{k}:
+#'   
+#'   \deqn{U_{k+1}(s) =\sum_a \pi{a|s} \sum_{s'} T(s' | s,a) [R(s,a) + \gamma U_k(s')]}   
+#'
+#'   In each iteration, all states are updated. Updating is stopped after 
+#'   `k_backups` iterations or after the
+#'   largest update \eqn{||U_{k+1} - U_k||_\infty < \theta}.
+#'   
+#' * `greedy_MDP_action()` returns the action with the largest Q-value given a 
+#'    state.
+#'    
+#' * `random_MDP_policy()`, `manual_MDP_policy()`, and `greedy_MDP_policy()`
+#'    generates different policies. These policies can be added to a problem
+#'    using [`add_policy()`].
+#'
 #' @name MDP_policy_functions
 #' @aliases MDP_policy_functions
 #'
 #' @family MDP
-#'
+#' @author Michael Hahsler
+#' 
 #' @param model an MDP problem specification.
 #' @param U a vector with value function representing the state utilities
 #'    (expected sum of discounted rewards from that point on).
@@ -15,6 +43,10 @@
 #' @param Q an action value function with Q-values as a state by action matrix.
 #' @param s a state.
 #' @param epsilon an `epsilon > 0` applies an epsilon-greedy policy.
+#'
+#' @references
+#' Sutton, R. S., Barto, A. G. (2020). Reinforcement Learning: An Introduction. 
+#' Second edition. The MIT Press.
 #'
 #' @examples
 #' data(Maze)
@@ -43,7 +75,7 @@
 #'
 #' # 4. an improved policy based on one policy evaluation and
 #' #   policy improvement step
-#' u <- approx_MDP_policy_evaluation(pi_random, Maze)
+#' u <- MDP_policy_evaluation(pi_random, Maze, verbose = TRUE)
 #' q <- q_values_MDP(Maze, U = u)
 #' pi_greedy <- greedy_MDP_policy(q)
 #' pi_greedy
@@ -51,10 +83,10 @@
 #'
 #' #' compare the approx. value functions for the policies
 #' rbind(
-#'   random = approx_MDP_policy_evaluation(pi_random, Maze),
-#'   manual = approx_MDP_policy_evaluation(pi_manual, Maze),
-#'   greedy = approx_MDP_policy_evaluation(pi_greedy, Maze),
-#'   optimal = approx_MDP_policy_evaluation(pi_opt, Maze)
+#'   random = MDP_policy_evaluation(pi_random, Maze),
+#'   manual = MDP_policy_evaluation(pi_manual, Maze),
+#'   greedy = MDP_policy_evaluation(pi_greedy, Maze),
+#'   optimal = MDP_policy_evaluation(pi_opt, Maze)
 #')
 #'
 #' # For many functions, we first add the policy to the problem description
@@ -89,12 +121,12 @@ q_values_MDP <- function(model, U = NULL) {
   S <- model$states
   A <- model$actions
   P <- transition_matrix(model, sparse = TRUE)
-  # FIXME: sparse = TRUE returns a dataframe
+  # TODO: sparse = TRUE returns a dataframe. This uses a lot of memory!
   R <- reward_matrix(model, sparse = FALSE)
   policy <- model$solution$policy[[1]]
   GAMMA <- model$discount
   
-  ### TODO: look for Q!
+  ### TODO: look if Q is already stored in the model!
   if (is.null(U)) {
     if (!is.null(policy))
       U <- policy$U
@@ -105,18 +137,25 @@ q_values_MDP <- function(model, U = NULL) {
   structure(outer(S, A, .QV_vec, P, R, GAMMA, U), dimnames = list(S, A))
 }
 
+
 #' @rdname MDP_policy_functions
 #' @param pi a policy as a data.frame with at least columns for states and action.
 #' @param k_backups number of look ahead steps used for approximate policy evaluation
-#'    used by the policy iteration method.
-#' @return `approx_MDP_policy_evaluation()` returns a vector with approximate
+#'    used by the policy iteration method. Set k_backups to `Inf` to only use 
+#'    \eqn{\theta} as the stopping criterion.
+#' @param theta stop when the largest change in a state value is less 
+#'    than \eqn{\theta}. 
+#' @param verbose logical; should progress and approximation errors be printed.
+#' @return `MDP_policy_evaluation()` returns a vector with (approximate)
 #'    state values (U).
 #' @export
-approx_MDP_policy_evaluation <-
+MDP_policy_evaluation <-
   function(pi,
            model,
            U = NULL,
-           k_backups = 10) {
+           k_backups = 1000,
+           theta = 1e-3,
+           verbose = FALSE) {
     if (!inherits(model, "MDP"))
       stop("'model' needs to be of class 'MDP'.")
     
@@ -134,8 +173,19 @@ approx_MDP_policy_evaluation <-
     if (is.null(U))
       U <- rep(0, times = length(S))
     
-    for (i in seq_len(k_backups))
+    if (k_backups > .Machine$integer.max)
+      k_backups <- .Machine$integer.max
+    for (i in seq_len(k_backups)) {
+      v <- U
       U <- .QV_vec(S, pi, P, R, GAMMA, U)
+      delta <- max(abs(v-U))
+      
+      if (verbose)
+        cat("Backup step", i, ": delta =", delta, "\n")
+      
+      if (delta < theta)
+        break
+    }
     
     U
   }
@@ -174,22 +224,7 @@ greedy_MDP_action <-
 
 
 #' @rdname MDP_policy_functions
-#' @return `greedy_MDP_policy()` returns the greedy policy given `Q`.
-#' @export
-greedy_MDP_policy <-
-  function(Q) {
-    A <- colnames(Q)
-    data.frame(
-      state = rownames(Q),
-      U = apply(Q, MARGIN = 1, max),
-      action = A[apply(Q, MARGIN = 1, which.max)],
-      row.names = NULL
-    )
-  }
-
-
-#' @rdname MDP_policy_functions
-#' @param prob probability vector for random actions for random_MDP_policy().
+#' @param prob probability vector for random actions for `random_MDP_policy()`.
 #'   a logical indicating if action probabilities should be returned for
 #'   `greedy_MDP_action()`.
 #' @return `random_MDP_policy()` returns a data.frame with the columns state and action to define a policy.
@@ -236,3 +271,19 @@ manual_MDP_policy <-
     data.frame(state = S,
                action = actions)
   }
+
+#' @rdname MDP_policy_functions
+#' @return `greedy_MDP_policy()` returns the greedy policy given `Q`.
+#' @export
+greedy_MDP_policy <-
+  function(Q) {
+    A <- colnames(Q)
+    data.frame(
+      state = rownames(Q),
+      U = apply(Q, MARGIN = 1, max),
+      action = A[apply(Q, MARGIN = 1, which.max)],
+      row.names = NULL
+    )
+  }
+
+

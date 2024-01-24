@@ -3,24 +3,31 @@
 \name{MDP_policy_functions}
 \alias{MDP_policy_functions}
 \alias{q_values_MDP}
-\alias{approx_MDP_policy_evaluation}
+\alias{MDP_policy_evaluation}
 \alias{greedy_MDP_action}
-\alias{greedy_MDP_policy}
 \alias{random_MDP_policy}
 \alias{manual_MDP_policy}
+\alias{greedy_MDP_policy}
 \title{Functions for MDP Policies}
 \usage{
 q_values_MDP(model, U = NULL)
 
-approx_MDP_policy_evaluation(pi, model, U = NULL, k_backups = 10)
+MDP_policy_evaluation(
+  pi,
+  model,
+  U = NULL,
+  k_backups = 1000,
+  theta = 0.001,
+  verbose = FALSE
+)
 
 greedy_MDP_action(s, Q, epsilon = 0, prob = FALSE)
-
-greedy_MDP_policy(Q)
 
 random_MDP_policy(model, prob = NULL)
 
 manual_MDP_policy(model, actions)
+
+greedy_MDP_policy(Q)
 }
 \arguments{
 \item{model}{an MDP problem specification.}
@@ -33,7 +40,13 @@ utilities are taken from the solution.}
 \item{pi}{a policy as a data.frame with at least columns for states and action.}
 
 \item{k_backups}{number of look ahead steps used for approximate policy evaluation
-used by the policy iteration method.}
+used by the policy iteration method. Set k_backups to \code{Inf} to only use
+\eqn{\theta} as the stopping criterion.}
+
+\item{theta}{stop when the largest change in a state value is less
+than \eqn{\theta}.}
+
+\item{verbose}{logical; should progress and approximation errors be printed.}
 
 \item{s}{a state.}
 
@@ -41,7 +54,7 @@ used by the policy iteration method.}
 
 \item{epsilon}{an \code{epsilon > 0} applies an epsilon-greedy policy.}
 
-\item{prob}{probability vector for random actions for random_MDP_policy().
+\item{prob}{probability vector for random actions for \code{random_MDP_policy()}.
 a logical indicating if action probabilities should be returned for
 \code{greedy_MDP_action()}.}
 
@@ -53,21 +66,47 @@ numeric id) for each state.}
 i.e., the action value for executing each action in each state. The Q-values
 are calculated from the value function (U) and the transition model.
 
-\code{approx_MDP_policy_evaluation()} returns a vector with approximate
+\code{MDP_policy_evaluation()} returns a vector with (approximate)
 state values (U).
 
 \code{greedy_MDP_action()} returns the action with the highest q-value
 for state \code{s}. If \code{prob = TRUE}, then a vector with
 the probability for each action is returned.
 
-\code{greedy_MDP_policy()} returns the greedy policy given \code{Q}.
-
 \code{random_MDP_policy()} returns a data.frame with the columns state and action to define a policy.
 
 \code{manual_MDP_policy()} returns a data.frame with the columns state and action to define a policy.
+
+\code{greedy_MDP_policy()} returns the greedy policy given \code{Q}.
 }
 \description{
 Implementation several functions useful to deal with MDP policies.
+}
+\details{
+Implemented functions are:
+\itemize{
+\item \code{q_values_MDP()} calculates (approximates)
+Q-values for a given model using the Bellman
+optimality equation:
+
+\deqn{q(s,a) = \sum_{s'} T(s'|s,a) [R(s,a) + \gamma U(s')]}
+
+Q-values can be used as the input for several other functions.
+\item \code{MDP_policy_evaluation()} evaluates a policy \eqn{\pi} for a model and returns
+(approximate) state values by applying the Bellman equation as an update
+rule for each state and iteration \eqn{k}:
+
+\deqn{U_{k+1}(s) =\sum_a \pi{a|s} \sum_{s'} T(s' | s,a) [R(s,a) + \gamma U_k(s')]}
+
+In each iteration, all states are updated. Updating is stopped after
+\code{k_backups} iterations or after the
+largest update \eqn{||U_{k+1} - U_k||_\infty < \theta}.
+\item \code{greedy_MDP_action()} returns the action with the largest Q-value given a
+state.
+\item \code{random_MDP_policy()}, \code{manual_MDP_policy()}, and \code{greedy_MDP_policy()}
+generates different policies. These policies can be added to a problem
+using \code{\link[=add_policy]{add_policy()}}.
+}
 }
 \examples{
 data(Maze)
@@ -96,7 +135,7 @@ gridworld_plot_policy(add_policy(Maze, pi_random), main = "Random Policy")
 
 # 4. an improved policy based on one policy evaluation and
 #   policy improvement step
-u <- approx_MDP_policy_evaluation(pi_random, Maze)
+u <- MDP_policy_evaluation(pi_random, Maze, verbose = TRUE)
 q <- q_values_MDP(Maze, U = u)
 pi_greedy <- greedy_MDP_policy(q)
 pi_greedy
@@ -104,10 +143,10 @@ gridworld_plot_policy(add_policy(Maze, pi_greedy), , main = "Greedy Policy")
 
 #' compare the approx. value functions for the policies
 rbind(
-  random = approx_MDP_policy_evaluation(pi_random, Maze),
-  manual = approx_MDP_policy_evaluation(pi_manual, Maze),
-  greedy = approx_MDP_policy_evaluation(pi_greedy, Maze),
-  optimal = approx_MDP_policy_evaluation(pi_opt, Maze)
+  random = MDP_policy_evaluation(pi_random, Maze),
+  manual = MDP_policy_evaluation(pi_manual, Maze),
+  greedy = MDP_policy_evaluation(pi_greedy, Maze),
+  optimal = MDP_policy_evaluation(pi_opt, Maze)
 )
 
 # For many functions, we first add the policy to the problem description
@@ -129,6 +168,10 @@ greedy_MDP_action(1, q, epsilon = 0, prob = FALSE)
 greedy_MDP_action(1, q, epsilon = 0, prob = TRUE)
 greedy_MDP_action(1, q, epsilon = .1, prob = TRUE)
 }
+\references{
+Sutton, R. S., Barto, A. G. (2020). Reinforcement Learning: An Introduction.
+Second edition. The MIT Press.
+}
 \seealso{
 Other MDP: 
 \code{\link{MDP}()},
@@ -141,5 +184,8 @@ Other MDP:
 \code{\link{solve_MDP}()},
 \code{\link{transition_graph}()},
 \code{\link{value_function}()}
+}
+\author{
+Michael Hahsler
 }
 \concept{MDP}

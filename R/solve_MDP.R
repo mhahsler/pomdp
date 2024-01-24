@@ -13,12 +13,12 @@
 #' starts with a random policy and iteratively performs
 #' a sequence of
 #'   - approximate policy evaluation (estimate the value function for the
-#' current policy using `k_backups`), and
+#' current policy using `k_backups` and function [`MDP_policy_evaluation()`]), and
 #'   - policy improvement (calculate a greedy policy given the value function).
 #' The algorithm stops when it converges to a stable policy.
 #'
 #' * **Value Iteration** starts with
-#'  an arbitraty value function (we use all 0s) and iteratively
+#'  an arbitrary value function (we use all 0s) and iteratively
 #' updates the value function using the Bellman equation. The iterations
 #' are terminated when no state value in the value function changes by more than
 #' \eqn{\epsilon (1-\gamma) / \gamma} which means that no state value is more than
@@ -118,8 +118,8 @@
 #' #  policy found by the solver.
 #' maze_solved <- solve_MDP(Maze)
 #'
-#' approx_MDP_policy_evaluation(pi, Maze, k_backup = 100)
-#' approx_MDP_policy_evaluation(policy(maze_solved)[[1]], Maze, k_backup = 100)
+#' MDP_policy_evaluation(pi, Maze, k_backup = 100)
+#' MDP_policy_evaluation(policy(maze_solved)[[1]], Maze, k_backup = 100)
 #'
 #' # Note that the solver already calculates the utility function and returns it with the policy
 #' policy(maze_solved)
@@ -361,7 +361,7 @@ MDP_policy_iteration_inf_horizon <-
       
       # evaluate to get U from pi
       U <-
-        approx_MDP_policy_evaluation(pi, model, U, k_backups = k_backups)
+        MDP_policy_evaluation(pi, model, U, k_backups = k_backups)
       
       # get greedy policy for U
       Qs <- outer(S, A, .QV_vec, P, R, GAMMA, U)

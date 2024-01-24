@@ -92,7 +92,7 @@ add_policy.MDP <- function(model, policy) {
     policy <- policy(policy)
   
   if(is.null(policy$U))
-    policy$U <- approx_MDP_policy_evaluation(policy, model)
+    policy$U <- MDP_policy_evaluation(policy, model)
   
   solution <- list(
     method = "manual",

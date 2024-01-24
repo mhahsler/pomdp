@@ -18,6 +18,8 @@
 * simulate_MDP() stops now at absorbing states.
 * simulate_MDP_cpp() works now with sparse model representation.
 * POMDP and MDP gained field for additional info.
+* approx_MDP_policy_evaluation() is now called MDP_policy_evaluation() and gained
+  parameter theta as an additional stopping criterion.
 
 ## Bugfixes
 * q_values_MDP(), solve_MDP(): Fixed reward representation issue.
