@@ -34,6 +34,11 @@ POMDP specification. \strong{The original specification is directly used by exte
 is parsed using an experimental POMDP file parser. The parsed information can be used with auxiliary functions
 in this package that use fields like the transition matrix, the observation matrix and the reward structure.
 
+The range of useful rewards is restricted by the solver. Here the values are restricted to the range
+\verb{[-1e10, 1e10]}.
+Unavailable actions have a reward of \code{-Inf} which is translated to -2 times the maximum
+absolute reward value used in the model.
+
 \strong{Notes:}
 The parser for POMDP files is experimental. Please report
 problems here: \url{https://github.com/mhahsler/pomdp/issues}.

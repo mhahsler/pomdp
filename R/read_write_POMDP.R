@@ -7,6 +7,11 @@
 #' is parsed using an experimental POMDP file parser. The parsed information can be used with auxiliary functions
 #' in this package that use fields like the transition matrix, the observation matrix and the reward structure.
 #'
+#' The range of useful rewards is restricted by the solver. Here the values are restricted to the range
+#' `[-1e10, 1e10]`. 
+#' Unavailable actions have a reward of `-Inf` which is translated to -2 times the maximum
+#' absolute reward value used in the model.
+#'
 #' **Notes:**
 #' The parser for POMDP files is experimental. Please report
 #' problems here: \url{https://github.com/mhahsler/pomdp/issues}.
@@ -38,9 +43,20 @@ write_POMDP <- function(x, file, digits = 7) {
   #}
   
   ### solver restrictions
+  mr <- .max_abs_reward(x)
   reward_max <- 1e10
-  reward_neg_Inf <- -1e15
-  pomdp_solve_OK_chars <- "[^A-Za-z0-9_-]"
+  if (mr > reward_max)
+    stop(
+      "Reward values supported by the solver need to be in [",
+      -reward_max,
+      ", ",+reward_max,
+      "]."
+    )
+  
+  reward_neg_Inf <- -2*mr
+  #reward_neg_Inf <- -1e15
+ 
+   pomdp_solve_OK_chars <- "[^A-Za-z0-9_-]"
   
   x <- check_and_fix_MDP(x)
   

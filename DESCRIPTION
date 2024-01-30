@@ -42,6 +42,7 @@ Collate:
     'MDP_policy_functions.R'
     'Maze.R'
     'RcppExports.R'
+    'RussianTiger.R'
     'Tiger.R'
     'accessors.R'
     'accessors_reward.R'

@@ -50,10 +50,10 @@ normalize_MDP(x, sparse = TRUE)
 
 reward_matrix(
   x,
-  action = NA,
-  start.state = NA,
-  end.state = NA,
-  observation = NA,
+  action = NULL,
+  start.state = NULL,
+  end.state = NULL,
+  observation = NULL,
   episode = NULL,
   epoch = NULL,
   sparse = FALSE
@@ -63,8 +63,8 @@ reward_val(
   x,
   action,
   start.state,
-  end.state = NA,
-  observation = NA,
+  end.state = NULL,
+  observation = NULL,
   episode = NULL,
   epoch = NULL
 )
