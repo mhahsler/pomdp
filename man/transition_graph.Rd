@@ -11,7 +11,8 @@ transition_graph(
   episode = NULL,
   epoch = NULL,
   state_col = NULL,
-  simplify_transitions = TRUE
+  simplify_transitions = TRUE,
+  remove_unavailable_actions = TRUE
 )
 
 plot_transition_graph(
@@ -35,6 +36,8 @@ plot_transition_graph(
 
 \item{simplify_transitions}{logical; combine parallel transition arcs into a single arc.}
 
+\item{remove_unavailable_actions}{logical; don't show arrows for unavailable actions.}
+
 \item{...}{further arguments are passed on to \code{igraph::plot.igraph()}.}
 }
 \value{
@@ -53,12 +56,18 @@ data("Tiger")
 g <- transition_graph(Tiger)
 g
 
-plot_transition_graph(Tiger, vertex.size = 80)
-plot_transition_graph(Tiger, vertex.size = 80, edge.label = NA)
+plot_transition_graph(Tiger)
+plot_transition_graph(Tiger, vertex.size = 20, 
+                      edge.label.cex = .5, edge.arrow.size = .5, margin = .5)
+plot_transition_graph(Tiger, vertex.size = 60, 
+                      edge.label = NA, edge.arrow.size = .5, 
+                      layout = rbind(c(-1,0), c(+1,0)), rescale = FALSE)
 
-## Plot an individual graph for each actions
+## Plot an individual graph for each actions and use a manual layout.
 for (a in Tiger$actions) {
- plot_transition_graph(Tiger, action = a, vertex.size = 60)
+ plot_transition_graph(Tiger, action = a, 
+                        layout = rbind(c(-1,0), c(+1,0)), rescale = FALSE,
+                        main = paste("action:", a))
 }
 
 ## Plot using the igraph library

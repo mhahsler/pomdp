@@ -15,6 +15,7 @@
 #' @param episode,epoch  Episode or epoch used for time-dependent POMDPs. Epochs are internally converted to the episode using the model horizon.
 #' @param state_col colors used to represent the states.
 #' @param simplify_transitions logical; combine parallel transition arcs into a single arc.
+#' @param remove_unavailable_actions logical; don't show arrows for unavailable actions.
 #'
 #' @returns returns the transition model as an igraph object.
 #' @examples
@@ -23,12 +24,18 @@
 #' g <- transition_graph(Tiger)
 #' g
 #'
-#' plot_transition_graph(Tiger, vertex.size = 80)
-#' plot_transition_graph(Tiger, vertex.size = 80, edge.label = NA)
+#' plot_transition_graph(Tiger)
+#' plot_transition_graph(Tiger, vertex.size = 20, 
+#'                       edge.label.cex = .5, edge.arrow.size = .5, margin = .5)
+#' plot_transition_graph(Tiger, vertex.size = 60, 
+#'                       edge.label = NA, edge.arrow.size = .5, 
+#'                       layout = rbind(c(-1,0), c(+1,0)), rescale = FALSE)
 #' 
-#' ## Plot an individual graph for each actions
+#' ## Plot an individual graph for each actions and use a manual layout.
 #' for (a in Tiger$actions) {
-#'  plot_transition_graph(Tiger, action = a, vertex.size = 60)
+#'  plot_transition_graph(Tiger, action = a, 
+#'                         layout = rbind(c(-1,0), c(+1,0)), rescale = FALSE,
+#'                         main = paste("action:", a))
 #' }
 #'
 #' ## Plot using the igraph library
@@ -81,23 +88,27 @@ transition_graph <-
         drop = FALSE
       )
     
-    # remove unavailable actions
-    if (remove_unavailable_actions) {
-      warning("Needs to be implemented. Unavailable actions.")
-    }
-    
-    gs <- lapply(
+    gs <- sapply(
       names(m),
       FUN = function(a) {
         g <-
           graph_from_adjacency_matrix(m[[a]], mode = "directed",  weighted = TRUE)
         E(g)$label <- a
-        as_data_frame(g)
-      }
+        df <- as_data_frame(g)
+        
+        # remove unavailable actions
+        if (remove_unavailable_actions) {
+          available <- sapply(seq_len(nrow(df)), FUN = function(i) 
+            all(reward_val(x, action = df$label[i], start.state = df$from[i], end.state = df$to[i]) != - Inf))
+          df <- df[available, , drop = FALSE] 
+        }
+        df
+      }, simplify = FALSE
     )
     
     g <-  graph_from_data_frame(do.call(rbind, gs))
-    E(g)$label <- paste0(E(g)$label, " (", round(E(g)$weight, 2), ")")
+    
+    E(g)$label <- paste0(E(g)$label, ifelse(E(g)$weight != 1, paste0(" (", round(E(g)$weight, 2), ")"), ""))
     
     if (simplify_transitions)
       g <- igraph::simplify(

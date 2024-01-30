@@ -8,6 +8,7 @@
 * New functions `absorbing_states()` and `reachable_states()` for MDPs and POMDPs.
 * Support for grid worlds (see ? gridworld).
 * New datasets: Cliff_walking
+* plot_transition_graph() now hides unavailable actions.
 
 ## Changes
 * simulate_POMDP(): Better calculation of T for infinite-horizon problems.
