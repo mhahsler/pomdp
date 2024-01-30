@@ -217,7 +217,7 @@ MDP2POMDP <- function(x) {
                            observation = factor(NA_character_, levels = x$states), 
                            value = x$reward$value)
    
-  class(x) <- c("MDP", "POMDP", "list")
+  class(x) <- c("POMDP", "list")
   check_and_fix_MDP(x)
 }
 

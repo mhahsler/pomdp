@@ -108,11 +108,8 @@ sim <- simulate_MDP(sol, n = 100, start = "uniform", horizon = 10,
   return_trajectories = TRUE)
 head(sim$trajectories)   
   
-
 # how often was each state visited?
 table(sim$trajectories$s)
-matrix(table(sim$trajectories$s), nrow = 3, 
-  dimnames = list(1:3, 1:4))[3:1, ]
 }
 \seealso{
 Other MDP: 

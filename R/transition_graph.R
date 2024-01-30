@@ -66,7 +66,8 @@ transition_graph <-
            episode = NULL,
            epoch = NULL,
            state_col = NULL,
-           simplify_transitions = TRUE) {
+           simplify_transitions = TRUE,
+           remove_unavailable_actions = TRUE) {
     state_col <-
       colors_discrete(length(x$states), state_col)
     
@@ -79,6 +80,11 @@ transition_graph <-
         sparse = FALSE,
         drop = FALSE
       )
+    
+    # remove unavailable actions
+    if (remove_unavailable_actions) {
+      warning("Needs to be implemented. Unavailable actions.")
+    }
     
     gs <- lapply(
       names(m),
@@ -131,8 +137,6 @@ plot_transition_graph <- function(x,
   
   plot(
     g,
-    layout = rbind(c(-1, 0), c(1, 0)),
-    rescale = FALSE,
     edge.curved = curve_multiple_directed(g, .8),
     edge.loop.angle = -pi / 4,
     ...

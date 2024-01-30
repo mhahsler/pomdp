@@ -14,12 +14,12 @@ expect_equal(names(which(absorbing_states(m2))), s_abs)
 expect_equal(names(which(absorbing_states(m3))), s_abs) 
 expect_equal(names(which(absorbing_states(m4))), s_abs) 
 
-v1 <- reward_val(Maze, "north", 1, 1)
-v2 <- reward_val(m2, "north", 1, 1)
-v3 <- reward_val(m3, "north", 1, 1)
-v4 <- reward_val(m4, "north", 1, 1)
+v1 <- reward_matrix(Maze, "north", 1, 1)
+v2 <- reward_matrix(m2, "north", 1, 1)
+v3 <- reward_matrix(m3, "north", 1, 1)
+v4 <- reward_matrix(m4, "north", 1, 1)
 
-expect_equal(v1, v2)
+expect_equal(v1, unname(v2))
 expect_equal(v1, v3)
-expect_equal(v1, v4)
+expect_true(all(v4 == v1))
 

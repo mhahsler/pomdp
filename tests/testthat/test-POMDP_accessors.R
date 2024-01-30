@@ -50,6 +50,19 @@ Tiger <- POMDP(
   )
 )
 
+# check reward as data.frame
+
+Tiger_norm <- normalize_POMDP(Tiger, sparse = FALSE)
+Tiger_norm2 <- normalize_POMDP(Tiger_norm, sparse = TRUE)
+
+expect_false(is.data.frame(Tiger_norm$reward))
+expect_true(is.data.frame(Tiger_norm2$reward))
+
+expect_equal(reward_matrix(Tiger), reward_matrix(Tiger_norm))
+expect_equal(reward_matrix(Tiger), reward_matrix(Tiger_norm2))
+
+
+
 # Check functions
 trans_f <- function(action, start.state, end.state) {
   ## listen has an identity matrix

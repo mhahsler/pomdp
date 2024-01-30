@@ -46,3 +46,8 @@ NumericVector vecprod(const NumericMatrix& A, const NumericVector& b) {
   
   return out;
 }
+
+// internal helper
+bool contains(IntegerVector X, int z) { 
+  return std::find(X.begin(), X.end(), z) != X.end(); 
+}

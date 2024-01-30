@@ -118,9 +118,6 @@ simulate_POMDP <-
     engine = "cpp",
     verbose = FALSE,
     ...) {
-    
-    # TODO: implement absorbing states
-    
     time_start <- proc.time()  
      
     engine <- match.arg(tolower(engine), c("cpp", "r"))
@@ -145,7 +142,7 @@ simulate_POMDP <-
       # PV = max_abs_R / gamma * gamma^t. For the PV <= delta, we need to solve
       # t >= log(delta/max_abs_R) / log(gamma) + 1
       # discount^horizon * max_abs_R <= 0.001
-      max_abs_R <-  max(abs(reward_matrix(model, sparse = TRUE)$value))
+      max_abs_R <- .max_abs_reward(model)
       horizon <- ceiling(log(delta_horizon/max_abs_R)/log(model$discount)) + 1
     }
     horizon <- as.integer(horizon)
@@ -262,6 +259,7 @@ simulate_POMDP <-
     
     states <- as.character(model$states)
     n_states <- length(states)
+    states_absorbing <- which(absorbing_states(model))
     obs <- as.character(model$observations)
     n_obs <- length(obs)
     actions <- as.character(model$actions)
@@ -323,11 +321,12 @@ simulate_POMDP <-
       cat("\n")
     }
     
-    #bs <- replicate(n, expr = {
     ### run once for debugging
+    #bs <- replicate(n, expr = {
     #sim <- { cat("debugging on!!!\n")
     sim <- foreach(i = 1:n) %dopar% {
       # initialize replication
+      alpha_vec_id <- NA_integer_
       s <- sample.int(length(states), 1L, prob = belief)
       b <- belief
       rew <- 0
@@ -403,7 +402,7 @@ simulate_POMDP <-
         obs_cnt[o] <- obs_cnt[o] + 1L
         
         # rew <- rew + rew_m[[a]][[s_prev]][s, o] * disc ^ (j - 1L)
-        r <- reward_val(model, a, s_prev, s, o, episode = current_episode)
+        r <- reward_matrix(model, a, s_prev, s, o, episode = current_episode)
         rew <- rew + r * disc ^ (j - 1L)
         #cat(j, ":", s_prev , "->", s, "- a:", a, "- o:", o, "- rew:", rew_m[[a]][[s_prev]][s, o], "\n")
         
@@ -425,6 +424,13 @@ simulate_POMDP <-
             r = r
           )
         
+        if(s %in% states_absorbing) {
+          if (return_trajectories)
+            trajectory <- trajectory[1:j, , drop = FALSE]
+          visited_belief_states <- visited_belief_states[1:j, , drop = FALSE]
+          # TODO: maybe add the finals state
+          break
+        }
       }
       
       # terminal values

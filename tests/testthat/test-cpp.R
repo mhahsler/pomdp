@@ -156,3 +156,4 @@ simulate_MDP(sol,
   n = 10,
   horizon = 10,
   verbose = verb)
+

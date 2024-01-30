@@ -9,39 +9,28 @@ using namespace Rcpp;
 
 /*** R
 library(pomdp)
-Rcpp::sourceCpp("src/simulate_MDP.cpp", verb = TRUE)
-
 data(Maze)
-Maze_norm <- normalize_MDP(Maze)
-
-simulate_MDP(Maze_norm, 10, start_vector(Maze_norm), 10, 
-                 disc = .9, return_trajectories = FALSE, epsilon = 1, verbose = TRUE)
-
-simulate_MDP(Maze_norm, 10, start_vector(Maze_norm), 10, 
-                 disc = .9, return_trajectories = TRUE, epsilon = 1, verbose = TRUE)
+Maze_norm <- normalize_MDP(Maze, sparse = FALSE)
+Maze_norm_sparse <- normalize_MDP(Maze, sparse = TRUE)
 
 # unsolved MDP
-simulate_MDP_cpp(Maze_norm, 10, start_vector(Maze_norm), 10, 
-  disc = .9, return_trajectories = FALSE, epsilon = 1, verbose = TRUE)
+pomdp:::simulate_MDP_cpp(Maze_norm, 2, start_vector(Maze_norm), 10, 
+  disc = 1, return_trajectories = TRUE, epsilon = 1, verbose = TRUE)
 
-simulate_MDP_cpp(Maze_norm, 10, start_vector(Maze_norm), 10, 
-  disc = .9, return_trajectores = TRUE, epsilon = 1, verbose = TRUE)
+pomdp:::simulate_MDP_cpp(Maze_norm_sparse, 2, start_vector(Maze_norm_sparse), 10, 
+  disc = 1, return_trajectories = TRUE, epsilon = 1, verbose = TRUE)
 
 # solve MDP
-sol <- solve_MDP(Maze_norm, discount = 1)
+sol <- solve_MDP(Maze_norm)
 sol
 policy(sol)
 
-simulate_MDP_cpp(sol, 10, start_vector(sol), 20, 
-  disc = 1, return_states = FALSE, epsilon = 0, verbose = TRUE)
+pomdp:::simulate_MDP_cpp(sol, 1, start_vector(sol), 10, 
+  disc = 1, return_trajectories = FALSE, epsilon = 0, verbose = TRUE)
 
-simulate_MDP_cpp(sol, 10, start_vector(sol), 20, 
-  disc = 1, return_states = TRUE, epsilon = 0, verbose = TRUE)
+pomdp:::simulate_MDP_cpp(sol, 10, start_vector(sol), 10, 
+  disc = 1, return_trajectories = TRUE, epsilon = 0, verbose = TRUE)
 */
-
-bool contains(IntegerVector X, int z) { 
-  return std::find(X.begin(), X.end(), z) != X.end(); 
-}
 
 // Note: all are 0-based integer indices
 // epsilon -1 means 0 for solved models and 1 for unsolved models

@@ -148,7 +148,8 @@ specified in the following ways:
 \itemize{
 \item A data.frame with columns exactly like the arguments of \code{T_()}.
 You can use \code{rbind()} with helper function \code{T_()} to create this data
-frame.
+frame. Probabilities can be specified multiple times and the definition that
+appears last in the data.frame will take affect.
 \item A named list of matrices, one for each action. Each matrix is square with
 rows representing start states \eqn{s} and columns representing end states \eqn{s'}.
 Instead of a matrix, also the strings \code{'identity'} or \code{'uniform'} can be specified.
@@ -165,7 +166,9 @@ following ways:
 \itemize{
 \item A data frame with columns named exactly like the arguments of \code{O_()}.
 You can use \code{rbind()}
-with helper function \code{O_()} to create this data frame.
+with helper function \code{O_()} to create this data frame. Probabilities can be
+specified multiple times and the definition that
+appears last in the data.frame will take affect.
 \item A named list of matrices, one for each action. Each matrix has
 rows representing end states \eqn{s'} and columns representing an observation \eqn{o}.
 Instead of a matrix, also the strings \code{'identity'} or \code{'uniform'} can be specified.
@@ -173,20 +176,28 @@ Instead of a matrix, also the strings \code{'identity'} or \code{'uniform'} can 
 that returns the observation probability.
 }
 
-\strong{Specification of the reward function: \eqn{R(s, s', o, a)}}
+\strong{Specification of the reward function: \eqn{R(a, s, s', o)}}
 
 The reward function can be specified in the following
 ways:
 \itemize{
 \item A data frame with columns named exactly like the arguments of \code{R_()}.
 You can use \code{rbind()}
-with helper function \code{R_()} to create this data frame.
+with helper function \code{R_()} to create this data frame. Rewards can be specified
+multiple times and the definition that
+appears last in the data.frame will take affect.
 \item A list of lists. The list levels are \code{'action'} and \code{'start.state'}. The list elements
 are matrices with
 rows representing end states \eqn{s'} and columns representing an observation \eqn{o}.
 \item A function with the same arguments are \code{R_()}, but no default values
 that returns the reward.
 }
+
+To avoid overflow problems with rewards, reward values should stay well within the
+range of
+\verb{[-1e10, +1e10]}. \code{-Inf} can be used as the reward for unavailable actions and
+will be translated into a large negative reward for solvers that only support
+finite reward values.
 
 \strong{Start Belief}
 

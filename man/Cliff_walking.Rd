@@ -18,13 +18,12 @@ The cliff walking grid world has the following layout:
 \figure{cliff_walking_gridworld.png}{Cliff Walking Grid World.}
 
 The grid world is represented as a 4 x 12 matrix of states.
-The states are labeled \code{s_1} through \code{s_48}. The layout is shown in the example code
-below. The start state is \code{s_1} and the goal state is \code{s_45}.
-The cliff covers states \code{s_5}, \code{s_9},  \code{s_13}, \code{s_17}, \code{s_21}, \code{s_25},
-\code{s_29}, \code{s_33}, \code{s_37}, and \code{s_41}.
+The states are labeled with their x and y coordinates.
+The start state is in the bottom left corner.
 Each action has a reward of -1, falling off the cliff has a reward of -100 and
 returns the agent back to the start. The episode is finished once the agent
-reaches the goal. No discounting is used (i.e., \eqn{\gamma = 1}).
+reaches the absorbing goal state in the bottom right corner.
+No discounting is used (i.e., \eqn{\gamma = 1}).
 }
 \examples{
 data(Cliff_walking)

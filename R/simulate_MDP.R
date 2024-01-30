@@ -77,11 +77,8 @@
 #'   return_trajectories = TRUE)
 #' head(sim$trajectories)   
 #'   
-#'
 #' # how often was each state visited?
 #' table(sim$trajectories$s)
-#' matrix(table(sim$trajectories$s), nrow = 3, 
-#'   dimnames = list(1:3, 1:4))[3:1, ]
 #' @export
 simulate_MDP <-
   function(model,
@@ -264,7 +261,7 @@ simulate_MDP <-
         
         #rew <- rew + rew_m[[a]][[s_prev]][s] * disc ^ (j - 1L)
         # MDPs have no observation!
-        r <- reward_val(model, a, s_prev, s)
+        r <- reward_matrix(model, a, s_prev, s)
         rew <- rew + r * disc ^ (j - 1L)
         
         if (return_trajectories)

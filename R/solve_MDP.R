@@ -454,7 +454,7 @@ solve_MDP_TD <-
       i <- 1L
       while (TRUE) {
         s_prime <- sample(S, 1L, prob = P[[a]][s,])
-        r <- reward_val(model, a, s, s_prime)
+        r <- reward_matrix(model, a, s, s_prime)
         a_prime <- greedy_MDP_action(s_prime, Q, epsilon)
         
         if (verbose) {

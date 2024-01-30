@@ -13,6 +13,38 @@ using namespace Rcpp;
 
 // epsilon -1 means 0 for solved models and 1 for unsolved models
 
+/*** R
+library(pomdp)
+data(Tiger)
+Tiger_norm <- normalize_POMDP(Tiger, sparse = FALSE)
+Tiger_norm_sparse <- normalize_POMDP(Tiger, sparse = TRUE)
+
+# unsolved
+simulate_POMDP(Tiger, n = 2, horizon = 10, verbose = TRUE)
+simulate_POMDP(Tiger, n = 2, verbose = TRUE)
+simulate_POMDP(Tiger, n = 2, return_beliefs = TRUE, return_trajectories = TRUE, verbose = TRUE)
+
+# needs to be normalized for C++!
+pomdp:::simulate_POMDP_cpp(Tiger_norm, n = 2, belief = start_vector(Tiger), horizon = 10, 
+                         disc = .9, return_beliefs = TRUE, return_trajectories = FALSE, epsilon = 1, verbose = TRUE)
+
+pomdp:::simulate_POMDP_cpp(Tiger_norm_sparse, n = 2, belief = start_vector(Tiger), horizon = 10, 
+                         disc = .9, return_beliefs = TRUE, return_trajectories = TRUE, epsilon = 1, verbose = TRUE)
+
+# solve
+sol <- solve_POMDP(Tiger)
+sol
+policy(sol)
+
+sol <- normalize_POMDP(sol, sparse = TRUE)
+
+pomdp:::simulate_POMDP_cpp(sol, n = 2, belief = start_vector(Tiger), horizon = 10, 
+                           disc = .9, return_trajectories = TRUE, verbose = TRUE, epsilon = 0)
+*/
+
+
+
+
 // [[Rcpp::export]]
 List simulate_POMDP_cpp(const List& model,
   const int n,
@@ -33,7 +65,15 @@ List simulate_POMDP_cpp(const List& model,
   const int nactions = get_actions(model).size();
   const int nobs = get_obs(model).size();
   
-  // define current belief b, action a, observation o, and state s
+  
+  // absorbing states?
+  Environment pkg = Environment::namespace_env("pomdp");
+  Function R_absorbing_states = pkg["absorbing_states"];
+  LogicalVector absorbing = R_absorbing_states(model);
+  // this is which (starting with 0)
+  IntegerVector abs_states = seq_along(absorbing) - 1;
+  abs_states = abs_states[absorbing];
+  
   
   // allocate output
   NumericVector rews(n);
@@ -94,7 +134,8 @@ List simulate_POMDP_cpp(const List& model,
   // n replications
   for (int i = 0; i < n; ++i) {
     NumericVector b;
-    int a, o, s, s_prev, alpha_vector_id;
+    int a, o, s, s_prev;
+    int alpha_vector_id = NA_INTEGER;
     double r, disc_pow; // used for discounting
 #ifdef DEBUG 
     Rcout << "--- Replication " << i << " ---\n";
@@ -186,10 +227,16 @@ List simulate_POMDP_cpp(const List& model,
         tr_episode.push_back(i + 1);
         tr_time.push_back(j);
         tr_simulation_state.push_back(s_prev + 1);
-        tr_alpha_vector_id.push_back(alpha_vector_id + 1);
+        if (alpha_vector_id == NA_INTEGER)
+          tr_alpha_vector_id.push_back(NA_INTEGER);
+        else 
+          tr_alpha_vector_id.push_back(alpha_vector_id + 1);
         tr_a.push_back(a + 1);
         tr_r.push_back(r);
       }
+      
+      if (contains(abs_states, s))
+        break;
       
     }
     

@@ -8,13 +8,12 @@
 #' ![Cliff Walking Grid World](cliff_walking_gridworld.png "Cliff Walking Grid World.")
 #'
 #' The grid world is represented as a 4 x 12 matrix of states. 
-#' The states are labeled `s_1` through `s_48`. The layout is shown in the example code
-#' below. The start state is `s_1` and the goal state is `s_45`.
-#' The cliff covers states `s_5`, `s_9`,  `s_13`, `s_17`, `s_21`, `s_25`, 
-#' `s_29`, `s_33`, `s_37`, and `s_41`.
+#' The states are labeled with their x and y coordinates.
+#' The start state is in the bottom left corner. 
 #' Each action has a reward of -1, falling off the cliff has a reward of -100 and 
 #' returns the agent back to the start. The episode is finished once the agent 
-#' reaches the goal. No discounting is used (i.e., \eqn{\gamma = 1}).
+#' reaches the absorbing goal state in the bottom right corner. 
+#' No discounting is used (i.e., \eqn{\gamma = 1}).
 #'
 #' @docType data
 #' @name Cliff_walking

@@ -20,6 +20,7 @@
 * POMDP and MDP gained field for additional info.
 * approx_MDP_policy_evaluation() is now called MDP_policy_evaluation() and gained
   parameter theta as an additional stopping criterion.
+* rewrote reward_matrix for better access.
 
 ## Bugfixes
 * q_values_MDP(), solve_MDP(): Fixed reward representation issue.
@@ -34,7 +35,9 @@
 
 ## Changes
 * Changed the action names for the Maze example to the names used in Russell 
-  and Norvig's AIMA book.
+  and Norvig's AIMA book. 
+* POMDP lost the parameter max. Costs need to be specified as negative 
+  rewards.
 
 ## Bugfixes
 * simulate_POMDP() now adds terminal values.

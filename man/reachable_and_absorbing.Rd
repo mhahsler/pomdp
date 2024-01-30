@@ -36,7 +36,7 @@ The function \code{reachable_states()} checks if states
 are reachable using the transition model.
 
 The function \code{absorbing_states()} checks if a state or a set of states are
-absorbing (terminal states) with a reward of zero.
+absorbing (terminal states) with a zero reward (or \code{-Inf} for unavailable actions).
 If no states are specified (\code{states = NULL}), then all model states are
 checked. This information can be used in simulations to end an episode.
 
