@@ -113,6 +113,7 @@
 #' Maze
 #' 
 #' # remove the unreachable state s(2,2)
+#' reachable_states(Maze)
 #' Maze <- remove_unreachable_states(Maze)
 #' Maze
 #' 

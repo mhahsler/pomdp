@@ -97,7 +97,6 @@ visNetwork(nodes, edges)  \%>\%
   visNodes(physics = FALSE) \%>\%
   visEdges(smooth = list(type = "curvedCW", roundness = .6), arrows = "to")
 }
-
 }
 \seealso{
 Other POMDP: 

@@ -1,9 +1,12 @@
 # Accessor Functions for Rewards
 #
+# Representations:
+# Default:
 # * Sparse (df): A data.frame with: action start.state end.state observation value
+# 
+# Others:
 # * Dense (list): A action list -> start.state list -> end.state x observation matrix
 # * A function can be converted to a list
-# * list of df can be used to extract a value (matrix, vector, or scalar)
 
 
 ### Note: Sparse is a data.frame for rewards
@@ -360,13 +363,13 @@ reward_list2df <- function(x) {
   ## TODO: MDP
   
   reward_df[["action"]] <-
-    factor(reward_df[["action"]], labels = actions)
+    factor(reward_df[["action"]], labels = actions, levels = seq_along(actions))
   reward_df[["start.state"]] <-
-    factor(reward_df[["start.state"]], labels = states)
+    factor(reward_df[["start.state"]], labels = states, levels = seq_along(states))
   reward_df[["end.state"]] <-
-    factor(reward_df[["end.state"]], labels = states)
+    factor(reward_df[["end.state"]], labels = states, levels = seq_along(states))
   reward_df[["observation"]] <-
-    factor(reward_df[["observation"]], labels = observations)
+    factor(reward_df[["observation"]], labels = observations, levels = seq_along(observations))
   
   
   rownames(reward_df) <- NULL

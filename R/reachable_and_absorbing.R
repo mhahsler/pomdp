@@ -107,6 +107,8 @@ remove_unreachable_states <- function(x) {
         factor(as.character(field$start.state), levels = keep_names)
       field$end.state <-
         factor(as.character(field$end.state), levels = keep_names)
+    } else if (is.function(field)){
+      # do nothing
     } else {
       ### a list of actions
       field <-
@@ -128,7 +130,7 @@ remove_unreachable_states <- function(x) {
     if (length(x$start) == length(x$states)) {
       ### prob vector
       x$start <- x$start[reachable]
-      if (sum(x$start) == 1)
+      if (sum(x$start) != 1)
         stop(
           "Probabilities for reachable states do not sum up to one! An unreachable state had a non-zero probability."
         )

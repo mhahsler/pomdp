@@ -14,6 +14,7 @@ MDP(
   discount = 0.9,
   horizon = Inf,
   start = "uniform",
+  normalize = TRUE,
   info = NULL,
   name = NA
 )
@@ -40,6 +41,8 @@ observations.}
 horizon.}
 
 \item{start}{Specifies in which state the MDP starts.}
+
+\item{normalize}{logical; should the description be normalized for faster access (see \code{\link[=normalize_MDP]{normalize_MDP()}})?}
 
 \item{info}{A list with additional information.}
 

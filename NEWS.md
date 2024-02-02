@@ -21,7 +21,8 @@
 * POMDP and MDP gained field for additional info.
 * approx_MDP_policy_evaluation() is now called MDP_policy_evaluation() and gained
   parameter theta as an additional stopping criterion.
-* rewrote reward_matrix for better access.
+* rewrote all accessor code reward_matrix, transition_matrix, observation_matrix
+  for better and faster access.
 
 ## Bugfixes
 * q_values_MDP(), solve_MDP(): Fixed reward representation issue.

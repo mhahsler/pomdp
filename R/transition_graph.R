@@ -65,7 +65,6 @@
 #'   visNodes(physics = FALSE) %>%
 #'   visEdges(smooth = list(type = "curvedCW", roundness = .6), arrows = "to")
 #' }
-#'
 #' @export
 transition_graph <-
   function(x,
@@ -81,15 +80,17 @@ transition_graph <-
     m <-
       transition_matrix(
         x,
-        action = action,
+        action = NULL,
         episode = episode,
         epoch = epoch,
-        sparse = FALSE,
-        drop = FALSE
+        sparse = FALSE
       )
     
+    if (is.null(action))
+      action <- x$actions
+    
     gs <- sapply(
-      names(m),
+      action,
       FUN = function(a) {
         g <-
           graph_from_adjacency_matrix(m[[a]], mode = "directed",  weighted = TRUE)

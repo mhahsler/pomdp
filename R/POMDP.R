@@ -312,7 +312,7 @@ POMDP <- function(states,
   x <- check_and_fix_MDP(x)
   
   if (normalize)
-    x <- normalize_POMDP(x)
+    x <- normalize_POMDP(x, sparse = TRUE)
   
   x
 }

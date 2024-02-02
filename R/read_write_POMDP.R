@@ -42,7 +42,7 @@ write_POMDP <- function(x, file, digits = 7) {
   #  return()
   #}
   
-  ### solver restrictions
+  ### solver restrictions. POMDP defines a float for the reward 
   mr <- .max_abs_reward(x)
   reward_max <- 1e10
   if (mr > reward_max)
@@ -56,7 +56,7 @@ write_POMDP <- function(x, file, digits = 7) {
   reward_neg_Inf <- -2*mr
   #reward_neg_Inf <- -1e15
  
-   pomdp_solve_OK_chars <- "[^A-Za-z0-9_-]"
+  pomdp_solve_OK_chars <- "[^A-Za-z0-9_-]"
   
   x <- check_and_fix_MDP(x)
   
