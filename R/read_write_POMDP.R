@@ -730,7 +730,7 @@ parse_POMDP_matrix <-
 
 
 .parse_POMDP_reward <-
-  function(problem, actions, states, obs, sparse = TRUE) {
+  function(problem, actions, states, observations, sparse = TRUE) {
     if (!sparse)
       matrix_list <- lapply(
         actions,
@@ -741,8 +741,8 @@ parse_POMDP_matrix <-
               matrix(
                 0,
                 nrow = length(states),
-                ncol = length(obs),
-                dimnames = (list(states, obs))
+                ncol = length(observations),
+                dimnames = (list(states, observations))
               )
           )
           names(l) <- states
@@ -756,8 +756,8 @@ parse_POMDP_matrix <-
           l <- lapply(
             states,
             FUN = function(s) {
-              m <- spMatrix(length(states), length(obs))
-              dimnames(m) <- list(states, obs)
+              m <- spMatrix(length(states), length(observations))
+              dimnames(m) <- list(states, observations)
               m
             }
           )
@@ -792,31 +792,24 @@ parse_POMDP_matrix <-
       # For debugging
       #cat("Processing (", i, ")", paste(vals, collapse = ";"), "\n")
       
+      ### this also translates *
+      acts <- .from_0_idx(vals[1])
+      starts <- .from_0_idx(vals[2])
       end <- .from_0_idx(vals[3])
       obs <- .from_0_idx(vals[4])
-      
-      starts <- .from_0_idx(vals[2])
-      acts <- vals[1]
-      if (acts == "*")
+      if (is.na(acts))
         acts <- actions
-      
-      if (starts == "*")
+      if (is.na(starts))
         starts <- states
+      if (is.na(obs))
+        obs <- observations
+      if (is.na(end))
+        end <- states
       
       for (action in acts) {
         for (start in starts) {
           # Case: R: <action> : <start-state> : <end-state> : <observation> %f
           if (length(vals) == 5L) {
-            if (end == '*' && obs == '*')
-              matrix_list[[action]][[start]][] <-
-                as.numeric(vals[5])
-            else if (end == '*')
-              matrix_list[[action]][[start]][, obs] <-
-                as.numeric(vals[5])
-            else if (obs == '*')
-              matrix_list[[action]][[start]][end,] <-
-                as.numeric(vals[5])
-            else
               matrix_list[[action]][[start]][end, obs] <-
                 as.numeric(vals[5])
           }
@@ -824,16 +817,6 @@ parse_POMDP_matrix <-
           # Case: R: <action> : <start-state> : <end-state> : <observation>
           # %f
           if (length(vals) == 4L) {
-            if (end == '*' && obs == '*')
-              matrix_list[[action]][[start]][] <-
-                read_val_line(i + 1L)
-            else if (end == '*')
-              matrix_list[[action]][[start]][, obs] <-
-                read_val_line(i + 1L)
-            else if (obs == '*')
-              matrix_list[[action]][[start]][end,] <-
-                read_val_line(i + 1L)
-            else
               matrix_list[[action]][[start]][end, obs] <-
                 read_val_line(i + 1L)
           }
@@ -841,11 +824,6 @@ parse_POMDP_matrix <-
           # Case: R: <action> : <start-state> : <end-state>
           #       %f %f ... %f
           if (length(vals) == 3L) {
-            if (end == '*')
-              for (k in seq_along(states))
-                matrix_list[[action]][[start]][k,] <-
-                  read_val_line(i + 1L)
-            else
               matrix_list[[action]][[start]][end, ] <-
                 read_val_line(i + 1L)
           }

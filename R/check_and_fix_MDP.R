@@ -348,7 +348,7 @@ check_and_fix_MDP <- function(x) {
             stop("observation_prob matrix for action ",
                  a,
                  ": has not the right dimensions!")
-          if (!all(rowSums(x$observation_prob[[a]]) == 1))
+          if (!sum1(x$observation_prob[[a]]))
             stop("observation_prob matrix for action ",
                  a,
                  ": rows do not add up to 1!")
