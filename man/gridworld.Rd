@@ -60,9 +60,9 @@ These states will be excluded.}
 \item{s}{a state label.}
 
 \item{xy}{a vector of length two with the x and y coordinate of a
-state in the grid world.}
+state in the gridworld.}
 
-\item{model, x}{a solved grid world MDP.}
+\item{model, x}{a solved gridworld MDP.}
 
 \item{epoch}{epoch for unconverged finite-horizon solutions.}
 
@@ -96,15 +96,15 @@ state in the grid world.}
 graph does not fit inside the plotting area.}
 }
 \description{
-Helper functions for grid world MDPs to convert between state names and
-grid world positions, and for visualizing policies.
+Helper functions for gridworld MDPs to convert between state names and
+gridworld positions, and for visualizing policies.
 }
 \details{
 Gridworlds are implemented with state names \code{s(row,col)}, where
-\code{row} and \code{col} are locations in the matrix representing the grid world.
+\code{row} and \code{col} are locations in the matrix representing the gridworld.
 The actions are \code{"up"}, \code{"right"},  \code{"down"}, and  \code{"left"}.
 
-\code{gridworld_init()} initializes a new grid world creating a matrix
+\code{gridworld_init()} initializes a new gridworld creating a matrix
 of states with the given dimensions. Other action names
 can be specified, but they must have the same effects in the same order
 as above.
@@ -130,7 +130,7 @@ gw$trans_prob("right", "s(2,1)", "s(2,1)")  ### but the agent stays in place
 gridworld_s2rc("s(3,3)")
 gridworld_rc2s(c(3,3))
 
-# use the Maze grid world 
+# use the Maze gridworld 
 data(Maze)
 
 # show the layout
@@ -140,7 +140,7 @@ gridworld_matrix(Maze, what = "labels")
 # visualize the transition graph
 gridworld_plot_transition_graph(Maze)
 
-# translate between state labels and grid world locations
+# translate between state labels and gridworld locations
 gridworld_rc2s(c(1,1))
 
 # for solved MDPs we can look at state values and policy actions
@@ -149,7 +149,7 @@ policy(sol)
 gridworld_matrix(sol, what = "values")
 gridworld_matrix(sol, what = "actions")
 
-# plot the solved grid world
+# plot the solved gridworld
 gridworld_plot_policy(sol)
 gridworld_plot_policy(sol, arrows = FALSE)
 }

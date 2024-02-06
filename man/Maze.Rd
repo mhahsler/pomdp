@@ -137,8 +137,8 @@ A modern approach. 4rd ed.
 }
 \seealso{
 Other MDP: 
-\code{\link{MDP_policy_functions}},
 \code{\link{MDP}()},
+\code{\link{MDP_policy_functions}},
 \code{\link{accessors}},
 \code{\link{add_policy}()},
 \code{\link{reachable_and_absorbing}},

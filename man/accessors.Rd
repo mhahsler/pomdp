@@ -224,8 +224,8 @@ Other POMDP:
 \code{\link{write_POMDP}()}
 
 Other MDP: 
-\code{\link{MDP_policy_functions}},
 \code{\link{MDP}()},
+\code{\link{MDP_policy_functions}},
 \code{\link{Maze}},
 \code{\link{add_policy}()},
 \code{\link{reachable_and_absorbing}},

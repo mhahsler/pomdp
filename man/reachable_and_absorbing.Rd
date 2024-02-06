@@ -59,8 +59,8 @@ which(!reachable_states(Maze))
 }
 \seealso{
 Other MDP: 
-\code{\link{MDP_policy_functions}},
 \code{\link{MDP}()},
+\code{\link{MDP_policy_functions}},
 \code{\link{Maze}},
 \code{\link{accessors}},
 \code{\link{add_policy}()},

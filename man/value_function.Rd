@@ -95,8 +95,8 @@ Other policy:
 \code{\link{optimal_action}()},
 \code{\link{plot_belief_space}()},
 \code{\link{plot_policy_graph}()},
-\code{\link{policy_graph}()},
 \code{\link{policy}()},
+\code{\link{policy_graph}()},
 \code{\link{projection}()},
 \code{\link{reward}()},
 \code{\link{solve_POMDP}()},
@@ -119,8 +119,8 @@ Other POMDP:
 \code{\link{write_POMDP}()}
 
 Other MDP: 
-\code{\link{MDP_policy_functions}},
 \code{\link{MDP}()},
+\code{\link{MDP_policy_functions}},
 \code{\link{Maze}},
 \code{\link{accessors}},
 \code{\link{add_policy}()},
