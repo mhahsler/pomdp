@@ -1,13 +1,13 @@
 #' Helper Functions for Gridworld MDPs
 #'
-#' Helper functions for grid world MDPs to convert between state names and
-#' grid world positions, and for visualizing policies.
+#' Helper functions for gridworld MDPs to convert between state names and
+#' gridworld positions, and for visualizing policies.
 #'
 #' Gridworlds are implemented with state names `s(row,col)`, where
-#' `row` and `col` are locations in the matrix representing the grid world.
+#' `row` and `col` are locations in the matrix representing the gridworld.
 #' The actions are `"up"`, `"right"`,  `"down"`, and  `"left"`. 
 #'
-#' `gridworld_init()` initializes a new grid world creating a matrix
+#' `gridworld_init()` initializes a new gridworld creating a matrix
 #' of states with the given dimensions. Other action names
 #' can be specified, but they must have the same effects in the same order 
 #' as above.
@@ -36,7 +36,7 @@
 #' gridworld_s2rc("s(3,3)")
 #' gridworld_rc2s(c(3,3))
 #'
-#' # use the Maze grid world 
+#' # use the Maze gridworld 
 #' data(Maze)
 #'
 #' # show the layout
@@ -46,7 +46,7 @@
 #' # visualize the transition graph
 #' gridworld_plot_transition_graph(Maze)
 #'
-#' # translate between state labels and grid world locations
+#' # translate between state labels and gridworld locations
 #' gridworld_rc2s(c(1,1))
 #'
 #' # for solved MDPs we can look at state values and policy actions
@@ -55,7 +55,7 @@
 #' gridworld_matrix(sol, what = "values")
 #' gridworld_matrix(sol, what = "actions")
 #'
-#' # plot the solved grid world
+#' # plot the solved gridworld
 #' gridworld_plot_policy(sol)
 #' gridworld_plot_policy(sol, arrows = FALSE)
 #' @param dim vector of length two with the x and y extent of the gridworld.
@@ -105,15 +105,15 @@ gridworld_init <- function(dim, A =  c("up", "right", "down", "left"),
 }
 
 #' @rdname gridworld
-#' @param model,x a solved grid world MDP.
+#' @param model,x a solved gridworld MDP.
 #' @param s a state label.
 #' @param xy a vector of length two with the x and y coordinate of a
-#'   state in the grid world.
+#'   state in the gridworld.
 #' @export
 gridworld_s2rc <- function(s) {
   xy <- as.integer(strsplit(s, "s\\(|,|\\)")[[1]][-1])
   if (length(xy) != 2 || any(is.na(xy)))
-    stop("Malformed grid world state label ",
+    stop("Malformed gridworld state label ",
          sQuote(s),
          ". Needs to be 's(x,y)'.")
   xy

@@ -1,13 +1,13 @@
-#' Cliff Walking Grid World
+#' Cliff Walking Gridworld
 #'
-#' The cliff walking grid world example from Chapter 6 of the textbook 
+#' The cliff walking gridworld example from Chapter 6 of the textbook 
 #' "Reinforcement Learning: An Introduction."
 #'
-#' The cliff walking grid world has the following layout:
+#' The cliff walking gridworld has the following layout:
 #'
-#' ![Cliff Walking Grid World](cliff_walking_gridworld.png "Cliff Walking Grid World.")
+#' ![Cliff Walking Gridworld](cliff_walking_gridworld.png "Cliff Walking Gridworld.")
 #'
-#' The grid world is represented as a 4 x 12 matrix of states. 
+#' The gridworld is represented as a 4 x 12 matrix of states. 
 #' The states are labeled with their x and y coordinates.
 #' The start state is in the bottom left corner. 
 #' Each action has a reward of -1, falling off the cliff has a reward of -100 and 

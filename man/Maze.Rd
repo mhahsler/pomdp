@@ -150,6 +150,7 @@ Other MDP:
 
 Other gridworld: 
 \code{\link{Cliff_walking}},
+\code{\link{Windy_gridworld}},
 \code{\link{gridworld}}
 }
 \concept{MDP}

@@ -44,6 +44,7 @@ Collate:
     'RcppExports.R'
     'RussianTiger.R'
     'Tiger.R'
+    'Windy_gridworld.R'
     'accessors.R'
     'accessors_reward.R'
     'accessors_trans_obs.R'

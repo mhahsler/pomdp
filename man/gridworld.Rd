@@ -156,6 +156,7 @@ gridworld_plot_policy(sol, arrows = FALSE)
 \seealso{
 Other gridworld: 
 \code{\link{Cliff_walking}},
-\code{\link{Maze}}
+\code{\link{Maze}},
+\code{\link{Windy_gridworld}}
 }
 \concept{gridworld}

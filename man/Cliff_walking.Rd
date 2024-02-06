@@ -65,6 +65,7 @@ Second Edition, MIT Press, Cambridge, MA.
 \seealso{
 Other gridworld: 
 \code{\link{Maze}},
+\code{\link{Windy_gridworld}},
 \code{\link{gridworld}}
 }
 \concept{gridworld}

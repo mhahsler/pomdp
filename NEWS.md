@@ -6,7 +6,7 @@
 * simulate_MDP() and simulate_POMDP() gained parameter return_trajectories.
 * New functions `absorbing_states()` and `reachable_states()` for MDPs and POMDPs.
 * Support for grid worlds (see ? gridworld).
-* New datasets: Cliff_walking, RussianTiger
+* New datasets: Cliff_walking, Windy_gridworld, RussianTiger
 * plot_transition_graph() now hides unavailable actions.
 
 ## Changes
