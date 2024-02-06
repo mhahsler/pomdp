@@ -661,7 +661,7 @@ solve_POMDP <- function(model,
   model
 }
 
-
+#' @export
 print.POMDP_solution <- function(x, ...) {
   cat("POMDP solution\n\n")
   print(unclass(x))

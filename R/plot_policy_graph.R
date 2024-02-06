@@ -37,7 +37,7 @@
 #' it also adds curvature to parallel edges that point in opposite directions.
 #' @family policy
 #'
-#' @import igraph
+#' @importFrom igraph as_edgelist vertex_attr edge_attr vertex_attr<- edge_attr<- plot.igraph
 #'
 #' @param x object of class [POMDP] containing a solved and converged POMDP problem.
 #' @param belief the initial belief is used to mark the initial belief state in the

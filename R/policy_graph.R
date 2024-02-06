@@ -17,7 +17,7 @@
 #' These options are disabled by default for `policy_graph()`.
 #' @family policy
 #'
-#' @import igraph
+#' @importFrom igraph vertex_attr<- edge_attr<- graph_from_edgelist
 #'
 #' @param x object of class [POMDP] containing a solved and converged POMDP problem.
 #' @param belief the initial belief is used to mark the initial belief state in the
@@ -162,8 +162,8 @@ policy_graph <-
     l <- l[!is.na(l$to),] # remove links to nowhere ('-' in pg)
     
     # creating graph
-    policy_graph <- graph.edgelist(as.matrix(l[, 1:2]))
-    edge.attributes(policy_graph) <-
+    policy_graph <- graph_from_edgelist(as.matrix(l[, 1:2]))
+    edge_attr(policy_graph) <-
       list(label = l$label, observation = l$label)
     
     # mark the node for the initial belief

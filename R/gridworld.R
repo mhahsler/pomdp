@@ -260,6 +260,8 @@ gridworld_plot_policy <-
       g$actions <- as.character(factor(g$actions, 
                                       levels = c("up", "right", "down", "left"), 
                                       labels = c("^", ">", "<", "v")))
+    
+    # plotting unicode characters is a problem.
                                       #labels = c("\U2191", "\U2192", "\U2193", "\U2190")))
       
     text(g$x, g$y, g$actions, cex = cex)

@@ -8,7 +8,7 @@
 #' @family POMDP
 #' @family MDP
 #'
-#' @import igraph
+#' @importFrom igraph graph_from_adjacency_matrix %>% E E<- V V<- add_layout_ as_data_frame as_tree graph_from_data_frame induced_subgraph norm_coords
 #'
 #' @param x object of class [POMDP] or [MDP].
 #' @param action the name or id of an action or a set of actions. Bey default the transition model for all actions is returned.
