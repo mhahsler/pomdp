@@ -43,10 +43,11 @@
 #' and choose an approximate algorithm with an acceptable level of 
 #' approximation to make the problem tractable.
 #'
-#' **Note on method grid:** The grid method implements a version of Point
+#' **Note on method grid:** The finite grid method implements a version of Point
 #' Based Value Iteration (PBVI). The used belief points are by default created
 #' using points that are reachable from the initial belief (`start`) by
-#' following all combinations of actions and observations. The size of the grid
+#' following all combinations of actions and observations. The size of the grid is
+#' by default 10,000 and 
 #' can be set via `parameter = list(fg_points = 100)`. Alternatively,
 #' different strategies can be chosen using the parameter `fg_type`. In
 #' this implementation, the user can also specify manually a grid of belief

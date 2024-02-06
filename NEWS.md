@@ -1,13 +1,12 @@
 # pomdp 1.1.3.1 (xx/xx/2024)
 
 ## New Features
-* Policies for the Maze problem can now be visualized.
 * Added functions to work with MDP policies (see ? MDP_policy_functions).
 * Added MDP solver functions: Q-learning, Sarsa, and expected Sarsa.
 * simulate_MDP() and simulate_POMDP() gained parameter return_trajectories.
 * New functions `absorbing_states()` and `reachable_states()` for MDPs and POMDPs.
 * Support for grid worlds (see ? gridworld).
-* New datasets: Cliff_walking
+* New datasets: Cliff_walking, RussianTiger
 * plot_transition_graph() now hides unavailable actions.
 
 ## Changes

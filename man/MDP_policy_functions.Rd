@@ -121,9 +121,9 @@ pi_opt
 gridworld_plot_policy(add_policy(Maze, pi_opt), main = "Optimal Policy")
 
 # 2. a manual policy (go up and in some squares to the right)
-acts <- rep("north", times = length(Maze$states))
+acts <- rep("up", times = length(Maze$states))
 names(acts) <- Maze$states
-acts[c("s(1,1)", "s(1,2)", "s(1,3)")] <- "east"
+acts[c("s(1,1)", "s(1,2)", "s(1,3)")] <- "right"
 pi_manual <- manual_MDP_policy(Maze, acts)
 pi_manual
 gridworld_plot_policy(add_policy(Maze, pi_manual), main = "Manual Policy")
@@ -159,7 +159,7 @@ plot_value_function(maze_random)
 gridworld_plot_policy(maze_random)
 
 # compare to a benchmark
-regret(maze_random, maze_solved)
+regret(maze_random, benchmark = maze_solved)
 
 # calculate greedy actions for state 1
 q <- q_values_MDP(maze_random)

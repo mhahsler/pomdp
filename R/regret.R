@@ -31,7 +31,7 @@
 #' sol_quick <- solve_POMDP(Tiger, method = "enum", horizon = 10)
 #' sol_quick
 #' 
-#' regret(sol_quick, sol_optimal)
+#' regret(sol_quick, benchmark = sol_optimal)
 #' @export
 regret <- function(policy, benchmark, start = NULL) {
   UseMethod("regret")
@@ -64,13 +64,13 @@ regret.MDP <- function(policy, benchmark, start = NULL) {
     stop("policy needs to be a solved MDP.")
   
   if (is.null(start))
-    start <- benchmark$start
+    start <- which(start_vector(benchmark) == 1) 
   
   if(is.character(start))
     start <- which(benchmark$states == start)
   
-  if (is.null(start) || length(start) != 1L)
-    stop("start state needs to be specified!")
+  if (length(start) != 1L)
+    stop("A single start state needs to be specified!")
   
   r_bench <- policy(benchmark)$U[start]
   r_pol <- policy(policy)$U[start]

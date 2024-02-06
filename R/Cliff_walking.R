@@ -36,7 +36,8 @@
 #' 
 #' # visualize the transition graph
 #' gridworld_plot_transition_graph(Cliff_walking)
-#' 
+#'
+#' # solve using different methods
 #' sol <- solve_MDP(Cliff_walking) 
 #' sol
 #' policy(sol)
@@ -56,3 +57,4 @@
 #' policy(sol)
 #' gridworld_plot_policy(sol)
 NULL
+

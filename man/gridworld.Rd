@@ -3,18 +3,22 @@
 \name{gridworld}
 \alias{gridworld}
 \alias{gridworld_init}
-\alias{gridworld_s2xy}
-\alias{gridworld_xy2s}
+\alias{gridworld_s2rc}
+\alias{gridworld_rc2s}
 \alias{gridworld_matrix}
 \alias{gridworld_plot_policy}
 \alias{gridworld_plot_transition_graph}
-\title{Helper Functions for Grid World MDPs}
+\title{Helper Functions for Gridworld MDPs}
 \usage{
-gridworld_init(dim)
+gridworld_init(
+  dim,
+  A = c("up", "right", "down", "left"),
+  unreachable_states = NULL
+)
 
-gridworld_s2xy(s)
+gridworld_s2rc(s)
 
-gridworld_xy2s(xy)
+gridworld_rc2s(xy)
 
 gridworld_matrix(model, epoch = 1L, what = "states")
 
@@ -45,7 +49,13 @@ gridworld_plot_transition_graph(
 )
 }
 \arguments{
-\item{dim}{vector of length two with the x and y extent of the grid world.}
+\item{dim}{vector of length two with the x and y extent of the gridworld.}
+
+\item{A}{vector with four action labels that move the agent up, right, down,
+and left.}
+
+\item{unreachable_states}{a vector with state labels for unreachable states.
+These states will be excluded.}
 
 \item{s}{a state label.}
 
@@ -90,14 +100,37 @@ Helper functions for grid world MDPs to convert between state names and
 grid world positions, and for visualizing policies.
 }
 \details{
-Grid worlds are implemented with state names \code{s(x,y)}, where
-\code{x} and \code{y} are state coordinates.
+Gridworlds are implemented with state names \code{s(row,col)}, where
+\code{row} and \code{col} are locations in the matrix representing the grid world.
+The actions are \code{"up"}, \code{"right"},  \code{"down"}, and  \code{"left"}.
 
 \code{gridworld_init()} initializes a new grid world creating a matrix
-of states with the given dimensions. Several other helper functions
+of states with the given dimensions. Other action names
+can be specified, but they must have the same effects in the same order
+as above.
+
+Several other helper functions
 are provided.
 }
 \examples{
+# define a gridworld as a matrix with 7 rows and 5 columns 
+gw <- gridworld_init(c(7,5), 
+                unreachable_states = c("s(2,2)", "s(3,2)", "s(4,2)"))
+gw
+
+# display the state labels in the gridworld
+gridworld_matrix(gw)
+
+# regular moves in the gridworld
+gw$trans_prob("right", "s(1,1)", "s(1,2)")
+gw$trans_prob("right", "s(2,1)", "s(2,2)")  ### we cannot move into an unreachable state
+gw$trans_prob("right", "s(2,1)", "s(2,1)")  ### but the agent stays in place
+
+# convert between state names and row/column indices
+gridworld_s2rc("s(3,3)")
+gridworld_rc2s(c(3,3))
+
+# use the Maze grid world 
 data(Maze)
 
 # show the layout
@@ -108,7 +141,7 @@ gridworld_matrix(Maze, what = "labels")
 gridworld_plot_transition_graph(Maze)
 
 # translate between state labels and grid world locations
-gridworld_xy2s(c(1,1))
+gridworld_rc2s(c(1,1))
 
 # for solved MDPs we can look at state values and policy actions
 sol <- solve_MDP(Maze)

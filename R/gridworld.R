@@ -1,19 +1,42 @@
-#' Helper Functions for Grid World MDPs
+#' Helper Functions for Gridworld MDPs
 #'
 #' Helper functions for grid world MDPs to convert between state names and
 #' grid world positions, and for visualizing policies.
 #'
-#' Grid worlds are implemented with state names `s(x,y)`, where
-#' `x` and `y` are state coordinates.
+#' Gridworlds are implemented with state names `s(row,col)`, where
+#' `row` and `col` are locations in the matrix representing the grid world.
+#' The actions are `"up"`, `"right"`,  `"down"`, and  `"left"`. 
 #'
 #' `gridworld_init()` initializes a new grid world creating a matrix
-#' of states with the given dimensions. Several other helper functions
+#' of states with the given dimensions. Other action names
+#' can be specified, but they must have the same effects in the same order 
+#' as above.
+#' 
+#' Several other helper functions
 #' are provided.
 #'
 #' @name gridworld
 #' @aliases gridworld
 #' @family gridworld
 #' @examples
+#' # define a gridworld as a matrix with 7 rows and 5 columns 
+#' gw <- gridworld_init(c(7,5), 
+#'                 unreachable_states = c("s(2,2)", "s(3,2)", "s(4,2)"))
+#' gw
+#' 
+#' # display the state labels in the gridworld
+#' gridworld_matrix(gw)
+#'
+#' # regular moves in the gridworld
+#' gw$trans_prob("right", "s(1,1)", "s(1,2)")
+#' gw$trans_prob("right", "s(2,1)", "s(2,2)")  ### we cannot move into an unreachable state
+#' gw$trans_prob("right", "s(2,1)", "s(2,1)")  ### but the agent stays in place
+#' 
+#' # convert between state names and row/column indices
+#' gridworld_s2rc("s(3,3)")
+#' gridworld_rc2s(c(3,3))
+#'
+#' # use the Maze grid world 
 #' data(Maze)
 #'
 #' # show the layout
@@ -24,7 +47,7 @@
 #' gridworld_plot_transition_graph(Maze)
 #'
 #' # translate between state labels and grid world locations
-#' gridworld_xy2s(c(1,1))
+#' gridworld_rc2s(c(1,1))
 #'
 #' # for solved MDPs we can look at state values and policy actions
 #' sol <- solve_MDP(Maze)
@@ -35,19 +58,48 @@
 #' # plot the solved grid world
 #' gridworld_plot_policy(sol)
 #' gridworld_plot_policy(sol, arrows = FALSE)
-#' @param dim vector of length two with the x and y extent of the grid world.
+#' @param dim vector of length two with the x and y extent of the gridworld.
+#' @param A vector with four action labels that move the agent up, right, down,
+#'   and left.
+#' @param unreachable_states a vector with state labels for unreachable states. 
+#'     These states will be excluded. 
 #' @export
-gridworld_init <- function(dim) {
+gridworld_init <- function(dim, A =  c("up", "right", "down", "left"), 
+                           unreachable_states = NULL) {
   S <- as.vector(outer(
     seq_len(dim[1]),
     seq_len(dim[2]),
     FUN = function(x, y)
       paste0("s(", x, ",", y, ")")
   ))
-  A <- c("north", "east", "south", "west")
+
+  if (!is.null(unreachable_states))
+    S <- setdiff(S, unreachable_states)
+  
+  T <- function(a, start.state, end.state) {
+    ai <- pmatch(a, A)
+    if (is.na(ai))
+      stop("Unknown action", a)
+    
+    rc <- gridworld_s2rc(start.state)
+    rc <- switch (
+      ai,
+      rc + c(-1,  0),          ### up
+      rc + c(0,+1),            ### right
+      rc + c(+1,  0),          ### down
+      rc + c(0,-1),            ### left
+    )
+   
+    es <-  gridworld_rc2s(rc)
+    if (!(es %in% S))
+      es <- start.state
+    as.integer(es == end.state)
+  }
+  
   list(
     states = S,
     actions = A,
+    trans_prob = T,
     info = list(gridworld_dim = dim)
   )
 }
@@ -58,7 +110,7 @@ gridworld_init <- function(dim) {
 #' @param xy a vector of length two with the x and y coordinate of a
 #'   state in the grid world.
 #' @export
-gridworld_s2xy <- function(s) {
+gridworld_s2rc <- function(s) {
   xy <- as.integer(strsplit(s, "s\\(|,|\\)")[[1]][-1])
   if (length(xy) != 2 || any(is.na(xy)))
     stop("Malformed grid world state label ",
@@ -69,7 +121,7 @@ gridworld_s2xy <- function(s) {
 
 #' @rdname gridworld
 #' @export
-gridworld_xy2s <- function(xy)
+gridworld_rc2s <- function(xy)
   paste0("s(", xy[1], ",", xy[2], ")")
 
 #' @rdname gridworld
@@ -206,7 +258,7 @@ gridworld_plot_policy <-
    
     if (arrows)
       g$actions <- as.character(factor(g$actions, 
-                                      levels = c("north", "east", "south", "west"), 
+                                      levels = c("up", "right", "down", "left"), 
                                       labels = c("\U2191", "\U2192", "\U2193", "\U2190")))
       
     text(g$x, g$y, g$actions, cex = cex)
@@ -234,7 +286,7 @@ gridworld_plot_transition_graph <-
            ...) {
     g <- transition_graph(x)
     
-    layout <- t(sapply(x$states, gridworld_s2xy))[, 2:1] *
+    layout <- t(sapply(x$states, gridworld_s2rc))[, 2:1] *
       cbind(rep(1, length(x$states)), -1)
     
     if (hide_unreachable_states) {

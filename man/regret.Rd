@@ -38,7 +38,7 @@ sol_optimal
 sol_quick <- solve_POMDP(Tiger, method = "enum", horizon = 10)
 sol_quick
 
-regret(sol_quick, sol_optimal)
+regret(sol_quick, benchmark = sol_optimal)
 }
 \seealso{
 Other POMDP: 
