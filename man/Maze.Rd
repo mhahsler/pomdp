@@ -50,6 +50,7 @@ converges without discounting (\code{discount = 1}).
 gw <- gridworld_init(dim = c(3, 4), unreachable_states = c("s(2,2)"))
 gridworld_matrix(gw)
 
+# the transition function is stochastic so we cannot use gw$T()
 T <- function(action, start.state, end.state) {
   action <- match.arg(action, choices = gw$actions)
   

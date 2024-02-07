@@ -10,7 +10,8 @@
 #' `gridworld_init()` initializes a new gridworld creating a matrix
 #' of states with the given dimensions. Other action names
 #' can be specified, but they must have the same effects in the same order 
-#' as above.
+#' as above. Unreachable states (walls) and absorbing state can be defined.
+#' Tis information is used to create a default transition function.
 #' 
 #' Several other helper functions
 #' are provided.
@@ -19,24 +20,49 @@
 #' @aliases gridworld
 #' @family gridworld
 #' @examples
-#' # define a gridworld as a matrix with 7 rows and 5 columns 
-#' gw <- gridworld_init(c(7,5), 
-#'                 unreachable_states = c("s(2,2)", "s(3,2)", "s(4,2)"))
+#' # Define a gridworld: The Dyna Maze from Chapter 8 in the RL book
+#' gw <- gridworld_init(c(6,9), 
+#'                 unreachable_states = c("s(2,3)", "s(3,3)", "s(4,3)",
+#'                                        "s(5,6)", 
+#'                                        "s(1,8)", "s(2,8)", "s(3,8)"),
+#'                 absorbing_states = "s(1,9)",
+#'                 labels = list("s(1,9)" = "G",
+#'                               "s(3,1)" = "S"))
 #' gw
 #' 
 #' # display the state labels in the gridworld
 #' gridworld_matrix(gw)
 #'
 #' # regular moves in the gridworld
-#' gw$trans_prob("right", "s(1,1)", "s(1,2)")
-#' gw$trans_prob("right", "s(2,1)", "s(2,2)")  ### we cannot move into an unreachable state
-#' gw$trans_prob("right", "s(2,1)", "s(2,1)")  ### but the agent stays in place
+#' gw$T("right", "s(1,1)", "s(1,2)")
+#' gw$T("right", "s(2,2)", "s(2,3)")  ### we cannot move into an unreachable state
+#' gw$T("right", "s(2,2)", "s(2,2)")  ### but the agent stays in place
 #' 
 #' # convert between state names and row/column indices
-#' gridworld_s2rc("s(3,3)")
-#' gridworld_rc2s(c(3,3))
+#' gridworld_s2rc("s(1,1)")
+#' gridworld_rc2s(c(1,1))
 #'
-#' # use the Maze gridworld 
+#' Dyna_maze <- MDP(
+#'   states = gw$states,
+#'   actions = gw$actions,
+#'   transition_prob = gw$T,
+#'   reward = rbind(R_(value = 0), R_(end.state = "s(1,9)", value = +1)),
+#'   discount = 0.95,
+#'   start = "s(3,1)",
+#'   info = gw$info,
+#'   name = "Dyna Maze"
+#'   )
+#'
+#' Dyna_maze
+#' 
+#' gridworld_plot_transition_graph(Dyna_maze, 
+#'     vertex.label = NA, vertex.size = 20)
+#'
+#' sol <- solve_MDP(Dyna_maze)
+#' gridworld_plot_policy(sol)
+#'
+#'
+#' # Use the existing Maze gridworld 
 #' data(Maze)
 #'
 #' # show the layout
@@ -63,9 +89,12 @@
 #'   and left.
 #' @param unreachable_states a vector with state labels for unreachable states. 
 #'     These states will be excluded. 
+#' @param absorbing_states a vector with state labels for absorbing states. 
 #' @export
 gridworld_init <- function(dim, A =  c("up", "right", "down", "left"), 
-                           unreachable_states = NULL) {
+                           unreachable_states = NULL,
+                           absorbing_states = NULL,
+                           labels = NULL) {
   S <- as.vector(outer(
     seq_len(dim[1]),
     seq_len(dim[2]),
@@ -76,10 +105,13 @@ gridworld_init <- function(dim, A =  c("up", "right", "down", "left"),
   if (!is.null(unreachable_states))
     S <- setdiff(S, unreachable_states)
   
-  T <- function(a, start.state, end.state) {
-    ai <- pmatch(a, A)
+  T <- function(action, start.state = NULL, end.state = NULL) {
+    ai <- pmatch(action, A)
     if (is.na(ai))
-      stop("Unknown action", a)
+      stop("Unknown action", action)
+    
+    if (!is.null(absorbing_states) && start.state %in% absorbing_states)
+      return(as.integer(end.state == start.state))
     
     rc <- gridworld_s2rc(start.state)
     rc <- switch (
@@ -99,8 +131,8 @@ gridworld_init <- function(dim, A =  c("up", "right", "down", "left"),
   list(
     states = S,
     actions = A,
-    trans_prob = T,
-    info = list(gridworld_dim = dim)
+    T = T,
+    info = list(gridworld_dim = dim, gridworld_labels = labels)
   )
 }
 
@@ -259,7 +291,7 @@ gridworld_plot_policy <-
     if (arrows)
       g$actions <- as.character(factor(g$actions, 
                                       levels = c("up", "right", "down", "left"), 
-                                      labels = c("^", ">", "<", "v")))
+                                      labels = c("^", ">", "v", "<")))
     
     # plotting unicode characters is a problem.
                                       #labels = c("\U2191", "\U2192", "\U2193", "\U2190")))
