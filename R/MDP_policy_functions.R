@@ -205,7 +205,7 @@ greedy_MDP_action <-
     if (!prob) {
       if (epsilon == 0 ||
           length(available_A) == 1L || runif(1) > epsilon) {
-        a <- available_A[which.max(Q[s, available_A])]
+        a <- available_A[which.max.random(Q[s, available_A])]
       } else {
         a <- sample(available_A, size = 1L)
       }
@@ -215,7 +215,7 @@ greedy_MDP_action <-
     
     #return probabilities
     p <- structure(rep(0, ncol(Q)), names = colnames(Q))
-    a <- available_A[which.max(Q[s, available_A])]
+    a <- available_A[which.max.random(Q[s, available_A])]
     p[a] <- 1 - epsilon
     p[available_A] <- p[available_A] + epsilon / length(available_A)
     
@@ -281,7 +281,7 @@ greedy_MDP_policy <-
     data.frame(
       state = rownames(Q),
       U = apply(Q, MARGIN = 1, max),
-      action = A[apply(Q, MARGIN = 1, which.max)],
+      action = A[apply(Q, MARGIN = 1, which.max.random)],
       row.names = NULL
     )
   }

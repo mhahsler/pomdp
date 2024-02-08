@@ -251,7 +251,7 @@ MDP_value_iteration_finite_horizon <-
         cat("Iteration for t = ", t)
       
       Qs <- outer(S, A, .QV_vec, P, R, GAMMA, U)
-      m <- apply(Qs, MARGIN = 1, which.max)
+      m <- apply(Qs, MARGIN = 1, which.max.random)
       
       pi <- factor(m, levels = seq_along(A), labels = A)
       U <- Qs[cbind(seq_along(S), m)]
@@ -291,7 +291,7 @@ MDP_value_iteration_inf_horizon <-
         cat("Iteration:", i)
       
       Qs <- outer(S, A, .QV_vec, P, R, GAMMA, U)
-      m <- apply(Qs, MARGIN = 1, which.max)
+      m <- apply(Qs, MARGIN = 1, which.max.random)
       
       pi <- factor(m, levels = seq_along(A), labels = A)
       U_t_minus_1 <- Qs[cbind(seq_along(S), m)]
@@ -365,7 +365,7 @@ MDP_policy_iteration_inf_horizon <-
       
       # get greedy policy for U
       Qs <- outer(S, A, .QV_vec, P, R, GAMMA, U)
-      m <- apply(Qs, MARGIN = 1, which.max)
+      m <- apply(Qs, MARGIN = 1, which.max.random)
       pi_prime <- factor(m, levels = seq_along(A), labels = A)
       
       if (all(pi == pi_prime)) {
@@ -512,7 +512,7 @@ solve_MDP_TD <-
       policy = list(data.frame(
         state = S,
         U = apply(Q, MARGIN = 1, max),
-        action = A[apply(Q, MARGIN = 1, which.max)],
+        action = A[apply(Q, MARGIN = 1, which.max.random)],
         row.names = NULL
       ))
     )

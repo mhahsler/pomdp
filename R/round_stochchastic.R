@@ -56,7 +56,7 @@ round_stochastic_int <- function(x, digits = 7) {
   if (s != 1) {
     #inc_id <- which.max(x - xr)
     ### take it from the largest
-    inc_id <- which.max(xr)
+    inc_id <- which.max.random(xr)
     xr[inc_id] <- xr[inc_id] + 1 - s
   }
   

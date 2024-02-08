@@ -78,3 +78,4 @@ Collate:
     'transition_graph.R'
     'update_belief.R'
     'value_function.R'
+    'which_max_random.R'
