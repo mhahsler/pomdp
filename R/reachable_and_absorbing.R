@@ -65,17 +65,18 @@ absorbing_states <- function(x,
           end.state = s
         )
     ) == 1)
-    &&
-      all(sapply(
-        x$actions,
-        FUN = function(a) {
-          r <- reward_matrix(x,
-                          action = a,
-                          start.state = s,
-                          end.state = s)
-          all(r == 0 | r == -Inf)
-        }
-      )))
+    # &&
+    #   all(sapply(
+    #     x$actions,
+    #     FUN = function(a) {
+    #       r <- reward_matrix(x,
+    #                       action = a,
+    #                       start.state = s,
+    #                       end.state = s)
+    #       all(r == 0 | r == -Inf)
+    #     }
+    #   ))
+    )
   
   
   if (is.null(states))
