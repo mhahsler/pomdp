@@ -39,6 +39,11 @@ reward_matrix <-
     else
       reward <-  x[["reward"]]
     
+    if (is.null(action) && (!is.null(start.state) || !is.null(end.state) || !is.null(observation)))
+      stop("action needs to be specified!")
+    if (!is.null(action) && is.null(start.state) && (!is.null(end.state) || !is.null(observation)))
+      stop("start.state needs to be specified!")
+    
     # convert functions first
     if (is.function(reward)) {
       # shortcut for a single value
@@ -422,7 +427,7 @@ reward_list2value <-
     
     states <- names(m[[1L]])
     observations <- colnames(m[[1L]][[1L]])
-    
+
     if (is.null(action))
       return(m)
     if (is.null(start.state))

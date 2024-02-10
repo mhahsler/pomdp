@@ -258,5 +258,22 @@ Other gridworld:
 \code{\link{Cliff_walking}},
 \code{\link{Maze}},
 \code{\link{Windy_gridworld}}
+
+Other MDP: 
+\code{\link{Cliff_walking}},
+\code{\link{MDP}()},
+\code{\link{MDP_policy_functions}},
+\code{\link{Maze}},
+\code{\link{Windy_gridworld}},
+\code{\link{accessors}},
+\code{\link{actions}()},
+\code{\link{add_policy}()},
+\code{\link{reachable_and_absorbing}},
+\code{\link{regret}()},
+\code{\link{simulate_MDP}()},
+\code{\link{solve_MDP}()},
+\code{\link{transition_graph}()},
+\code{\link{value_function}()}
 }
+\concept{MDP}
 \concept{gridworld}

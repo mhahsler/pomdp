@@ -59,11 +59,15 @@ which(!reachable_states(Maze))
 }
 \seealso{
 Other MDP: 
+\code{\link{Cliff_walking}},
 \code{\link{MDP}()},
 \code{\link{MDP_policy_functions}},
 \code{\link{Maze}},
+\code{\link{Windy_gridworld}},
 \code{\link{accessors}},
+\code{\link{actions}()},
 \code{\link{add_policy}()},
+\code{\link{gridworld}},
 \code{\link{regret}()},
 \code{\link{simulate_MDP}()},
 \code{\link{solve_MDP}()},
@@ -73,6 +77,7 @@ Other MDP:
 Other POMDP: 
 \code{\link{POMDP}()},
 \code{\link{accessors}},
+\code{\link{actions}()},
 \code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},

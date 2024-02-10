@@ -26,6 +26,7 @@
 #' @name gridworld
 #' @aliases gridworld
 #' @family gridworld
+#' @family MDP
 #' @examples
 #' # Defines states, actions and a transition model for a standard gridworld
 #' gw <- gridworld_init(dim = c(7,7),

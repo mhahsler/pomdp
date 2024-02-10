@@ -48,6 +48,7 @@ Collate:
     'accessors.R'
     'accessors_reward.R'
     'accessors_trans_obs.R'
+    'actions.R'
     'add_policy.R'
     'check_and_fix_MDP.R'
     'colors.R'

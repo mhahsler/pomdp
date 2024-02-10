@@ -4,12 +4,12 @@
 \name{Cliff_walking}
 \alias{Cliff_walking}
 \alias{cliff_walking}
-\title{Cliff Walking Gridworld}
+\title{Cliff Walking Gridworld MDP}
 \format{
 An object of class \link{MDP}.
 }
 \description{
-The cliff walking gridworld example from Chapter 6 of the textbook
+The cliff walking gridworld MDP example from Chapter 6 of the textbook
 "Reinforcement Learning: An Introduction."
 }
 \details{
@@ -67,6 +67,23 @@ Other gridworld:
 \code{\link{Maze}},
 \code{\link{Windy_gridworld}},
 \code{\link{gridworld}}
+
+Other MDP: 
+\code{\link{MDP}()},
+\code{\link{MDP_policy_functions}},
+\code{\link{Maze}},
+\code{\link{Windy_gridworld}},
+\code{\link{accessors}},
+\code{\link{actions}()},
+\code{\link{add_policy}()},
+\code{\link{gridworld}},
+\code{\link{reachable_and_absorbing}},
+\code{\link{regret}()},
+\code{\link{simulate_MDP}()},
+\code{\link{solve_MDP}()},
+\code{\link{transition_graph}()},
+\code{\link{value_function}()}
 }
+\concept{MDP}
 \concept{gridworld}
 \keyword{datasets}

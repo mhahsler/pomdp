@@ -68,6 +68,7 @@ Other policy:
 Other POMDP: 
 \code{\link{POMDP}()},
 \code{\link{accessors}},
+\code{\link{actions}()},
 \code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{reachable_and_absorbing}},

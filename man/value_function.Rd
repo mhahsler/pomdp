@@ -105,6 +105,7 @@ Other policy:
 Other POMDP: 
 \code{\link{POMDP}()},
 \code{\link{accessors}},
+\code{\link{actions}()},
 \code{\link{add_policy}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
@@ -119,11 +120,15 @@ Other POMDP:
 \code{\link{write_POMDP}()}
 
 Other MDP: 
+\code{\link{Cliff_walking}},
 \code{\link{MDP}()},
 \code{\link{MDP_policy_functions}},
 \code{\link{Maze}},
+\code{\link{Windy_gridworld}},
 \code{\link{accessors}},
+\code{\link{actions}()},
 \code{\link{add_policy}()},
+\code{\link{gridworld}},
 \code{\link{reachable_and_absorbing}},
 \code{\link{regret}()},
 \code{\link{simulate_MDP}()},

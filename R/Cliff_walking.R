@@ -1,6 +1,6 @@
-#' Cliff Walking Gridworld
+#' Cliff Walking Gridworld MDP
 #'
-#' The cliff walking gridworld example from Chapter 6 of the textbook 
+#' The cliff walking gridworld MDP example from Chapter 6 of the textbook 
 #' "Reinforcement Learning: An Introduction."
 #'
 #' The cliff walking gridworld has the following layout:
@@ -21,6 +21,7 @@
 #' @format An object of class [MDP].
 #' @keywords datasets
 #' @family gridworld
+#' @family MDP
 #' @references
 #' Richard S. Sutton and Andrew G. Barto (2018). Reinforcement Learning: An Introduction
 #' Second Edition, MIT Press, Cambridge, MA.

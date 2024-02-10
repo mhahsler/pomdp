@@ -1,6 +1,7 @@
-#' Steward Russell's 4x3 Maze Grid World
+#' Steward Russell's 4x3 Maze Gridworld MDP
 #'
-#' The 4x3 maze described in Chapter 17 of the textbook "Artificial Intelligence: A Modern Approach" (AIMA).
+#' The 4x3 maze is described in Chapter 17 of the textbook 
+#' "Artificial Intelligence: A Modern Approach" (AIMA).
 #'
 #' The simple maze has the following layout:
 #'
@@ -34,8 +35,8 @@
 #' converges without discounting (`discount = 1`).
 #' @name Maze
 #' @aliases Maze maze
-#' @family MDP
 #' @family gridworld
+#' @family MDP
 #' @docType data
 #' @format An object of class [MDP].
 #' @keywords datasets

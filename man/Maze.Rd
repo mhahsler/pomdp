@@ -4,12 +4,13 @@
 \name{Maze}
 \alias{Maze}
 \alias{maze}
-\title{Steward Russell's 4x3 Maze Grid World}
+\title{Steward Russell's 4x3 Maze Gridworld MDP}
 \format{
 An object of class \link{MDP}.
 }
 \description{
-The 4x3 maze described in Chapter 17 of the textbook "Artificial Intelligence: A Modern Approach" (AIMA).
+The 4x3 maze is described in Chapter 17 of the textbook
+"Artificial Intelligence: A Modern Approach" (AIMA).
 }
 \details{
 The simple maze has the following layout:
@@ -50,7 +51,8 @@ converges without discounting (\code{discount = 1}).
 gw <- gridworld_init(dim = c(3, 4), unreachable_states = c("s(2,2)"))
 gridworld_matrix(gw)
 
-# the transition function is stochastic so we cannot use gw$T()
+# the transition function is stochastic so we cannot use the standard
+# gridworld gw$transition_prob() function
 T <- function(action, start.state, end.state) {
   action <- match.arg(action, choices = gw$actions)
   
@@ -137,22 +139,26 @@ Russell,9 S. J. and Norvig, P. (2020). Artificial Intelligence:
 A modern approach. 4rd ed.
 }
 \seealso{
+Other gridworld: 
+\code{\link{Cliff_walking}},
+\code{\link{Windy_gridworld}},
+\code{\link{gridworld}}
+
 Other MDP: 
+\code{\link{Cliff_walking}},
 \code{\link{MDP}()},
 \code{\link{MDP_policy_functions}},
+\code{\link{Windy_gridworld}},
 \code{\link{accessors}},
+\code{\link{actions}()},
 \code{\link{add_policy}()},
+\code{\link{gridworld}},
 \code{\link{reachable_and_absorbing}},
 \code{\link{regret}()},
 \code{\link{simulate_MDP}()},
 \code{\link{solve_MDP}()},
 \code{\link{transition_graph}()},
 \code{\link{value_function}()}
-
-Other gridworld: 
-\code{\link{Cliff_walking}},
-\code{\link{Windy_gridworld}},
-\code{\link{gridworld}}
 }
 \concept{MDP}
 \concept{gridworld}

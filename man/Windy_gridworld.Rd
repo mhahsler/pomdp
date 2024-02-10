@@ -4,12 +4,12 @@
 \name{Windy_gridworld}
 \alias{Windy_gridworld}
 \alias{windy_gridworld}
-\title{Windy Gridworld}
+\title{Windy Gridworld MDP}
 \format{
 An object of class \link{MDP}.
 }
 \description{
-The Windy gridworld example from Chapter 6 of the textbook
+The Windy gridworld MDP example from Chapter 6 of the textbook
 "Reinforcement Learning: An Introduction."
 }
 \details{
@@ -54,6 +54,23 @@ Other gridworld:
 \code{\link{Cliff_walking}},
 \code{\link{Maze}},
 \code{\link{gridworld}}
+
+Other MDP: 
+\code{\link{Cliff_walking}},
+\code{\link{MDP}()},
+\code{\link{MDP_policy_functions}},
+\code{\link{Maze}},
+\code{\link{accessors}},
+\code{\link{actions}()},
+\code{\link{add_policy}()},
+\code{\link{gridworld}},
+\code{\link{reachable_and_absorbing}},
+\code{\link{regret}()},
+\code{\link{simulate_MDP}()},
+\code{\link{solve_MDP}()},
+\code{\link{transition_graph}()},
+\code{\link{value_function}()}
 }
+\concept{MDP}
 \concept{gridworld}
 \keyword{datasets}

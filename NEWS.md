@@ -8,6 +8,7 @@
 * Support for gridworlds (see ? gridworld).
 * New datasets: Cliff_walking, Windy_gridworld, RussianTiger
 * plot_transition_graph() now hides unavailable actions.
+* Added actions() to find available actions.
 
 ## Changes
 * simulate_POMDP(): Better calculation of T for infinite-horizon problems.
