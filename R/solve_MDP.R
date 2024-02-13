@@ -12,25 +12,30 @@
 #' * **Modified Policy Iteration**
 #' starts with a random policy and iteratively performs
 #' a sequence of
-#'   - approximate policy evaluation (estimate the value function for the
+#'   1. approximate policy evaluation (estimate the value function for the
 #' current policy using `k_backups` and function [`MDP_policy_evaluation()`]), and
-#'   - policy improvement (calculate a greedy policy given the value function).
-#' The algorithm stops when it converges to a stable policy.
+#'   2. policy improvement (calculate a greedy policy given the value function).
+#' The algorithm stops when it converges to a stable policy (i.e., no changes 
+#' between two iterations).
 #'
 #' * **Value Iteration** starts with
 #'   an arbitrary value function (by default all 0s) and iteratively
-#'   updates the value function using the Bellman equation. The iterations
-#'   are terminated either at `N_max` or when the solution converges. 
-#'   Convergence is achieved 
+#'   updates the value function for each state using the Bellman equation. 
+#'   The iterations
+#'   are terminated either after `N_max` iterations or when the solution converges. 
+#'   Approximate convergence is achieved 
 #'   for discounted problems (with \eqn{\gamma < 1}) 
-#'   when the maximal value function change over all states \eqn{\delta} is
-#'   \eqn{\delta \le error (1-\gamma) / \gamma} which means that no state value is more than
+#'   when the maximal value function change for any state \eqn{\delta} is
+#'   \eqn{\delta \le error (1-\gamma) / \gamma}. It can be shown that this means 
+#'   that no state value is more than
 #'   \eqn{error} from the value in the optimal value function. For undiscounted 
 #'   problems, we use \eqn{\delta \le error}.
 #'
 #'   The greedy policy
-#'   is calculated from the value function. Value iteration can be seen as
+#'   is calculated from the final value function. Value iteration can be seen as
 #'   policy iteration with truncated policy evaluation.
+#'   
+#' Note that the policy converges earlier than the value function.  
 #'
 #' Implemented are the following temporal difference control methods
 #' described in Sutton and Barto (2020).
@@ -39,20 +44,26 @@
 #' The algorithms use a step size parameter \eqn{\alpha} (learning rate) for the
 #' updates and the exploration parameter \eqn{\epsilon} for
 #' the \eqn{\epsilon}-greedy policy.
-#'
+#' 
+#' If the model has absorbing states to terminate episodes, then no maximal episode length
+#' (`horizon`) needs to 
+#' be specified. To make sure that the algorithm does finish in a reasonable amount of time,
+#' episodes are stopped after 10,000 actions with a warning. For models without absorbing states,
+#' a episode length has to be specified via `horizon`. 
+#' 
 #' * **Q-Learning** is an off-policy temporal difference method that uses
 #'    an \eqn{\epsilon}-greedy behavior policy and learns a greedy target
 #'    policy.
 #'
-#' * **Sarsa** is an on-policy method that learns an \eqn{\epsilon}-greedy
-#'    policy.
+#' * **Sarsa** is an on-policy method that follows and learns 
+#'    an \eqn{\epsilon}-greedy policy. The final \eqn{\epsilon}-greedy policy
+#'    is converted into a greedy policy.
 #'
 #' * **Expected Sarsa**: We implement an on-policy version that uses
 #'   the expected value under the current policy for the update.
 #'   It moves deterministically in the same direction as Sarsa
-#'   moved in expectation. Because it uses the expectation, we can
+#'   moves in expectation. Because it uses the expectation, we can
 #'   set the step size \eqn{\alpha} to large values and even 1.
-#'
 #'
 #' @family solver
 #' @family MDP
@@ -276,7 +287,7 @@ MDP_value_iteration_finite_horizon <-
 
 MDP_value_iteration_inf_horizon <-
   function(model,
-           eps,
+           error,
            N_max = 1000,
            U = NULL,
            verbose = FALSE) {
@@ -311,7 +322,7 @@ MDP_value_iteration_inf_horizon <-
       if (verbose)
         cat(" -> delta:", delta, "\n")
       
-      if (delta <= eps * convergence_factor) {
+      if (delta <= error * convergence_factor) {
         converged <- TRUE
         break
       }
@@ -327,7 +338,7 @@ MDP_value_iteration_inf_horizon <-
         " iterations (delta = ",
         delta,
         ").",
-        " Consider decreasing the 'discount' factor or increasing 'eps' or 'N_max'."
+        " Consider decreasing the 'discount' factor or increasing 'error' or 'N_max'."
       )
     
     model$solution <- list(
@@ -429,15 +440,17 @@ solve_MDP_TD <-
            N = 100,
            U = NULL,
            verbose = FALSE) {
-    ### default is infinite horizon, but we use 1000 to guarantee termination
+    ### default is infinite horizon, but we use 10000 to guarantee termination
     warn_horizon <- FALSE
     if (is.null(horizon))
       horizon <- model$horizon
     if (is.null(horizon)) {
+      if (!any(absorbing_states(model))) 
+        stop("The model has no absorbing states. Specify the horizon.")
       warn_horizon <- TRUE
       horizon <- 10000
     }
-    
+      
     if (is.null(discount))
       discount <- model$discount
     if (is.null(discount))

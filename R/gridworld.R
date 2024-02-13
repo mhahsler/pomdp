@@ -13,16 +13,20 @@
 #' as above. Unreachable states (walls) and absorbing state can be defined.
 #' This information can be used to build a custom gridworld MDP.
 #'
-#' Several helper functions are provided 
-#' to use states, look at the state layout, and plot policies on the 
+#' Several helper functions are provided
+#' to use states, look at the state layout, and plot policies on the
 #' gridworld.
-#' 
+#'
 #' `gridworld_maze_MDP()` helps to easily define maze-like gridworld MDPs.
-#' By default, the goal state is absorbing, but with `restart = TRUE`, the 
+#' By default, the goal state is absorbing, but with `restart = TRUE`, the
 #' agent restarts the problem at the start state every time it reaches the goal
 #' and receives the reward. Note that this implies that the goal state itself
-#' becomes unreachable. 
+#' becomes unreachable.
 #' 
+#' `gridworld_animate()` applies algorithms from [solve_MDP()] iteration 
+#' by iteration and visualized the state utilities. This helps to understand 
+#' how the algorithms work.
+#'
 #' @name gridworld
 #' @aliases gridworld
 #' @family gridworld
@@ -34,7 +38,7 @@
 #'                 absorbing_states = "s(4,4)",
 #'                 labels = list("s(4,4)" = "Black Hole")
 #'                 )
-#' 
+#'
 #' gw$states
 #' gw$actions
 #' gw$info
@@ -55,23 +59,23 @@
 #' gridworld_rc2s(c(1,1))
 #'
 #' # The information in gw can be used to build a custom MDP.
-#' 
-#' # We modify the standard transition function so there is a 50% chance that 
-#' # you will get sucked into the black hole from the adjacent squares. 
+#'
+#' # We modify the standard transition function so there is a 50% chance that
+#' # you will get sucked into the black hole from the adjacent squares.
 #' trans_black_hole <- function(action = NA, start.state = NA, end.state = NA) {
 #'   # ignore the action next to the black hole
-#'   if (start.state %in% c("s(3,3)", "s(3,4)", "s(3,5)", "s(4,3)", "s(4,5)", 
+#'   if (start.state %in% c("s(3,3)", "s(3,4)", "s(3,5)", "s(4,3)", "s(4,5)",
 #'                          "s(5,3)", "s(5,4)", "s(5,5)")) {
-#'         if(end.state == "s(4,4)") 
-#'             return(.5) 
-#'         else 
+#'         if(end.state == "s(4,4)")
+#'             return(.5)
+#'         else
 #'             return(gw$transition_prob(action, start.state, end.state) * .5)
 #'   }
-#'   
+#'
 #'   # use the standard gridworld movement
 #'   gw$transition_prob(action, start.state, end.state)
 #' }
-#' 
+#'
 #' black_hole <- MDP(states = gw$states,
 #'   actions = gw$actions,
 #'   transition_prob = trans_black_hole,
@@ -79,11 +83,11 @@
 #'   info = gw$info,
 #'   name = "Black hole"
 #'   )
-#' 
-#' black_hole 
-#' 
+#'
+#' black_hole
+#'
 #' gridworld_plot_transition_graph(black_hole)
-#' 
+#'
 #' # solve the problem
 #' sol <- solve_MDP(black_hole)
 #' gridworld_matrix(sol, what = "values")
@@ -91,7 +95,7 @@
 #' # the optimal policy is to fly around, but avoid the black hole.
 #'
 #' # Build a Maze: The Dyna Maze from Chapter 8 in the RL book
-#' 
+#'
 #' Dyna_maze <- gridworld_maze_MDP(
 #'                 dim = c(6,9),
 #'                 start = "s(3,1)",
@@ -104,10 +108,10 @@
 #'                 name = "Dyna Maze",
 #'                 )
 #' Dyna_maze
-#' 
+#'
 #' gridworld_matrix(Dyna_maze)
 #' gridworld_matrix(Dyna_maze, what = "labels")
-#' 
+#'
 #' gridworld_plot_transition_graph(Dyna_maze)
 #' # Note that the problems resets if the goal state would be reached.
 #'
@@ -117,6 +121,9 @@
 #' gridworld_matrix(sol, what = "actions")
 #' gridworld_plot_policy(sol)
 #' gridworld_plot_policy(sol, arrows = FALSE, cex = 1, states = FALSE)
+#' 
+#' # visualize the first 5 iterations of value iteration
+#' gridworld_animate(Dyna_maze, method = "value", n = 5)
 #' @param dim vector of length two with the x and y extent of the gridworld.
 #' @param actions vector with four action labels that move the agent up, right, down,
 #'   and left.
@@ -154,19 +161,15 @@ gridworld_init <-
       rc <- gridworld_s2rc(start.state)
       rc <- switch(ai,
                    rc + c(-1,  0),
-                   ### up
-                   rc + c(0, +1),
-                   ### right
+                   rc + c(0,+1),
                    rc + c(+1,  0),
-                   ### down
-                   rc + c(0, -1),
-                   ### left
-      )
-      
-      es <-  gridworld_rc2s(rc)
-      if (!(es %in% S))
-        es <- start.state
-      as.integer(es == end.state)
+                   rc + c(0,-1),
+                   )
+                   
+                   es <-  gridworld_rc2s(rc)
+                   if (!(es %in% S))
+                     es <- start.state
+                   as.integer(es == end.state)
     }
     
     list(
@@ -180,14 +183,14 @@ gridworld_init <-
 
 #' @rdname gridworld
 #' @param start,goal labels for the start state and the goal state.
-#' @param walls a vector with state labels for walls. Walls will 
+#' @param walls a vector with state labels for walls. Walls will
 #'              become unreachable states.
 #' @param goal_reward reward to transition to the goal state.
 #' @param step_cost cost of each action that does not lead to the goal state.
-#' @param restart logical; if `TRUE` then the problem automatically restarts when 
+#' @param restart logical; if `TRUE` then the problem automatically restarts when
 #'      the agent reaches the goal state.
 #' @param discount,horizon,normalize MDP discount factor, horizon, and normalization.
-#' @param info A list with additional information. Has to contain the gridworld 
+#' @param info A list with additional information. Has to contain the gridworld
 #'      dimensions as element `gridworld_dim`.
 #' @param name a string to identify the MDP problem.
 #' @export
@@ -215,38 +218,37 @@ gridworld_maze_MDP <- function(dim,
     )
   
   if (!restart)
-    return( 
+    return(
       MDP(
-      states = gw$states,
-      actions = gw$actions,
-      transition_prob = gw$transition_prob,
-      reward = rbind(
-        R_(value = -step_cost),
-        R_(end.state = goal, value = goal_reward)
-      ),
-      discount = discount,
-      horizon = horizon,
-      start = start,
-      normalize = normalize,
-      info = gw$info,
-      name = name
+        states = gw$states,
+        actions = gw$actions,
+        transition_prob = gw$transition_prob,
+        reward = rbind(
+          R_(value = -step_cost),
+          R_(end.state = goal, value = goal_reward)
+        ),
+        discount = discount,
+        horizon = horizon,
+        start = start,
+        normalize = normalize,
+        info = gw$info,
+        name = name
+      )
     )
-    )
-    
-  # with restarts   
-    
+  
+  # with restarts
+  
   # find all states that can lead to the goal
   v <- Vectorize(gw$transition_prob, vectorize.args = "start.state")
   reach <- sapply(gw$actions, v, gw$states, goal)
-  lead.states <- setdiff(gw$states[which(rowSums(reach)>0)], goal)
+  lead.states <- setdiff(gw$states[which(rowSums(reach) > 0)], goal)
   
   # redirect to the start state
   trans_restart <- function(action = NA,
-                    start.state = NA,
-                    end.state = NA) {
-    
+                            start.state = NA,
+                            end.state = NA) {
     if (gw$transition_prob(action, start.state, goal)) {
-      if(end.state == start)
+      if (end.state == start)
         return(1)
       else
         return(0)
@@ -254,8 +256,8 @@ gridworld_maze_MDP <- function(dim,
     
     gw$transition_prob(action, start.state, end.state)
   }
-      
-       
+  
+  
   # note the goal state is now unreachable
   MDP(
     states = setdiff(gw$states, goal),
@@ -263,7 +265,11 @@ gridworld_maze_MDP <- function(dim,
     transition_prob = trans_restart,
     reward = rbind(
       R_(value = -step_cost),
-      R_(start.state = lead.states, end.state = start, value = goal_reward)
+      R_(
+        start.state = lead.states,
+        end.state = start,
+        value = goal_reward
+      )
     ),
     discount = discount,
     horizon = horizon,
@@ -430,21 +436,25 @@ gridworld_plot_policy <-
       NA
     
     if (states)
-      text(g$x,
-           g$y,
-           g$state,
-           pos = 3,
-           offset = offset,
-           cex = .5 * cex)
+      text(
+        g$x,
+        g$y,
+        g$state,
+        pos = 3,
+        offset = offset,
+        cex = .5 * cex
+      )
     #text(g$x, g$y, g$state, pos = 3, cex = .8)
     
     if (labels)
-      text(g$x,
-           g$y,
-           g$label,
-           pos = 1,
-           offset = offset,
-           cex = .5 * cex)
+      text(
+        g$x,
+        g$y,
+        g$label,
+        pos = 1,
+        offset = offset,
+        cex = .5 * cex
+      )
     
     if (arrows)
       g$actions <- as.character(factor(
@@ -462,7 +472,7 @@ gridworld_plot_policy <-
 #' @rdname gridworld
 #' @param hide_unreachable_states logical; do not show unreachable states.
 #' @param remove.loops logical; do not show transitions from a state back to itself.
-#' @param vertex.color,vertex.shape,vertex.size,vertex.label,edge.arrow.size 
+#' @param vertex.color,vertex.shape,vertex.size,vertex.label,edge.arrow.size
 #'  see `igraph::igraph.plotting` for details. Set `vertex.label = NULL` to show the
 #'  state labels on the graph.
 #' @param margin a single number specifying the margin of the plot. Can be used if the
@@ -485,12 +495,12 @@ gridworld_plot_transition_graph <-
     g <- transition_graph(x)
     
     layout <- t(sapply(x$states, gridworld_s2rc))[, 2:1] *
-      cbind(rep(1, length(x$states)),-1)
+      cbind(rep(1, length(x$states)), -1)
     
     if (hide_unreachable_states) {
       reachable <- reachable_states(x)
       g <- induced_subgraph(g, V(g)[reachable])
-      layout <- layout[reachable,]
+      layout <- layout[reachable, ]
     }
     
     V(g)$color <- vertex.color
@@ -519,3 +529,41 @@ gridworld_plot_transition_graph <-
     
     invisible(g)
   }
+
+#' @rdname gridworld
+#' @param n number of iterations to animate.
+#' @param method a MDP solution method for [solve_MDP()].
+#' @param zlim limits for visualizing the state value.
+#' @export
+gridworld_animate <- function(x,
+                              method,
+                              n,
+                              zlim = NULL,
+                              ...) {
+  U <- NULL
+  
+  for (i in seq(n)) {
+    sol <- suppressWarnings(solve_MDP(
+      x,
+      N = 1,
+      U = U,
+      method = method,
+      ...
+    ))
+    U <- value_function(sol)
+    
+    if (!is.null(zlim))
+      gridworld_plot_policy(
+        sol,
+        main = sol$solution$method,
+        sub = paste("Iteration", i),
+        zlim = zlim
+      )
+    else
+      gridworld_plot_policy(
+        sol,
+        main = sol$solution$method,
+        sub = paste("Iteration", i)
+      )
+  }
+}

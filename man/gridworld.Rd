@@ -9,6 +9,7 @@
 \alias{gridworld_matrix}
 \alias{gridworld_plot_policy}
 \alias{gridworld_plot_transition_graph}
+\alias{gridworld_animate}
 \title{Helper Functions for Gridworld MDPs}
 \usage{
 gridworld_init(
@@ -68,6 +69,8 @@ gridworld_plot_transition_graph(
   main = NULL,
   ...
 )
+
+gridworld_animate(x, method, n, zlim = NULL, ...)
 }
 \arguments{
 \item{dim}{vector of length two with the x and y extent of the gridworld.}
@@ -139,6 +142,12 @@ state labels on the graph.}
 
 \item{margin}{a single number specifying the margin of the plot. Can be used if the
 graph does not fit inside the plotting area.}
+
+\item{method}{a MDP solution method for \code{\link[=solve_MDP]{solve_MDP()}}.}
+
+\item{n}{number of iterations to animate.}
+
+\item{zlim}{limits for visualizing the state value.}
 }
 \description{
 Helper functions for gridworld MDPs to convert between state names and
@@ -194,18 +203,18 @@ gridworld_rc2s(c(1,1))
 
 # The information in gw can be used to build a custom MDP.
 
-# We modify the standard transition function so there is a 50\% chance that 
-# you will get sucked into the black hole from the adjacent squares. 
+# We modify the standard transition function so there is a 50\% chance that
+# you will get sucked into the black hole from the adjacent squares.
 trans_black_hole <- function(action = NA, start.state = NA, end.state = NA) {
   # ignore the action next to the black hole
-  if (start.state \%in\% c("s(3,3)", "s(3,4)", "s(3,5)", "s(4,3)", "s(4,5)", 
+  if (start.state \%in\% c("s(3,3)", "s(3,4)", "s(3,5)", "s(4,3)", "s(4,5)",
                          "s(5,3)", "s(5,4)", "s(5,5)")) {
-        if(end.state == "s(4,4)") 
-            return(.5) 
-        else 
+        if(end.state == "s(4,4)")
+            return(.5)
+        else
             return(gw$transition_prob(action, start.state, end.state) * .5)
   }
-  
+
   # use the standard gridworld movement
   gw$transition_prob(action, start.state, end.state)
 }
@@ -218,7 +227,7 @@ black_hole <- MDP(states = gw$states,
   name = "Black hole"
   )
 
-black_hole 
+black_hole
 
 gridworld_plot_transition_graph(black_hole)
 
@@ -255,6 +264,9 @@ gridworld_matrix(sol, what = "values")
 gridworld_matrix(sol, what = "actions")
 gridworld_plot_policy(sol)
 gridworld_plot_policy(sol, arrows = FALSE, cex = 1, states = FALSE)
+
+# visualize the first 5 iterations of value iteration
+gridworld_animate(Dyna_maze, method = "value", n = 5)
 }
 \seealso{
 Other gridworld: 
