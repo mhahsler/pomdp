@@ -70,7 +70,7 @@
 #'
 #' STiger
 #'
-#' sol <- solve_MDP(STiger, eps = 1e-7)
+#' sol <- solve_MDP(STiger)
 #' sol
 #'
 #' policy(sol)
@@ -82,7 +82,7 @@
 #' sol2
 #'
 #' policy(sol2)
-#' plot_value_function(sol2)
+#' plot_value_function(sol2, ylim = c(80, 120))
 #' @export
 MDP <- function(states,
                 actions,

@@ -13,10 +13,10 @@ solve_MDP_DP(
   method = "value_iteration",
   horizon = NULL,
   discount = NULL,
-  terminal_values = NULL,
-  eps = 0.01,
-  max_iterations = 1000,
+  N_max = 1000,
+  error = 0.01,
   k_backups = 10,
+  U = NULL,
   verbose = FALSE
 )
 
@@ -28,6 +28,7 @@ solve_MDP_TD(
   alpha = 0.5,
   epsilon = 0.1,
   N = 100,
+  U = NULL,
   verbose = FALSE
 )
 }
@@ -47,19 +48,18 @@ running iterations till it converges to the infinite horizon solution. If
 \item{discount}{discount factor in range \eqn{(0, 1]}. If \code{NULL}, then the
 discount factor specified in \code{model} will be used.}
 
-\item{terminal_values}{a vector with terminal utilities for each state. If
-\code{NULL}, then a vector of all 0s is used.}
-
-\item{eps}{maximum error allowed in the utility of any state
-(i.e., the maximum policy loss) used as the termination criterion for
-the value iteration method.}
-
-\item{max_iterations}{maximum number of iterations allowed to converge. If the
+\item{N_max}{maximum number of iterations allowed to converge. If the
 maximum is reached then the non-converged solution is returned with a
 warning.}
 
-\item{k_backups}{number of look ahead steps used for approximate policy evaluation
+\item{error}{value iteration: maximum error allowed in the utility of any state
+(i.e., the maximum policy loss) used as the termination criterion.}
+
+\item{k_backups}{policy iteration: number of look ahead steps used for approximate policy evaluation
 used by the policy iteration method.}
+
+\item{U}{a vector with initial utilities used for each state. If
+\code{NULL}, then the default of a vector of all 0s is used.}
 
 \item{verbose}{logical, if set to \code{TRUE}, the function provides the
 output of the solver in the R console.}
@@ -77,7 +77,7 @@ The solution is a list with the elements:
 \itemize{
 \item \code{policy} a list representing the policy graph. The list only has one element for converged solutions.
 \item \code{converged} did the algorithm converge (\code{NA}) for finite-horizon problems.
-\item \code{delta} final delta (infinite-horizon only)
+\item \code{delta} final \eqn{\delta} (value iteration and infinite-horizon only)
 \item \code{iterations} number of iterations to convergence (infinite-horizon only)
 }
 }
@@ -100,17 +100,23 @@ current policy using \code{k_backups} and function \code{\link[=MDP_policy_evalu
 The algorithm stops when it converges to a stable policy.
 }
 \item \strong{Value Iteration} starts with
-an arbitrary value function (we use all 0s) and iteratively
+an arbitrary value function (by default all 0s) and iteratively
 updates the value function using the Bellman equation. The iterations
-are terminated when no state value in the value function changes by more than
-\eqn{\epsilon (1-\gamma) / \gamma} which means that no state value is more than
-\eqn{\epsilon} from the value in the optimal value function. The greedy policy
+are terminated either at \code{N_max} or when the solution converges.
+Convergence is achieved
+for discounted problems (with \eqn{\gamma < 1})
+when the maximal value function change over all states \eqn{\delta} is
+\eqn{\delta \le error (1-\gamma) / \gamma} which means that no state value is more than
+\eqn{error} from the value in the optimal value function. For undiscounted
+problems, we use \eqn{\delta \le error}.
+
+The greedy policy
 is calculated from the value function. Value iteration can be seen as
 policy iteration with truncated policy evaluation.
 }
 
 Implemented are the following temporal difference control methods
-following Sutton and Barto (2020).
+described in Sutton and Barto (2020).
 Note that the MDP transition and reward models are only used to simulate
 the environment for these reinforcement learning methods.
 The algorithms use a step size parameter \eqn{\alpha} (learning rate) for the
@@ -138,7 +144,7 @@ maze_solved <- solve_MDP(Maze, method = "value_iteration")
 maze_solved
 policy(maze_solved)
 
-# plot the value function U (with the state labels rotated)
+# plot the value function U
 plot_value_function(maze_solved)
 
 # Maze solutions can be visualized

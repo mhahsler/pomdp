@@ -37,6 +37,8 @@ RussianTiger$observations
 # reward (-Inf indicates unavailable actions)
 RussianTiger$reward
 
+sapply(RussianTiger$states, FUN = function(s) actions(RussianTiger, s))
+
 plot_transition_graph(RussianTiger, vertex.size = 30, edge.arrow.size = .3, margin = .5)
 
 # absorbing states

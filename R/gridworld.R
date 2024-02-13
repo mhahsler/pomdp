@@ -378,6 +378,7 @@ gridworld_matrix <- function(model,
 #' @param main logical; main title.
 #' @param cex expansion factor for the action.
 #' @param offset move the state labels out of the way (in fractions of a character width).
+#' @param lines logical; draw lines to separate states.
 #' @param ... further arguments are passed on to [graphics::image()].
 #' @importFrom graphics image text box abline
 #' @export
@@ -391,6 +392,7 @@ gridworld_plot_policy <-
            main = NULL,
            cex = 1,
            offset = .5,
+           lines = TRUE,
            ...) {
     if (is.null(main))
       main <- model$name
@@ -405,11 +407,13 @@ gridworld_plot_policy <-
     
     nrows <- model$info$gridworld_dim[1]
     ncols <- model$info$gridworld_dim[2]
-    box()
-    frac <- 1 / ((nrows - 1L) * 2)
-    abline(h = (((1:nrows) * 2L) - 1L) * frac)
-    frac <- 1 / ((ncols - 1L) * 2)
-    abline(v = (((1:ncols) * 2L) - 1L) * frac)
+    if (lines) {
+      box()
+      frac <- 1 / ((nrows - 1L) * 2)
+      abline(h = (((1:nrows) * 2L) - 1L) * frac)
+      frac <- 1 / ((ncols - 1L) * 2)
+      abline(v = (((1:ncols) * 2L) - 1L) * frac)
+    }
     
     g <- expand.grid(y = (nrows - 1L):0 / (nrows - 1L),
                      x = 0:(ncols - 1L) / (ncols - 1L))

@@ -51,6 +51,7 @@ gridworld_plot_policy(
   main = NULL,
   cex = 1,
   offset = 0.5,
+  lines = TRUE,
   ...
 )
 
@@ -124,6 +125,8 @@ state in the gridworld.}
 \item{cex}{expansion factor for the action.}
 
 \item{offset}{move the state labels out of the way (in fractions of a character width).}
+
+\item{lines}{logical; draw lines to separate states.}
 
 \item{...}{further arguments are passed on to \code{igraph::plot.igraph()}.}
 

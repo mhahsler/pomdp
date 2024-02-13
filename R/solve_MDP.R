@@ -18,16 +18,22 @@
 #' The algorithm stops when it converges to a stable policy.
 #'
 #' * **Value Iteration** starts with
-#'  an arbitrary value function (we use all 0s) and iteratively
-#' updates the value function using the Bellman equation. The iterations
-#' are terminated when no state value in the value function changes by more than
-#' \eqn{\epsilon (1-\gamma) / \gamma} which means that no state value is more than
-#' \eqn{\epsilon} from the value in the optimal value function. The greedy policy
-#' is calculated from the value function. Value iteration can be seen as
-#' policy iteration with truncated policy evaluation.
+#'   an arbitrary value function (by default all 0s) and iteratively
+#'   updates the value function using the Bellman equation. The iterations
+#'   are terminated either at `N_max` or when the solution converges. 
+#'   Convergence is achieved 
+#'   for discounted problems (with \eqn{\gamma < 1}) 
+#'   when the maximal value function change over all states \eqn{\delta} is
+#'   \eqn{\delta \le error (1-\gamma) / \gamma} which means that no state value is more than
+#'   \eqn{error} from the value in the optimal value function. For undiscounted 
+#'   problems, we use \eqn{\delta \le error}.
+#'
+#'   The greedy policy
+#'   is calculated from the value function. Value iteration can be seen as
+#'   policy iteration with truncated policy evaluation.
 #'
 #' Implemented are the following temporal difference control methods
-#' following Sutton and Barto (2020).
+#' described in Sutton and Barto (2020).
 #' Note that the MDP transition and reward models are only used to simulate
 #' the environment for these reinforcement learning methods.
 #' The algorithms use a step size parameter \eqn{\alpha} (learning rate) for the
@@ -69,7 +75,7 @@
 #'   The solution is a list with the elements:
 #'   - `policy` a list representing the policy graph. The list only has one element for converged solutions.
 #'   - `converged` did the algorithm converge (`NA`) for finite-horizon problems.
-#'   - `delta` final delta (infinite-horizon only)
+#'   - `delta` final \eqn{\delta} (value iteration and infinite-horizon only)
 #'   - `iterations` number of iterations to convergence (infinite-horizon only)
 #'
 #' @author Michael Hahsler
@@ -89,7 +95,7 @@
 #' maze_solved
 #' policy(maze_solved)
 #'
-#' # plot the value function U (with the state labels rotated)
+#' # plot the value function U
 #' plot_value_function(maze_solved)
 #'
 #' # Maze solutions can be visualized
@@ -149,25 +155,24 @@ solve_MDP <- function(model, method = "value", ...) {
 }
 
 #' @rdname solve_MDP
-#' @param terminal_values a vector with terminal utilities for each state. If
-#'   `NULL`, then a vector of all 0s is used.
-#' @param eps maximum error allowed in the utility of any state
-#'   (i.e., the maximum policy loss) used as the termination criterion for
-#'   the value iteration method.
-#' @param max_iterations maximum number of iterations allowed to converge. If the
+#' @param U a vector with initial utilities used for each state. If
+#'   `NULL`, then the default of a vector of all 0s is used.
+#' @param N_max maximum number of iterations allowed to converge. If the
 #'   maximum is reached then the non-converged solution is returned with a
 #'   warning.
-#' @param k_backups number of look ahead steps used for approximate policy evaluation
+#' @param error value iteration: maximum error allowed in the utility of any state
+#'   (i.e., the maximum policy loss) used as the termination criterion.
+#' @param k_backups policy iteration: number of look ahead steps used for approximate policy evaluation
 #'   used by the policy iteration method.
 #' @export
 solve_MDP_DP <- function(model,
                          method = "value_iteration",
                          horizon = NULL,
                          discount = NULL,
-                         terminal_values = NULL,
-                         eps = 0.01,
-                         max_iterations = 1000,
+                         N_max = 1000,
+                         error = 0.01,
                          k_backups = 10,
+                         U = NULL,
                          verbose = FALSE) {
   if (!inherits(model, "MDP"))
     stop("'model' needs to be of class 'MDP'.")
@@ -185,29 +190,29 @@ solve_MDP_DP <- function(model,
     model$discount <- discount
   if (is.null(model$discount)) {
     message("No discount rate specified. Using .9!")
-    model$discount <- .10
+    model$discount <- .9
   }
   
   switch(method,
          value_iteration = {
            if (is.infinite(model$horizon))
              MDP_value_iteration_inf_horizon(model,
-                                             eps,
-                                             max_iterations,
-                                             U = terminal_values,
+                                             error,
+                                             N_max,
+                                             U = U,
                                              verbose = verbose)
            else
              MDP_value_iteration_finite_horizon(model,
                                                 horizon = model$horizon,
-                                                U = terminal_values,
+                                                U = U,
                                                 verbose = verbose)
          },
          policy_iteration = {
            if (is.infinite(model$horizon))
              MDP_policy_iteration_inf_horizon(model,
-                                              max_iterations,
+                                              N_max,
                                               k_backups,
-                                              U = terminal_values,
+                                              U = U,
                                               verbose = verbose)
            else
              stop("Method not implemented yet for finite horizon problems.")
@@ -272,7 +277,7 @@ MDP_value_iteration_finite_horizon <-
 MDP_value_iteration_inf_horizon <-
   function(model,
            eps,
-           max_iterations = 1000,
+           N_max = 1000,
            U = NULL,
            verbose = FALSE) {
     S <- model$states
@@ -280,13 +285,17 @@ MDP_value_iteration_inf_horizon <-
     P <- transition_matrix(model)
     R <- reward_matrix(model)
     GAMMA <- model$discount
+    if (GAMMA < 1)
+      convergence_factor <- (1 - GAMMA) / GAMMA
+    else
+      convergence_factor <- 1
     
     if (is.null(U))
       U <- rep(0, times = length(S))
     names(U) <- S
     
     converged <- FALSE
-    for (i in seq_len(max_iterations)) {
+    for (i in seq_len(N_max)) {
       if (verbose)
         cat("Iteration:", i)
       
@@ -302,7 +311,7 @@ MDP_value_iteration_inf_horizon <-
       if (verbose)
         cat(" -> delta:", delta, "\n")
       
-      if (delta <= eps * (1 - GAMMA) / GAMMA) {
+      if (delta <= eps * convergence_factor) {
         converged <- TRUE
         break
       }
@@ -318,7 +327,7 @@ MDP_value_iteration_inf_horizon <-
         " iterations (delta = ",
         delta,
         ").",
-        " Consider decreasing the 'discount' factor or increasing 'eps' or 'max_iterations'."
+        " Consider decreasing the 'discount' factor or increasing 'eps' or 'N_max'."
       )
     
     model$solution <- list(
@@ -338,7 +347,7 @@ MDP_value_iteration_inf_horizon <-
 
 MDP_policy_iteration_inf_horizon <-
   function(model,
-           max_iterations = 1000,
+           N_max = 1000,
            k_backups = 10,
            U = NULL,
            verbose = FALSE) {
@@ -348,14 +357,21 @@ MDP_policy_iteration_inf_horizon <-
     R <- reward_matrix(model, sparse = FALSE)
     GAMMA <- model$discount
     
-    if (is.null(U))
+    if (is.null(U)) {
       U <- rep(0, times = length(S))
+      pi <- random_MDP_policy(model)$action
+    } else {
+      # get greedy policy for a given U
+      Qs <- outer(S, A, .QV_vec, P, R, GAMMA, U)
+      m <- apply(Qs, MARGIN = 1, which.max.random)
+      pi <- factor(m, levels = seq_along(A), labels = A)
+    }
     
-    pi <- random_MDP_policy(model)$action
+    names(U) <- S
     names(pi) <- S
     
     converged <- FALSE
-    for (i in seq_len(max_iterations)) {
+    for (i in seq_len(N_max)) {
       if (verbose)
         cat("Iteration ", i, "\n")
       
@@ -381,7 +397,7 @@ MDP_policy_iteration_inf_horizon <-
         "MDP solver did not converge after ",
         i,
         " iterations.",
-        " Consider decreasing the 'discount' factor or increasing 'max_iterations'."
+        " Consider decreasing the 'discount' factor or increasing 'N_max'."
       )
     
     model$solution <- list(
@@ -411,6 +427,7 @@ solve_MDP_TD <-
            alpha = 0.5,
            epsilon = 0.1,
            N = 100,
+           U = NULL,
            verbose = FALSE) {
     ### default is infinite horizon, but we use 1000 to guarantee termination
     warn_horizon <- FALSE
@@ -439,11 +456,14 @@ solve_MDP_TD <-
       match.arg(method, c("sarsa", "q_learning", "expected_sarsa"))
     
     # Initialize Q
-    Q <-
+    if (is.null(U))
+      Q <-
       matrix(0,
              nrow = length(S),
              ncol = length(A),
              dimnames = list(S, A))
+    else
+      Q <- q_values_MDP(model, U = U)
     
     # loop episodes
     for (e in seq(N)) {
