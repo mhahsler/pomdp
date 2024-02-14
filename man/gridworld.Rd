@@ -14,7 +14,7 @@
 \usage{
 gridworld_init(
   dim,
-  actions = c("up", "right", "down", "left"),
+  action_labels = c("up", "right", "down", "left"),
   unreachable_states = NULL,
   absorbing_states = NULL,
   labels = NULL
@@ -45,7 +45,7 @@ gridworld_matrix(model, epoch = 1L, what = "states")
 gridworld_plot_policy(
   model,
   epoch = 1L,
-  arrows = TRUE,
+  actions = "character",
   states = FALSE,
   labels = TRUE,
   absorbing_state_action = FALSE,
@@ -75,7 +75,7 @@ gridworld_animate(x, method, n, zlim = NULL, ...)
 \arguments{
 \item{dim}{vector of length two with the x and y extent of the gridworld.}
 
-\item{actions}{vector with four action labels that move the agent up, right, down,
+\item{action_labels}{vector with four action labels that move the agent up, right, down,
 and left.}
 
 \item{unreachable_states}{a vector with state labels for unreachable states.
@@ -89,6 +89,10 @@ These states will be excluded.}
 
 \item{walls}{a vector with state labels for walls. Walls will
 become unreachable states.}
+
+\item{actions}{how to show actions. Options are:
+\code{"character"}, \code{"unicode"} arrows (needs to be supported by the used font),
+\code{"label"} of the action, and  \code{"none"} to suppress showing the action.}
 
 \item{goal_reward}{reward to transition to the goal state.}
 
@@ -116,8 +120,6 @@ state in the gridworld.}
 \item{what}{What should be returned in the matrix. Options are:
 \code{"states"}, \code{"labels"}, \code{"values"}, \code{"actions"}, \code{"absorbing"}, and
 \code{"reachable"}.}
-
-\item{arrows}{logical; show arrows instead of action names.}
 
 \item{states}{logical; show state names.}
 
@@ -173,6 +175,10 @@ By default, the goal state is absorbing, but with \code{restart = TRUE}, the
 agent restarts the problem at the start state every time it reaches the goal
 and receives the reward. Note that this implies that the goal state itself
 becomes unreachable.
+
+\code{gridworld_animate()} applies algorithms from \code{\link[=solve_MDP]{solve_MDP()}} iteration
+by iteration and visualized the state utilities. This helps to understand
+how the algorithms work.
 }
 \examples{
 # Defines states, actions and a transition model for a standard gridworld
@@ -263,7 +269,7 @@ sol <- solve_MDP(Dyna_maze)
 gridworld_matrix(sol, what = "values")
 gridworld_matrix(sol, what = "actions")
 gridworld_plot_policy(sol)
-gridworld_plot_policy(sol, arrows = FALSE, cex = 1, states = FALSE)
+gridworld_plot_policy(sol, actions = "label", cex = 1, states = FALSE)
 
 # visualize the first 5 iterations of value iteration
 gridworld_animate(Dyna_maze, method = "value", n = 5)

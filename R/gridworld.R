@@ -120,12 +120,12 @@
 #' gridworld_matrix(sol, what = "values")
 #' gridworld_matrix(sol, what = "actions")
 #' gridworld_plot_policy(sol)
-#' gridworld_plot_policy(sol, arrows = FALSE, cex = 1, states = FALSE)
+#' gridworld_plot_policy(sol, actions = "label", cex = 1, states = FALSE)
 #' 
 #' # visualize the first 5 iterations of value iteration
 #' gridworld_animate(Dyna_maze, method = "value", n = 5)
 #' @param dim vector of length two with the x and y extent of the gridworld.
-#' @param actions vector with four action labels that move the agent up, right, down,
+#' @param action_labels vector with four action labels that move the agent up, right, down,
 #'   and left.
 #' @param unreachable_states a vector with state labels for unreachable states.
 #'     These states will be excluded.
@@ -133,7 +133,7 @@
 #' @export
 gridworld_init <-
   function(dim,
-           actions =  c("up", "right", "down", "left"),
+           action_labels =  c("up", "right", "down", "left"),
            unreachable_states = NULL,
            absorbing_states = NULL,
            labels = NULL) {
@@ -150,7 +150,7 @@ gridworld_init <-
     T <- function(action,
                   start.state = NULL,
                   end.state = NULL) {
-      ai <- pmatch(action, actions)
+      ai <- pmatch(action, action_labels)
       if (is.na(ai))
         stop("Unknown action", action)
       
@@ -174,7 +174,7 @@ gridworld_init <-
     
     list(
       states = S,
-      actions = actions,
+      actions = action_labels,
       transition_prob = T,
       reward = rbind(R_(value = 0)),
       info = list(gridworld_dim = dim, gridworld_labels = labels)
@@ -198,7 +198,7 @@ gridworld_maze_MDP <- function(dim,
                                start,
                                goal,
                                walls = NULL,
-                               actions =  c("up", "right", "down", "left"),
+                               action_labels =  c("up", "right", "down", "left"),
                                goal_reward = 1,
                                step_cost = 0,
                                restart = FALSE,
@@ -377,7 +377,9 @@ gridworld_matrix <- function(model,
 
 #' @rdname gridworld
 #' @param epoch epoch for unconverged finite-horizon solutions.
-#' @param arrows logical; show arrows instead of action names.
+#' @param actions how to show actions. Options are: 
+#'  simple `"character"`, `"unicode"` arrows (needs to be supported by the used font), 
+#'  `"label"` of the action, and  `"none"` to suppress showing the action.
 #' @param states logical; show state names.
 #' @param labels logical; show state labels.
 #' @param absorbing_state_action logical; show the value and the action for absorbing states.
@@ -391,7 +393,7 @@ gridworld_matrix <- function(model,
 gridworld_plot_policy <-
   function(model,
            epoch = 1L,
-           arrows = TRUE,
+           actions = "character",
            states = FALSE,
            labels = TRUE,
            absorbing_state_action = FALSE,
@@ -400,6 +402,8 @@ gridworld_plot_policy <-
            offset = .5,
            lines = TRUE,
            ...) {
+    actions <- match.arg(actions, c("character", "unicode", "label", "none"))
+    
     if (is.null(main))
       main <- model$name
     
@@ -456,16 +460,22 @@ gridworld_plot_policy <-
         cex = .5 * cex
       )
     
-    if (arrows)
-      g$actions <- as.character(factor(
+    g$actions <- switch(actions,
+      character =  as.character(factor(
         g$actions,
         levels = c("up", "right", "down", "left"),
-        labels = c("^", ">", "v", "<")
-      ))
-    
-    # plotting unicode characters is a problem.
-    #labels = c("\U2191", "\U2192", "\U2193", "\U2190")))
-    
+        labels = c("^", ">", "v", "<"))),
+      
+      unicode = as.character(factor(
+        g$actions,
+        levels = c("up", "right", "down", "left"),
+        labels = c("\U2191", "\U2192", "\U2193", "\U2190"))),
+      
+      label = g$actions,
+      
+      none = NA
+      )
+     
     text(g$x, g$y, g$actions, cex = cex)
   }
 
