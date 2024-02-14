@@ -25,7 +25,7 @@ gridworld_maze_MDP(
   start,
   goal,
   walls = NULL,
-  actions = c("up", "right", "down", "left"),
+  action_labels = c("up", "right", "down", "left"),
   goal_reward = 1,
   step_cost = 0,
   restart = FALSE,
@@ -90,10 +90,6 @@ These states will be excluded.}
 \item{walls}{a vector with state labels for walls. Walls will
 become unreachable states.}
 
-\item{actions}{how to show actions. Options are:
-\code{"character"}, \code{"unicode"} arrows (needs to be supported by the used font),
-\code{"label"} of the action, and  \code{"none"} to suppress showing the action.}
-
 \item{goal_reward}{reward to transition to the goal state.}
 
 \item{step_cost}{cost of each action that does not lead to the goal state.}
@@ -120,6 +116,10 @@ state in the gridworld.}
 \item{what}{What should be returned in the matrix. Options are:
 \code{"states"}, \code{"labels"}, \code{"values"}, \code{"actions"}, \code{"absorbing"}, and
 \code{"reachable"}.}
+
+\item{actions}{how to show actions. Options are:
+simple \code{"character"}, \code{"unicode"} arrows (needs to be supported by the used font),
+\code{"label"} of the action, and  \code{"none"} to suppress showing the action.}
 
 \item{states}{logical; show state names.}
 
