@@ -114,6 +114,11 @@ expect_equal(om_func, om)
 rew_func <- reward_matrix(Tiger_func)
 expect_equal(rew_func, rew)
 
+# test accessors for function
+expect_equal(transition_matrix(Tiger_func, "listen", "tiger-left", "tiger-left"), 1)
+expect_equal(observation_matrix(Tiger_func, "listen", "tiger-left", "tiger-left"), .85)
+expect_equal(reward_matrix(Tiger_func, "listen", "tiger-left", "tiger-left", "tiger-left"), -1)
+
 # translate function
 Tiger_func_norm <- normalize_POMDP(Tiger_func)
 expect_equal(Tiger_func_norm$transition_prob, tm)
@@ -356,3 +361,4 @@ expect_true(is.matrix(rm[[1]][[1]]))
 # convert matrix back to data.frame
 rm <- reward_matrix(densePOMDP, sparse = TRUE)
 expect_s3_class(rm, "data.frame")
+
