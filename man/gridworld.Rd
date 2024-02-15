@@ -38,7 +38,7 @@ gridworld_maze_MDP(
 
 gridworld_s2rc(s)
 
-gridworld_rc2s(xy)
+gridworld_rc2s(rc)
 
 gridworld_matrix(model, epoch = 1L, what = "states")
 
@@ -106,8 +106,8 @@ dimensions as element \code{gridworld_dim}.}
 
 \item{s}{a state label.}
 
-\item{xy}{a vector of length two with the x and y coordinate of a
-state in the gridworld.}
+\item{rc}{a vector of length two with the row and column coordinate of a
+state in the gridworld matrix.}
 
 \item{model, x}{a solved gridworld MDP.}
 

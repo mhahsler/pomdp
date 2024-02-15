@@ -1,0 +1,163 @@
+---
+title: "Gridworlds in Package pomdp"
+author: "Michael Hahsler"
+bibliography: pomdp.bib
+vignette: >
+  %\VignetteIndexEntry{Gridworlds in Package pomdp}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output:
+  rmarkdown::html_vignette
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = TRUE,
+  animation.hook = knitr::hook_ffmpeg_html
+)
+```
+
+```{r setup}
+library(pomdp)
+```
+
+## Introduction 
+
+Gridworlds represent an easy to explore how Markov Decision Problems (MDPs),
+Partially Observable Decision Problems (POMDPs), and various approaches to solve these problems
+work. The R package **pomdp** [@Hahsler2024] provides a set of helper functions starting with the 
+prefix `gridworld_`
+to make defining and experimenting with gridworlds easy. 
+
+## Defining a Gridworld
+
+Many gridworlds represent mazes with start and goal states that the agent needs to solve.
+Mazes can be easily defined. Here we create the Dyna Maze from Chapter 8 in [@Sutton1998].
+
+```{r}
+x <- gridworld_maze_MDP(
+                dim = c(6,9),
+                start = "s(3,1)",
+                goal = "s(1,9)",
+                walls = c("s(2,3)", "s(3,3)", "s(4,3)",
+                          "s(5,6)",
+                          "s(1,8)", "s(2,8)", "s(3,8)"),
+                goal_reward = 1,
+                step_cost = 0,
+                restart = TRUE,
+                discount = 0.95,
+                name = "Dyna Maze",
+                )
+x
+```
+
+Gridworlds are implemented with state names `"s(<row>,<col>)"`, where
+`row` and `col` are locations in the matrix representing the gridworld.
+The actions are `"up"`, `"right"`,  `"down"`, and  `"left"`.
+Conversion between state labels and the position in the matrix (row and column 
+index) can be done with `gridworld_s2rc()` and `gridworld_rc2s()`, respectively.
+
+The transition graph can be visualized. Note, the transition from the state below the
+goal state back to the start state shows that the maze restarts the agent once it reaches
+the goal and collects the goal reward.
+
+```{r}
+gridworld_plot_transition_graph(x)
+```
+
+A more general way to create gridworlds is implemented in the function
+`gridworld_init()` which initializes a new gridworld creating a matrix of states 
+with given dimensions. Unreachable stats and absorbing state can be defined. 
+The returned information can be used to build a custom gridworld MDP.
+
+## Working wit Gridworld MDPs
+
+The gridworld can be accessed as a matrix.
+
+```{r}
+gridworld_matrix(x)
+gridworld_matrix(x, what = "labels")
+gridworld_matrix(x, what = "reachable")
+```
+
+Other options for `what` are `"values"` (for state values) and `"action"`, but these are only 
+available for solved problems that contain a policy.
+
+## Solving a Gridworld
+
+Gridworld MDPs are solved like any other MDP.
+
+```{r}
+sol <- solve_MDP(x, method = "value_iteration")
+sol
+```
+
+Detailed information about the solution can be accessed.
+
+```{r}
+sol$solution
+```
+
+Now the policy and the state values are available as a matrix.
+
+```{r}
+gridworld_matrix(sol, what = "values")
+gridworld_matrix(sol, what = "actions")
+```
+
+A visual presentation with the state value represented by color (darker is larger),
+the policy represented by action arrows, and the labels added is also available.
+
+```{r}
+gridworld_plot_policy(sol)
+```
+
+We see that value iteration found a clear path from the start state towards the goal state following
+increasing state values. 
+
+## Experimenting with Solvers
+
+It is interesting to look how different solvers find a solution. We can visualize how the policy and 
+state values change after each iteration. For example, we can stop the algorithm after
+a given number of iterations and visualize the progress.
+
+```{r}
+sol <- solve_MDP(x, method = "value_iteration", N = 5)
+gridworld_plot_policy(sol, zlim = c(0, 2), sub = "Iteration 5")
+```
+The solver creates a warning indicating that the solution has not converged after only
+5 iterations. In the visualization, we see that value iteration has expanded values from the 
+goal state up to 5 squares away. To make this analysis easier, we can use 
+`gridworld_animate()` to draw a visualization after each iteration.
+
+```{r}
+gridworld_animate(x, "value_iteration", n = 5, zlim = c(0, 2))
+```
+R markdown documents can use `{r, fig.show='animate'}` so create an animation using 
+the individual frames.
+
+```{r, fig.show='animate'}
+gridworld_animate(x, "value_iteration", n = 20, zlim = c(0, 2))
+```
+
+It is easy to see how value iteration propagates value from the goal to the start.
+In the following, we create animations for more solving methods.
+
+
+```{r, fig.show='animate'}
+gridworld_animate(x, "policy_iteration", n = 20, zlim = c(0, 2))
+```
+
+```{r, fig.show='animate'}
+gridworld_animate(x, "q_learning", n = 20, zlim = c(0, 2),  horizon = 100)
+```
+
+```{r, fig.show='animate'}
+gridworld_animate(x, "sarsa", n = 20, zlim = c(0, 2), horizon = 100)
+```
+
+```{r, fig.show='animate'}
+gridworld_animate(x, "expected_sarsa", n = 20, zlim = c(0, 2), horizon = 100, alpha = 1)
+```

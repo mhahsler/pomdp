@@ -283,22 +283,22 @@ gridworld_maze_MDP <- function(dim,
 #' @rdname gridworld
 #' @param model,x a solved gridworld MDP.
 #' @param s a state label.
-#' @param xy a vector of length two with the x and y coordinate of a
-#'   state in the gridworld.
+#' @param rc a vector of length two with the row and column coordinate of a
+#'   state in the gridworld matrix.
 #' @export
 gridworld_s2rc <- function(s) {
-  xy <- as.integer(strsplit(s, "s\\(|,|\\)")[[1]][-1])
-  if (length(xy) != 2 || any(is.na(xy)))
+  rc <- as.integer(strsplit(s, "s\\(|,|\\)")[[1]][-1])
+  if (length(rc) != 2 || any(is.na(rc)))
     stop("Malformed gridworld state label ",
          sQuote(s),
-         ". Needs to be 's(x,y)'.")
-  xy
+         ". Needs to be 's(<row>,<col>)'.")
+  rc
 }
 
 #' @rdname gridworld
 #' @export
-gridworld_rc2s <- function(xy)
-  paste0("s(", xy[1], ",", xy[2], ")")
+gridworld_rc2s <- function(rc)
+  paste0("s(", rc[1], ",", rc[2], ")")
 
 #' @rdname gridworld
 #' @param what What should be returned in the matrix. Options are:

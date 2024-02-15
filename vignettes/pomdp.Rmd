@@ -1,27 +1,30 @@
 ---
-title: "POMDP: Introduction to Partially Observable Markov Decision Processes"
+title: "pomdp: Introduction to Partially Observable Markov Decision Processes"
 author: "Michael Hahsler and Hossein Kamalzadeh"
-date: "May 20, 2021"
-bibliography: bibliography.bib
+bibliography: pomdp.bib
 vignette: >
   %\VignetteIndexEntry{POMDP: Introduction to Partially Observable Markov Decision Processes}
   %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 output:
-  knitr:::html_vignette:
-    toc: yes
-editor_options: 
-  markdown: 
-    wrap: 72
+  rmarkdown::html_vignette
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
 library("pomdp")
 ```
 
 # Introduction
 
-The R package **pomdp** provides the infrastructure to define and
+The R package **pomdp** [@Hahsler2024] provides the infrastructure to define and
 analyze the solutions of Partially Observable Markov Decision Processes
 (POMDP) models. The package is a companion to package **pomdpSolve**
 which provides the executable for
