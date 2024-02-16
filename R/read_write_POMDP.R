@@ -86,19 +86,19 @@ write_POMDP <- function(x, file, digits = 7) {
          if (is.character(states) &&
              any(grepl(pomdp_solve_OK_chars, states)))
            stop(
-             "Some state labels use caracters unsupported by the solver! Only use ",
+             "Some state labels use characters unsupported by the solver! Only use ",
              pomdp_solve_OK_chars
            )
          if (is.character(actions) &&
              any(grepl(pomdp_solve_OK_chars, actions)))
            stop(
-             "Some action labels use caracters unsupported by the solver! Only use ",
+             "Some action labels use characters unsupported by the solver! Only use ",
              pomdp_solve_OK_chars
            )
          if (is.character(observations) &&
              any(grepl(pomdp_solve_OK_chars, observations)))
            stop(
-             "Some observation labels use caracters unsupported by the solver! Only use ",
+             "Some observation labels use characters unsupported by the solver! Only use ",
              pomdp_solve_OK_chars
            )
          
