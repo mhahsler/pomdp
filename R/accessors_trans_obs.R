@@ -39,8 +39,17 @@ value_matrix <-
     # convert functions
     if (is.function(value)) {
       # shortcut for a single value
-      if (!is.null(action) && !is.null(row) && !is.null(col))
-          return(value(action, row, col))
+      if (!is.null(action) && !is.null(row) && !is.null(col)) {
+        if (is.numeric(action)) action <- x$actions[action]
+        if (is.numeric(row)) row <- x$states[row]
+        if (field == "transition_prob")
+          cols <- x$states
+        else
+          ### obs
+          cols <- x$observations
+        if (is.numeric(col)) col <- cols[col]
+        return(value(action, row, col))
+      }
 
       return(function2value(x, field, value, action, row, col, sparse))
     }

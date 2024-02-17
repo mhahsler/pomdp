@@ -5,7 +5,7 @@
 \alias{read_POMDP}
 \title{Read and write a POMDP Model to a File in POMDP Format}
 \usage{
-write_POMDP(x, file, digits = 7)
+write_POMDP(x, file, digits = 7, labels = FALSE)
 
 read_POMDP(file, parse = TRUE, normalize = TRUE)
 }
@@ -16,6 +16,9 @@ read_POMDP(file, parse = TRUE, normalize = TRUE)
 
 \item{digits}{precision for writing numbers (digits after the decimal
 point).}
+
+\item{labels}{logical; write original labels or use index numbers? Labels are
+restricted to \verb{[a-zA-Z0-9_-]} and the first character has to be a letter.}
 
 \item{parse}{logical; try to parse the model matrices.
 Solvers still work with unparsed matrices, but helpers for simulation are not available.}

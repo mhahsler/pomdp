@@ -8,7 +8,7 @@
 #' in this package that use fields like the transition matrix, the observation matrix and the reward structure.
 #'
 #' The range of useful rewards is restricted by the solver. Here the values are restricted to the range
-#' `[-1e10, 1e10]`. 
+#' `[-1e10, 1e10]`.
 #' Unavailable actions have a reward of `-Inf` which is translated to -2 times the maximum
 #' absolute reward value used in the model.
 #'
@@ -19,9 +19,11 @@
 #' @family POMDP
 #'
 #' @param x an object of class [POMDP].
+#' @param file a file name. `read_POMDP()` also accepts [connections] including URLs.
 #' @param digits precision for writing numbers (digits after the decimal
 #' point).
-#' @param file a file name. `read_POMDP()` also accepts [connections] including URLs.
+#' @param labels logical; write original labels or use index numbers? Labels are 
+#' restricted to `[a-zA-Z0-9_-]` and the first character has to be a letter.
 #' @return `read_POMDP()` returns a [POMDP] object.
 #' @author Hossein Kamalzadeh, Michael Hahsler
 #' @references POMDP solver website: https://www.pomdp.org
@@ -32,7 +34,10 @@
 #' ## show the POMDP file that would be written.
 #' write_POMDP(Tiger, file = stdout())
 #' @export
-write_POMDP <- function(x, file, digits = 7) {
+write_POMDP <- function(x,
+                        file,
+                        digits = 7,
+                        labels = FALSE) {
   if (!inherits(x, "POMDP"))
     stop("model needs to be a POMDP model use POMDP()!")
   
@@ -42,21 +47,22 @@ write_POMDP <- function(x, file, digits = 7) {
   #  return()
   #}
   
-  ### solver restrictions. POMDP defines a float for the reward 
+  ### solver restrictions. POMDP defines a float for the reward
   mr <- .max_abs_reward(x)
   reward_max <- 1e10
   if (mr > reward_max)
     stop(
-      "Reward values supported by the solver need to be in [",
-      -reward_max,
-      ", ",+reward_max,
+      "Reward values supported by the solver need to be in [",-reward_max,
+      ", ",
+      +reward_max,
       "]."
     )
   
-  reward_neg_Inf <- -2*mr
+  reward_neg_Inf <- -2 * mr
   #reward_neg_Inf <- -1e15
- 
-  pomdp_solve_OK_chars <- "[^A-Za-z0-9_-]"
+  
+  # restrictions on POMDP labels 
+  pomdp_solve_OK_chars <- "[^a-zA-Z0-9_-]"
   
   x <- check_and_fix_MDP(x)
   
@@ -83,24 +89,26 @@ write_POMDP <- function(x, file, digits = 7) {
            reward <- reward_matrix(x, sparse = FALSE)
          
          # state names cannot contain special characters!
-         if (is.character(states) &&
-             any(grepl(pomdp_solve_OK_chars, states)))
-           stop(
-             "Some state labels use characters unsupported by the solver! Only use ",
-             pomdp_solve_OK_chars
-           )
-         if (is.character(actions) &&
-             any(grepl(pomdp_solve_OK_chars, actions)))
-           stop(
-             "Some action labels use characters unsupported by the solver! Only use ",
-             pomdp_solve_OK_chars
-           )
-         if (is.character(observations) &&
-             any(grepl(pomdp_solve_OK_chars, observations)))
-           stop(
-             "Some observation labels use characters unsupported by the solver! Only use ",
-             pomdp_solve_OK_chars
-           )
+         if (labels) {
+           if (is.character(states) &&
+               any(grepl(pomdp_solve_OK_chars, states)))
+             stop(
+               "Some state labels use characters unsupported by the solver! Only use ",
+               pomdp_solve_OK_chars
+             )
+           if (is.character(actions) &&
+               any(grepl(pomdp_solve_OK_chars, actions)))
+             stop(
+               "Some action labels use characters unsupported by the solver! Only use ",
+               pomdp_solve_OK_chars
+             )
+           if (is.character(observations) &&
+               any(grepl(pomdp_solve_OK_chars, observations)))
+             stop(
+               "Some observation labels use characters unsupported by the solver! Only use ",
+               pomdp_solve_OK_chars
+             )
+         }
          
          ### POMDP file
          preamble <-  paste0(
@@ -118,13 +126,17 @@ write_POMDP <- function(x, file, digits = 7) {
            values,
            "\n",
            "states: ",
-           paste(states, collapse = " "),
+           ifelse(!labels, number_of_states, paste(states, collapse = " ")),
            "\n",
            "actions: ",
-           paste(actions, collapse = " "),
+           ifelse(!labels, number_of_actions, paste(actions, collapse = " ")),
            "\n",
            "observations: ",
-           paste(observations, collapse = " "),
+           ifelse(
+             !labels,
+             number_of_observations,
+             paste(observations, collapse = " ")
+           ),
            "\n"
          )
          
@@ -175,10 +187,10 @@ write_POMDP <- function(x, file, digits = 7) {
                         "\n")
          }
          
-         cat(preamble, preamble_start, "\n", file = file)
+         cat(preamble, "\n", file = file)
+         cat(preamble_start, "\n", file = file)
          
          ### write preamble
-         
          format_POMDP_df <-
            function(x,
                     file,
@@ -240,8 +252,12 @@ write_POMDP <- function(x, file, digits = 7) {
              if (inherits(x, "Matrix"))
                return(format_POMDP_dgc(x, file, type, action, start, digits))
              
+             # make action a number
+             action <- .to_0_idx(factor(action, levels = actions))
+             
              if (type == "R")
-               code <- paste0(type, ": ", action, " : ", start, "\n")
+               code <-
+               paste0(type, ": ", action, " : ", start, "\n")
              else
                code <- paste0(type, ": ", action, "\n")
              
@@ -249,11 +265,11 @@ write_POMDP <- function(x, file, digits = 7) {
                code <- paste0(code, x, "\n")
              else
                code <-
-                 paste0(code,
-                        .format_number_fixed(x,
-                                             digits,
-                                             type),
-                        "\n")
+               paste0(code,
+                      .format_number_fixed(x,
+                                           digits,
+                                           type),
+                      "\n")
              
              cat(code, file = file, append = TRUE)
              cat("\n", file = file)
@@ -273,6 +289,9 @@ write_POMDP <- function(x, file, digits = 7) {
              # empty matrix
              if (nnzero(x) == 0L)
                return()
+             
+             # make action a number
+             action <- .to_0_idx(factor(action, levels = actions))
              
              if (type == "R")
                prefix <- paste(action, start, sep = " : ")
@@ -313,7 +332,7 @@ write_POMDP <- function(x, file, digits = 7) {
              format_POMDP_matrix(transition_prob[[a]], file, "T", a, digits = digits)
          }
          
-         ### Observation Probabilitieus
+         ### observation probabilities
          if (is.data.frame(observation_prob))
            format_POMDP_df(observation_prob, file, "O", digits)
          else{
@@ -337,9 +356,9 @@ write_POMDP <- function(x, file, digits = 7) {
                     reward$value > reward_max) &
                    reward$value != -Inf))
              stop(
-               "Reward values supported by the solver need to be in [",
-               -reward_max,
-               ", ",+reward_max,
+               "Reward values supported by the solver need to be in [",-reward_max,
+               ", ",
+               +reward_max,
                "]."
              )
            reward$value[reward$value == -Inf] <- reward_neg_Inf
@@ -365,12 +384,13 @@ write_POMDP <- function(x, file, digits = 7) {
                reward_matrix != -Inf
                ))
                  stop(
-                   "Reward values supported by the solver need to be in [",
-                   -reward_max,
-                   ",",+reward_max,
+                   "Reward values supported by the solver need to be in [",-reward_max,
+                   ",",
+                   +reward_max,
                    "]"
                  )
-               reward_matrix[reward_matrix == -Inf] <- reward_neg_Inf
+               reward_matrix[reward_matrix == -Inf] <-
+                 reward_neg_Inf
                
                format_POMDP_matrix(reward_matrix, file, "R", a, s, digits = digits)
              }
@@ -674,7 +694,7 @@ parse_POMDP_matrix <-
           else if (is.na(start))
             trans[[action]][, end] <- as.numeric(vals[4])
           else if (is.na(end))
-            trans[[action]][start,] <- as.numeric(vals[4])
+            trans[[action]][start, ] <- as.numeric(vals[4])
           else
             trans[[action]][start, end] <- as.numeric(vals[4])
         }
@@ -687,7 +707,7 @@ parse_POMDP_matrix <-
           else if (is.na(start))
             trans[[action]][, end] <- read_val_line(i + 1L)
           else if (is.na(end))
-            trans[[action]][start,] <- read_val_line(i + 1L)
+            trans[[action]][start, ] <- read_val_line(i + 1L)
           else
             trans[[action]][start, end] <- read_val_line(i + 1L)
         }
@@ -697,9 +717,9 @@ parse_POMDP_matrix <-
         if (length(vals) == 2L) {
           if (is.na(start))
             for (k in seq_along(rows))
-              trans[[action]][k,] <- read_val_line(i + 1L)
+              trans[[action]][k, ] <- read_val_line(i + 1L)
           else
-            trans[[action]][start, ] <- read_val_line(i + 1L)
+            trans[[action]][start,] <- read_val_line(i + 1L)
         }
         
         # Case: T: <action>
@@ -714,7 +734,7 @@ parse_POMDP_matrix <-
           special <- pmatch(problem[i + 1], c("identity", "uniform"))
           if (is.na(special)) {
             for (j in seq_along(rows))
-              trans[[action]][j,] <- read_val_line(i + j)
+              trans[[action]][j, ] <- read_val_line(i + j)
           } else {
             trans[[action]] <- c("identity", "uniform")[special]
           }
@@ -730,7 +750,11 @@ parse_POMDP_matrix <-
 
 
 .parse_POMDP_reward <-
-  function(problem, actions, states, observations, sparse = TRUE) {
+  function(problem,
+           actions,
+           states,
+           observations,
+           sparse = TRUE) {
     if (!sparse)
       matrix_list <- lapply(
         actions,
@@ -810,22 +834,22 @@ parse_POMDP_matrix <-
         for (start in starts) {
           # Case: R: <action> : <start-state> : <end-state> : <observation> %f
           if (length(vals) == 5L) {
-              matrix_list[[action]][[start]][end, obs] <-
-                as.numeric(vals[5])
+            matrix_list[[action]][[start]][end, obs] <-
+              as.numeric(vals[5])
           }
           
           # Case: R: <action> : <start-state> : <end-state> : <observation>
           # %f
           if (length(vals) == 4L) {
-              matrix_list[[action]][[start]][end, obs] <-
-                read_val_line(i + 1L)
+            matrix_list[[action]][[start]][end, obs] <-
+              read_val_line(i + 1L)
           }
           
           # Case: R: <action> : <start-state> : <end-state>
           #       %f %f ... %f
           if (length(vals) == 3L) {
-              matrix_list[[action]][[start]][end, ] <-
-                read_val_line(i + 1L)
+            matrix_list[[action]][[start]][end,] <-
+              read_val_line(i + 1L)
           }
           
           # Case: R: <action> : <start-state>
@@ -835,7 +859,7 @@ parse_POMDP_matrix <-
           # %f %f ... %f
           if (length(vals) == 2L) {
             for (j in seq_along(states))
-              matrix_list[[action]][[start]][j,] <-
+              matrix_list[[action]][[start]][j, ] <-
                 read_val_line(i + j)
           }
         }
@@ -873,7 +897,7 @@ parse_POMDP_matrix <-
   if (is.numeric(belief) &&
       length(belief) == length(states) &&
       round(sum(belief), 3) == 1) {
-    if(!is.null(names(belief)) && !all(names(belief) == states))
+    if (!is.null(names(belief)) && !all(names(belief) == states))
       names(belief) <- states
     return(belief)
   }

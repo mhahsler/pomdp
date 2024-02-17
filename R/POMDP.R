@@ -127,6 +127,13 @@
 #' A finite-horizon POMDP may also converging to a infinite horizon solution
 #' if the horizon is long enough.
 #'
+#' **Large Models**
+#' 
+#' If small functions can describe an otherwise large model, then using `normalize = FALSE`
+#' can be used to prevent translating the functions to matrices. However, once external solvers are 
+#' called, the matrices have to be created. Currently, only some internal functions can use R functions 
+#' directly. 
+#'
 #' **Time-dependent POMDPs**
 #'
 #' Time dependence of transition probabilities, observation probabilities and

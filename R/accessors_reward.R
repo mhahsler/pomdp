@@ -48,10 +48,16 @@ reward_matrix <-
     if (is.function(reward)) {
       # shortcut for a single value
       if (!is.null(action) && !is.null(start.state) && !is.null(end.state)) {
+        if (is.numeric(action)) action <- x$actions[action]
+        if (is.numeric(start.state)) start.state <- x$states[start.state]
+        if (is.numeric(end.state)) end.state <- x$states[end.state]
+        
         if(inherits(x, "MDP"))
           return(reward(action, start.state, end.state))
-        else if (!is.null(observation))
+        else if (!is.null(observation)) {
+          if (is.numeric(observation)) observation <- x$observations[observation]
           return(reward(action, start.state, end.state, observation))
+        }
       }
         
       reward <- reward_function2list(reward, x)
@@ -107,12 +113,20 @@ reward_val <-
                   episode = episode,
                   epoch = epoch,
                   sparse = NULL)
+ 
+  # TODO: This could be done better 
+  if (is.function(r))
+    r <-
+      reward_matrix(x,
+                    episode = episode,
+                    epoch = epoch,
+                    sparse = FALSE)
   
   if (is.data.frame(r)) {
     rew <- r$value
   } else {
     # list of list of matrices
-    rew <- unlist(x$reward, recursive = TRUE)
+    rew <- unlist(r, recursive = TRUE)
   }
   
   rew[rew == -Inf] <- NA
