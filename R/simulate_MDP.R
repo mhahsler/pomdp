@@ -92,6 +92,16 @@ simulate_MDP <-
            verbose = FALSE,
            ...) {
     engine <- match.arg(tolower(engine), c("cpp", "r"))
+    if(engine == "cpp" && 
+       (is.function(model$transition_prob) ||
+        is.function(model$reward))) {
+      
+      warning("Some elements of the MDP are defined as R funciton. The CPP engine is very slow with R function calls.\n",
+              "Falling back to R. Normalize the model first to use CPP.", immediate. = TRUE
+      )
+      engine <- 'r'
+    }
+    
     
     start <- .translate_belief(start, model = model)
     solved <- is_solved_MDP(model)
@@ -128,8 +138,8 @@ simulate_MDP <-
       disc <- 1
     
     if (engine == "cpp") {
-      ### TODO: Make sparse
-      model <- normalize_MDP(model, sparse = TRUE)
+      # Cpp can now deal with unnormalized POMDPs
+      #model <- normalize_MDP(model, sparse = TRUE)
       
       if (foreach::getDoParWorkers() == 1 || n * horizon < 100000)
         return (simulate_MDP_cpp(

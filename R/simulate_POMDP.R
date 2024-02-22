@@ -121,6 +121,18 @@ simulate_POMDP <-
     time_start <- proc.time()  
      
     engine <- match.arg(tolower(engine), c("cpp", "r"))
+    if(engine == "cpp" && 
+       (is.function(model$transition_prob) ||
+       is.function(model$observation_prob) ||
+       is.function(model$reward))) {
+      
+      warning("Some elements of the POMDP are defined as R funciton. The CPP engine is very slow with R function calls.\n",
+              "Falling back to R. Normalize the model first to use CPP.", immediate. = TRUE
+              )
+      engine <- 'r'
+    }
+    
+    
     
     solved <- is_solved_POMDP(model)
     dt <- is_timedependent_POMDP(model)
@@ -165,7 +177,9 @@ simulate_POMDP <-
       
       if (!dt) {
         ### TODO: Add support for time dependence
-        model <- normalize_POMDP(model, sparse = TRUE)
+        
+        # Cpp can now deal with unnormalized POMDPs
+        #model <- normalize_POMDP(model, sparse = TRUE)
         
         if (foreach::getDoParWorkers() == 1 || n * horizon < 100000L) {
           res <- simulate_POMDP_cpp(

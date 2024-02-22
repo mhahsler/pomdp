@@ -7,7 +7,7 @@
 \usage{
 write_POMDP(x, file, digits = 7, labels = FALSE)
 
-read_POMDP(file, parse = TRUE, normalize = TRUE)
+read_POMDP(file, parse = TRUE, normalize = FALSE)
 }
 \arguments{
 \item{x}{an object of class \link{POMDP}.}

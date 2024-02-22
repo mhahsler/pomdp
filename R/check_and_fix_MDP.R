@@ -47,7 +47,6 @@ check_and_fix_MDP <- function(x) {
   }
   
   ### do the checking
-  
   # expand states, actions and observations if only the number is given
   if (is.numeric(x$states) &&
       length(x$states) == 1L)

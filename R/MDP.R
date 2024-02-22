@@ -30,7 +30,6 @@
 #' @param horizon numeric; Number of epochs. `Inf` specifies an infinite
 #' horizon.
 #' @param start Specifies in which state the MDP starts.
-#' @param normalize logical; should the description be normalized for faster access (see [normalize_MDP()])?
 #' @param info A list with additional information.
 #' @param name a string to identify the MDP problem.
 #' @param x a `MDP` object.
@@ -91,7 +90,6 @@ MDP <- function(states,
                 discount = .9,
                 horizon = Inf,
                 start = "uniform",
-                normalize = TRUE,
                 info = NULL,
                 name = NA) {
   
@@ -113,9 +111,6 @@ MDP <- function(states,
   
   class(x) <- list("MDP", "list")
   x <- check_and_fix_MDP(x)
-  
-  if (normalize)
-    x <- normalize_MDP(x)
   
   x
 }

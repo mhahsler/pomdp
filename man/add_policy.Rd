@@ -30,7 +30,8 @@ sol
 
 perfect_Tiger <- Tiger
 perfect_Tiger$observation_prob <- list(
-  listen = "identity", 
+  listen = diag(1, length(perfect_Tiger$states), 
+    length(perfect_Tiger$observations)), 
   `open-left` = "uniform",
   `open-right` = "uniform"
 )

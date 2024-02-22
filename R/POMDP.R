@@ -68,7 +68,7 @@
 #'
 #' * A named list of matrices, one for each action. Each matrix has
 #'   rows representing end states \eqn{s'} and columns representing an observation \eqn{o}.
-#'   Instead of a matrix, also the strings `'identity'` or `'uniform'` can be specified.
+#'   Instead of a matrix, also the string `'uniform'` can be specified.
 #'
 #' * A function with the same arguments are `O_()`, but no default values
 #'   that returns the observation probability.
@@ -127,12 +127,6 @@
 #' A finite-horizon POMDP may also converging to a infinite horizon solution
 #' if the horizon is long enough.
 #'
-#' **Large Models**
-#' 
-#' If small functions can describe an otherwise large model, then using `normalize = FALSE`
-#' can be used to prevent translating the functions to matrices. However, once external solvers are 
-#' called, the matrices have to be created. Currently, only some internal functions can use R functions 
-#' directly. 
 #'
 #' **Time-dependent POMDPs**
 #'
@@ -171,7 +165,6 @@
 #' (default) can be used.  The belief is used to calculate the total expected cumulative
 #' reward. It is also used by some solvers. See Details section for more
 #' information.
-#' @param normalize logical; should the description be normalized for faster access (see [normalize_POMDP()])?
 #' @param info A list with additional information.
 #' @param name a string to identify the POMDP problem.
 #' @param action,start.state,end.state,observation,probability,value Values
@@ -296,7 +289,6 @@ POMDP <- function(states,
                   horizon = Inf,
                   terminal_values = NULL,
                   start = "uniform",
-                  normalize = TRUE,
                   info = NULL,
                   name = NA) {
   ### unsolved pomdp model
@@ -317,9 +309,6 @@ POMDP <- function(states,
   
   class(x) <- c("POMDP", "list")
   x <- check_and_fix_MDP(x)
-  
-  if (normalize)
-    x <- normalize_POMDP(x, sparse = TRUE)
   
   x
 }

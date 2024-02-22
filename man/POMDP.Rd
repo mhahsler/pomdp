@@ -22,7 +22,6 @@ POMDP(
   horizon = Inf,
   terminal_values = NULL,
   start = "uniform",
-  normalize = TRUE,
   info = NULL,
   name = NA
 )
@@ -75,8 +74,6 @@ probability for each state is supplied. Also the string \code{'uniform'}
 (default) can be used.  The belief is used to calculate the total expected cumulative
 reward. It is also used by some solvers. See Details section for more
 information.}
-
-\item{normalize}{logical; should the description be normalized for faster access (see \code{\link[=normalize_POMDP]{normalize_POMDP()}})?}
 
 \item{info}{A list with additional information.}
 
@@ -171,7 +168,7 @@ specified multiple times and the definition that
 appears last in the data.frame will take affect.
 \item A named list of matrices, one for each action. Each matrix has
 rows representing end states \eqn{s'} and columns representing an observation \eqn{o}.
-Instead of a matrix, also the strings \code{'identity'} or \code{'uniform'} can be specified.
+Instead of a matrix, also the string \code{'uniform'} can be specified.
 \item A function with the same arguments are \code{O_()}, but no default values
 that returns the observation probability.
 }
@@ -228,13 +225,6 @@ function and policy.
 
 A finite-horizon POMDP may also converging to a infinite horizon solution
 if the horizon is long enough.
-
-\strong{Large Models}
-
-If small functions can describe an otherwise large model, then using \code{normalize = FALSE}
-can be used to prevent translating the functions to matrices. However, once external solvers are
-called, the matrices have to be created. Currently, only some internal functions can use R functions
-directly.
 
 \strong{Time-dependent POMDPs}
 

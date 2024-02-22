@@ -12,26 +12,26 @@
 #' `transition_matrix()` accesses the transition model. The complete model
 #' is a list with one element for each action. Each element contains a states x states matrix
 #' with \eqn{s} (`start.state`) as rows and \eqn{s'} (`end.state`) as columns.
-#' Matrices with a density below 50% can be requested in sparse format 
+#' Matrices with a density below 50% can be requested in sparse format
 #' (as a [Matrix::dgCMatrix-class]).
 #'
 #' ## Observation Probabilities \eqn{O(o|s',a)}
-#' `observation_matrix()` accesses the observation model. The complete model is a 
+#' `observation_matrix()` accesses the observation model. The complete model is a
 #' list with one element for each action. Each element contains a states x observations matrix
 #' with \eqn{s} (`start.state`) as rows and \eqn{o} (`observation`) as columns.
-#' Matrices with a density below 50% can be requested in sparse format 
+#' Matrices with a density below 50% can be requested in sparse format
 #' (as a [Matrix::dgCMatrix-class])
 #'
 #' ## Reward \eqn{R(s,s',o,a)}
-#' `reward_matrix()` accesses the reward model. 
-#' The preferred representation is a data.frame with the 
-#' columns `action`, `start.state`, `end.state`, 
-#' `observation`, and `value`. This is a sparse representation. 
-#' The dense representation is a list of lists of matrices. 
+#' `reward_matrix()` accesses the reward model.
+#' The preferred representation is a data.frame with the
+#' columns `action`, `start.state`, `end.state`,
+#' `observation`, and `value`. This is a sparse representation.
+#' The dense representation is a list of lists of matrices.
 #' The list levels are \eqn{a} (`action`)  and \eqn{s} (`start.state`).
-#' The matrices have rows representing \eqn{s'} (`end.state`) 
+#' The matrices have rows representing \eqn{s'} (`end.state`)
 #' and columns representing \eqn{o} (`observations`).
-#' The reward structure cannot be efficiently stored using a standard sparse matrix 
+#' The reward structure cannot be efficiently stored using a standard sparse matrix
 #' since there might be a fixed cost for each action
 #' resulting in no entries with 0.
 #'
@@ -41,17 +41,17 @@
 #' ## Convert the Complete POMDP Description into a consistent form
 #' `normalize_POMDP()` returns a new POMDP definition where `transition_prob`,
 #' `observations_prob`, `reward`, and `start` are normalized. The options are:
-#' 
-#' * `sparse = NULL`: Only translates functions and leaves everything else as in the description. This avoids 
+#'
+#' * `sparse = NULL`: Only translates functions and leaves everything else as in the description. This avoids
 #'    unnecessary conversions.
 #' * `sparse = TRUE`: Converts everything into dense matrices. This allows fast access for small problems,
-#'    but requires too much memory for larger problems. 
+#'    but requires too much memory for larger problems.
 #' * `sparse = FALSE`: Transitions and observations are stored as sparse [Matrix::dgCMatrix-class] objects.
 #'    Rewards are stored as a data.frame.
-#' 
-#' 
-#'  
-#' 
+#'
+#'
+#'
+#'
 #' to (lists of) matrices and vectors to
 #' make direct access easy.  Also, `states`, `actions`, and `observations` are ordered as given in the problem
 #' definition to make safe access using numerical indices possible. Normalized POMDP descriptions are used for
@@ -71,6 +71,11 @@
 #' @param sparse logical; use sparse matrices when the density is below 50% and keeps data.frame representation
 #'  for the reward field. `NULL` returns the
 #'   representation stored in the problem description which saves the time for conversion.
+#' @param trans_start logical; expand the start to a probability vector?
+#' @param trans_function logical; convert functions into matrices?
+#' @param trans_keyword logical; convert distribution keywords (uniform and identity) 
+#'  in `transition_prob` or `observation_prob` to matrices?
+#'   
 #' @return A list or a list of lists of matrices.
 #' @author Michael Hahsler
 #' @examples
@@ -104,7 +109,7 @@
 #'
 #' ## Visualize transition matrix for action 'open-left'
 #' plot_transition_graph(Tiger)
-#' 
+#'
 #' ## Use a function for the Tiger transition model
 #' trans <- function(action, end.state, start.state) {
 #'   ## listen has an identity matrix
@@ -130,38 +135,82 @@ start_vector <- function(x) {
 
 #' @rdname accessors
 #' @export
-normalize_POMDP <- function(x, sparse = TRUE) {
+normalize_POMDP <- function(x,
+                            sparse = FALSE,
+                            trans_start = TRUE,
+                            trans_function = TRUE,
+                            trans_keyword = TRUE) {
   if (!inherits(x, "POMDP"))
     stop("x is not an POMDP object!")
   
-  x$start <- start_vector(x)
+  if (trans_start)
+    x$start <- start_vector(x)
   
   # transitions to matrices
   if (.is_timedependent_field(x, "transition_prob")) {
-    for (i in seq_along(x$transition_prob))
-      x$transition_prob[[i]] <-
-        transition_matrix(x, episode = i, sparse = sparse)
-  } else
-    x$transition_prob <-
-      transition_matrix(x, sparse = sparse)
+    for (i in seq_along(x$transition_prob)) {
+      if (is.function(x$transition_prob[[i]]) && !trans_function) {
+        # do nothing
+      } else {
+        x$transition_prob[[i]] <-
+          transition_matrix(
+            x,
+            episode = i,
+            sparse = sparse,
+            trans_keyword = trans_keyword
+          )
+      }
+    }
+  } else {
+    if (is.function(x$transition_prob) && !trans_function) {
+      # do nothing
+    } else {
+      x$transition_prob <-
+        transition_matrix(x, sparse = sparse, trans_keyword = trans_keyword)
+    }
+  }
   
   # observations to matrices
   if (.is_timedependent_field(x, "observation_prob")) {
-    for (i in seq_along(x$observation_prob))
-      x$observation_prob[[i]] <-
-        observation_matrix(x, episode = i, sparse = sparse)
-  } else
-    x$observation_prob <-
-      observation_matrix(x, sparse = sparse)
+    for (i in seq_along(x$observation_prob)) {
+      if (is.function(x$observation_prob[[i]]) && !trans_function) {
+        # do nothing
+      } else {
+        x$observation_prob[[i]] <-
+          observation_matrix(
+            x,
+            episode = i,
+            sparse = sparse,
+            trans_keyword = trans_keyword
+          )
+      }
+    }
+  } else {
+    if (is.function(x$observation_prob) && !trans_function) {
+      # do nothing
+    } else {
+      x$observation_prob <-
+        observation_matrix(x, sparse = sparse, trans_keyword = trans_keyword)
+    }
+  }
   
   # reward to data.frame (sparse) or dense matrix
   if (.is_timedependent_field(x, "reward")) {
-    for (i in seq_along(x$reward))
-      x$reward[[i]] <-
-        reward_matrix(x, episode = i, sparse = sparse)
+    for (i in seq_along(x$reward)) {
+      if ((is.function(x$reward[[i]]) && !trans_function)) {
+        # do nothing
+      } else {
+        x$reward[[i]] <-
+          reward_matrix(x, episode = i, sparse = sparse)
+      }
+    }
   } else {
-    x$reward <-
-      reward_matrix(x, sparse = sparse)
+    if ((is.function(x$reward) && !trans_function)) {
+      # do nothing
+    } else {
+      x$reward <-
+        reward_matrix(x, sparse = sparse)
+    }
   }
   
   x
@@ -171,18 +220,33 @@ normalize_POMDP <- function(x, sparse = TRUE) {
 
 #' @rdname accessors
 #' @export
-normalize_MDP <- function(x, sparse = TRUE) {
+normalize_MDP <- function(x,
+                          sparse = FALSE,
+                          trans_start = TRUE,
+                          trans_function = TRUE,
+                          trans_keyword = TRUE) {
   if (!inherits(x, "MDP"))
     stop("x is not an MDP object!")
-  x$start <- start_vector(x)
   
-  x$transition_prob <-
-    transition_matrix(x, sparse = sparse)
+  if (trans_start)
+    x$start <- start_vector(x)
   
-  x$reward <- reward_matrix(x, sparse = sparse)
+  if (is.function(x$transition_prob) && !trans_function) {
+    # do nothing
+  } else {
+    x$transition_prob <-
+      transition_matrix(x, sparse = sparse)
+  }
+  
+  if ((is.function(x$reward) && !trans_function)) {
+    # do nothing
+  } else {
+    x$reward <- reward_matrix(x, sparse = sparse)
+  }
+  
   x
 }
-    
+
 
 # make a matrix sparse if it has low density
 .sparsify <- function(x,
@@ -193,8 +257,10 @@ normalize_MDP <- function(x, sparse = TRUE) {
     return(x)
   
   if (!sparse) {
-    if (is.matrix(x)) return(x)
-    else return(as.matrix(x))
+    if (is.matrix(x))
+      return(x)
+    else
+      return(as.matrix(x))
   }
   
   # sparse
@@ -206,4 +272,3 @@ normalize_MDP <- function(x, sparse = TRUE) {
   else
     return(as.matrix(x))
 }
-

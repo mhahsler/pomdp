@@ -122,8 +122,8 @@
 #' gridworld_plot_policy(sol)
 #' gridworld_plot_policy(sol, actions = "label", cex = 1, states = FALSE)
 #' 
-#' # visualize the first 5 iterations of value iteration
-#' gridworld_animate(Dyna_maze, method = "value", n = 5)
+#' # visualize the first 3 iterations of value iteration
+#' gridworld_animate(Dyna_maze, method = "value", n = 3)
 #' @param dim vector of length two with the x and y extent of the gridworld.
 #' @param action_labels vector with four action labels that move the agent up, right, down,
 #'   and left.
@@ -189,7 +189,7 @@ gridworld_init <-
 #' @param step_cost cost of each action that does not lead to the goal state.
 #' @param restart logical; if `TRUE` then the problem automatically restarts when
 #'      the agent reaches the goal state.
-#' @param discount,horizon,normalize MDP discount factor, horizon, and normalization.
+#' @param discount,horizon MDP discount factor, and horizon.
 #' @param info A list with additional information. Has to contain the gridworld
 #'      dimensions as element `gridworld_dim`.
 #' @param name a string to identify the MDP problem.
@@ -204,7 +204,6 @@ gridworld_maze_MDP <- function(dim,
                                restart = FALSE,
                                discount = 0.9,
                                horizon = Inf,
-                               normalize = TRUE,
                                info = NULL,
                                name = NA) {
   gw <-
@@ -230,7 +229,6 @@ gridworld_maze_MDP <- function(dim,
         discount = discount,
         horizon = horizon,
         start = start,
-        normalize = normalize,
         info = gw$info,
         name = name
       )
@@ -274,7 +272,6 @@ gridworld_maze_MDP <- function(dim,
     discount = discount,
     horizon = horizon,
     start = start,
-    normalize = normalize,
     info = gw$info,
     name = name
   )
@@ -510,7 +507,7 @@ gridworld_plot_transition_graph <-
     if (hide_unreachable_states) {
       reachable <- reachable_states(x)
       g <- induced_subgraph(g, V(g)[reachable])
-      layout <- layout[reachable, ]
+      layout <- layout[reachable, , drop = FALSE]
     }
     
     V(g)$color <- vertex.color

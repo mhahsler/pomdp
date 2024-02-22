@@ -162,9 +162,6 @@ estimate_belief_for_nodes <-
     verbose = FALSE,
     ...) {
     
-    if (verbose)
-      x <- normalize_POMDP(x)
-    
     if (.has_policy_tree(x))
       return(.estimate_belief_for_nodes_trajectories_tree(x, belief = belief, n = n, verbose = verbose, ...))
     

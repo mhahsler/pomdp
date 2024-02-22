@@ -52,16 +52,14 @@ Tiger <- POMDP(
 
 # check reward as data.frame
 
-Tiger_norm <- normalize_POMDP(Tiger, sparse = FALSE)
-Tiger_norm2 <- normalize_POMDP(Tiger_norm, sparse = TRUE)
+Tiger_norm <- normalize_POMDP(Tiger)
+Tiger_norm2 <- normalize_POMDP(Tiger_norm, sparse = TRUE, trans_start = FALSE, trans_keyword = FALSE)
 
 expect_false(is.data.frame(Tiger_norm$reward))
 expect_true(is.data.frame(Tiger_norm2$reward))
 
 expect_equal(reward_matrix(Tiger), reward_matrix(Tiger_norm))
 expect_equal(reward_matrix(Tiger), reward_matrix(Tiger_norm2))
-
-
 
 # Check functions
 trans_f <- function(action, start.state, end.state) {
@@ -101,9 +99,7 @@ Tiger_func <- POMDP(
   
   transition_prob = trans_f,
   observation_prob = obs_f,
-  reward = rew_f,
-  normalize = FALSE
-)
+  reward = rew_f)
 
 tm_func <- transition_matrix(Tiger_func)
 expect_equal(tm_func, tm)
@@ -123,7 +119,7 @@ expect_equal(reward_matrix(Tiger_func, "listen", "tiger-left", "tiger-left", "ti
 Tiger_func_norm <- normalize_POMDP(Tiger_func)
 expect_equal(Tiger_func_norm$transition_prob, tm)
 expect_equal(Tiger_func_norm$observation_prob, om)
-expect_true(is.data.frame(Tiger_func_norm$reward))
+expect_false(is.data.frame(Tiger_func_norm$reward))
 expect_equal(reward_matrix(Tiger_func_norm), rew)
 
 ## check for factor translation in data.frames (pre R 4.0)
@@ -198,8 +194,7 @@ objPOMDP <- POMDP(
     O_("End", "A-plus-2-state", "A-plus-1-state", 0.1), #(3, 2)
     O_("End", "A-plus-2-state", "A-plus-2-state", 0.9) #(3, 3)
     
-  ),
-  normalize = FALSE
+  )
 )
 
 #compare this
@@ -255,8 +250,7 @@ mixedPOMDP <- POMDP(
       c(.2, .2, .2, .2, .2), 
       c(.2, .2, .2, .2, .2) 
     )
-  ),
-  normalize = FALSE
+  )
 )
 
 densePOMDP <- normalize_POMDP(mixedPOMDP, sparse = FALSE)

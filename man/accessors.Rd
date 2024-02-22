@@ -16,9 +16,21 @@
 \usage{
 start_vector(x)
 
-normalize_POMDP(x, sparse = TRUE)
+normalize_POMDP(
+  x,
+  sparse = FALSE,
+  trans_start = TRUE,
+  trans_function = TRUE,
+  trans_keyword = TRUE
+)
 
-normalize_MDP(x, sparse = TRUE)
+normalize_MDP(
+  x,
+  sparse = FALSE,
+  trans_start = TRUE,
+  trans_function = TRUE,
+  trans_keyword = TRUE
+)
 
 reward_matrix(
   x,
@@ -48,7 +60,8 @@ transition_matrix(
   end.state = NULL,
   episode = NULL,
   epoch = NULL,
-  sparse = FALSE
+  sparse = FALSE,
+  trans_keyword = TRUE
 )
 
 transition_val(x, action, start.state, end.state, episode = NULL, epoch = NULL)
@@ -60,7 +73,8 @@ observation_matrix(
   observation = NULL,
   episode = NULL,
   epoch = NULL,
-  sparse = FALSE
+  sparse = FALSE,
+  trans_keyword = TRUE
 )
 
 observation_val(
@@ -78,6 +92,13 @@ observation_val(
 \item{sparse}{logical; use sparse matrices when the density is below 50\% and keeps data.frame representation
 for the reward field. \code{NULL} returns the
 representation stored in the problem description which saves the time for conversion.}
+
+\item{trans_start}{logical; expand the start to a probability vector?}
+
+\item{trans_function}{logical; convert functions into matrices?}
+
+\item{trans_keyword}{logical; convert distribution keywords (uniform and identity)
+in \code{transition_prob} or \code{observation_prob} to matrices?}
 
 \item{action}{name or index of an action.}
 

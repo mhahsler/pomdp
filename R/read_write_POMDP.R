@@ -407,7 +407,7 @@ write_POMDP <- function(x,
 #' @export
 read_POMDP <- function(file,
                        parse = TRUE,
-                       normalize = TRUE) {
+                       normalize = FALSE) {
   problem <- readLines(file)
   
   get_vals <- function(var) {

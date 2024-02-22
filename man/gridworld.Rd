@@ -31,7 +31,6 @@ gridworld_maze_MDP(
   restart = FALSE,
   discount = 0.9,
   horizon = Inf,
-  normalize = TRUE,
   info = NULL,
   name = NA
 )
@@ -97,7 +96,7 @@ become unreachable states.}
 \item{restart}{logical; if \code{TRUE} then the problem automatically restarts when
 the agent reaches the goal state.}
 
-\item{discount, horizon, normalize}{MDP discount factor, horizon, and normalization.}
+\item{discount, horizon}{MDP discount factor, and horizon.}
 
 \item{info}{A list with additional information. Has to contain the gridworld
 dimensions as element \code{gridworld_dim}.}
@@ -271,8 +270,8 @@ gridworld_matrix(sol, what = "actions")
 gridworld_plot_policy(sol)
 gridworld_plot_policy(sol, actions = "label", cex = 1, states = FALSE)
 
-# visualize the first 5 iterations of value iteration
-gridworld_animate(Dyna_maze, method = "value", n = 5)
+# visualize the first 3 iterations of value iteration
+gridworld_animate(Dyna_maze, method = "value", n = 3)
 }
 \seealso{
 Other gridworld: 

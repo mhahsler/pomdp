@@ -3,7 +3,7 @@ title: "pomdp: Introduction to Partially Observable Markov Decision Processes"
 author: "Michael Hahsler and Hossein Kamalzadeh"
 bibliography: pomdp.bib
 vignette: >
-  %\VignetteIndexEntry{POMDP: Introduction to Partially Observable Markov Decision Processes}
+  %\VignetteIndexEntry{pomdp: Introduction to Partially Observable Markov Decision Processes}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 output:

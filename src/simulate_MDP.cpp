@@ -53,9 +53,7 @@ List simulate_MDP_cpp(const List& model,
   const int nactions = get_actions(model).size();
   
   // absorbing states?
-  Environment pkg = Environment::namespace_env("pomdp");
-  Function R_absorbing_states = pkg["absorbing_states"];
-  LogicalVector absorbing = R_absorbing_states(model);
+  LogicalVector absorbing = absorbing_states(model);
   // this is which (starting with 0)
   IntegerVector abs_states = seq_along(absorbing) - 1;
   abs_states = abs_states[absorbing];

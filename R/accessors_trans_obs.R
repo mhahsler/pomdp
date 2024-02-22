@@ -21,7 +21,8 @@ value_matrix <-
            col = NULL,
            episode = NULL,
            epoch = NULL,
-           sparse = NULL) {
+           sparse = NULL,
+           trans_keyword = TRUE) {
     ## action list of s x s matrices
     
     if (is.null(episode)) {
@@ -61,7 +62,7 @@ value_matrix <-
     
     # we have a list of matrices
     # subset
-    list2value(x, field, value, action, row, col, sparse)
+    list2value(x, field, value, action, row, col, sparse, trans_keyword)
   }
 
 #' @include accessors.R
@@ -74,7 +75,8 @@ transition_matrix <-
            end.state = NULL,
            episode = NULL,
            epoch = NULL,
-           sparse = FALSE) {
+           sparse = FALSE,
+           trans_keyword = TRUE) {
     value_matrix(x,
                  "transition_prob",
                  action,
@@ -82,7 +84,8 @@ transition_matrix <-
                  end.state,
                  episode,
                  epoch,
-                 sparse)
+                 sparse,
+                 trans_keyword)
     
   }
 
@@ -115,7 +118,8 @@ observation_matrix <-
            observation = NULL,
            episode = NULL,
            epoch = NULL,
-           sparse = FALSE) {
+           sparse = FALSE,
+           trans_keyword = TRUE) {
     value_matrix(x,
                  "observation_prob",
                  action,
@@ -123,7 +127,8 @@ observation_matrix <-
                  observation,
                  episode,
                  epoch,
-                 sparse)
+                 sparse,
+                 trans_keyword)
     
   }
 
@@ -155,7 +160,8 @@ list2value <-
            action = NULL,
            row = NULL,
            col = NULL,
-           sparse = NULL) {
+           sparse = NULL,
+           trans_keyword = TRUE) {
     actions <- x$actions
     rows <- x$states
     if (field == "transition_prob")
@@ -165,8 +171,11 @@ list2value <-
       cols <- x$observations
     
     ## convert from character
-    .fix <- function(mm, sparse) {
+    .fix <- function(mm, sparse, trans_keyword = TRUE) {
       if (is.character(mm)) {
+        if (!trans_keyword)
+          return(mm)
+        
         mm <- switch(
           mm,
           identity = {
@@ -188,11 +197,11 @@ list2value <-
     }
     
     if (is.null(action)) {
-      m <- lapply(m, .fix, sparse = sparse)
+      m <- lapply(m, .fix, sparse = sparse, trans_keyword = trans_keyword)
       return(m)
     }
     
-    m <- .fix(m[[action]], sparse)
+    m <- .fix(m[[action]], sparse, trans_keyword)
     
     if (is.null(row) && is.null(col))
       return(m)

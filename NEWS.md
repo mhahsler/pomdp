@@ -23,6 +23,9 @@
   parameter theta as an additional stopping criterion.
 * rewrote all accessor code reward_matrix, transition_matrix, observation_matrix
   for better and faster access.
+* normalize() gained parameters for more detailed normalization.
+* POMDP() and MDP() lost normalize.
+* model.h has now support for keywords in transition_prob and observation_prob.
 
 ## Bugfixes
 * q_values_MDP(), solve_MDP(): Fixed reward representation issue.
