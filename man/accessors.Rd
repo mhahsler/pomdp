@@ -18,18 +18,18 @@ start_vector(x)
 
 normalize_POMDP(
   x,
-  sparse = FALSE,
-  trans_start = TRUE,
+  sparse = TRUE,
+  trans_start = FALSE,
   trans_function = TRUE,
-  trans_keyword = TRUE
+  trans_keyword = FALSE
 )
 
 normalize_MDP(
   x,
-  sparse = FALSE,
-  trans_start = TRUE,
+  sparse = TRUE,
+  trans_start = FALSE,
   trans_function = TRUE,
-  trans_keyword = TRUE
+  trans_keyword = FALSE
 )
 
 reward_matrix(
@@ -162,21 +162,11 @@ resulting in no entries with 0.
 \subsection{Convert the Complete POMDP Description into a consistent form}{
 
 \code{normalize_POMDP()} returns a new POMDP definition where \code{transition_prob},
-\code{observations_prob}, \code{reward}, and \code{start} are normalized. The options are:
-\itemize{
-\item \code{sparse = NULL}: Only translates functions and leaves everything else as in the description. This avoids
-unnecessary conversions.
-\item \code{sparse = TRUE}: Converts everything into dense matrices. This allows fast access for small problems,
-but requires too much memory for larger problems.
-\item \code{sparse = FALSE}: Transitions and observations are stored as sparse \link[Matrix:dgCMatrix-class]{Matrix::dgCMatrix} objects.
-Rewards are stored as a data.frame.
-}
+\code{observations_prob}, \code{reward}, and \code{start} are normalized.
 
-to (lists of) matrices and vectors to
-make direct access easy.  Also, \code{states}, \code{actions}, and \code{observations} are ordered as given in the problem
-definition to make safe access using numerical indices possible. Normalized POMDP descriptions are used for
-C++ based code (e.g., \code{\link[=simulate_POMDP]{simulate_POMDP()}}) and normalizing them once will save time if the code is
-called repeatedly.
+Also, \code{states}, \code{actions}, and \code{observations} are ordered as given in the problem
+definition to make safe access using numerical indices possible. Normalized POMDP descriptions can be
+used in custom code that expects consistently a certain format.
 }
 }
 \examples{

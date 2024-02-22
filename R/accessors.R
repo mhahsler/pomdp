@@ -40,24 +40,11 @@
 #'
 #' ## Convert the Complete POMDP Description into a consistent form
 #' `normalize_POMDP()` returns a new POMDP definition where `transition_prob`,
-#' `observations_prob`, `reward`, and `start` are normalized. The options are:
-#'
-#' * `sparse = NULL`: Only translates functions and leaves everything else as in the description. This avoids
-#'    unnecessary conversions.
-#' * `sparse = TRUE`: Converts everything into dense matrices. This allows fast access for small problems,
-#'    but requires too much memory for larger problems.
-#' * `sparse = FALSE`: Transitions and observations are stored as sparse [Matrix::dgCMatrix-class] objects.
-#'    Rewards are stored as a data.frame.
-#'
-#'
-#'
-#'
-#' to (lists of) matrices and vectors to
-#' make direct access easy.  Also, `states`, `actions`, and `observations` are ordered as given in the problem
-#' definition to make safe access using numerical indices possible. Normalized POMDP descriptions are used for
-#' C++ based code (e.g., [simulate_POMDP()]) and normalizing them once will save time if the code is
-#' called repeatedly.
-#'
+#' `observations_prob`, `reward`, and `start` are normalized. 
+#' 
+#' Also, `states`, `actions`, and `observations` are ordered as given in the problem
+#' definition to make safe access using numerical indices possible. Normalized POMDP descriptions can be
+#' used in custom code that expects consistently a certain format.
 #' @family POMDP
 #' @family MDP
 #' @name accessors
@@ -136,10 +123,10 @@ start_vector <- function(x) {
 #' @rdname accessors
 #' @export
 normalize_POMDP <- function(x,
-                            sparse = FALSE,
-                            trans_start = TRUE,
+                            sparse = TRUE,
+                            trans_start = FALSE,
                             trans_function = TRUE,
-                            trans_keyword = TRUE) {
+                            trans_keyword = FALSE) {
   if (!inherits(x, "POMDP"))
     stop("x is not an POMDP object!")
   
@@ -221,10 +208,10 @@ normalize_POMDP <- function(x,
 #' @rdname accessors
 #' @export
 normalize_MDP <- function(x,
-                          sparse = FALSE,
-                          trans_start = TRUE,
+                          sparse = TRUE,
+                          trans_start = FALSE,
                           trans_function = TRUE,
-                          trans_keyword = TRUE) {
+                          trans_keyword = FALSE) {
   if (!inherits(x, "MDP"))
     stop("x is not an MDP object!")
   
