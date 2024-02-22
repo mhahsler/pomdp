@@ -1,7 +1,7 @@
 ---
 title: "pomdp: Introduction to Partially Observable Markov Decision Processes"
 author: "Michael Hahsler and Hossein Kamalzadeh"
-bibliography: pomdp.bib
+bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{pomdp: Introduction to Partially Observable Markov Decision Processes}
   %\VignetteEngine{knitr::rmarkdown}

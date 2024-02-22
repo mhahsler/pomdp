@@ -1,7 +1,7 @@
 ---
 title: "Gridworlds in Package pomdp"
 author: "Michael Hahsler"
-bibliography: pomdp.bib
+bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{Gridworlds in Package pomdp}
   %\VignetteEngine{knitr::rmarkdown}
