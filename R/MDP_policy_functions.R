@@ -200,7 +200,8 @@ greedy_MDP_action <-
            Q,
            epsilon = 0,
            prob = FALSE) {
-    available_A <- colnames(Q)
+    # R = -Inf means unavailable action
+    available_A <- colnames(Q)[Q[s, ] != - Inf]
     
     if (!prob) {
       if (epsilon == 0 ||
