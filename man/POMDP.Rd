@@ -85,8 +85,8 @@ information.}
 
 \item{message}{a error message to be displayed displayed}
 
-\item{epoch}{integer; an epoch that should be converted to the corresponding episode in a time-dependent
-POMDP.}
+\item{epoch}{integer; an epoch that should be converted to the
+corresponding episode in a time-dependent POMDP.}
 
 \item{action, start.state, end.state, observation, probability, value}{Values
 used in the helper functions \code{O_()}, \code{R_()}, and \code{T_()} to
@@ -342,6 +342,7 @@ pomdp-solve website: \url{http://www.pomdp.org}
 }
 \seealso{
 Other POMDP: 
+\code{\link{MDP2POMDP}},
 \code{\link{accessors}},
 \code{\link{actions}()},
 \code{\link{add_policy}()},

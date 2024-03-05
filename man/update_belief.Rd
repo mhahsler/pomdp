@@ -59,6 +59,7 @@ update_belief(c(.15,.85), action = "listen", observation = "tiger-right", model 
 }
 \seealso{
 Other POMDP: 
+\code{\link{MDP2POMDP}},
 \code{\link{POMDP}()},
 \code{\link{accessors}},
 \code{\link{actions}()},

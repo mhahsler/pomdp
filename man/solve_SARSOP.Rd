@@ -106,6 +106,7 @@ Other solver:
 \code{\link{solve_POMDP}()}
 
 Other POMDP: 
+\code{\link{MDP2POMDP}},
 \code{\link{POMDP}()},
 \code{\link{accessors}},
 \code{\link{actions}()},

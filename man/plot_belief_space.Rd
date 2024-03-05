@@ -132,6 +132,7 @@ Other policy:
 \code{\link{value_function}()}
 
 Other POMDP: 
+\code{\link{MDP2POMDP}},
 \code{\link{POMDP}()},
 \code{\link{accessors}},
 \code{\link{actions}()},

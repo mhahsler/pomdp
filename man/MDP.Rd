@@ -3,7 +3,6 @@
 \name{MDP}
 \alias{MDP}
 \alias{is_solved_MDP}
-\alias{MDP2POMDP}
 \title{Define an MDP Problem}
 \usage{
 MDP(
@@ -19,8 +18,6 @@ MDP(
 )
 
 is_solved_MDP(x, stop = FALSE)
-
-MDP2POMDP(x)
 }
 \arguments{
 \item{states}{a character vector specifying the names of the states.}
@@ -64,7 +61,7 @@ MDPs with a finite state space. similar to \link{POMDP}
 models, but without the observation model. The \code{'observations'} column in
 the the reward specification is always missing.
 
-\code{MDP2POMDP()} reformulates an MDP as a POMDP by adding an observation
+\code{\link[=make_partially_observable]{make_partially_observable()}} reformulates an MDP as a POMDP by adding an observation
 model with one observation per state
 that reveals the current state. This is achieved by adding identity
 observation probability matrices.
@@ -110,7 +107,7 @@ policy(sol)
 plot_value_function(sol)
 
 # convert the MDP into a POMDP and solve
-STiger_POMDP <- MDP2POMDP(STiger)
+STiger_POMDP <- make_partially_observable(STiger)
 sol2 <- solve_POMDP(STiger_POMDP)
 sol2
 
@@ -120,6 +117,7 @@ plot_value_function(sol2, ylim = c(80, 120))
 \seealso{
 Other MDP: 
 \code{\link{Cliff_walking}},
+\code{\link{MDP2POMDP}},
 \code{\link{MDP_policy_functions}},
 \code{\link{Maze}},
 \code{\link{Windy_gridworld}},

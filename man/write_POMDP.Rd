@@ -57,6 +57,7 @@ POMDP solver website: https://www.pomdp.org
 }
 \seealso{
 Other POMDP: 
+\code{\link{MDP2POMDP}},
 \code{\link{POMDP}()},
 \code{\link{accessors}},
 \code{\link{actions}()},

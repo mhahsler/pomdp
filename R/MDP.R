@@ -8,7 +8,7 @@
 #' models, but without the observation model. The `'observations'` column in
 #' the the reward specification is always missing.
 #'
-#' `MDP2POMDP()` reformulates an MDP as a POMDP by adding an observation
+#' [`make_partially_observable()`] reformulates an MDP as a POMDP by adding an observation
 #' model with one observation per state
 #' that reveals the current state. This is achieved by adding identity
 #' observation probability matrices.
@@ -76,7 +76,7 @@
 #' plot_value_function(sol)
 #'
 #' # convert the MDP into a POMDP and solve
-#' STiger_POMDP <- MDP2POMDP(STiger)
+#' STiger_POMDP <- make_partially_observable(STiger)
 #' sol2 <- solve_POMDP(STiger_POMDP)
 #' sol2
 #'
@@ -190,36 +190,3 @@ is_solved_MDP <- function(x, stop = FALSE) {
   
   return(epoch)
 }
-
-#' @rdname MDP
-#' @export
-MDP2POMDP <- function(x) {
-  if (!inherits(x, "MDP"))
-    stop("'x' needs to be of class 'MDP'.")
-  
-  # add an observation for each state and identity observation_probability for all actions ('*')
-  # (note: pomdp-solve does not support "identity" for observation_probs)
-  x$observations <- x$states
-  ident_matrix <- diag(length(x$states))
-  dimnames(ident_matrix) <- list(x$states, x$observations)
-  
-  x$observation_prob <-
-    sapply(
-      x$actions,
-      FUN = function(x)
-        ident_matrix,
-      simplify = FALSE
-    )
- 
-  # add missing observations to reward data.frame
-  if(is.data.frame(x$reward))
-    x$reward <- data.frame(action = x$reward$action, 
-                           start.state = x$reward$start.state, 
-                           end.state = x$reward$end.state, 
-                           observation = factor(NA_character_, levels = x$states), 
-                           value = x$reward$value)
-   
-  class(x) <- c("POMDP", "list")
-  check_and_fix_MDP(x)
-}
-

@@ -61,6 +61,7 @@ which(!reachable_states(Maze))
 Other MDP: 
 \code{\link{Cliff_walking}},
 \code{\link{MDP}()},
+\code{\link{MDP2POMDP}},
 \code{\link{MDP_policy_functions}},
 \code{\link{Maze}},
 \code{\link{Windy_gridworld}},
@@ -75,6 +76,7 @@ Other MDP:
 \code{\link{value_function}()}
 
 Other POMDP: 
+\code{\link{MDP2POMDP}},
 \code{\link{POMDP}()},
 \code{\link{accessors}},
 \code{\link{actions}()},

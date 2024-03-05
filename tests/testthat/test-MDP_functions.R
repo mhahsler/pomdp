@@ -6,7 +6,7 @@ library("pomdp")
 data("Maze")
 m2 <- normalize_MDP(Maze, sparse = FALSE)
 m3 <- normalize_MDP(Maze, sparse = TRUE)
-m4 <- MDP2POMDP(Maze)
+m4 <- make_partially_observable(Maze)
 
 s_abs <- c("s(1,4)", "s(2,4)")
 expect_equal(names(which(absorbing_states(Maze))), s_abs)
@@ -23,3 +23,5 @@ expect_equal(v1, unname(v2))
 expect_equal(v1, v3)
 expect_true(all(v4 == v1))
 
+
+expect_equal(make_fully_observable(make_partially_observable(Maze)), Maze)

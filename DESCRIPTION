@@ -40,6 +40,7 @@ Collate:
     'Cliff_walking.R'
     'POMDP.R'
     'MDP.R'
+    'MDP2POMDP.R'
     'MDP_policy_functions.R'
     'Maze.R'
     'RcppExports.R'

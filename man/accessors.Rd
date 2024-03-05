@@ -219,6 +219,7 @@ transition_matrix(Tiger)
 }
 \seealso{
 Other POMDP: 
+\code{\link{MDP2POMDP}},
 \code{\link{POMDP}()},
 \code{\link{actions}()},
 \code{\link{add_policy}()},
@@ -238,6 +239,7 @@ Other POMDP:
 Other MDP: 
 \code{\link{Cliff_walking}},
 \code{\link{MDP}()},
+\code{\link{MDP2POMDP}},
 \code{\link{MDP_policy_functions}},
 \code{\link{Maze}},
 \code{\link{Windy_gridworld}},

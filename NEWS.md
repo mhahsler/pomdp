@@ -9,6 +9,8 @@
 * New datasets: Cliff_walking, Windy_gridworld, RussianTiger
 * plot_transition_graph() now hides unavailable actions.
 * Added actions() to find available actions.
+* Added make_partially_observable() and make_fully_observable() to convert 
+  between MDPs and POMDPs.
 
 ## Changes
 * simulate_POMDP(): Better calculation of T for infinite-horizon problems.
@@ -26,6 +28,7 @@
 * normalize() gained parameters for more detailed normalization.
 * POMDP() and MDP() lost normalize.
 * model.h has now support for keywords in transition_prob and observation_prob.
+* MDP2POMDP is now make_partially_observable().
 
 ## Bugfixes
 * q_values_MDP(), solve_MDP(): Fixed reward representation issue.
