@@ -178,7 +178,7 @@ MDP_policy_evaluation <-
     for (i in seq_len(k_backups)) {
       v <- U
       U <- .QV_vec(S, pi, P, R, GAMMA, U)
-      delta <- max(abs(v-U))
+      delta <- max(abs(v-U), na.rm = TRUE)
       
       if (verbose)
         cat("Backup step", i, ": delta =", delta, "\n")

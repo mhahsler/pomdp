@@ -235,7 +235,7 @@ solve_MDP_DP <- function(model,
 # from stage k onward, if we choose a_k = a and then proceed optimally (given by U).
 .QV <-
   function(s, a, P, R, GAMMA, U)
-    sum(P[[a]][s,] * (R[[a]][[s]] + GAMMA * U))
+    sum(P[[a]][s,] * (R[[a]][[s]] + GAMMA * U), na.rm = TRUE)
 .QV_vec <- Vectorize(.QV, vectorize.args = c("s", "a"))
 
 # TODO: we could check for convergence
@@ -392,10 +392,14 @@ MDP_policy_iteration_inf_horizon <-
       
       # get greedy policy for U
       Qs <- outer(S, A, .QV_vec, P, R, GAMMA, U)
+      
+      # non-randomizes
       m <- apply(Qs, MARGIN = 1, which.max.random)
       pi_prime <- factor(m, levels = seq_along(A), labels = A)
       
-      if (all(pi == pi_prime)) {
+      # account for random tie breaking
+      #if (all(pi == pi_prime)) {
+      if (all(Qs[cbind(seq_len(nrow(Qs)), pi)] == apply(Qs, MARGIN = 1, max))) {
         converged <- TRUE
         break
       }
