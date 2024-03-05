@@ -108,7 +108,10 @@ transition_graph <-
     )
     
     g <-  graph_from_data_frame(do.call(rbind, gs))
+    # make sure the vertices are in the same order as in the description
+    g <- igraph::permute(g, match(V(g)$name, x$states))
     
+     
     E(g)$label <- paste0(E(g)$label, ifelse(E(g)$weight != 1, paste0(" (", round(E(g)$weight, 2), ")"), ""))
     
     if (simplify_transitions)
