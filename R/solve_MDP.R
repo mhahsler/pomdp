@@ -496,15 +496,19 @@ solve_MDP_TD <-
           cat("Step", i, "- s a r s' a':", s, a, r, s_prime, a_prime, "\n")
         }
         
-        if (method == "sarsa")
+        if (method == "sarsa") {
           # is called Sarsa because it uses the sequence s, a, r, s', a'
           Q[s, a] <-
-          Q[s, a] + alpha * (r + gamma * Q[s_prime, a_prime] - Q[s, a])
-        else if (method == "q_learning") {
+            Q[s, a] + alpha * (r + gamma * Q[s_prime, a_prime] - Q[s, a])
+          if (is.na(Q[s, a]))
+            Q[s, a] <- -Inf
+        }else if (method == "q_learning") {
           # a' is greedy instead of using the behavior policy
           a_max <- greedy_MDP_action(s_prime, Q, epsilon = 0)
           Q[s, a] <-
             Q[s, a] + alpha * (r + gamma * Q[s_prime, a_max] - Q[s, a])
+          if(is.na(Q[s,a]))
+            Q[s,a] <- -Inf
         } else if (method == "expected_sarsa") {
           p <-
             greedy_MDP_action(s_prime, Q, epsilon, prob = TRUE)
@@ -513,6 +517,8 @@ solve_MDP_TD <-
                 na.rm = TRUE)
           Q[s, a] <-
             Q[s, a] + alpha * (r + gamma * exp_Q_prime - Q[s, a])
+          if(is.na(Q[s,a]))
+            Q[s,a] <- -Inf
         }
         
         s <- s_prime
