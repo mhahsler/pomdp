@@ -151,8 +151,12 @@ gridworld_init <-
                   start.state = NULL,
                   end.state = NULL) {
       ai <- pmatch(action, action_labels)
-      if (is.na(ai))
-        stop("Unknown action", action)
+      
+      # stay in place for unknown actions
+      if (is.na(ai)) {
+        #warning("Unknown action", action)
+        return(as.integer(end.state == start.state))
+      }
       
       if (!is.null(absorbing_states) &&
           start.state %in% absorbing_states)
@@ -206,14 +210,23 @@ gridworld_maze_MDP <- function(dim,
                                horizon = Inf,
                                info = NULL,
                                name = NA) {
+  
+  state_labels <-  structure(list(rep_len(
+    "Goal", length(goal)
+  )), names = goal)
+  
+  if (start != "uniform") {
+    start_labels <- c(state_labels, structure(list(rep_len(
+      "Start", length(start)
+    )), names = start))
+  }
+  
   gw <-
     gridworld_init(
       dim,
       unreachable_states = walls,
       absorbing_states = goal,
-      labels = structure(list("Start", rep_len(
-        "Goal", length(goal)
-      )), names = c(start, goal))
+      labels = state_labels
     )
   
   if (!restart)
@@ -234,40 +247,43 @@ gridworld_maze_MDP <- function(dim,
       )
     )
   
-  # with restarts
+  # with restarts. We add the action restart which is only available in the goal state. 
+  if (start == "uniform")
+    start <- gw$states
   
   # find all states that can lead to the goal
-  v <- Vectorize(gw$transition_prob, vectorize.args = "start.state")
-  reach <- sapply(gw$actions, v, gw$states, goal)
-  lead.states <- setdiff(gw$states[which(rowSums(reach) > 0)], goal)
+  #v <- Vectorize(gw$transition_prob, vectorize.args = "start.state")
+  #reach <- sapply(gw$actions, v, gw$states, goal)
+  #reach <- reach[!rownames(reach) %in% goal, ]
+  #lead.states <- names(which(rowSums(reach) > 0))
   
   # redirect to the start state
   trans_restart <- function(action = NA,
                             start.state = NA,
                             end.state = NA) {
-    if (gw$transition_prob(action, start.state, goal)) {
-      if (end.state == start)
-        return(1)
+    if (start.state %in% goal) {
+      if (end.state %in% start) 
+        return(1/length(start))
       else
         return(0)
     }
     
+    # regular move
     gw$transition_prob(action, start.state, end.state)
   }
   
   
   # note the goal state is now unreachable
   MDP(
-    states = setdiff(gw$states, goal),
-    actions = gw$actions,
+    states = gw$states,
+    actions = c(gw$actions, "restart"),
     transition_prob = trans_restart,
     reward = rbind(
       R_(value = -step_cost),
-      R_(
-        start.state = lead.states,
-        end.state = start,
-        value = goal_reward
-      )
+      R_(action = "restart", value = -Inf),
+      R_(end.state = goal, value = goal_reward),
+      R_(start.state = goal, value = -Inf),
+      R_(start.state = goal, action = "restart", value = 0)
     ),
     discount = discount,
     horizon = horizon,
@@ -410,7 +426,7 @@ gridworld_plot_policy <-
     #if (!absorbing_state_action)
     #  U[gridworld_matrix(model, what = "absorbing")] <- NA
     
-    image(t(U)[, rev(seq_len(nrow(U)))], main = main, axes = FALSE, ...)
+    image(t(U)[, rev(seq_len(nrow(U))), drop = FALSE], main = main, axes = FALSE, ...)
     
     nrows <- model$info$gridworld_dim[1]
     ncols <- model$info$gridworld_dim[2]
@@ -518,7 +534,7 @@ gridworld_plot_transition_graph <-
       g <- igraph::simplify(g, remove.loops = TRUE)
     
     asp <- x$info$gridworld_dim[2] / x$info$gridworld_dim[1]
-    
+     
     if (is.null(main))
       main <- x$name
     
@@ -530,6 +546,7 @@ gridworld_plot_transition_graph <-
       ylim = c(-(1 + margin),  (1 + margin)),
       edge.arrow.size = edge.arrow.size,
       vertex.label = vertex.label,
+      edge.label = NA,
       main = main,
       ...
     )
