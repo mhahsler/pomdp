@@ -12,6 +12,8 @@ Environment pkg = Environment::namespace_env("pomdp");
 Function R_transition_matrix = pkg["transition_matrix"];
 Function R_observation_matrix = pkg["observation_matrix"];
 Function R_reward_matrix = pkg["reward_matrix"];
+Function R_start_vector = pkg["start_vector"];
+Function R_absorbing_states = pkg["absorbing_states"];
 
 // Access model information
 bool is_solved(const List& model) { 
@@ -24,10 +26,7 @@ bool is_converged(const List& model) {
 
 // More accessors
 NumericVector start_vector(const List& model) {
-  //Environment pkg = Environment::namespace_env("pomdp");
-  Function R_start_states = pkg["start_states"];
-  return as<NumericVector>(R_start_states(model));
-  //return as<NumericVector>(model["start"]);
+  return as<NumericVector>(R_start_vector(model));
 }  
 
 CharacterVector get_states(const List& model) {
@@ -35,8 +34,6 @@ CharacterVector get_states(const List& model) {
 }  
 
 LogicalVector absorbing_states(const List& model) {
-  //Environment pkg = Environment::namespace_env("pomdp");
-  Function R_absorbing_states = pkg["absorbing_states"];
   return R_absorbing_states(model);
 }
 
