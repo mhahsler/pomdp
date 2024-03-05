@@ -422,8 +422,8 @@ is_timedependent_POMDP <- function(x)
 }
 
 #' @rdname POMDP
-#' @param epoch integer; an epoch that should be converted to the corresponding episode in a time-dependent
-#' POMDP.
+#' @param epoch integer; an epoch that should be converted to the 
+#'              corresponding episode in a time-dependent POMDP.
 #' @export
 epoch_to_episode <- function(x, epoch) {
   if (is.null(epoch))
