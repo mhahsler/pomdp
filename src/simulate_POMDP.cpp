@@ -94,6 +94,7 @@ List simulate_POMDP_cpp(const List& model,
   std::vector<int> tr_simulation_state;
   std::vector<int> tr_alpha_vector_id;
   std::vector<int> tr_a;
+  std::vector<int> tr_o;
   std::vector<double> tr_r;
   
   if (verbose) {
@@ -230,6 +231,7 @@ List simulate_POMDP_cpp(const List& model,
         else 
           tr_alpha_vector_id.push_back(alpha_vector_id + 1);
         tr_a.push_back(a + 1);
+        tr_o.push_back(o + 1);
         tr_r.push_back(r);
       }
       
@@ -262,12 +264,17 @@ List simulate_POMDP_cpp(const List& model,
    a_v.attr("class") = "factor";
    a_v.attr("levels") = get_actions(model);
    
+   IntegerVector o_v = IntegerVector(tr_o.begin(), tr_o.end());
+   o_v.attr("class") = "factor";
+   o_v.attr("levels") = get_obs(model);
+   
    trajectories = DataFrame::create(
      _["episode"] = tr_episode,
      _["time"] = tr_time,
      _["simulation_state"] = simulation_state_v,
      _["alpha_vector_id"] = tr_alpha_vector_id,
      _["a"] = a_v,
+     _["o"] = o_v,
      _["r"] = tr_r
    );
   }
