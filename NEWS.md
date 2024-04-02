@@ -1,4 +1,4 @@
-# pomdp 1.1.3.1 (xx/xx/2024)
+# pomdp 1.2.0. (04/02/2024)
 
 ## New Features
 * Added functions to work with MDP policies (see ? MDP_policy_functions).
@@ -8,7 +8,8 @@
 * Support for gridworlds (see ? gridworld).
 * New datasets: Cliff_walking, Windy_gridworld, RussianTiger
 * plot_transition_graph() now hides unavailable actions.
-* Added actions() to find available actions.
+* Added actions() to find available actions (unavailable actions have a reward
+  of -Inf).
 * Added make_partially_observable() and make_fully_observable() to convert 
   between MDPs and POMDPs.
 
