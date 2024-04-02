@@ -22,6 +22,7 @@ plot_transition_graph(
   epoch = NULL,
   state_col = NULL,
   simplify_transitions = TRUE,
+  main = NULL,
   ...
 )
 }

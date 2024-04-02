@@ -140,6 +140,7 @@ plot_transition_graph <- function(x,
                                   epoch = NULL,
                                   state_col = NULL,
                                   simplify_transitions = TRUE,
+                                  main = NULL,
                                   ...) {
   g <- transition_graph(
     x,
@@ -150,10 +151,13 @@ plot_transition_graph <- function(x,
     simplify_transitions = simplify_transitions
   )
   
+  if (is.null(main))
+    main <- paste("Transition Graph:", x$name)
+  
   plot(
     g,
     edge.curved = curve_multiple_directed(g, .8),
-    edge.loop.angle = -pi / 4,
+    edge.loop.angle = -pi / 4, main = main,
     ...
   )
   

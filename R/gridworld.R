@@ -418,7 +418,7 @@ gridworld_plot_policy <-
     actions <- match.arg(actions, c("character", "unicode", "label", "none"))
     
     if (is.null(main))
-      main <- model$name
+      main <- paste("Policy:", model$name, paste0("(", model$solution$method,")"))
     
     U <-
       gridworld_matrix(model, epoch = epoch, what = "value")
@@ -441,6 +441,11 @@ gridworld_plot_policy <-
     g <- expand.grid(y = (nrows - 1L):0 / (nrows - 1L),
                      x = 0:(ncols - 1L) / (ncols - 1L))
     
+    if (nrows < 2)
+      g$y <- 0
+    if (ncols < 2)
+      g$x <- 0
+     
     g$state <-
       as.vector(gridworld_matrix(model, what = "states"))
     g$labels <-
@@ -536,7 +541,7 @@ gridworld_plot_transition_graph <-
     asp <- x$info$gridworld_dim[2] / x$info$gridworld_dim[1]
      
     if (is.null(main))
-      main <- x$name
+      main <- paste("Transition Graph:", x$name)
     
     plot(
       g,
