@@ -132,6 +132,7 @@ transition_graph <-
   }
 
 #' @rdname transition_graph
+#' @param main a main title for the plot.
 #' @param ... further arguments are passed on to `igraph::plot.igraph()`.
 #' @export
 plot_transition_graph <- function(x,

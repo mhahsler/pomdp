@@ -39,6 +39,8 @@ plot_transition_graph(
 
 \item{remove_unavailable_actions}{logical; don't show arrows for unavailable actions.}
 
+\item{main}{a main title for the plot.}
+
 \item{...}{further arguments are passed on to \code{igraph::plot.igraph()}.}
 }
 \value{

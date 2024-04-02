@@ -129,21 +129,23 @@ pi_manual
 gridworld_plot_policy(add_policy(Maze, pi_manual), main = "Manual Policy")
 
 # 3. a random policy
+set.seed(1234)
 pi_random <- random_MDP_policy(Maze)
 pi_random
 gridworld_plot_policy(add_policy(Maze, pi_random), main = "Random Policy")
 
 # 4. an improved policy based on one policy evaluation and
-#   policy improvement step
-u <- MDP_policy_evaluation(pi_random, Maze, verbose = TRUE)
+#   policy improvement step.
+u <- MDP_policy_evaluation(pi_random, Maze)
 q <- q_values_MDP(Maze, U = u)
 pi_greedy <- greedy_MDP_policy(q)
 pi_greedy
-gridworld_plot_policy(add_policy(Maze, pi_greedy), , main = "Greedy Policy")
+gridworld_plot_policy(add_policy(Maze, pi_greedy), main = "Greedy Policy")
 
-#' compare the approx. value functions for the policies
+#' compare the approx. value functions for the policies (we restrict
+#'    the number of backups for the random policy since it may not converge)
 rbind(
-  random = MDP_policy_evaluation(pi_random, Maze),
+  random = MDP_policy_evaluation(pi_random, Maze, k_backups = 100),
   manual = MDP_policy_evaluation(pi_manual, Maze),
   greedy = MDP_policy_evaluation(pi_greedy, Maze),
   optimal = MDP_policy_evaluation(pi_opt, Maze)
