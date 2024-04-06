@@ -36,7 +36,7 @@ expect_equal(pg_horizon$action, pg_stepwise$action) # transitions do not work
 
 ## context("solve_POMDP and model files")
 
-sol <- solve_POMDP(system.file("examples/shuttle.95.POMDP", package = "pomdp"), 
+sol <- solve_POMDP(system.file("examples/shuttle_95.POMDP", package = "pomdp"), 
                    parameter = list(fg_points = 10))
 plot_policy_graph(sol, show_belief = FALSE)
 policy(sol)

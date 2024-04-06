@@ -49,4 +49,11 @@ sol <- solve_POMDP(RussianTiger)
 policy(sol)
 plot_policy_graph(sol)
 }
+\seealso{
+Other POMDP_examples: 
+\code{\link{POMDP}()},
+\code{\link{POMDP_example_files}},
+\code{\link{Tiger}}
+}
+\concept{POMDP_examples}
 \keyword{datasets}

@@ -26,6 +26,7 @@
 #'
 #' @name Tiger
 #' @aliases Tiger Three_doors
+#' @family POMDP_examples
 #' @docType data
 #' @format An object of class [POMDP].
 #' @references Anthony R. Cassandra, Leslie P Kaelbling, and Michael L.

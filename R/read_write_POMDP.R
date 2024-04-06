@@ -175,16 +175,26 @@ write_POMDP <- function(x,
                preamble_start <-
                  paste0("start: ", paste(start, collapse = " "), "\n")
                
-             } else if (start[1] != "-")
+             } else {
+               if (start[1] == "-") {
+                 pre <- "start exclude: "
+                 start_states <- start[-1]
+               } else {
+                 pre <- "start include: "
+                 start_states <- start
+               }
+               
+               if (!labels) {
+                 start_states <- factor(start_states, levels = states)
+                 start_states <- as.integer(start_states) - 1L
+               }
+               
                preamble_start <-
-                 paste0("start include: ",
-                        paste(start, collapse = " "),
+                 paste0(pre,
+                        paste(start_states, collapse = " "),
                         "\n")
-             else
-               preamble_start <-
-                 paste0("start exclude: ",
-                        paste(start[-1], collapse = " "),
-                        "\n")
+             } else
+               stop("Not suported!")
          }
          
          cat(preamble, "\n", file = file)
@@ -401,20 +411,26 @@ write_POMDP <- function(x,
 
 
 #' @rdname write_POMDP
-#' @param parse logical; try to parse the model matrices.
+#' @param parse logical; try to parse the model maotrices.
 #'  Solvers still work with unparsed matrices, but helpers for simulation are not available.
 #' @param normalize logical; should the description be normalized for faster access (see [normalize_POMDP()])?
+#' @param verbose logical; report parsed lines. This is useful for debugging a POMDP file.
 #' @export
 read_POMDP <- function(file,
                        parse = TRUE,
-                       normalize = FALSE) {
+                       normalize = FALSE,
+                       verbose = FALSE) {
   problem <- readLines(file)
   
-  get_vals <- function(var) {
+  get_vals <- function(var, verbose = FALSE) {
     label <- paste0("^", var, "\\s*:\\s*")
     ind <- grep(label, problem)
-    if (length(ind) == 0L)
+    
+    if (length(ind) == 0L) {
+      if (verbose)
+        cat("Field", var, "not found!\n")
       return(NULL)
+    }
     
     if (length(ind) > 1L)
       stop("Multiple definitions for ", var)
@@ -428,27 +444,31 @@ read_POMDP <- function(file,
     
     # numbers?
     vals <- type.convert(vals, as.is = TRUE)
+    
+    if (verbose)
+      cat("Processing", sQuote(var), "at line", ind, "-", paste(sQuote(vals), colapse = " "), "\n")
+    
     vals
   }
   
-  discount <- get_vals("discount")
+  discount <- get_vals("discount", verbose = verbose)
   
-  start <-  get_vals("start")
+  start <-  get_vals("start", verbose = verbose)
   if (is.numeric(start))
     start <-  round_stochastic(start)
   if (is.null(start))
     start <- "uniform"
   
   ### expand states, actions and observations
-  states <- get_vals("states")
+  states <- get_vals("states", verbose = verbose)
   if (is.integer(states) && length(states == 1L))
     states <- paste0("s", seq_len(states))
   
-  observations <- get_vals("observations")
+  observations <- get_vals("observations", verbose = verbose)
   if (is.integer(observations) && length(observations == 1L))
     observations <- paste0("o", seq_len(observations))
   
-  actions <- get_vals("actions")
+  actions <- get_vals("actions", verbose = verbose)
   if (is.integer(actions) && length(actions == 1L))
     actions <- paste0("a", seq_len(actions))
   
@@ -460,7 +480,7 @@ read_POMDP <- function(file,
     transition_prob <- NULL
     try(transition_prob <-
           parse_POMDP_df(problem,
-                         field = "T"))
+                         field = "T", verbose = verbose))
     if (is.null(transition_prob))
       try(transition_prob <-
             parse_POMDP_matrix(problem,
@@ -468,12 +488,13 @@ read_POMDP <- function(file,
                                actions,
                                states,
                                observations,
-                               sparse = TRUE))
+                               sparse = TRUE,
+                               verbose = verbose))
     
     observation_prob <- NULL
     try(observation_prob <-
           parse_POMDP_df(problem,
-                         field = "O"))
+                         field = "O", verbose = verbose))
     if (is.null(observation_prob))
       try(observation_prob <-
             parse_POMDP_matrix(problem,
@@ -481,12 +502,13 @@ read_POMDP <- function(file,
                                actions,
                                states,
                                observations,
-                               sparse = TRUE))
+                               sparse = TRUE,
+                               verbose = verbose))
     
     reward <- NULL
     try(reward <-
           parse_POMDP_df(problem,
-                         field = "R"))
+                         field = "R", verbose = verbose))
     if (is.null(reward))
       try(reward <-
             parse_POMDP_matrix(problem,
@@ -494,7 +516,8 @@ read_POMDP <- function(file,
                                actions,
                                states,
                                observations,
-                               sparse = TRUE))
+                               sparse = TRUE,
+                               verbose = verbose))
   }
   
   x <- list(
@@ -564,7 +587,8 @@ parse_POMDP_df <- function(problem,
                            actions = NULL,
                            states = NULL,
                            observations = NULL,
-                           sparse = TRUE) {
+                           sparse = TRUE,
+                           verbose = FALSE) {
   field <- match.arg(field)
   
   if (field == "R") {
@@ -609,6 +633,12 @@ parse_POMDP_df <- function(problem,
     )
   )
   
+  if (verbose) {
+    cat("Processing", field, "at lines", paste(ind, collapse = ", "), "\n")
+    print(dat) 
+    cat("\n")
+  }
+  
   dat
 }
 
@@ -620,11 +650,12 @@ parse_POMDP_matrix <-
            actions,
            states,
            observations,
-           sparse = TRUE) {
+           sparse = TRUE,
+           verbose = FALSE) {
     field <- match.arg(field)
     
     if (field == "R")
-      return(.parse_POMDP_reward(problem, actions, states, observations, sparse))
+      return(.parse_POMDP_reward(problem, actions, states, observations, sparse, verbose = verbose))
     
     rows <- states
     
@@ -666,8 +697,6 @@ parse_POMDP_matrix <-
     ind <- grep(label, problem)
     
     for (i in ind) {
-      # cat("Parsing line ", i, "\n")
-      
       vals <- sub("\\s*#.*$", "", problem[i])
       vals <- trimws(sub(label, "", vals))
       vals <- strsplit(vals, "\\s*:\\s*")[[1]]
@@ -678,16 +707,42 @@ parse_POMDP_matrix <-
         }
       }
       
-      # For debugging
-      # cat("Processing", field, "at line", i, "-", paste(vals, collapse = ";"), "\n")
+      if (verbose)
+        cat("Processing", field, "at line", i, "-", paste(sQuote(vals), collapse = " "), "\n")
       
       start <- .from_0_idx(vals[2])
       end <- .from_0_idx(vals[3])
-      
       acts <- .from_0_idx(vals[1])
       if (is.na(acts))
         acts <- actions
+      
       for (action in acts) {
+        # FIXME: if the matrix is identity/uniform then we have to expand it first.
+        if(is.character(trans[[action]])) {
+          #trans[[action]] <-
+          # T has a state/state matrix
+          rows <- states
+          cols <- states
+          cols
+          mm <- switch(
+            trans[[action]],
+            identity = {
+              if (is.null(sparse) || sparse)
+                Matrix::Diagonal(length(rows))
+              else
+                diag(length(rows))
+            },
+            uniform = matrix(
+              1 / length(cols),
+              nrow = length(rows),
+              ncol = length(cols)
+            )
+          )
+          
+          dimnames(mm) <- list(rows, cols)
+          trans[[action]] <- mm
+        }
+        
         if (length(vals) == 4L) {
           if (is.na(start) && is.na(end))
             trans[[action]][] <- as.numeric(vals[4])
@@ -754,7 +809,8 @@ parse_POMDP_matrix <-
            actions,
            states,
            observations,
-           sparse = TRUE) {
+           sparse = TRUE,
+           verbose = FALSE) {
     if (!sparse)
       matrix_list <- lapply(
         actions,
@@ -814,7 +870,8 @@ parse_POMDP_matrix <-
       }
       
       # For debugging
-      #cat("Processing (", i, ")", paste(vals, collapse = ";"), "\n")
+      if (verbose)
+        cat("Processing (", i, ")", paste(sQuote(vals), collapse = " "), "\n")
       
       ### this also translates *
       acts <- .from_0_idx(vals[1])

@@ -17,6 +17,7 @@
 #' for [POMDP].
 #'
 #' @family MDP
+#' @family MDP_examples
 #'
 #' @include POMDP.R
 #' @param states a character vector specifying the names of the states.

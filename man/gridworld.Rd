@@ -280,12 +280,9 @@ Other gridworld:
 \code{\link{Windy_gridworld}}
 
 Other MDP: 
-\code{\link{Cliff_walking}},
 \code{\link{MDP}()},
 \code{\link{MDP2POMDP}},
 \code{\link{MDP_policy_functions}},
-\code{\link{Maze}},
-\code{\link{Windy_gridworld}},
 \code{\link{accessors}},
 \code{\link{actions}()},
 \code{\link{add_policy}()},

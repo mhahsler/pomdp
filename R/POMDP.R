@@ -140,6 +140,7 @@
 #' an epoch to the episode it belongs to.
 #'
 #' @family POMDP
+#' @family POMDP_examples
 #'
 #' @param states a character vector specifying the names of the states. Note that
 #' state names have to start with a letter.

@@ -1,0 +1,66 @@
+# Example POMDP (Light) from
+# "A Tutorial on Partially Observable Markov Decision Processes” (Littman, 2007)
+
+discount: 0.95
+values: reward
+states: start-rewardright start-rewardleft branch-rewardright left-rewardright right-rewardright branch-rewardleft left-rewardleft right-rewardleft done
+actions: forward left right lookup
+observations: startx right left branch start-green start-red
+
+start: start-rewardright start-rewardleft
+
+T : forward
+identity
+
+T : left
+identity
+
+T : right
+identity
+
+T : lookup
+identity
+
+T : forward : start-rewardright : branch-rewardright 1.0
+T : left : branch-rewardright : left-rewardright 1.0
+T : right : branch-rewardright : right-rewardright 1.0
+T : forward : right-rewardright : done 1.0
+T : forward : left-rewardright : done 1.0
+
+T : forward : start-rewardleft : branch-rewardleft 1.0
+T : left : branch-rewardleft : left-rewardleft 1.0
+T : right : branch-rewardleft : right-rewardleft 1.0
+T : forward : right-rewardleft : done 1.0
+T : forward : left-rewardleft : done 1.0
+
+T : forward : start-rewardright : start-rewardright 0.0
+T : left : branch-rewardright : branch-rewardright 0.0
+T : right : branch-rewardright : branch-rewardright 0.0
+T : forward : right-rewardright : right-rewardright 0.0
+T : forward : left-rewardright : left-rewardright 0.0
+
+T : forward : start-rewardleft : start-rewardleft 0.0
+T : left : branch-rewardleft : branch-rewardleft 0.0
+T : right : branch-rewardleft : branch-rewardleft 0.0
+T : forward : right-rewardleft : right-rewardleft 0.0
+T : forward : left-rewardleft : left-rewardleft 0.0
+
+O : * : start-rewardright : startx 1.0
+O : * : branch-rewardright : branch 1.0
+O : * : left-rewardright : left 1.0
+O : * : right-rewardright : right 1.0
+O : * : start-rewardleft : startx 1.0
+O : * : branch-rewardleft : branch 1.0
+O : * : left-rewardleft : left 1.0
+O : * : right-rewardleft : right 1.0
+O : * : done : startx 1.0
+
+O: lookup : start-rewardleft : start-green 1.0
+O: lookup : start-rewardright : start-red 1.0
+O: lookup : start-rewardleft : startx 0.0
+O: lookup : start-rewardright : startx 0.0
+
+R : forward : left-rewardleft : * : * 1.0
+R : forward : right-rewardleft : * : * -1.0
+R : forward : left-rewardright : * : * -1.0
+R : forward : right-rewardright : * : * 1.0

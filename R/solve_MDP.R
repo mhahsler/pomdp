@@ -154,6 +154,9 @@ solve_MDP <- function(model, method = "value", ...) {
   methods_DP <- c("value_iteration", "policy_iteration")
   methods_TD <-  c("sarsa", "q_learning", "expected_sarsa")
   
+  if (!inherits(model, "MDP"))
+    stop("x needs to be a MDP!")
+  
   method <- match.arg(method, c(methods_DP, methods_TD))
   
   if (method %in% methods_DP)

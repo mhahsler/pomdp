@@ -7,7 +7,7 @@
 \usage{
 write_POMDP(x, file, digits = 7, labels = FALSE)
 
-read_POMDP(file, parse = TRUE, normalize = FALSE)
+read_POMDP(file, parse = TRUE, normalize = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{x}{an object of class \link{POMDP}.}
@@ -20,10 +20,12 @@ point).}
 \item{labels}{logical; write original labels or use index numbers? Labels are
 restricted to \verb{[a-zA-Z0-9_-]} and the first character has to be a letter.}
 
-\item{parse}{logical; try to parse the model matrices.
+\item{parse}{logical; try to parse the model maotrices.
 Solvers still work with unparsed matrices, but helpers for simulation are not available.}
 
 \item{normalize}{logical; should the description be normalized for faster access (see \code{\link[=normalize_POMDP]{normalize_POMDP()}})?}
+
+\item{verbose}{logical; report parsed lines. This is useful for debugging a POMDP file.}
 }
 \value{
 \code{read_POMDP()} returns a \link{POMDP} object.

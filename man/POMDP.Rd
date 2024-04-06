@@ -358,8 +358,14 @@ Other POMDP:
 \code{\link{update_belief}()},
 \code{\link{value_function}()},
 \code{\link{write_POMDP}()}
+
+Other POMDP_examples: 
+\code{\link{POMDP_example_files}},
+\code{\link{RussianTiger}},
+\code{\link{Tiger}}
 }
 \author{
 Hossein Kamalzadeh, Michael Hahsler
 }
 \concept{POMDP}
+\concept{POMDP_examples}

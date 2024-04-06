@@ -116,11 +116,8 @@ plot_value_function(sol2, ylim = c(80, 120))
 }
 \seealso{
 Other MDP: 
-\code{\link{Cliff_walking}},
 \code{\link{MDP2POMDP}},
 \code{\link{MDP_policy_functions}},
-\code{\link{Maze}},
-\code{\link{Windy_gridworld}},
 \code{\link{accessors}},
 \code{\link{actions}()},
 \code{\link{add_policy}()},
@@ -131,8 +128,14 @@ Other MDP:
 \code{\link{solve_MDP}()},
 \code{\link{transition_graph}()},
 \code{\link{value_function}()}
+
+Other MDP_examples: 
+\code{\link{Cliff_walking}},
+\code{\link{Maze}},
+\code{\link{Windy_gridworld}}
 }
 \author{
 Michael Hahsler
 }
 \concept{MDP}
+\concept{MDP_examples}

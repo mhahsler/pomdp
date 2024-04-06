@@ -47,4 +47,11 @@ Littman (1994). Acting Optimally in Partially Observable Stochastic Domains.
 In Proceedings of the Twelfth National Conference on Artificial
 Intelligence, pp. 1023-1028.
 }
+\seealso{
+Other POMDP_examples: 
+\code{\link{POMDP}()},
+\code{\link{POMDP_example_files}},
+\code{\link{RussianTiger}}
+}
+\concept{POMDP_examples}
 \keyword{datasets}

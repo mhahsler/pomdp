@@ -176,11 +176,8 @@ Second edition. The MIT Press.
 }
 \seealso{
 Other MDP: 
-\code{\link{Cliff_walking}},
 \code{\link{MDP}()},
 \code{\link{MDP2POMDP}},
-\code{\link{Maze}},
-\code{\link{Windy_gridworld}},
 \code{\link{accessors}},
 \code{\link{actions}()},
 \code{\link{add_policy}()},

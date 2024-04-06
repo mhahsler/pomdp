@@ -1,7 +1,7 @@
 Package: pomdp
 Title: Infrastructure for Partially Observable Markov Decision Processes (POMDP)
-Version: 1.2.0
-Date: 2024-04-02
+Version: 1.2.1
+Date: 2024-xx-xx
 Authors@R: c(
     person(given = "Michael",
        family = "Hahsler",
@@ -40,9 +40,9 @@ Collate:
     'Cliff_walking.R'
     'POMDP.R'
     'MDP.R'
-    'MDP2POMDP.R'
     'MDP_policy_functions.R'
     'Maze.R'
+    'POMDP_file_examples.R'
     'RcppExports.R'
     'RussianTiger.R'
     'Tiger.R'
@@ -57,6 +57,7 @@ Collate:
     'estimate_belief_for_nodes.R'
     'foreach_helper.R'
     'gridworld.R'
+    'make_partially_observable.R'
     'optimal_action.R'
     'plot_belief_space.R'
     'plot_policy_graph.R'

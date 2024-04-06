@@ -35,8 +35,8 @@
 #' converges without discounting (`discount = 1`).
 #' @name Maze
 #' @aliases Maze maze
+#' @family MDP_examples
 #' @family gridworld
-#' @family MDP
 #' @docType data
 #' @format An object of class [MDP].
 #' @keywords datasets

@@ -18,6 +18,7 @@
 #'
 #' @name RussianTiger
 #' @aliases RussianTiger
+#' @family POMDP_examples
 #' @docType data
 #' @format An object of class [POMDP].
 #' @keywords datasets

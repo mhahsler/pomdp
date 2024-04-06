@@ -20,8 +20,8 @@
 #' @aliases windy_gridworld
 #' @format An object of class [MDP].
 #' @keywords datasets
+#' @family MDP_examples
 #' @family gridworld
-#' @family MDP
 #' @references
 #' Richard S. Sutton and Andrew G. Barto (2018). Reinforcement Learning: An Introduction
 #' Second Edition, MIT Press, Cambridge, MA.

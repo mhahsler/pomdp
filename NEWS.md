@@ -1,4 +1,14 @@
-# pomdp 1.2.0. (04/02/2024)
+# pomdp 1.2.1 (xx/xx/2024)
+
+## New Features
+* read_POMDP gained parameter verbose to debug reading.
+* solve_x check now that the model is of type x.
+* Added some POMDP file examples.
+
+## Bugfixes
+* Improved read_POMDP and write_POMDP.
+
+# pomdp 1.2.0 (04/02/2024)
 
 ## New Features
 * Added functions to work with MDP policies (see ? MDP_policy_functions).

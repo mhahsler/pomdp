@@ -1,0 +1,102 @@
+# This is an example that appears in Lonnie Chrisman's paper "
+# Reinforcement Learning with Perceptual Aliasing: The 
+# Perceptual Distinctions Approach", AAAI-92  The actual values
+# were sent to Michael from Lonnie via email and taken directly 
+# from Lonnie's code.
+
+# LRV - least recently visited, MRV - most recently visited
+# Backin up while docked has no effect (except to change LRV to MRV)
+# Turning around while docked, leaves you in front of station, facing it
+
+# Names for states, actions and observations were added by Michael Hahsler
+
+# Description from 
+#
+# Chrisman L., (1992) “Reinforcement Learning with Perceptual Aliasing: The Perceptual Distinctions Approach.” AAAI 1992: 183-188.
+#
+# This section reports the results of applying the complete system to a simple simulated docking application
+# with incomplete perception, non-deterministic actions,
+# and noisy sensors. The scenario consists of two space
+# stations separated by a small amount of free space with
+# loading docks located on each station. The task is to
+# transport supplies between the two docks. Each time
+# the agent successfully attaches to the least-recently visited station, it receives a reward of +10. In order to
+# dock, the agent must position itself in front of the station, with its back to the dock, and backup. Whenever the agent collides with the station by propelling
+# forward into the dock, it receives a penalty of -3. At
+# all other times, it receives zero reinforcement.
+#Three actions are available to the agent: GoForward,
+#Backup, TurnAround. The agent is always facing exactly one of the two stations, and TurnAround causes
+#it to face the other. Depending on the current state,
+#the GoForward action either detaches from the loading dock, launches into free space, approaches the next
+#station from free space, or collides (with a penalty)
+#into a space station directly ahead. Backup is almost
+#the inverse of GoForward except that it is extremely
+#unreliable. Backup launches from a station with probability 0.3. From space, it approaches a station in reverse with probability 0.8. And from docking position,
+#it fails to dock 30% of the time. When actions fail,
+#the agent sometimes remains in the same position, but
+#sometimes accidentally gets randomly turned around.
+#The agent's perception is very limited. From a station, it sees the station or only empty space depending
+#on which way it is facing. In free space perception is
+#noisy: with probability 0.7 the agent sees the forward
+#station, otherwise it sees nothing but empty space.
+#The two stations appear identical to the agent except
+#that the least-recently visited station displays an \accepting deliveries" sign which is visible to the agent
+#exactly when the station is visible. When docked, only
+#the interior of the dock itself is visible. The +10 reward
+#is also observable for one time unit after receipt.
+
+
+discount: 0.95
+values: reward
+states: Docked_LRV At_MRV_facing_station Space_facing_LRV At_LRV_back_to_station At_MRV_back_to_station Space_facing_MRV At_LRV_facing_station Docked_MRV
+
+actions: TurnAround GoForward Backup 
+observations: LRV MRV docked_MRV Nothing docked_LRV
+
+start:
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0
+
+T: TurnAround
+0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0  
+0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0  
+0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0  
+0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 
+0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0  
+0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0  
+0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0  
+0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 
+
+T: GoForward
+0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0  
+0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0  
+0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0  
+0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 
+0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0  
+0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0  
+0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0  
+0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 
+
+T: Backup
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 
+0.0 0.4 0.3 0.0 0.3 0.0 0.0 0.0 
+0.0 0.0 0.1 0.8 0.0 0.0 0.1 0.0 
+0.7 0.0 0.0 0.3 0.0 0.0 0.0 0.0 
+0.0 0.0 0.0 0.0 0.3 0.0 0.0 0.7 
+0.0 0.1 0.0 0.0 0.8 0.1 0.0 0.0 
+0.0 0.0 0.0 0.3 0.0 0.3 0.4 0.0 
+0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0
+
+O: *
+0.0 0.0 0.0 0.0 1.0 
+0.0 1.0 0.0 0.0 0.0 
+0.0 0.7 0.0 0.3 0.0 
+0.0 0.0 0.0 1.0 0.0 
+0.0 0.0 0.0 1.0 0.0 
+0.7 0.0 0.0 0.3 0.0 
+1.0 0.0 0.0 0.0 0.0 
+0.0 0.0 1.0 0.0 0.0 
+
+R: GoForward : 1 : 1 : * -3
+# R: GoForward : 7 : 6 : * -3  # What Chrisman specifies
+R: GoForward : 6 : 6 : * -3   # What I think it should be
+R: Backup : 3 : 0 : * 10
