@@ -5,7 +5,7 @@
 #'
 #' The gridworld has the following layout:
 #'
-#' ![Windy Gridworld](windy_gridworld.png "Windy Gridworld.")
+#' ![Windy Gridworld](windy-gridworld.png "Windy Gridworld.")
 #'
 #' The grid world is represented as a 7 x 10 matrix of states. 
 #' In the middle region the next states are shifted upward by wind

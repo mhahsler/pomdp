@@ -1,4 +1,4 @@
-# pomdp 1.2.1 (xx/xx/2024)
+# pomdp 1.2.1 (04/08/2024)
 
 ## New Features
 * read_POMDP gained parameter verbose to debug reading.
@@ -7,6 +7,9 @@
 
 ## Bugfixes
 * Improved read_POMDP and write_POMDP.
+* old LaTeX version on the CRAN master cannot deal with underscores 
+  in filenames. Rename the files cliff_walking_gridworld.png and  
+  windy_gridworld.png
 
 # pomdp 1.2.0 (04/02/2024)
 

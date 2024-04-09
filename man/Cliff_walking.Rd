@@ -15,7 +15,7 @@ The cliff walking gridworld MDP example from Chapter 6 of the textbook
 \details{
 The cliff walking gridworld has the following layout:
 
-\figure{cliff_walking_gridworld.png}{Cliff Walking Gridworld.}
+\figure{cliff-walking-gridworld.png}{Cliff Walking Gridworld.}
 
 The gridworld is represented as a 4 x 12 matrix of states.
 The states are labeled with their x and y coordinates.

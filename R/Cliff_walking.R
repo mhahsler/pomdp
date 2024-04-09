@@ -5,7 +5,7 @@
 #'
 #' The cliff walking gridworld has the following layout:
 #'
-#' ![Cliff Walking Gridworld](cliff_walking_gridworld.png "Cliff Walking Gridworld.")
+#' ![Cliff Walking Gridworld](cliff-walking-gridworld.png "Cliff Walking Gridworld.")
 #'
 #' The gridworld is represented as a 4 x 12 matrix of states. 
 #' The states are labeled with their x and y coordinates.
