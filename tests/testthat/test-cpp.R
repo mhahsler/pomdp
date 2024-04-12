@@ -52,6 +52,7 @@ simulate_POMDP(
   verbose = verb,
   engine = "r"
 )
+
 simulate_POMDP(
   Tiger,
   n = 10,

@@ -82,6 +82,7 @@
 #' # reward distribution
 #' hist(sim$reward)
 #'
+#' 
 #' ## Example 2: look at the belief states and the trajectories starting with 
 #' #             an initial start belief.
 #' sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), 
@@ -132,13 +133,15 @@ simulate_POMDP <-
       engine <- 'r'
     }
     
-    
-    
     solved <- is_solved_POMDP(model)
     dt <- is_timedependent_POMDP(model)
     
     if (is.null(belief))
       belief <- start_vector(model)
+    
+    if (!is.numeric(belief) || length(belief) != length(model$states) || 
+        !sum1(belief))
+      stop("Initial belief is misspecified!")
     
     n <- as.integer(n)
     digits <- as.integer(digits)

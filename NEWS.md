@@ -1,3 +1,9 @@
+# pomdp 1.2.2 (04/12/2024)
+
+## Bugfixes
+* Check for out-of-bounds error for Rcpp operator* for vectors 
+  (does not check size).
+
 # pomdp 1.2.1 (04/08/2024)
 
 ## New Features

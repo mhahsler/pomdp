@@ -115,6 +115,7 @@ round_stochastic(sim$action_cnt / sum(sim$action_cnt), 2)
 # reward distribution
 hist(sim$reward)
 
+
 ## Example 2: look at the belief states and the trajectories starting with 
 #             an initial start belief.
 sim <- simulate_POMDP(sol, n = 100, belief = c(.5, .5), 
