@@ -54,7 +54,7 @@ A list with elements:
 contains the \code{episode} id, the \code{time} step, the state \code{s},
 the chosen action \code{a},
 the reward \code{r}, and the next state \code{s_prime}. Trajectories are
-only returend of \code{return_trajectories = TRUE}.
+only returned for \code{return_trajectories = TRUE}.
 }
 }
 \description{

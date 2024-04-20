@@ -40,7 +40,7 @@
 #'    contains the `episode` id, the `time` step, the state `s`, 
 #'    the chosen action `a`,
 #'    the reward `r`, and the next state `s_prime`. Trajectories are 
-#'    only returend of `return_trajectories = TRUE`.
+#'    only returned for `return_trajectories = TRUE`.
 #' @author Michael Hahsler
 #' @examples
 #' # enable parallel simulation 
