@@ -365,7 +365,7 @@ The solution contains the following elements:
 -   **`alpha`:** A data frame with the coefficients of the optimal
     hyperplanes for the value function.
 
--   **`policy`:** A data frame that combines the ingormation from `pg`
+-   **`policy`:** A data frame that combines the information from `pg`
     and `alpha`. The first few columns specifying the belief state
     (hyperplane from `alpha`) and the last column indicates the optimal
     action (from `pg`).
