@@ -16,10 +16,8 @@ The rounded vector or matrix.
 }
 \description{
 Rounds a vector such that the sum of 1 is preserved. Rounds a matrix such
-that the rows still sum up to 1.
-}
-\details{
-Rounds and adjusts one entry such that the rounding error is the smallest.
+that each row sum up to 1. One entry is adjusted after rounding
+such that the rounding error is the smallest.
 }
 \examples{
 # regular rounding would not sum up to 1 

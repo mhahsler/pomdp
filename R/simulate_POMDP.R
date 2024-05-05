@@ -178,8 +178,10 @@ simulate_POMDP <-
     
     if (engine == "cpp") {
       
+      ### TODO: check model!!! Also in simulate_MDP!
+      
       if (!dt) {
-        ### TODO: Add support for time dependence
+        ### TODO: Add support for time dependence (C++)
         
         # Cpp can now deal with unnormalized POMDPs
         #model <- normalize_POMDP(model, sparse = TRUE)
