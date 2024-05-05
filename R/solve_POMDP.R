@@ -44,25 +44,30 @@
 #' approximation to make the problem tractable.
 #'
 #' **Note on method grid:** The finite grid method implements a version of Point
-#' Based Value Iteration (PBVI). The used belief points are by default created
+#' Based Value Iteration (PBVI). The used belief points are created
 #' using points that are reachable from the initial belief (`start`) by
-#' following all combinations of actions and observations. The size of the grid is
-#' by default 10,000 and 
+#' following all combinations of actions and observations. The default size of the grid is
+#' by 10,000 and 
 #' can be set via `parameter = list(fg_points = 100)`. Alternatively,
-#' different strategies can be chosen using the parameter `fg_type`. In
-#' this implementation, the user can also specify manually a grid of belief
-#' states by providing a matrix with belief states as produced by
+#' different strategies can be chosen to generate the belief points.
+#' using the parameter `fg_type`. In
+#' this implementation, the user can also manually specify a grid of belief
+#' points by providing a matrix with belief points as produced by
 #' [sample_belief_space()] as the parameter `grid`.
 #'
 #' To guarantee convergence in point-based (finite grid) value iteration, the
 #' initial value function must be a lower bound on the optimal value function.
 #' If all rewards are strictly non-negative, an initial value function with an
-#' all zero vector can be used and results will be similar to other methods.
-#' However, if there are negative rewards, lower bounds can be guaranteed by
-#' setting a single vector with the values \eqn{min(reward)/(1 - discount)}.
-#' The value function is guaranteed to converge to the true value function, but
-#' finite-horizon value functions will not be as expected. [solve_POMDP()]
-#' produces a warning in this case.
+#' all-zero vector can be used, and results will be similar to other methods.
+#' However, if the model contains negative rewards, lower bounds can be only 
+#' guaranteed by
+#' using an initial value function vector with the values 
+#' \eqn{min(reward)/(1 - discount)}.
+#' In this case, the value function is guaranteed to converge to the true value 
+#' function in the infinite-horizon case, but
+#' finite-horizon value functions may not converge. [solve_POMDP()]
+#' produces a warning in this case. The correct value function can be obtained 
+#' by using [simulate_POMDP()] or switching to a different method.
 #'
 #' **Time-dependent POMDPs:** Time dependence of transition probabilities,
 #' observation probabilities and reward structure can be modeled by considering
