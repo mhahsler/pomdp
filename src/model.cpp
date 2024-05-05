@@ -8,12 +8,16 @@ using namespace Rcpp;
 // NOTE: Episode in time-dependent POMDPs are currently unsupported.
 // NOTE: All indices are 0-based.
 
+// Call R functions
 Environment pkg = Environment::namespace_env("pomdp");
-Function R_transition_matrix = pkg["transition_matrix"];
-Function R_observation_matrix = pkg["observation_matrix"];
-Function R_reward_matrix = pkg["reward_matrix"];
 Function R_start_vector = pkg["start_vector"];
 Function R_absorbing_states = pkg["absorbing_states"];
+
+// Currently unused because R function calls are too slow
+//
+// Function R_transition_matrix = pkg["transition_matrix"];
+// Function R_observation_matrix = pkg["observation_matrix"];
+// Function R_reward_matrix = pkg["reward_matrix"];
 
 // Access model information
 bool is_solved(const List& model) { 
@@ -126,7 +130,7 @@ NumericMatrix transition_matrix(const List& model, int action, int episode) {
     if (as<CharacterVector>(acts)[0] == "uniform") {
       NumericVector m(n_states * n_states, 1.0 / n_states); 
       m.attr("dim") = IntegerVector::create(n_states, n_states); 
-      return NumericMatrix(m);
+      return as<NumericMatrix>(m);
     }
     
     if (as<CharacterVector>(acts)[0] == "identity") {
@@ -264,10 +268,10 @@ NumericMatrix observation_matrix(const List& model, int action,
     if (as<CharacterVector>(acts)[0] == "uniform") {
       NumericVector m(n_states * n_obs, 1.0 / n_obs); 
       m.attr("dim") = IntegerVector::create(n_states, n_obs); 
-      return NumericMatrix(m);
+      return as<NumericMatrix>(m);
     }
 
-    stop("Unknown matrix specifier! Only 'uniform' are allowed.");
+    stop("Unknown matrix specifier! Only 'uniform' is allowed.");
   }
   
   

@@ -23,10 +23,11 @@ NumericVector veccrossprod(const NumericMatrix& A, const NumericVector& b) {
   
   NumericVector out(A.ncol());
   for (R_xlen_t i = 0; i < A.ncol(); ++i) {
-    NumericMatrix::ConstColumn A_col = A( _ , i);
-    out[i] = std::inner_product(A_col.begin(), A_col.end(), b.begin(), 0.);              
+    const NumericVector A_col = A.column(i);
+
+    out[i] = std::inner_product(A_col.begin(), A_col.end(), b.begin(), 0.);
   }
-  
+
   return out;
 }
 
@@ -37,7 +38,7 @@ NumericVector vecprod(const NumericMatrix& A, const NumericVector& b) {
   
   NumericVector out(A.nrow());
   for (R_xlen_t i = 0; i < A.nrow(); ++i) {
-    NumericMatrix::ConstRow A_row = A(i, _ );
+    NumericVector A_row = A.row(i);
     out[i] = std::inner_product(A_row.begin(), A_row.end(), b.begin(), 0.);              
   }
   

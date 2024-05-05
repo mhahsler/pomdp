@@ -1,8 +1,8 @@
-# pomdp 1.2.2 (04/12/2024)
+# pomdp 1.2.3 (05/04/2024)
 
 ## Bugfixes
-* Check for out-of-bounds error for Rcpp operator* for vectors 
-  (does not check size).
+* Fixed possible memory violation in observation_matrix() and 
+  transition_matrix().
 
 # pomdp 1.2.1 (04/08/2024)
 

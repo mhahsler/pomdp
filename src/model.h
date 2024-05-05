@@ -13,8 +13,6 @@ using namespace Rcpp;
 // NOTE: Episode in time-dependent POMDPs are currently unsupported.
 // NOTE: All indices are 0-based.
 
-//Environment pkg;
-
 // Access model information
 bool is_solved(const List& model);
 bool is_converged(const List& model);

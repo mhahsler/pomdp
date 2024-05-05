@@ -49,22 +49,23 @@ DataFrame reward_cpp(const List& model, const NumericMatrix& belief) {
 NumericVector update_belief_cpp(const List& model, const NumericVector& belief,
   int action, int observation, int digits = 7) {
   
-  NumericMatrix::Column obs_v = observation_matrix(model, action).column(observation);
+  NumericVector obs_v = observation_matrix(model, action).column(observation);
   NumericMatrix tr_m = transition_matrix(model, action);
   
-  // FIXME: The check is to see why valgrind produces a memory violation on the 
-  // CRAN server.
-  // Note: sugar operator* in rCPP does not check vector lengths and takes the 
+  // Note: sugar operator* in Rcpp does not check vector lengths and takes the 
   //  length of the first vector!
   NumericVector new_belief = veccrossprod(tr_m, belief);
-  if (obs_v.size() != new_belief.size()) {
-    NumericVector obs_vv = obs_v;
-    Rcerr << "action: " << action << "\n" 
-          << "observation: " << observation << "\n"
-          << "tr x belief: " << new_belief << "\n"
-          << "obs vec: " << obs_vv << "\n";
-    stop("Observation vector length does not agree with the belief state size.!");
-  }
+  
+  // if (obs_v.size() != new_belief.size()) {
+  //   NumericVector obs_vv = obs_v;
+  //   Rcerr << "update_belief_cpp()\n" 
+  //         << "action: " << action << "\n" 
+  //         << "observation: " << observation << "\n"
+  //         << "tr x belief: " << new_belief << "\n"
+  //         << "obs vec: " << obs_vv << "\n";
+  //   stop("Observation vector length does not agree with the belief state size!\nPlease open an issue at https://github.com/mhahsler/pomdp/issues and submit the above information there.");
+  // }
+  
   new_belief =  obs_v * new_belief;
   new_belief = new_belief / sum(new_belief);
   

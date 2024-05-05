@@ -199,6 +199,7 @@ List simulate_POMDP_cpp(const List& model,
       state_cnt[s]++;
       obs_cnt[o]++;
       
+      // Alternative implementations
       //rews[i] += reward_matrix(model, a, s_prev)(s, o) * pow(disc, j);
       //rews[i] += reward_matrix(model, a, s_prev)(s, o) * disc_pow;  
       r = reward_val(model, a, s_prev, s, o);
