@@ -96,7 +96,7 @@
 #'
 #' # Build a Maze: The Dyna Maze from Chapter 8 in the RL book
 #'
-#' Dyna_maze <- gridworld_maze_MDP(
+#' DynaMaze <- gridworld_maze_MDP(
 #'                 dim = c(6,9),
 #'                 start = "s(3,1)",
 #'                 goal = "s(1,9)",
@@ -107,15 +107,15 @@
 #'                 discount = 0.95,
 #'                 name = "Dyna Maze",
 #'                 )
-#' Dyna_maze
+#' DynaMaze
 #'
-#' gridworld_matrix(Dyna_maze)
-#' gridworld_matrix(Dyna_maze, what = "labels")
+#' gridworld_matrix(DynaMaze)
+#' gridworld_matrix(DynaMaze, what = "labels")
 #'
 #' gridworld_plot_transition_graph(Dyna_maze)
 #' # Note that the problems resets if the goal state would be reached.
 #'
-#' sol <- solve_MDP(Dyna_maze)
+#' sol <- solve_MDP(DynaMaze)
 #'
 #' gridworld_matrix(sol, what = "values")
 #' gridworld_matrix(sol, what = "actions")
@@ -123,7 +123,7 @@
 #' gridworld_plot_policy(sol, actions = "label", cex = 1, states = FALSE)
 #' 
 #' # visualize the first 3 iterations of value iteration
-#' gridworld_animate(Dyna_maze, method = "value", n = 3)
+#' gridworld_animate(DynaMaze, method = "value", n = 3)
 #' @param dim vector of length two with the x and y extent of the gridworld.
 #' @param action_labels vector with four action labels that move the agent up, right, down,
 #'   and left.
@@ -216,7 +216,7 @@ gridworld_maze_MDP <- function(dim,
   )), names = goal)
   
   if (start != "uniform") {
-    start_labels <- c(state_labels, structure(list(rep_len(
+    state_labels <- c(state_labels, structure(list(rep_len(
       "Start", length(start)
     )), names = start))
   }

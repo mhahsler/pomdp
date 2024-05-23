@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_POMDP.R
 \name{simulate_POMDP}
 \alias{simulate_POMDP}
-\title{Simulate Trajectories in a POMDP}
+\title{Simulate Trajectories Through a POMDP}
 \usage{
 simulate_POMDP(
   model,

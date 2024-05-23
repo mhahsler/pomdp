@@ -1,4 +1,4 @@
-#' Simulate Trajectories in a POMDP
+#' Simulate Trajectories Through a POMDP
 #'
 #' Simulate trajectories through a POMDP. The start state for each
 #' trajectory is randomly chosen using the specified belief. The belief is used to choose actions

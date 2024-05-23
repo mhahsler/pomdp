@@ -1,6 +1,6 @@
 #' Russian Tiger Problem POMDP Specification
 #'
-#' This is a variation of the Tiger Problem introduces in Cassandra et al (1994)
+#' This is a variation of the Tiger Problem introduced in Cassandra et al (1994)
 #' with an absorbing state after a door is opened.
 #'
 #' The original Tiger problem is available as [Tiger]. The original problem is

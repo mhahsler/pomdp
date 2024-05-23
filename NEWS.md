@@ -1,3 +1,11 @@
+# pomdp 1.2.3-1 (xx/xx/2024)
+
+## New Features
+* Added the DynaMaze MDP dataset.
+
+## Bugfixes
+* gridworld_maze_MDP: start state is now recorded in info.
+
 # pomdp 1.2.3 (05/04/2024)
 
 ## Bugfixes

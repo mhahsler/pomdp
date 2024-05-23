@@ -8,7 +8,7 @@
 An object of class \link{POMDP}.
 }
 \description{
-This is a variation of the Tiger Problem introduces in Cassandra et al (1994)
+This is a variation of the Tiger Problem introduced in Cassandra et al (1994)
 with an absorbing state after a door is opened.
 }
 \details{
