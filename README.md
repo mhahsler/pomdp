@@ -2,11 +2,11 @@
 # <img src="man/figures/logo.svg" align="right" height="139" /> R package pomdp - Infrastructure for Partially Observable Markov Decision Processes (POMDP)
 
 [![CRAN
-version](http://www.r-pkg.org/badges/version/pomdp)](https://CRAN.R-project.org/package=pomdp)
+version](https://www.r-pkg.org/badges/version/pomdp)](https://CRAN.R-project.org/package=pomdp)
 [![stream r-universe
 status](https://mhahsler.r-universe.dev/badges/pomdp)](https://mhahsler.r-universe.dev/pomdp)
 [![CRAN RStudio mirror
-downloads](http://cranlogs.r-pkg.org/badges/pomdp)](https://CRAN.R-project.org/package=pomdp)
+downloads](https://cranlogs.r-pkg.org/badges/pomdp)](https://CRAN.R-project.org/package=pomdp)
 
 ## Introduction
 
