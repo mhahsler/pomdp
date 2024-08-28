@@ -344,11 +344,9 @@ pomdp-solve website: \url{http://www.pomdp.org}
 Other POMDP: 
 \code{\link{MDP2POMDP}},
 \code{\link{accessors}},
-\code{\link{actions}()},
-\code{\link{add_policy}()},
+\code{\link{add_policy.POMDP}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
-\code{\link{reachable_and_absorbing}},
 \code{\link{regret}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
@@ -356,7 +354,7 @@ Other POMDP:
 \code{\link{solve_SARSOP}()},
 \code{\link{transition_graph}()},
 \code{\link{update_belief}()},
-\code{\link{value_function}()},
+\code{\link{value_function.POMDP}()},
 \code{\link{write_POMDP}()}
 
 Other POMDP_examples: 

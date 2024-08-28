@@ -12,8 +12,9 @@
 ### Note: Sparse is a data.frame for rewards
 #' @include accessors.R
 #' @rdname accessors
+#' @importFrom markovDP reward_matrix
 #' @export
-reward_matrix <-
+reward_matrix.POMDP <-
   function(x,
            action = NULL,
            start.state = NULL,
@@ -83,27 +84,6 @@ reward_matrix <-
     reward_list2value(reward, action, start.state, end.state, observation)
   }
 
-#' @rdname accessors
-#' @export
-reward_val <-
-  function(x,
-           action,
-           start.state,
-           end.state = NULL,
-           observation = NULL,
-           episode = NULL,
-           epoch = NULL) {
-    #warning("reward_val is deprecated. Use reward_matrix instead!")
-    reward_matrix(x,
-                  action,
-                  start.state,
-                  end.state,
-                  observation,
-                  episode,
-                  epoch,
-                  sparse = FALSE)
-    
-  }
 
 # used internally
 .max_abs_reward <- function(x, episode = NULL,

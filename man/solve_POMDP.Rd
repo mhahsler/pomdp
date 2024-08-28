@@ -386,37 +386,34 @@ iteration: an anytime algorithm for POMDPs. IJCAI'03: Proceedings of the
 }
 \seealso{
 Other policy: 
+\code{\link{action.POMDP}()},
 \code{\link{estimate_belief_for_nodes}()},
-\code{\link{optimal_action}()},
 \code{\link{plot_belief_space}()},
 \code{\link{plot_policy_graph}()},
-\code{\link{policy}()},
+\code{\link{policy.POMDP}()},
 \code{\link{policy_graph}()},
 \code{\link{projection}()},
 \code{\link{reward}()},
 \code{\link{solve_SARSOP}()},
-\code{\link{value_function}()}
+\code{\link{value_function.POMDP}()}
 
 Other solver: 
-\code{\link{solve_MDP}()},
 \code{\link{solve_SARSOP}()}
 
 Other POMDP: 
 \code{\link{MDP2POMDP}},
 \code{\link{POMDP}()},
 \code{\link{accessors}},
-\code{\link{actions}()},
-\code{\link{add_policy}()},
+\code{\link{add_policy.POMDP}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
-\code{\link{reachable_and_absorbing}},
 \code{\link{regret}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_SARSOP}()},
 \code{\link{transition_graph}()},
 \code{\link{update_belief}()},
-\code{\link{value_function}()},
+\code{\link{value_function.POMDP}()},
 \code{\link{write_POMDP}()}
 }
 \author{

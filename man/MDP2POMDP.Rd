@@ -60,28 +60,12 @@ policy(sol)
 # The result is not exciting since we can observe where the tiger is!
 }
 \seealso{
-Other MDP: 
-\code{\link{MDP}()},
-\code{\link{MDP_policy_functions}},
-\code{\link{accessors}},
-\code{\link{actions}()},
-\code{\link{add_policy}()},
-\code{\link{gridworld}},
-\code{\link{reachable_and_absorbing}},
-\code{\link{regret}()},
-\code{\link{simulate_MDP}()},
-\code{\link{solve_MDP}()},
-\code{\link{transition_graph}()},
-\code{\link{value_function}()}
-
 Other POMDP: 
 \code{\link{POMDP}()},
 \code{\link{accessors}},
-\code{\link{actions}()},
-\code{\link{add_policy}()},
+\code{\link{add_policy.POMDP}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
-\code{\link{reachable_and_absorbing}},
 \code{\link{regret}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
@@ -89,11 +73,10 @@ Other POMDP:
 \code{\link{solve_SARSOP}()},
 \code{\link{transition_graph}()},
 \code{\link{update_belief}()},
-\code{\link{value_function}()},
+\code{\link{value_function.POMDP}()},
 \code{\link{write_POMDP}()}
 }
 \author{
 Michael Hahsler
 }
-\concept{MDP}
 \concept{POMDP}

@@ -1,8 +1,8 @@
 #' @keywords internal 
 #'
 #' @section Key functions:
-#' - Problem specification: [POMDP], [MDP]
-#' - Solvers: [solve_POMDP()], [solve_MDP()], [solve_SARSOP()]
+#' - Problem specification: [POMDP]
+#' - Solvers: [solve_POMDP()], [solve_SARSOP()]
 #'
 #' @import Rcpp
 #' @importFrom Matrix spMatrix crossprod coerce Math Math2 cBind rBind nnzero

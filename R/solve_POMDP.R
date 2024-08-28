@@ -663,8 +663,9 @@ solve_POMDP <- function(model,
     structure(solver_output, class = "text")
   
   ### MDP uses policy field
-  if (inherits(model, "MDP"))
-    model$solution$policy <- .MDP_policy_from_POMDP(model)
+  ### FIXME: We need to do this in package mdp!!!
+  #if (inherits(model, "MDP"))
+  #  model$solution$policy <- .MDP_policy_from_POMDP(model)
   
   model
 }
@@ -790,7 +791,7 @@ print.POMDP_solution <- function(x, ...) {
       ))
     
     # we do not support belief_points
-    model$solution$belief_points_solver <- NULL
+  model$solution$belief_points_solver <- NULL
     
     model
   }

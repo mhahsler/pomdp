@@ -11,7 +11,6 @@
 #' `make_fully_observable()` removes the observation model from a POMDP and returns
 #' an MDP.
 #'
-#' @family MDP
 #' @family POMDP
 #'
 #' @name MDP2POMDP

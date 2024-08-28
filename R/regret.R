@@ -10,7 +10,6 @@
 #' Since the optimal policy may not be known, regret relative to the best known policy can be used.     
 #'
 #' @family POMDP
-#' @family MDP
 #'
 #' @param policy a solved POMDP containing the policy to calculate the regret for. 
 #' @param benchmark a solved POMDP with the (optimal) policy. Regret is calculated relative to this
@@ -55,25 +54,3 @@ regret.POMDP <- function(policy, benchmark, start = NULL) {
   r_bench - r_pol
 }
 
-#' @export
-regret.MDP <- function(policy, benchmark, start = NULL) {
-  if (!inherits(benchmark, "MDP") || !is_solved_MDP(benchmark))
-    stop("benchmark needs to be a solved MDP.")
-  
-  if (!inherits(policy, "MDP") || !is_solved_MDP(policy))
-    stop("policy needs to be a solved MDP.")
-  
-  if (is.null(start))
-    start <- which(start_vector(benchmark) == 1) 
-  
-  if(is.character(start))
-    start <- which(benchmark$states == start)
-  
-  if (length(start) != 1L)
-    stop("A single start state needs to be specified!")
-  
-  r_bench <- policy(benchmark)$U[start]
-  r_pol <- policy(policy)$U[start]
-  
-  r_bench - r_pol
-}

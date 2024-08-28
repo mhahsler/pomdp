@@ -2,16 +2,15 @@
 #'
 #' Returns the transition model as an \pkg{igraph} object.
 #'
-#' The transition model of a POMDP/MDP is a Markov Chain. This function extracts the transition model as
+#' The transition model of a POMDP is a Markov Chain. This function extracts the transition model as
 #' an igraph object.
 #'
 #' @family POMDP
-#' @family MDP
 #'
 #' @importFrom igraph graph_from_adjacency_matrix %>% E E<- V V<- add_layout_ as_data_frame as_tree graph_from_data_frame induced_subgraph norm_coords
 #'
-#' @param x object of class [POMDP] or [MDP].
-#' @param action the name or id of an action or a set of actions. Bey default the transition model for all actions is returned.
+#' @param x object of class [POMDP].
+#' @param action the name or id of an action or a set of actions. By default the transition model for all actions is returned.
 #' @param episode,epoch  Episode or epoch used for time-dependent POMDPs. Epochs are internally converted to the episode using the model horizon.
 #' @param state_col colors used to represent the states.
 #' @param simplify_transitions logical; combine parallel transition arcs into a single arc.

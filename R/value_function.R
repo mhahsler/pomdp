@@ -1,7 +1,7 @@
 #' Value Function
 #'
 #' Extracts the value function from a solved model.
-
+#'
 #' Extracts the alpha vectors describing the value function. This is similar to [policy()] which in addition returns the
 #' action prescribed by the solution.
 #'
@@ -11,9 +11,8 @@
 #'
 #' @family policy
 #' @family POMDP
-#' @family MDP
 #'
-#' @param model a solved [POMDP] or [MDP].
+#' @param model a solved [POMDP].
 #' @param projection Sample in a projected belief space. See [projection()] for details.
 #' @param epoch the value function of what epoch should be plotted? Use 1 for
 #'   converged policies.
@@ -62,22 +61,7 @@
 #' }
 #' @importFrom graphics plot barplot box lines text
 #' @param drop logical; drop the list for converged converged, epoch-independent value functions.
-#' @export
-value_function <- function(model, drop = TRUE) {
-  UseMethod("value_function")
-}
-
-#' @export
-value_function.MDP <- function(model, drop = TRUE) {
-  is_solved_MDP(model, stop = TRUE)
-  val <- lapply(policy(model, drop = FALSE), "[[", "U")
-  
-  if (drop && length(val) == 1L)
-    val <- val[[1]]
-  
-  val
-}
-
+#' @importFrom markovDP value_function 
 #' @export
 value_function.POMDP <- function(model, drop = TRUE) {
   is_solved_POMDP(model, stop = TRUE)
@@ -126,58 +110,7 @@ value_function.POMDP <- function(model, drop = TRUE) {
 
 
 #' @rdname value_function
-#' @export
-plot_value_function <- function(model,
-                                projection = NULL,
-                                epoch = 1,
-                                ylim = NULL,
-                                legend = TRUE,
-                                col = NULL,
-                                lwd = 1,
-                                lty = 1,
-                                ylab = "Value",
-                                ...) {
-  UseMethod("plot_value_function")
-}
-
-#' @export
-plot_value_function.MDP <-
-  function(model,
-           projection = NULL,
-           epoch = 1,
-           ylim = NULL,
-           legend = TRUE,
-           col = NULL,
-           lwd = 1,
-           lty = 1,
-           ylab = "Value",
-           las = 3,
-           ...) {
-    is_solved_MDP(model, stop = TRUE)
-    
-    policy <- policy(model, drop = FALSE)[[epoch]]
-    
-    mid <- barplot(
-      policy$U,
-      col = col,
-      ylab = ylab,
-      xlab = "State",
-      names.arg = paste(model$states),
-      las = las,
-      ...
-    )
-    
-    if (legend)
-      text(
-        x = mid,
-        y = 0,
-        labels = policy$action,
-        srt = 90,
-        adj = c(-.1, .5)
-      )
-    invisible(NULL)
-  }
-
+#' @importFrom markovDP plot_value_function
 #' @export
 plot_value_function.POMDP <-
   function(model,

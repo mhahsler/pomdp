@@ -5,9 +5,8 @@
 #' policies.
 #'
 #' @family POMDP
-#' @family MDP
 #'
-#' @param model a POMDP or MDP model description.
+#' @param model a POMDP model description.
 #' @param policy a policy data.frame.
 #'
 #' @return The model description with the added policy.
@@ -62,11 +61,7 @@
 #' plot_belief_space(custom_sol)
 #' 
 #' simulate_POMDP(custom_sol, n = 1000)$avg_reward
-#' @export
-add_policy <- function(model, policy) {
-  UseMethod("add_policy")
-}
-
+#' @importFrom markovDP add_policy
 #' @export
 add_policy.POMDP <- function(model, policy) {
   if(inherits(policy, "POMDP"))
@@ -86,25 +81,3 @@ add_policy.POMDP <- function(model, policy) {
    
   model
 }
-
-#' @export
-add_policy.MDP <- function(model, policy) {
-  if(inherits(policy, "MDP"))
-    policy <- policy(policy)
-  
-  if(is.null(policy$U))
-    policy$U <- MDP_policy_evaluation(policy, model)
-  
-  solution <- list(
-    method = "manual",
-    policy = list(policy),
-    converged = NA
-  )
-  
-  model$solution <- solution
-  model <- check_and_fix_MDP(model)
-  
-  model
-}
-
-

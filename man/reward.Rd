@@ -74,16 +74,16 @@ plot_value_function(sol, ylim = c(0, 10))
 }
 \seealso{
 Other policy: 
+\code{\link{action.POMDP}()},
 \code{\link{estimate_belief_for_nodes}()},
-\code{\link{optimal_action}()},
 \code{\link{plot_belief_space}()},
 \code{\link{plot_policy_graph}()},
-\code{\link{policy}()},
+\code{\link{policy.POMDP}()},
 \code{\link{policy_graph}()},
 \code{\link{projection}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()},
-\code{\link{value_function}()}
+\code{\link{value_function.POMDP}()}
 }
 \author{
 Michael Hahsler

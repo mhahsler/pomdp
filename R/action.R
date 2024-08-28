@@ -1,6 +1,6 @@
-#' Optimal action for a belief
+#' Action given a Policy and a Belief
 #'
-#' Determines the optimal action for a policy (solved POMDP) for a given belief
+#' Determines the action for a policy (solved POMDP) for a given belief
 #' at a given epoch.
 #'
 #' @family policy
@@ -35,9 +35,9 @@
 #'
 #' # the POMDP is converged, so all epoch give the same result.
 #' optimal_action(sol, "tiger-right", epoch = 10)
-#'
+#' @importFrom markovDP action
 #' @export
-optimal_action <-
+action.POMDP <-
   function(model, belief = NULL, epoch = 1) {
     reward_node_action(model, belief = belief, epoch = epoch)[["action"]]
 }

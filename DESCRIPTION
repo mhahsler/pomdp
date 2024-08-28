@@ -1,65 +1,72 @@
 Package: pomdp
-Title: Infrastructure for Partially Observable Markov Decision Processes (POMDP)
+Title: Infrastructure for Partially Observable Markov Decision Processes
+    (POMDP)
 Version: 1.2.3-1
 Date: 2024-xx-xx
 Authors@R: c(
-    person(given = "Michael",
-       family = "Hahsler",
-       role = c("aut", "cph", "cre"),
-       email = "mhahsler@lyle.smu.edu",
-       comment = c(ORCID = "0000-0003-2716-1405")),
-    person(given = "Hossein",
-       family = "Kamalzadeh",
-       role = c("ctb")))
-Description: Provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Process (POMDP) models. Interfaces for various exact and approximate solution algorithms are available including value iteration, point-based value iteration and SARSOP. Smallwood and Sondik (1973) <doi:10.1287/opre.21.5.1071>.
-Classification/ACM: G.4, G.1.6, I.2.6
+    person("Michael", "Hahsler", , "mhahsler@lyle.smu.edu", role = c("aut", "cph", "cre"),
+           comment = c(ORCID = "0000-0003-2716-1405")),
+    person("Hossein", "Kamalzadeh", role = "ctb")
+  )
+Description: Provides the infrastructure to define and analyze the
+    solutions of Partially Observable Markov Decision Process (POMDP)
+    models. Interfaces for various exact and approximate solution
+    algorithms are available including value iteration, point-based value
+    iteration and SARSOP. Smallwood and Sondik (1973)
+    <doi:10.1287/opre.21.5.1071>.
+License: GPL (>=3)
 URL: https://github.com/mhahsler/pomdp
 BugReports: https://github.com/mhahsler/pomdp/issues
-Depends: R (>= 3.5.0)
-Imports: pomdpSolve (>= 1.0.4), processx, stats, methods, Matrix, Rcpp, foreach, igraph
-SystemRequirements: C++17
-LinkingTo: Rcpp
-Suggests: knitr,
-  rmarkdown,
-  gifski,
-  testthat,
-  Ternary,
-  visNetwork, 
-  sarsop,
-  doParallel
-VignetteBuilder: knitr
-Encoding: UTF-8
-License: GPL (>=3)
+Depends: 
+    R (>= 3.5.0)
+Imports: 
+    foreach,
+    igraph,
+    markovDP,
+    Matrix,
+    methods,
+    pomdpSolve (>= 1.0.4),
+    processx,
+    Rcpp,
+    stats
+Suggests: 
+    doParallel,
+    gifski,
+    knitr,
+    rmarkdown,
+    sarsop,
+    Ternary,
+    testthat,
+    visNetwork
+LinkingTo: 
+    Rcpp
+VignetteBuilder: 
+    knitr
+Classification/ACM: G.4, G.1.6, I.2.6
 Copyright: Copyright (C) Michael Hahsler and Hossein Kamalzadeh.
-RoxygenNote: 7.3.1
+Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+SystemRequirements: C++17
 Collate: 
     'AAA_check_installed.R'
-    'AAA_pomdp-package.R'
+    'AAA_package.R'
     'AAA_shorten.R'
-    'Cliff_walking.R'
-    'DynaMaze.R'
     'POMDP.R'
-    'MDP.R'
-    'MDP_policy_functions.R'
-    'Maze.R'
     'POMDP_file_examples.R'
     'RcppExports.R'
     'RussianTiger.R'
     'Tiger.R'
-    'Windy_gridworld.R'
     'accessors.R'
+    'accessors_observations.R'
     'accessors_reward.R'
-    'accessors_trans_obs.R'
-    'actions.R'
+    'accessors_transactions.R'
+    'action.R'
     'add_policy.R'
     'check_and_fix_MDP.R'
-    'colors.R'
     'estimate_belief_for_nodes.R'
     'foreach_helper.R'
-    'gridworld.R'
     'make_partially_observable.R'
-    'optimal_action.R'
     'plot_belief_space.R'
     'plot_policy_graph.R'
     'policy.R'
@@ -67,16 +74,13 @@ Collate:
     'print.text.R'
     'projection.R'
     'queue.R'
-    'reachable_and_absorbing.R'
     'read_write_POMDP.R'
     'read_write_pomdp_solve.R'
     'regret.R'
     'reward.R'
     'round_stochchastic.R'
     'sample_belief_space.R'
-    'simulate_MDP.R'
     'simulate_POMDP.R'
-    'solve_MDP.R'
     'solve_POMDP.R'
     'solve_SARSOP.R'
     'stack.R'

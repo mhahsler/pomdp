@@ -10,8 +10,9 @@ using namespace Rcpp;
 
 // Call R functions
 Environment pkg = Environment::namespace_env("pomdp");
-Function R_start_vector = pkg["start_vector"];
-Function R_absorbing_states = pkg["absorbing_states"];
+Environment pkg_markovDP = Environment::namespace_env("markovDP");
+Function R_start_vector = pkg_markovDP["start_vector"];
+Function R_absorbing_states = pkg_markovDP["absorbing_states"];
 
 // Currently unused because R function calls are too slow
 //

@@ -27,9 +27,9 @@ plot_transition_graph(
 )
 }
 \arguments{
-\item{x}{object of class \link{POMDP} or \link{MDP}.}
+\item{x}{object of class \link{POMDP}.}
 
-\item{action}{the name or id of an action or a set of actions. Bey default the transition model for all actions is returned.}
+\item{action}{the name or id of an action or a set of actions. By default the transition model for all actions is returned.}
 
 \item{episode, epoch}{Episode or epoch used for time-dependent POMDPs. Epochs are internally converted to the episode using the model horizon.}
 
@@ -50,7 +50,7 @@ returns the transition model as an igraph object.
 Returns the transition model as an \pkg{igraph} object.
 }
 \details{
-The transition model of a POMDP/MDP is a Markov Chain. This function extracts the transition model as
+The transition model of a POMDP is a Markov Chain. This function extracts the transition model as
 an igraph object.
 }
 \examples{
@@ -106,33 +106,16 @@ Other POMDP:
 \code{\link{MDP2POMDP}},
 \code{\link{POMDP}()},
 \code{\link{accessors}},
-\code{\link{actions}()},
-\code{\link{add_policy}()},
+\code{\link{add_policy.POMDP}()},
 \code{\link{plot_belief_space}()},
 \code{\link{projection}()},
-\code{\link{reachable_and_absorbing}},
 \code{\link{regret}()},
 \code{\link{sample_belief_space}()},
 \code{\link{simulate_POMDP}()},
 \code{\link{solve_POMDP}()},
 \code{\link{solve_SARSOP}()},
 \code{\link{update_belief}()},
-\code{\link{value_function}()},
+\code{\link{value_function.POMDP}()},
 \code{\link{write_POMDP}()}
-
-Other MDP: 
-\code{\link{MDP}()},
-\code{\link{MDP2POMDP}},
-\code{\link{MDP_policy_functions}},
-\code{\link{accessors}},
-\code{\link{actions}()},
-\code{\link{add_policy}()},
-\code{\link{gridworld}},
-\code{\link{reachable_and_absorbing}},
-\code{\link{regret}()},
-\code{\link{simulate_MDP}()},
-\code{\link{solve_MDP}()},
-\code{\link{value_function}()}
 }
-\concept{MDP}
 \concept{POMDP}
