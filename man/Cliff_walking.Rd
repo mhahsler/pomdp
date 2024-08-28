@@ -64,11 +64,13 @@ Second Edition, MIT Press, Cambridge, MA.
 }
 \seealso{
 Other MDP_examples: 
+\code{\link{DynaMaze}},
 \code{\link{MDP}()},
 \code{\link{Maze}},
 \code{\link{Windy_gridworld}}
 
 Other gridworld: 
+\code{\link{DynaMaze}},
 \code{\link{Maze}},
 \code{\link{Windy_gridworld}},
 \code{\link{gridworld}}

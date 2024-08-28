@@ -131,6 +131,7 @@ Other MDP:
 
 Other MDP_examples: 
 \code{\link{Cliff_walking}},
+\code{\link{DynaMaze}},
 \code{\link{Maze}},
 \code{\link{Windy_gridworld}}
 }

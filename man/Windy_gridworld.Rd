@@ -52,11 +52,13 @@ Second Edition, MIT Press, Cambridge, MA.
 \seealso{
 Other MDP_examples: 
 \code{\link{Cliff_walking}},
+\code{\link{DynaMaze}},
 \code{\link{MDP}()},
 \code{\link{Maze}}
 
 Other gridworld: 
 \code{\link{Cliff_walking}},
+\code{\link{DynaMaze}},
 \code{\link{Maze}},
 \code{\link{gridworld}}
 }

@@ -260,7 +260,7 @@ DynaMaze
 gridworld_matrix(DynaMaze)
 gridworld_matrix(DynaMaze, what = "labels")
 
-gridworld_plot_transition_graph(Dyna_maze)
+gridworld_plot_transition_graph(DynaMaze)
 # Note that the problems resets if the goal state would be reached.
 
 sol <- solve_MDP(DynaMaze)
@@ -276,6 +276,7 @@ gridworld_animate(DynaMaze, method = "value", n = 3)
 \seealso{
 Other gridworld: 
 \code{\link{Cliff_walking}},
+\code{\link{DynaMaze}},
 \code{\link{Maze}},
 \code{\link{Windy_gridworld}}
 

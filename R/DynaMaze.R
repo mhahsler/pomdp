@@ -4,8 +4,8 @@
 #' "Reinforcement Learning: An Introduction."
 #'
 #' The simple 6x9 maze with a few walls. 
-#' @name Maze
-#' @aliases Maze maze
+#' @name DynaMaze
+#' @aliases DynaMaze dynamaze
 #' @family MDP_examples
 #' @family gridworld
 #' @docType data
@@ -24,6 +24,6 @@
 #' gridworld_matrix(DynaMaze)
 #' gridworld_matrix(DynaMaze, what = "labels")
 #'
-#' gridworld_plot_transition_graph(Dyna_maze)
+#' gridworld_plot_transition_graph(DynaMaze)
 NULL
 
