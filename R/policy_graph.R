@@ -219,7 +219,7 @@ policy_graph <-
     
     if (remove_unreachable_nodes)
       policy_graph <- igraph::delete_vertices(policy_graph, setdiff(seq_along(V(policy_graph)), 
-        igraph::dfs(policy_graph, root = initial_pg_node, unreach = FALSE)$order))
+        igraph::dfs(policy_graph, root = initial_pg_node, unreachable = FALSE)$order))
 
     policy_graph
   }
