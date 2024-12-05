@@ -1,7 +1,7 @@
 Package: pomdp
 Title: Infrastructure for Partially Observable Markov Decision Processes (POMDP)
-Version: 1.2.3-1
-Date: 2024-xx-xx
+Version: 1.2.4
+Date: 2024-12-05
 Authors@R: c(
     person(given = "Michael",
        family = "Hahsler",
