@@ -1,7 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^Work$
 ^\.github$
 README.Rmd
-pomdp.bib
+data_src
 

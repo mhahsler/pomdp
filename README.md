@@ -1,10 +1,10 @@
 
 # <img src="man/figures/logo.svg" align="right" height="139" /> R package pomdp - Infrastructure for Partially Observable Markov Decision Processes (POMDP)
 
-[![CRAN
-version](https://www.r-pkg.org/badges/version/pomdp)](https://CRAN.R-project.org/package=pomdp)
-[![stream r-universe
+[![r-universe
 status](https://mhahsler.r-universe.dev/badges/pomdp)](https://mhahsler.r-universe.dev/pomdp)
+[![Package on
+CRAN](https://www.r-pkg.org/badges/version/pomdp)](https://CRAN.R-project.org/package=pomdp)
 [![CRAN RStudio mirror
 downloads](https://cranlogs.r-pkg.org/badges/pomdp)](https://CRAN.R-project.org/package=pomdp)
 
@@ -50,17 +50,16 @@ Tutorial](https://pomdp.org/tutorial/).
 
 To cite package ‘pomdp’ in publications use:
 
-> Hahsler M (2023). *pomdp: Infrastructure for Partially Observable
-> Markov Decision Processes (POMDP)*. R package version 1.1.2,
-> <https://CRAN.R-project.org/package=pomdp>.
+> Hahsler M (2024). *pomdp: Infrastructure for Partially Observable
+> Markov Decision Processes (POMDP)*. R package version 1.2.4,
+> <https://github.com/mhahsler/pomdp>.
 
     @Manual{,
-      title = {pomdp: Infrastructure for Partially Observable Markov Decision
-    Processes (POMDP)},
+      title = {pomdp: Infrastructure for Partially Observable Markov Decision Processes (POMDP)},
       author = {Michael Hahsler},
-      year = {2023},
-      note = {R package version 1.1.2},
-      url = {https://CRAN.R-project.org/package=pomdp},
+      year = {2024},
+      note = {R package version 1.2.4},
+      url = {https://github.com/mhahsler/pomdp},
     }
 
 ## Installation
@@ -76,7 +75,8 @@ install.packages("pomdp")
 
 ``` r
 install.packages("pomdp",
-    repos = c("https://mhahsler.r-universe.dev". "https://cloud.r-project.org/"))
+    repos = c("https://mhahsler.r-universe.dev",
+              "https://cloud.r-project.org/"))
 ```
 
 ## Usage
@@ -93,13 +93,12 @@ Tiger
     ##   Discount factor: 0.75
     ##   Horizon: Inf epochs
     ##   Size: 2 states / 3 actions / 2 obs.
-    ##   Normalized: FALSE
-    ## 
+    ##   Start: uniform
     ##   Solved: FALSE
     ## 
     ##   List components: 'name', 'discount', 'horizon', 'states', 'actions',
     ##     'observations', 'transition_prob', 'observation_prob', 'reward',
-    ##     'start', 'terminal_values'
+    ##     'start', 'terminal_values', 'info'
 
 ``` r
 sol <- solve_POMDP(model = Tiger)
@@ -110,17 +109,16 @@ sol
     ##   Discount factor: 0.75
     ##   Horizon: Inf epochs
     ##   Size: 2 states / 3 actions / 2 obs.
-    ##   Normalized: FALSE
-    ## 
+    ##   Start: uniform
     ##   Solved:
-    ##     Method: grid
+    ##     Method: 'grid'
     ##     Solution converged: TRUE
     ##     # of alpha vectors: 5
     ##     Total expected reward: 1.933439
     ## 
     ##   List components: 'name', 'discount', 'horizon', 'states', 'actions',
     ##     'observations', 'transition_prob', 'observation_prob', 'reward',
-    ##     'start', 'solution'
+    ##     'start', 'info', 'solution'
 
 Display the value function.
 
@@ -146,7 +144,8 @@ of Standards and Technology (NIST) under grant number
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
 <div id="ref-Cassandra2015" class="csl-entry">
 
