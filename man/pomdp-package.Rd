@@ -6,7 +6,7 @@
 \alias{pomdp-package}
 \title{pomdp: Infrastructure for Partially Observable Markov Decision Processes (POMDP)}
 \description{
-Provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Process (POMDP) models. Interfaces for various exact and approximate solution algorithms are available including value iteration, point-based value iteration and SARSOP. Smallwood and Sondik (1973) \doi{10.1287/opre.21.5.1071}.
+Provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Process (POMDP) models. Interfaces for various exact and approximate solution algorithms are available including value iteration, point-based value iteration and SARSOP. Hahsler and Cassandra \doi{10.32614/RJ-2024-021}.
 }
 \section{Key functions}{
 

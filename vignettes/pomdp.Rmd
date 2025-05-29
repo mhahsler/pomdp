@@ -24,7 +24,7 @@ library("pomdp")
 
 # Introduction
 
-The R package **pomdp** [@Hahsler2024] provides the infrastructure to define and
+The R package **pomdp** [@Hahsler2025],[@Hahsler2024] provides the infrastructure to define and
 analyze the solutions of Partially Observable Markov Decision Processes
 (POMDP) models. The package is a companion to package **pomdpSolve**
 which provides the executable for

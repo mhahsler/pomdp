@@ -32,7 +32,7 @@ discount factor specified in \code{model} will be used.}
 \code{\link[=write_POMDP]{write_POMDP()}}).}
 
 \item{parameter}{a list with parameters passed on to
-the function \code{\link[sarsop:appl]{sarsop::pomdpsol()}} in package \pkg{sarsop}.}
+the function \code{\link[sarsop:pomdpsol]{sarsop::pomdpsol()}} in package \pkg{sarsop}.}
 
 \item{verbose}{logical, if set to \code{TRUE}, the function provides the
 output of the solver in the R console.}

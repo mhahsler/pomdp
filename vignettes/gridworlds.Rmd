@@ -27,7 +27,7 @@ library(pomdp)
 
 Gridworlds represent an easy to explore how Markov Decision Problems (MDPs),
 Partially Observable Decision Problems (POMDPs), and various approaches to solve these problems
-work. The R package **pomdp** [@Hahsler2024] provides a set of helper functions starting with the 
+work. The R package **pomdp** [@Hahsler2025],[@Hahsler2024] provides a set of helper functions starting with the 
 prefix `gridworld_`
 to make defining and experimenting with gridworlds easy. 
 

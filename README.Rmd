@@ -15,9 +15,9 @@ A partially observable Markov decision process (POMDP) models an agent decision 
 where the agent cannot directly observe the environment's state, but has to rely on 
 observations. The goal is to find an optimal policy to guide the agent's actions.
 
-The `pomdp` package provides the infrastructure to define and analyze the solutions 
+The `pomdp` package [@Hahsler2025] provides the infrastructure to define and analyze the solutions 
 of optimal control problems formulated as Partially Observable Markov Decision Processes (POMDP). 
-The package uses the solvers from [pomdp-solve](http://www.pomdp.org/code/) (Cassandra, 2015) 
+The package uses the solvers from [pomdp-solve](http://www.pomdp.org/code/) [@Cassandra2015] 
 available in the companion R package [**pomdpSolve**](https://github.com/mhahsler/pomdpSolve) to solve 
 POMDPs using a variety of exact and approximate algorithms.
 
@@ -42,7 +42,7 @@ to the following algorithms:
 If you are new to POMDPs then start with the [POMDP Tutorial](https://pomdp.org/tutorial/).
 
 ```{r echo=FALSE, results = 'asis'}
-pkg_citation(pkg, 1)
+pkg_citation(pkg, 2)
 pkg_install(pkg)
 ```
 

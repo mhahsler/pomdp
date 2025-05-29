@@ -1,3 +1,9 @@
+# pomdp 1.2.5 (05/29/2025)
+
+## Changes
+* Added source data to GitHub
+* Added reference to the R-Journal article. 
+
 # pomdp 1.2.4 (12/04/2024)
 
 ## New Features

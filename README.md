@@ -15,11 +15,12 @@ decision process where the agent cannot directly observe the
 environment’s state, but has to rely on observations. The goal is to
 find an optimal policy to guide the agent’s actions.
 
-The `pomdp` package provides the infrastructure to define and analyze
-the solutions of optimal control problems formulated as Partially
-Observable Markov Decision Processes (POMDP). The package uses the
-solvers from [pomdp-solve](http://www.pomdp.org/code/) (Cassandra, 2015)
-available in the companion R package
+The `pomdp` package (Hahsler and Cassandra 2025) provides the
+infrastructure to define and analyze the solutions of optimal control
+problems formulated as Partially Observable Markov Decision Processes
+(POMDP). The package uses the solvers from
+[pomdp-solve](http://www.pomdp.org/code/) (Cassandra 2015) available in
+the companion R package
 [**pomdpSolve**](https://github.com/mhahsler/pomdpSolve) to solve POMDPs
 using a variety of exact and approximate algorithms.
 
@@ -50,16 +51,21 @@ Tutorial](https://pomdp.org/tutorial/).
 
 To cite package ‘pomdp’ in publications use:
 
-> Hahsler M (2024). *pomdp: Infrastructure for Partially Observable
-> Markov Decision Processes (POMDP)*. R package version 1.2.4,
-> <https://github.com/mhahsler/pomdp>.
+> Hahsler M, Cassandra AR (2025). “Pomdp: A computational infrastructure
+> for partially observable Markov decision processes.” *The R Journal*,
+> *16*(2), 1-18. ISSN 2073-4859, <doi:10.32614/RJ-2024-021>
+> <https://doi.org/10.32614/RJ-2024-021>.
 
-    @Manual{,
-      title = {pomdp: Infrastructure for Partially Observable Markov Decision Processes (POMDP)},
-      author = {Michael Hahsler},
-      year = {2024},
-      note = {R package version 1.2.4},
-      url = {https://github.com/mhahsler/pomdp},
+    @Article{,
+      title = {Pomdp: A computational infrastructure for partially observable Markov decision processes},
+      author = {Michael Hahsler and Anthony R. Cassandra},
+      year = {2025},
+      journal = {The R Journal},
+      volume = {16},
+      number = {2},
+      pages = {1--18},
+      doi = {10.32614/RJ-2024-021},
+      issn = {2073-4859},
     }
 
 ## Installation
@@ -160,6 +166,15 @@ Cassandra, Anthony R., Michael L. Littman, and Nevin Lianwen Zhang.
 Observable Markov Decision Processes.” In *UAI’97: Proceedings of the
 Thirteenth Conference on Uncertainty in Artificial Intelligence*,
 54--61.
+
+</div>
+
+<div id="ref-Hahsler2025" class="csl-entry">
+
+Hahsler, Michael, and Anthony R. Cassandra. 2025. “Pomdp: A
+Computational Infrastructure for Partially Observable Markov Decision
+Processes.” *The R Journal* 16 (2): 116–33.
+<https://doi.org/10.32614/RJ-2024-021>.
 
 </div>
 
