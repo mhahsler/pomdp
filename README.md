@@ -7,6 +7,7 @@ status](https://mhahsler.r-universe.dev/badges/pomdp)](https://mhahsler.r-univer
 CRAN](https://www.r-pkg.org/badges/version/pomdp)](https://CRAN.R-project.org/package=pomdp)
 [![CRAN RStudio mirror
 downloads](https://cranlogs.r-pkg.org/badges/pomdp)](https://CRAN.R-project.org/package=pomdp)
+![License](https://img.shields.io/cran/l/pomdp)
 
 ## Introduction
 
