@@ -60,11 +60,11 @@
 #'
 #'   # the reward helper R_() expects: action, start.state, end.state, observation, value
 #'   reward = rbind(
-#'     R_("open-left",  "tiger-left",  v = -100),
-#'     R_("open-left",  "tiger-right", v =   10),
-#'     R_("open-right", "tiger-left",  v =   10),
-#'     R_("open-right", "tiger-right", v = -100),
-#'     R_("do-nothing",                v =    0)
+#'     R_("open-left",  "tiger-left",  value = -100),
+#'     R_("open-left",  "tiger-right", value =   10),
+#'     R_("open-right", "tiger-left",  value =   10),
+#'     R_("open-right", "tiger-right", value = -100),
+#'     R_("do-nothing",                value =    0)
 #'   )
 #' )
 #'

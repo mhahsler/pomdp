@@ -207,11 +207,11 @@
 #'   # the reward helper expects: action, start.state, end.state, observation, value
 #'   # missing arguments default to NA which matches any value (often denoted as * in POMDPs).
 #'   reward = rbind(
-#'     R_("listen",                    v =   -1),
-#'     R_("open-left",  "tiger-left",  v = -100),
-#'     R_("open-left",  "tiger-right", v =   10),
-#'     R_("open-right", "tiger-left",  v =   10),
-#'     R_("open-right", "tiger-right", v = -100)
+#'     R_("listen",                    value =   -1),
+#'     R_("open-left",  "tiger-left",  value = -100),
+#'     R_("open-left",  "tiger-right", value =   10),
+#'     R_("open-right", "tiger-left",  value =   10),
+#'     R_("open-right", "tiger-right", value = -100)
 #'   )
 #' )
 #'

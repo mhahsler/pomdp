@@ -246,7 +246,7 @@ curve_multiple_directed <- function(graph, start = 0.3) {
         return(0)
       }
       else {
-        return(seq(-start, start, length = length(x)))
+        return(seq(-start, start, length.out = length(x)))
       }
     }
   )

@@ -1,3 +1,9 @@
+# pomdp 1.2.5.1 (xx/xx/2025)
+
+## Changes
+* Fixed partial argument matches.
+
+
 # pomdp 1.2.5 (05/29/2025)
 
 ## Changes

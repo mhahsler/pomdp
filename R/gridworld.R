@@ -472,7 +472,7 @@ gridworld_plot_policy <-
       text(
         g$x,
         g$y,
-        g$label,
+        g$labels,
         pos = 1,
         offset = offset,
         cex = .5 * cex
@@ -489,7 +489,7 @@ gridworld_plot_policy <-
         levels = c("up", "right", "down", "left"),
         labels = c("\U2191", "\U2192", "\U2193", "\U2190"))),
       
-      label = g$actions,
+      labels = g$actions,
       
       none = NA
       )

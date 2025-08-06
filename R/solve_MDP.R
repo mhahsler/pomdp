@@ -135,8 +135,8 @@
 #' #  policy found by the solver.
 #' maze_solved <- solve_MDP(Maze)
 #'
-#' MDP_policy_evaluation(pi, Maze, k_backup = 100)
-#' MDP_policy_evaluation(policy(maze_solved), Maze, k_backup = 100)
+#' MDP_policy_evaluation(pi, Maze, k_backups = 100)
+#' MDP_policy_evaluation(policy(maze_solved), Maze, k_backups = 100)
 #'
 #' # Note that the solver already calculates the utility function and returns it with the policy
 #' policy(maze_solved)
