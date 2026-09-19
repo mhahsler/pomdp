@@ -1,6 +1,6 @@
 Package: pomdp
 Title: Infrastructure for Partially Observable Markov Decision Processes (POMDP)
-Version: 1.2.5.1
+Version: 1.2.6.1
 Date: 2025-xx-xx
 Authors@R: c(
     person(given = "Michael",
@@ -31,7 +31,6 @@ VignetteBuilder: knitr
 Encoding: UTF-8
 License: GPL (>=3)
 Copyright: Copyright (C) Michael Hahsler and Hossein Kamalzadeh.
-RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Collate: 
     'AAA_check_installed.R'
@@ -84,3 +83,4 @@ Collate:
     'update_belief.R'
     'value_function.R'
     'which_max_random.R'
+Config/roxygen2/version: 8.1.0

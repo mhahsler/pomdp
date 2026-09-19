@@ -40,8 +40,8 @@ Michael L. Littman (2009), A tutorial on partially observable Markov decision pr
 \doi{10.1016/j.jmp.2009.01.005}
 }
 \seealso{
-Other POMDP_examples: 
-\code{\link{POMDP}()},
+Other POMDP_examples:
+\code{\link[=POMDP]{POMDP()}},
 \code{\link{RussianTiger}},
 \code{\link{Tiger}}
 }

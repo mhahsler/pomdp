@@ -73,17 +73,17 @@ legend(x = "top", legend = levels(rew$action), title = "action", col = 1:3, pch 
 plot_value_function(sol, ylim = c(0, 10))
 }
 \seealso{
-Other policy: 
-\code{\link{estimate_belief_for_nodes}()},
-\code{\link{optimal_action}()},
-\code{\link{plot_belief_space}()},
-\code{\link{plot_policy_graph}()},
-\code{\link{policy}()},
-\code{\link{policy_graph}()},
-\code{\link{projection}()},
-\code{\link{solve_POMDP}()},
-\code{\link{solve_SARSOP}()},
-\code{\link{value_function}()}
+Other policy:
+\code{\link[=estimate_belief_for_nodes]{estimate_belief_for_nodes()}},
+\code{\link[=optimal_action]{optimal_action()}},
+\code{\link[=plot_belief_space]{plot_belief_space()}},
+\code{\link[=plot_policy_graph]{plot_policy_graph()}},
+\code{\link[=policy]{policy()}},
+\code{\link[=policy_graph]{policy_graph()}},
+\code{\link[=projection]{projection()}},
+\code{\link[=solve_POMDP]{solve_POMDP()}},
+\code{\link[=solve_SARSOP]{solve_SARSOP()}},
+\code{\link[=value_function]{value_function()}}
 }
 \author{
 Michael Hahsler

@@ -119,35 +119,35 @@ ggtern(df, aes(x = `tiger-left`, y = `tiger-center`, z = `tiger-right`)) +
 }
 }
 \seealso{
-Other policy: 
-\code{\link{estimate_belief_for_nodes}()},
-\code{\link{optimal_action}()},
-\code{\link{plot_policy_graph}()},
-\code{\link{policy}()},
-\code{\link{policy_graph}()},
-\code{\link{projection}()},
-\code{\link{reward}()},
-\code{\link{solve_POMDP}()},
-\code{\link{solve_SARSOP}()},
-\code{\link{value_function}()}
+Other policy:
+\code{\link[=estimate_belief_for_nodes]{estimate_belief_for_nodes()}},
+\code{\link[=optimal_action]{optimal_action()}},
+\code{\link[=plot_policy_graph]{plot_policy_graph()}},
+\code{\link[=policy]{policy()}},
+\code{\link[=policy_graph]{policy_graph()}},
+\code{\link[=projection]{projection()}},
+\code{\link[=reward]{reward()}},
+\code{\link[=solve_POMDP]{solve_POMDP()}},
+\code{\link[=solve_SARSOP]{solve_SARSOP()}},
+\code{\link[=value_function]{value_function()}}
 
-Other POMDP: 
+Other POMDP:
 \code{\link{MDP2POMDP}},
-\code{\link{POMDP}()},
+\code{\link[=POMDP]{POMDP()}},
 \code{\link{accessors}},
-\code{\link{actions}()},
-\code{\link{add_policy}()},
-\code{\link{projection}()},
+\code{\link[=actions]{actions()}},
+\code{\link[=add_policy]{add_policy()}},
+\code{\link[=projection]{projection()}},
 \code{\link{reachable_and_absorbing}},
-\code{\link{regret}()},
-\code{\link{sample_belief_space}()},
-\code{\link{simulate_POMDP}()},
-\code{\link{solve_POMDP}()},
-\code{\link{solve_SARSOP}()},
-\code{\link{transition_graph}()},
-\code{\link{update_belief}()},
-\code{\link{value_function}()},
-\code{\link{write_POMDP}()}
+\code{\link[=regret]{regret()}},
+\code{\link[=sample_belief_space]{sample_belief_space()}},
+\code{\link[=simulate_POMDP]{simulate_POMDP()}},
+\code{\link[=solve_POMDP]{solve_POMDP()}},
+\code{\link[=solve_SARSOP]{solve_SARSOP()}},
+\code{\link[=transition_graph]{transition_graph()}},
+\code{\link[=update_belief]{update_belief()}},
+\code{\link[=value_function]{value_function()}},
+\code{\link[=write_POMDP]{write_POMDP()}}
 }
 \author{
 Michael Hahsler

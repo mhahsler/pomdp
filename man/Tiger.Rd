@@ -48,8 +48,8 @@ In Proceedings of the Twelfth National Conference on Artificial
 Intelligence, pp. 1023-1028.
 }
 \seealso{
-Other POMDP_examples: 
-\code{\link{POMDP}()},
+Other POMDP_examples:
+\code{\link[=POMDP]{POMDP()}},
 \code{\link{POMDP_example_files}},
 \code{\link{RussianTiger}}
 }

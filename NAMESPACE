@@ -86,52 +86,62 @@ export(value_function)
 export(write_POMDP)
 import(Rcpp)
 import(pomdpSolve)
-importFrom(Matrix,Math)
-importFrom(Matrix,Math2)
-importFrom(Matrix,cBind)
-importFrom(Matrix,coerce)
-importFrom(Matrix,colSums)
-importFrom(Matrix,crossprod)
-importFrom(Matrix,nnzero)
-importFrom(Matrix,rBind)
-importFrom(Matrix,spMatrix)
-importFrom(foreach,"%dopar%")
-importFrom(foreach,foreach)
-importFrom(foreach,getDoParWorkers)
-importFrom(foreach,times)
-importFrom(graphics,abline)
-importFrom(graphics,axis)
-importFrom(graphics,barplot)
-importFrom(graphics,box)
-importFrom(graphics,image)
-importFrom(graphics,legend)
-importFrom(graphics,lines)
-importFrom(graphics,plot)
-importFrom(graphics,text)
-importFrom(igraph,"%>%")
-importFrom(igraph,"E<-")
-importFrom(igraph,"V<-")
-importFrom(igraph,"edge_attr<-")
-importFrom(igraph,"vertex_attr<-")
-importFrom(igraph,E)
-importFrom(igraph,V)
-importFrom(igraph,add_layout_)
-importFrom(igraph,as_data_frame)
-importFrom(igraph,as_edgelist)
-importFrom(igraph,as_tree)
-importFrom(igraph,edge_attr)
-importFrom(igraph,graph_from_adjacency_matrix)
-importFrom(igraph,graph_from_data_frame)
-importFrom(igraph,graph_from_edgelist)
-importFrom(igraph,induced_subgraph)
-importFrom(igraph,norm_coords)
-importFrom(igraph,plot.igraph)
-importFrom(igraph,vertex_attr)
+importFrom(Matrix,
+  Math,
+  Math2,
+  cBind,
+  coerce,
+  colSums,
+  crossprod,
+  nnzero,
+  rBind,
+  spMatrix
+)
+importFrom(foreach,
+  "%dopar%",
+  foreach,
+  getDoParWorkers,
+  times
+)
+importFrom(graphics,
+  abline,
+  axis,
+  barplot,
+  box,
+  image,
+  legend,
+  lines,
+  plot,
+  text
+)
+importFrom(igraph,
+  "%>%",
+  "E<-",
+  "V<-",
+  "edge_attr<-",
+  "vertex_attr<-",
+  E,
+  V,
+  add_layout_,
+  as_data_frame,
+  as_edgelist,
+  as_tree,
+  edge_attr,
+  graph_from_adjacency_matrix,
+  graph_from_data_frame,
+  graph_from_edgelist,
+  induced_subgraph,
+  norm_coords,
+  plot.igraph,
+  vertex_attr
+)
 importFrom(methods,as)
 importFrom(processx,run)
 importFrom(stats,runif)
-importFrom(utils,head)
-importFrom(utils,read.table)
-importFrom(utils,tail)
-importFrom(utils,type.convert)
+importFrom(utils,
+  head,
+  read.table,
+  tail,
+  type.convert
+)
 useDynLib(pomdp, .registration=TRUE)

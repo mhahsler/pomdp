@@ -72,16 +72,16 @@ plot_policy_graph(sol)
 # Note: the first number in the node id is the epoch.
 }
 \seealso{
-Other policy: 
-\code{\link{estimate_belief_for_nodes}()},
-\code{\link{optimal_action}()},
-\code{\link{plot_belief_space}()},
-\code{\link{plot_policy_graph}()},
-\code{\link{policy}()},
-\code{\link{projection}()},
-\code{\link{reward}()},
-\code{\link{solve_POMDP}()},
-\code{\link{solve_SARSOP}()},
-\code{\link{value_function}()}
+Other policy:
+\code{\link[=estimate_belief_for_nodes]{estimate_belief_for_nodes()}},
+\code{\link[=optimal_action]{optimal_action()}},
+\code{\link[=plot_belief_space]{plot_belief_space()}},
+\code{\link[=plot_policy_graph]{plot_policy_graph()}},
+\code{\link[=policy]{policy()}},
+\code{\link[=projection]{projection()}},
+\code{\link[=reward]{reward()}},
+\code{\link[=solve_POMDP]{solve_POMDP()}},
+\code{\link[=solve_SARSOP]{solve_SARSOP()}},
+\code{\link[=value_function]{value_function()}}
 }
 \concept{policy}

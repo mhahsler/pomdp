@@ -112,19 +112,19 @@ head(sim$trajectories)
 table(sim$trajectories$s)
 }
 \seealso{
-Other MDP: 
-\code{\link{MDP}()},
+Other MDP:
+\code{\link[=MDP]{MDP()}},
 \code{\link{MDP2POMDP}},
 \code{\link{MDP_policy_functions}},
 \code{\link{accessors}},
-\code{\link{actions}()},
-\code{\link{add_policy}()},
+\code{\link[=actions]{actions()}},
+\code{\link[=add_policy]{add_policy()}},
 \code{\link{gridworld}},
 \code{\link{reachable_and_absorbing}},
-\code{\link{regret}()},
-\code{\link{solve_MDP}()},
-\code{\link{transition_graph}()},
-\code{\link{value_function}()}
+\code{\link[=regret]{regret()}},
+\code{\link[=solve_MDP]{solve_MDP()}},
+\code{\link[=transition_graph]{transition_graph()}},
+\code{\link[=value_function]{value_function()}}
 }
 \author{
 Michael Hahsler

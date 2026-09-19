@@ -63,13 +63,13 @@ Richard S. Sutton and Andrew G. Barto (2018). Reinforcement Learning: An Introdu
 Second Edition, MIT Press, Cambridge, MA.
 }
 \seealso{
-Other MDP_examples: 
+Other MDP_examples:
 \code{\link{DynaMaze}},
-\code{\link{MDP}()},
+\code{\link[=MDP]{MDP()}},
 \code{\link{Maze}},
 \code{\link{Windy_gridworld}}
 
-Other gridworld: 
+Other gridworld:
 \code{\link{DynaMaze}},
 \code{\link{Maze}},
 \code{\link{Windy_gridworld}},

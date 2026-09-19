@@ -58,23 +58,23 @@ update_belief(c(.15,.85), action = "listen", observation = "tiger-right", model 
 
 }
 \seealso{
-Other POMDP: 
+Other POMDP:
 \code{\link{MDP2POMDP}},
-\code{\link{POMDP}()},
+\code{\link[=POMDP]{POMDP()}},
 \code{\link{accessors}},
-\code{\link{actions}()},
-\code{\link{add_policy}()},
-\code{\link{plot_belief_space}()},
-\code{\link{projection}()},
+\code{\link[=actions]{actions()}},
+\code{\link[=add_policy]{add_policy()}},
+\code{\link[=plot_belief_space]{plot_belief_space()}},
+\code{\link[=projection]{projection()}},
 \code{\link{reachable_and_absorbing}},
-\code{\link{regret}()},
-\code{\link{sample_belief_space}()},
-\code{\link{simulate_POMDP}()},
-\code{\link{solve_POMDP}()},
-\code{\link{solve_SARSOP}()},
-\code{\link{transition_graph}()},
-\code{\link{value_function}()},
-\code{\link{write_POMDP}()}
+\code{\link[=regret]{regret()}},
+\code{\link[=sample_belief_space]{sample_belief_space()}},
+\code{\link[=simulate_POMDP]{simulate_POMDP()}},
+\code{\link[=solve_POMDP]{solve_POMDP()}},
+\code{\link[=solve_SARSOP]{solve_SARSOP()}},
+\code{\link[=transition_graph]{transition_graph()}},
+\code{\link[=value_function]{value_function()}},
+\code{\link[=write_POMDP]{write_POMDP()}}
 }
 \author{
 Michael Hahsler

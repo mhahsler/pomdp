@@ -50,8 +50,8 @@ policy(sol)
 plot_policy_graph(sol)
 }
 \seealso{
-Other POMDP_examples: 
-\code{\link{POMDP}()},
+Other POMDP_examples:
+\code{\link[=POMDP]{POMDP()}},
 \code{\link{POMDP_example_files}},
 \code{\link{Tiger}}
 }

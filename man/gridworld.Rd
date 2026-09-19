@@ -274,25 +274,25 @@ gridworld_plot_policy(sol, actions = "label", cex = 1, states = FALSE)
 gridworld_animate(DynaMaze, method = "value", n = 3)
 }
 \seealso{
-Other gridworld: 
+Other gridworld:
 \code{\link{Cliff_walking}},
 \code{\link{DynaMaze}},
 \code{\link{Maze}},
 \code{\link{Windy_gridworld}}
 
-Other MDP: 
-\code{\link{MDP}()},
+Other MDP:
+\code{\link[=MDP]{MDP()}},
 \code{\link{MDP2POMDP}},
 \code{\link{MDP_policy_functions}},
 \code{\link{accessors}},
-\code{\link{actions}()},
-\code{\link{add_policy}()},
+\code{\link[=actions]{actions()}},
+\code{\link[=add_policy]{add_policy()}},
 \code{\link{reachable_and_absorbing}},
-\code{\link{regret}()},
-\code{\link{simulate_MDP}()},
-\code{\link{solve_MDP}()},
-\code{\link{transition_graph}()},
-\code{\link{value_function}()}
+\code{\link[=regret]{regret()}},
+\code{\link[=simulate_MDP]{simulate_MDP()}},
+\code{\link[=solve_MDP]{solve_MDP()}},
+\code{\link[=transition_graph]{transition_graph()}},
+\code{\link[=value_function]{value_function()}}
 }
 \concept{MDP}
 \concept{gridworld}
