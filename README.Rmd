@@ -1,6 +1,11 @@
 ---
-output: github_document
-bibliography: vignettes/references.bib
+  output:
+    github_document:
+      pandoc_args:
+        - --lua-filter=vignettes/csl-to-list.lua
+  bibliography: vignettes/references.bib
+  link-citations: true
+  citeproc: false
 ---
 
 ```{r echo=FALSE, results = 'asis'}
