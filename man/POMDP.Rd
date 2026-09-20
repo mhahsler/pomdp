@@ -95,7 +95,7 @@ create an entry for \code{observation_prob}, \code{reward}, or
 matches any action/state/observation.}
 }
 \value{
-The function returns an object of class POMDP which is list of the model specification.
+An object of class POMDP containing the model specification.
 \code{\link[=solve_POMDP]{solve_POMDP()}} reads the object and adds a list element named
 \code{'solution'}.
 }
@@ -146,11 +146,11 @@ specified in the following ways:
 \item A data.frame with columns exactly like the arguments of \code{T_()}.
 You can use \code{rbind()} with helper function \code{T_()} to create this data
 frame. Probabilities can be specified multiple times and the definition that
-appears last in the data.frame will take affect.
+appears last in the data.frame will take effect.
 \item A named list of matrices, one for each action. Each matrix is square with
 rows representing start states \eqn{s} and columns representing end states \eqn{s'}.
 Instead of a matrix, also the strings \code{'identity'} or \code{'uniform'} can be specified.
-\item A function with the same arguments are \code{T_()}, but no default values
+\item A function with the same arguments as \code{T_()}, but no default values
 that returns the transition probability.
 }
 
@@ -165,11 +165,11 @@ following ways:
 You can use \code{rbind()}
 with helper function \code{O_()} to create this data frame. Probabilities can be
 specified multiple times and the definition that
-appears last in the data.frame will take affect.
+appears last in the data.frame will take effect.
 \item A named list of matrices, one for each action. Each matrix has
 rows representing end states \eqn{s'} and columns representing an observation \eqn{o}.
 Instead of a matrix, also the string \code{'uniform'} can be specified.
-\item A function with the same arguments are \code{O_()}, but no default values
+\item A function with the same arguments as \code{O_()}, but no default values
 that returns the observation probability.
 }
 
@@ -182,11 +182,11 @@ ways:
 You can use \code{rbind()}
 with helper function \code{R_()} to create this data frame. Rewards can be specified
 multiple times and the definition that
-appears last in the data.frame will take affect.
+appears last in the data.frame will take effect.
 \item A list of lists. The list levels are \code{'action'} and \code{'start.state'}. The list elements
 are matrices with
 rows representing end states \eqn{s'} and columns representing an observation \eqn{o}.
-\item A function with the same arguments are \code{R_()}, but no default values
+\item A function with the same arguments as \code{R_()}, but no default values
 that returns the reward.
 }
 

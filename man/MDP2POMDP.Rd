@@ -22,8 +22,8 @@ observations.}
 a \code{MDP} or a \code{POMDP} object.
 }
 \description{
-Convert a MDP into POMDP by adding an observation model or
-a POMDP into a MDP by making the states observable.
+Convert an MDP into a POMDP by adding an observation model or
+a POMDP into an MDP by making the states observable.
 }
 \details{
 \code{make_partially_observable()} adds an observation model to an MDP. If no observations and

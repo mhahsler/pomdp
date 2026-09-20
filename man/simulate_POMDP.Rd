@@ -29,11 +29,11 @@ starting states for the trajectories.
 Defaults to the start belief state specified in the model or "uniform".}
 
 \item{horizon}{number of epochs for the simulation. If \code{NULL} then the
-horizon for finite-horizon model is used. For infinite-horizon problems, a horizon is
+horizon for a finite-horizon model is used. For infinite-horizon problems, a horizon is
 calculated using the discount factor.}
 
 \item{epsilon}{the probability of random actions for using an epsilon-greedy policy.
-Default for solved models is 0 and for unsolved model 1.}
+The default for solved models is 0 and for unsolved models is 1.}
 
 \item{delta_horizon}{precision used to determine the horizon for infinite-horizon problems.}
 
@@ -66,7 +66,7 @@ simulation (\code{simulation_state}), the id of the used alpha vector given the 
 \description{
 Simulate trajectories through a POMDP. The start state for each
 trajectory is randomly chosen using the specified belief. The belief is used to choose actions
-from the the epsilon-greedy policy and then updated using observations.
+from the epsilon-greedy policy and then updated using observations.
 }
 \details{
 Simulates \code{n} trajectories.

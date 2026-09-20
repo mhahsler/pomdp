@@ -94,7 +94,7 @@ policy.POMDP <- function(x, drop = TRUE) {
   ## all observation_probs should be the same!
   bs <- x$observation_prob[[1L]]
   
-  # create a list ith epochs
+  # create a list with epochs
   lapply(
     seq_along(pg),
     FUN = function(i) {

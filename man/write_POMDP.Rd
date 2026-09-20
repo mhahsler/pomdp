@@ -20,7 +20,7 @@ point).}
 \item{labels}{logical; write original labels or use index numbers? Labels are
 restricted to \verb{[a-zA-Z0-9_-]} and the first character has to be a letter.}
 
-\item{parse}{logical; try to parse the model maotrices.
+\item{parse}{logical; try to parse the model matrices.
 Solvers still work with unparsed matrices, but helpers for simulation are not available.}
 
 \item{normalize}{logical; should the description be normalized for faster access (see \code{\link[=normalize_POMDP]{normalize_POMDP()}})?}
@@ -31,7 +31,7 @@ Solvers still work with unparsed matrices, but helpers for simulation are not av
 \code{read_POMDP()} returns a \link{POMDP} object.
 }
 \description{
-Reads and write a POMDP file suitable for the \code{pomdp-solve} program.
+Reads and writes a POMDP file suitable for the \code{pomdp-solve} program.
 }
 \details{
 \link{POMDP} objects read from a POMDP file have an extra element called \code{problem} which contains the original

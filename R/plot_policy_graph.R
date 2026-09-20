@@ -8,12 +8,12 @@
 #' improved visualization (a legend, tree layout for finite-horizon solutions, better edge curving, etc.).
 #' It also offers an interactive visualization using [visNetwork::visIgraph()].
 #' 
-#' Each policy graph node is represented by an alpha vector specifying a hyper plane segment. The convex hull of
-#' the set of hyperplanes represents the the value function.
+#' Each policy graph node is represented by an alpha vector specifying a hyperplane segment. The convex hull of
+#' the set of hyperplanes represents the value function.
 #' The policy specifies for each node an optimal action which is printed together with the node ID inside the node.
 #' The arcs are labeled with observations.
-#' Infinite-horizon converged solutions from a single policy graph. 
-#' For finite-horizon solution a policy tree is produced.
+#' Infinite-horizon converged solutions form a single policy graph.
+#' For a finite-horizon solution, a policy tree is produced.
 #' The levels of the tree and the first number in the node label represent the epochs. 
 #' 
 #' For better visualization, we provide a few features:
@@ -53,7 +53,7 @@
 #'   they use. Also, plotting options are passed on to the plotting engine [igraph::plot.igraph()]
 #'   or [visNetwork::visIgraph()].
 #'
-#' @returns returns invisibly what the plotting engine returns.
+#' @returns Invisibly returns what the plotting engine returns.
 #'
 #' @keywords hplot graphs
 #' @examples

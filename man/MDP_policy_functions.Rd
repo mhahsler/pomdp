@@ -80,7 +80,7 @@ the probability for each action is returned.
 \code{greedy_MDP_policy()} returns the greedy policy given \code{Q}.
 }
 \description{
-Implementation several functions useful to deal with MDP policies.
+Implements several functions useful for working with MDP policies.
 }
 \details{
 Implemented functions are:

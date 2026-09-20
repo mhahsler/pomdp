@@ -140,7 +140,7 @@ steps:
 
 ## Defining a POMDP Problem
 
-The `POMDP()` function has the following arguments, each corresponds to
+The `POMDP()` function has the following arguments, each of which corresponds to
 one of the elements of a POMDP.
 
 ```{r}
@@ -180,7 +180,7 @@ where
 -   `name` used to give the POMDP problem a name.
 
 While specifying the discount rate and the set of states, observations
-and actions is straight-forward. Some arguments can be specified in
+and actions is straightforward. Some arguments can be specified in
 different ways. The initial belief state `start` can be specified as
 
 -   A vector of $n$ probabilities in $[0,1]$, that add up to 1, where
@@ -274,12 +274,12 @@ We will demonstrate how to use the package with the Tiger Problem
 > agent opens door with the tiger, it will get hurt (a negative reward
 > of -100), but if it opens the door with the treasure, it will receive
 > a positive reward of 10. After a door is opened, the problem is
-> reset(i.e., the tiger is randomly assigned to a door with chance
-> 50/50) and the the agent gets another try.
+> reset (i.e., the tiger is randomly assigned to a door with a 50/50
+> chance), and the agent gets another try.
 
 ## Specifying the Tiger Problem
 
-The problem can be specified using function `POMDP()` as follows.
+The problem can be specified using the `POMDP()` function as follows.
 
 ```{r}
 library("pomdp")

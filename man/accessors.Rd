@@ -119,7 +119,7 @@ problem description.
 \details{
 Several parts of the POMDP/MDP description can be defined in different ways. In particular,
 the fields \code{transition_prob}, \code{observation_prob}, \code{reward}, and \code{start} can be defined using matrices, data frames,
-keywords, or functions. See \link{POMDP} for details. The functions provided here, provide unified access to the data in these fields
+keywords, or functions. See \link{POMDP} for details. The functions provided here offer unified access to the data in these fields
 to make writing code easier.
 \subsection{Transition Probabilities \eqn{T(s'|s,a)}}{
 

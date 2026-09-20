@@ -47,7 +47,7 @@ horizon.}
 \item{stop}{logical; stop with an error.}
 }
 \value{
-The function returns an object of class MDP which is list with
+An object of class MDP containing
 the model specification. \code{\link[=solve_MDP]{solve_MDP()}} reads the object and adds a list element called
 \code{'solution'}.
 }
@@ -56,10 +56,10 @@ Defines all the elements of a finite state-space MDP problem.
 }
 \details{
 Markov decision processes (MDPs) are discrete-time stochastic control
-process with completely observable states. We implement here
-MDPs with a finite state space. similar to \link{POMDP}
+processes with completely observable states. Here, we implement
+MDPs with a finite state space, similar to \link{POMDP}
 models, but without the observation model. The \code{'observations'} column in
-the the reward specification is always missing.
+the reward specification is always missing.
 
 \code{\link[=make_partially_observable]{make_partially_observable()}} reformulates an MDP as a POMDP by adding an observation
 model with one observation per state

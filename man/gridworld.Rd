@@ -144,7 +144,7 @@ state labels on the graph.}
 \item{margin}{a single number specifying the margin of the plot. Can be used if the
 graph does not fit inside the plotting area.}
 
-\item{method}{a MDP solution method for \code{\link[=solve_MDP]{solve_MDP()}}.}
+\item{method}{an MDP solution method for \code{\link[=solve_MDP]{solve_MDP()}}.}
 
 \item{n}{number of iterations to animate.}
 
@@ -162,7 +162,7 @@ The actions are \code{"up"}, \code{"right"},  \code{"down"}, and  \code{"left"}.
 \code{gridworld_init()} initializes a new gridworld creating a matrix
 of states with the given dimensions. Other action names
 can be specified, but they must have the same effects in the same order
-as above. Unreachable states (walls) and absorbing state can be defined.
+as above. Unreachable states (walls) and absorbing states can be defined.
 This information can be used to build a custom gridworld MDP.
 
 Several helper functions are provided

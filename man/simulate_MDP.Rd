@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulate_MDP.R
 \name{simulate_MDP}
 \alias{simulate_MDP}
-\title{Simulate Trajectories in a MDP}
+\title{Simulate Trajectories in an MDP}
 \usage{
 simulate_MDP(
   model,
@@ -18,7 +18,7 @@ simulate_MDP(
 )
 }
 \arguments{
-\item{model}{a MDP model.}
+\item{model}{an MDP model.}
 
 \item{n}{number of trajectories.}
 
@@ -58,7 +58,7 @@ only returned for \code{return_trajectories = TRUE}.
 }
 }
 \description{
-Simulate trajectories through a MDP. The start state for each
+Simulate trajectories through an MDP. The start state for each
 trajectory is randomly chosen using the specified belief. The belief is used to choose actions
 from an epsilon-greedy policy and then update the state.
 }
@@ -68,7 +68,7 @@ faster C++ implementation (\code{engine = 'cpp'}).
 
 Both implementations support parallel execution using the package
 \pkg{foreach}. To enable parallel execution, a parallel backend like
-\pkg{doparallel} needs to be available needs to be registered (see
+a parallel backend such as \pkg{doparallel} needs to be registered (see
 \code{\link[doParallel:registerDoParallel]{doParallel::registerDoParallel()}}).
 Note that small simulations are slower using parallelization. Therefore, C++ simulations
 with n * horizon less than 100,000 are always executed using a single worker.

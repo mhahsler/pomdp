@@ -105,7 +105,7 @@
     unreachable states are  now suppressed.
 * policy() gained parameters alpha and action.
 * color palettes are now exported.
-* POMPD accessors gain parameter drop.
+* POMDP accessors gain parameter drop.
 * POMDP constructor and read_POMDP gained parameter normalize and, by default, normalize
   the POMDP definition.
 

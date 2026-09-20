@@ -23,18 +23,18 @@ plot_value_function(
 \arguments{
 \item{model}{a solved \link{POMDP} or \link{MDP}.}
 
-\item{drop}{logical; drop the list for converged converged, epoch-independent value functions.}
+\item{drop}{logical; drop the list for converged, epoch-independent value functions.}
 
 \item{projection}{Sample in a projected belief space. See \code{\link[=projection]{projection()}} for details.}
 
-\item{epoch}{the value function of what epoch should be plotted? Use 1 for
+\item{epoch}{the epoch whose value function should be plotted. Use 1 for
 converged policies.}
 
 \item{ylim}{the y limits of the plot.}
 
 \item{legend}{logical; show the actions in the visualization?}
 
-\item{col}{potting colors.}
+\item{col}{plotting colors.}
 
 \item{lwd}{line width.}
 
@@ -42,7 +42,7 @@ converged policies.}
 
 \item{ylab}{label for the y-axis.}
 
-\item{...}{additional arguments are passed on to \code{\link[stats:line]{stats::line()}}
+\item{...}{additional arguments passed on to \code{\link[graphics:plot]{graphics::plot()}},
 or \code{\link[graphics:barplot]{graphics::barplot()}}`.}
 }
 \value{

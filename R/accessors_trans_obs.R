@@ -3,8 +3,8 @@
 # Representations:
 # Default:
 # * Sparse (list):
-#     Trans: A action list -> start.state x end.state sparse matrix
-#     Obs: A action list -> end.state x observation sparse matrix
+#     Trans: An action list -> start.state x end.state sparse matrix
+#     Obs: An action list -> end.state x observation sparse matrix
 #
 # Others
 # * Dense (list): Same as sparse with dense matrices

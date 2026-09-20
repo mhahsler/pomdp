@@ -34,8 +34,8 @@ for time-dependent POMDPs (see \link{POMDP}).}
 state is returned.}
 }
 \value{
-returns the updated belief state as a named vector.
-If \code{action} or \code{observations} is a vector with multiple elements ot missing, then a matrix with all
+The updated belief state as a named vector.
+If \code{action} or \code{observations} is a vector with multiple elements or is missing, then a matrix with all
 resulting belief states is returned.
 }
 \description{

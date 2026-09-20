@@ -1,15 +1,15 @@
 #' POMDP Policy Graphs
 #'
-#' The function creates a POMDP policy graph for converged POMDP solution and the
+#' The function creates a POMDP policy graph for a converged POMDP solution and a
 #' policy tree for a finite-horizon solution.
 #' The graph is represented as an \pkg{igraph} object.
 #'
-#' Each policy graph node is represented by an alpha vector specifying a hyper plane segment. The convex hull of
-#' the set of hyperplanes represents the the value function.
+#' Each policy graph node is represented by an alpha vector specifying a hyperplane segment. The convex hull of
+#' the set of hyperplanes represents the value function.
 #' The policy specifies for each node an optimal action which is printed together with the node ID inside the node.
 #' The arcs are labeled with observations.
-#' Infinite-horizon converged solutions from a single policy graph. 
-#' For finite-horizon solution a policy tree is produced.
+#' Infinite-horizon converged solutions form a single policy graph.
+#' For a finite-horizon solution, a policy tree is produced.
 #' The levels of the tree and the first number in the node label represent the epochs. 
 #' 
 #' The parameters `show_belief`, `remove_unreachable_nodes`, and `simplify_observations` are 
@@ -21,7 +21,7 @@
 #'
 #' @param x object of class [POMDP] containing a solved and converged POMDP problem.
 #' @param belief the initial belief is used to mark the initial belief state in the
-#' grave of a converged solution and to identify the root node in a policy graph for a finite-horizon solution.
+#' graph of a converged solution and to identify the root node in a policy graph for a finite-horizon solution.
 #' If `NULL` then the belief is taken from the model definition.
 #' @param show_belief logical; show estimated belief proportions as a pie chart or color in each node?
 #' @param state_col colors used to represent the belief over the states in each node. Only used if `show_belief` is `TRUE`.
@@ -29,7 +29,7 @@
 #' @param remove_unreachable_nodes logical; remove nodes that are not reachable from the start state? Currently only implemented for policy trees for unconverged finite-time horizon POMDPs.
 #' @param ... parameters are passed on to [estimate_belief_for_nodes()].
 #'
-#' @returns returns the policy graph as an igraph object.
+#' @returns The policy graph as an igraph object.
 #' @examples
 #' data("Tiger")
 #'

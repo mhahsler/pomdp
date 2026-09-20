@@ -1,6 +1,6 @@
 #' Read and write a POMDP Model to a File in POMDP Format
 #'
-#' Reads and write a POMDP file suitable for the `pomdp-solve` program.
+#' Reads and writes a POMDP file suitable for the `pomdp-solve` program.
 #'
 #' [POMDP] objects read from a POMDP file have an extra element called `problem` which contains the original
 #' POMDP specification. **The original specification is directly used by external solvers.** In addition, the file
@@ -39,7 +39,7 @@ write_POMDP <- function(x,
                         digits = 7,
                         labels = FALSE) {
   if (!inherits(x, "POMDP"))
-    stop("model needs to be a POMDP model use POMDP()!")
+    stop("model needs to be a POMDP model; use POMDP()!")
   
   # we write the problem field if we have it
   #if(!is.null(x$problem)) {
@@ -411,7 +411,7 @@ write_POMDP <- function(x,
 
 
 #' @rdname write_POMDP
-#' @param parse logical; try to parse the model maotrices.
+#' @param parse logical; try to parse the model matrices.
 #'  Solvers still work with unparsed matrices, but helpers for simulation are not available.
 #' @param normalize logical; should the description be normalized for faster access (see [normalize_POMDP()])?
 #' @param verbose logical; report parsed lines. This is useful for debugging a POMDP file.
@@ -562,7 +562,7 @@ read_POMDP <- function(file,
     ),
     collapse = "\n")
   } else
-    stop("formating not implemented for ", class(x), " in field ", debug)
+    stop("formatting not implemented for ", class(x), " in field ", debug)
 }
 
 

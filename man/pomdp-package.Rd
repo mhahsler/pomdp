@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.svg}{options: style='float: right' alt='logo' width='120'}}
 
-Provides the infrastructure to define and analyze the solutions of Partially Observable Markov Decision Process (POMDP) models. Interfaces for various exact and approximate solution algorithms are available including value iteration, point-based value iteration and SARSOP. Hahsler and Cassandra \doi{10.32614/RJ-2024-021}.
+Provides the infrastructure to define and analyze solutions to Partially Observable Markov Decision Process (POMDP) models. Interfaces to various exact and approximate solution algorithms are available, including value iteration, point-based value iteration, and SARSOP. Hahsler and Cassandra \doi{10.32614/RJ-2024-021}.
 }
 \section{Key functions}{
 

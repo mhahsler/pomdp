@@ -144,7 +144,7 @@
 #' - `solver_output` output of the solver program.
 #' - `converged` did the solution converge?
 #' - `initial_belief` used initial belief used.
-#' - `total_expected_reward` total expected reward starting from the the initial belief.
+#' - `total_expected_reward` total expected reward starting from the initial belief.
 #' - `pg`, `initial_pg_node` the policy graph (see Details section).
 #' - `alpha` value function as hyperplanes representing the nodes in the policy graph (see Details section).
 #' - `belief_points_solver` optional; belief points used by the solver.

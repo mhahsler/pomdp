@@ -1,6 +1,6 @@
 #' Functions for MDP Policies
 #'
-#' Implementation several functions useful to deal with MDP policies.
+#' Implements several functions useful for working with MDP policies.
 #'
 #' Implemented functions are:
 #' 
@@ -290,5 +290,4 @@ greedy_MDP_policy <-
       row.names = NULL
     )
   }
-
 

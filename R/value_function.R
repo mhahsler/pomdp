@@ -15,15 +15,15 @@
 #'
 #' @param model a solved [POMDP] or [MDP].
 #' @param projection Sample in a projected belief space. See [projection()] for details.
-#' @param epoch the value function of what epoch should be plotted? Use 1 for
+#' @param epoch the epoch whose value function should be plotted. Use 1 for
 #'   converged policies.
 #' @param ylim the y limits of the plot.
 #' @param legend logical; show the actions in the visualization?
-#' @param col potting colors.
+#' @param col plotting colors.
 #' @param lwd line width.
 #' @param lty line type.
 #' @param ylab label for the y-axis.
-#' @param ... additional arguments are passed on to [stats::line()] 
+#' @param ... additional arguments passed on to [graphics::plot()],
 #'  or [graphics::barplot()]`.
 #'
 #' @returns the function as a matrix with alpha vectors as rows.
@@ -61,7 +61,7 @@
 #'  coord_cartesian(ylim = c(-5, 15)) + ylab("Value") + xlab("Belief space")
 #' }
 #' @importFrom graphics plot barplot box lines text
-#' @param drop logical; drop the list for converged converged, epoch-independent value functions.
+#' @param drop logical; drop the list for converged, epoch-independent value functions.
 #' @export
 value_function <- function(model, drop = TRUE) {
   UseMethod("value_function")

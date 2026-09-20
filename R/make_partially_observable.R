@@ -1,7 +1,7 @@
 #' Convert between MDPs and POMDPs
 #'
-#' Convert a MDP into POMDP by adding an observation model or
-#' a POMDP into a MDP by making the states observable.
+#' Convert an MDP into a POMDP by adding an observation model or
+#' a POMDP into an MDP by making the states observable.
 #'
 #' `make_partially_observable()` adds an observation model to an MDP. If no observations and
 #' observation probabilities are provided, then an observation for each state is created

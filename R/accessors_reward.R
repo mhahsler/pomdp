@@ -5,7 +5,7 @@
 # * Sparse (df): A data.frame with: action start.state end.state observation value
 # 
 # Others:
-# * Dense (list): A action list -> start.state list -> end.state x observation matrix
+# * Dense (list): An action list -> start.state list -> end.state x observation matrix
 # * A function can be converted to a list
 
 
@@ -23,7 +23,7 @@ reward_matrix <-
            epoch = NULL,
            sparse = FALSE) {
     if (inherits(x, "MDP") && !is.null(observation))
-      stop("Observations can not be specified for MDPs!")
+      stop("Observations cannot be specified for MDPs!")
     ## action list of s' x o matrices
     ## action list of s list of s' x o matrices
     ## if not observations are available then it is a s' vector

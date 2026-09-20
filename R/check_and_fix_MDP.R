@@ -84,7 +84,7 @@ check_and_fix_MDP <- function(x) {
       x$start <- x$start[x$states]
   }
   if (any(is.na(x$start)))
-    stop("start containes undefined start states.")
+    stop("start contains undefined start states.")
   if (is.character(x$start)) {
     if (!(identical(x$start, "uniform") || all(x$start %in% x$states)))
       stop(

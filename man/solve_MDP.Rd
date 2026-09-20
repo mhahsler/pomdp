@@ -132,7 +132,7 @@ If the model has absorbing states to terminate episodes, then no maximal episode
 (\code{horizon}) needs to
 be specified. To make sure that the algorithm does finish in a reasonable amount of time,
 episodes are stopped after 10,000 actions with a warning. For models without absorbing states,
-a episode length has to be specified via \code{horizon}.
+an episode length has to be specified via \code{horizon}.
 \itemize{
 \item \strong{Q-Learning} is an off-policy temporal difference method that uses
 an \eqn{\epsilon}-greedy behavior policy and learns a greedy target

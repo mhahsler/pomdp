@@ -17,7 +17,7 @@
 #' @param simplify_transitions logical; combine parallel transition arcs into a single arc.
 #' @param remove_unavailable_actions logical; don't show arrows for unavailable actions.
 #'
-#' @returns returns the transition model as an igraph object.
+#' @returns The transition model as an igraph object.
 #' @examples
 #' data("Tiger")
 #'

@@ -66,7 +66,7 @@ solver output (\code{solver_output}). The solution is a list that contains eleme
 \item \code{solver_output} output of the solver program.
 \item \code{converged} did the solution converge?
 \item \code{initial_belief} used initial belief used.
-\item \code{total_expected_reward} total expected reward starting from the the initial belief.
+\item \code{total_expected_reward} total expected reward starting from the initial belief.
 \item \code{pg}, \code{initial_pg_node} the policy graph (see Details section).
 \item \code{alpha} value function as hyperplanes representing the nodes in the policy graph (see Details section).
 \item \code{belief_points_solver} optional; belief points used by the solver.

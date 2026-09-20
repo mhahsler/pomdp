@@ -5,7 +5,7 @@
 #'
 #' Several parts of the POMDP/MDP description can be defined in different ways. In particular,
 #' the fields `transition_prob`, `observation_prob`, `reward`, and `start` can be defined using matrices, data frames,
-#' keywords, or functions. See [POMDP] for details. The functions provided here, provide unified access to the data in these fields
+#' keywords, or functions. See [POMDP] for details. The functions provided here offer unified access to the data in these fields
 #' to make writing code easier.
 #'
 #' ## Transition Probabilities \eqn{T(s'|s,a)}
@@ -128,7 +128,7 @@ normalize_POMDP <- function(x,
                             trans_function = TRUE,
                             trans_keyword = FALSE) {
   if (!inherits(x, "POMDP"))
-    stop("x is not an POMDP object!")
+    stop("x is not a POMDP object!")
   
   if (trans_start)
     x$start <- start_vector(x)

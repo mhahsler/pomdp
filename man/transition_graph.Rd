@@ -44,7 +44,7 @@ plot_transition_graph(
 \item{...}{further arguments are passed on to \code{igraph::plot.igraph()}.}
 }
 \value{
-returns the transition model as an igraph object.
+The transition model as an igraph object.
 }
 \description{
 Returns the transition model as an \pkg{igraph} object.

@@ -2,7 +2,7 @@
 #'
 #' Simulate trajectories through a POMDP. The start state for each
 #' trajectory is randomly chosen using the specified belief. The belief is used to choose actions
-#' from the the epsilon-greedy policy and then updated using observations.
+#' from the epsilon-greedy policy and then updated using observations.
 #'
 #' Simulates `n` trajectories.
 #' If no simulation horizon is specified, the horizon of finite-horizon problems 
@@ -35,10 +35,10 @@
 #'  starting states for the trajectories.
 #'  Defaults to the start belief state specified in the model or "uniform".
 #' @param horizon number of epochs for the simulation. If `NULL` then the
-#'  horizon for finite-horizon model is used. For infinite-horizon problems, a horizon is 
+#'  horizon for a finite-horizon model is used. For infinite-horizon problems, a horizon is
 #'  calculated using the discount factor.
 #' @param epsilon the probability of random actions for using an epsilon-greedy policy.
-#'  Default for solved models is 0 and for unsolved model 1.
+#'  The default for solved models is 0 and for unsolved models is 1.
 #' @param delta_horizon precision used to determine the horizon for infinite-horizon problems.
 #' @param digits round probabilities for belief points.
 #' @param return_beliefs logical; Return all visited belief states? This requires n x horizon memory.
@@ -127,7 +127,7 @@ simulate_POMDP <-
        is.function(model$observation_prob) ||
        is.function(model$reward))) {
       
-      warning("Some elements of the POMDP are defined as R funciton. The CPP engine is very slow with R function calls.\n",
+      warning("Some elements of the POMDP are defined as R functions. The C++ engine is very slow with R function calls.\n",
               "Falling back to R. Normalize the model first to use CPP.", immediate. = TRUE
               )
       engine <- 'r'

@@ -3,10 +3,10 @@
 #' Defines all the elements of a finite state-space MDP problem.
 #'
 #' Markov decision processes (MDPs) are discrete-time stochastic control
-#' process with completely observable states. We implement here
-#' MDPs with a finite state space. similar to [POMDP]
+#' processes with completely observable states. Here, we implement
+#' MDPs with a finite state space, similar to [POMDP]
 #' models, but without the observation model. The `'observations'` column in
-#' the the reward specification is always missing.
+#' the reward specification is always missing.
 #'
 #' [`make_partially_observable()`] reformulates an MDP as a POMDP by adding an observation
 #' model with one observation per state
@@ -35,7 +35,7 @@
 #' @param name a string to identify the MDP problem.
 #' @param x a `MDP` object.
 #'
-#' @return The function returns an object of class MDP which is list with
+#' @return An object of class MDP containing
 #'   the model specification. [solve_MDP()] reads the object and adds a list element called
 #' `'solution'`.
 #' @author Michael Hahsler
@@ -166,7 +166,7 @@ print.MDP <- function(x, ...) {
 #' @export
 is_solved_MDP <- function(x, stop = FALSE) {
   if (!inherits(x, "MDP"))
-    stop("x needs to be a MDP object!")
+    stop("x needs to be an MDP object!")
   solved <- !is.null(x$solution)
   if (stop && !solved)
     stop("x needs to be a solved MDP. Use solve_MDP() first.")

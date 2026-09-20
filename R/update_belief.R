@@ -52,8 +52,8 @@
 #' @param drop logical; drop the result to a vector if only a single belief
 #' state is returned.
 #' 
-#' @returns returns the updated belief state as a named vector. 
-#'   If `action` or `observations` is a vector with multiple elements ot missing, then a matrix with all
+#' @returns The updated belief state as a named vector.
+#'   If `action` or `observations` is a vector with multiple elements or is missing, then a matrix with all
 #'   resulting belief states is returned.
 #' 
 #' @author Michael Hahsler

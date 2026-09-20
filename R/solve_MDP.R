@@ -49,7 +49,7 @@
 #' (`horizon`) needs to 
 #' be specified. To make sure that the algorithm does finish in a reasonable amount of time,
 #' episodes are stopped after 10,000 actions with a warning. For models without absorbing states,
-#' a episode length has to be specified via `horizon`. 
+#' an episode length has to be specified via `horizon`.
 #' 
 #' * **Q-Learning** is an off-policy temporal difference method that uses
 #'    an \eqn{\epsilon}-greedy behavior policy and learns a greedy target
@@ -155,7 +155,7 @@ solve_MDP <- function(model, method = "value", ...) {
   methods_TD <-  c("sarsa", "q_learning", "expected_sarsa")
   
   if (!inherits(model, "MDP"))
-    stop("x needs to be a MDP!")
+    stop("x needs to be an MDP!")
   
   method <- match.arg(method, c(methods_DP, methods_TD))
   

@@ -1,6 +1,6 @@
 #' Add a Policy to a POMDP Problem Description
 #'
-#' Add a policy to a POMDP problem description allows the user to 
+#' Adding a policy to a POMDP problem description allows the user to
 #' test policies on modified problem descriptions or to test manually created
 #' policies.
 #'
@@ -42,7 +42,7 @@
 #' plot_value_function(sol)
 #' plot_belief_space(sol)
 #' 
-#' # create a policy manually where the agent opens a door at a believe of 
+#' # create a policy manually where the agent opens a door at a belief of
 #' #  roughly 2/3 (note the alpha vectors do not represent 
 #' #  a valid value function)
 #' p <- list(
@@ -106,5 +106,3 @@ add_policy.MDP <- function(model, policy) {
   
   model
 }
-
-
