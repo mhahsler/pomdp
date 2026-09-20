@@ -11,12 +11,18 @@ output:
 ---
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(
+has_gifski <- requireNamespace("gifski", quietly = TRUE)
+animation_display <- if (has_gifski) "animate" else "last"
+
+chunk_options <- list(
   collapse = TRUE,
   comment = "#>",
-  warning = TRUE,
-  animation.hook = knitr::hook_gifski
+  warning = TRUE
 )
+if (has_gifski) {
+  chunk_options$animation.hook <- knitr::hook_gifski
+}
+do.call(knitr::opts_chunk$set, chunk_options)
 ```
 
 ```{r setup}
@@ -135,10 +141,10 @@ goal state up to 5 squares away. To make this analysis easier, we can use
 ```{r}
 gridworld_animate(x, "value_iteration", n = 5, zlim = c(0, 2))
 ```
-R markdown documents can use `{r, fig.show='animate'}` so create an animation using 
-the individual frames.
+When `gifski` is installed, R Markdown combines the individual frames into an
+animation. Otherwise, the vignette displays the final frame as a static plot.
 
-```{r, fig.show='animate'}
+```{r, fig.show=animation_display}
 gridworld_animate(x, "value_iteration", n = 20, zlim = c(0, 2))
 ```
 
@@ -146,18 +152,18 @@ It is easy to see how value iteration propagates value from the goal to the star
 In the following, we create animations for more solving methods.
 
 
-```{r, fig.show='animate'}
+```{r, fig.show=animation_display}
 gridworld_animate(x, "policy_iteration", n = 20, zlim = c(0, 2))
 ```
 
-```{r, fig.show='animate'}
+```{r, fig.show=animation_display}
 gridworld_animate(x, "q_learning", n = 20, zlim = c(0, 2),  horizon = 100)
 ```
 
-```{r, fig.show='animate'}
+```{r, fig.show=animation_display}
 gridworld_animate(x, "sarsa", n = 20, zlim = c(0, 2), horizon = 100)
 ```
 
-```{r, fig.show='animate'}
+```{r, fig.show=animation_display}
 gridworld_animate(x, "expected_sarsa", n = 20, zlim = c(0, 2), horizon = 100, alpha = 1)
 ```
