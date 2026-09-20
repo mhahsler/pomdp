@@ -211,8 +211,9 @@
 #' ################################################################
 #' # Example 2: Solve a problem specified as a POMDP file
 #' #            using a grid of size 20
-#' sol <- solve_POMDP("http://www.pomdp.org/examples/cheese.95.POMDP",
-#'   method = "grid", parameter = list(fg_points = 20))
+#' file <- system.file("examples/shuttle_95.POMDP", package = "pomdp")
+#' sol <- solve_POMDP(file, method = "grid",
+#'   parameter = list(fg_points = 20))
 #' sol
 #'
 #' policy(sol)

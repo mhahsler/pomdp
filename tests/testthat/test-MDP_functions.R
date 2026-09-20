@@ -1,7 +1,4 @@
-library("testthat")
-library("pomdp")
-
-## context("MDP_functions")
+test_that("MDP representations preserve model behavior", {
 
 data("Maze")
 m2 <- normalize_MDP(Maze, sparse = FALSE)
@@ -25,3 +22,4 @@ expect_true(all(v4 == v1))
 
 
 expect_equal(make_fully_observable(make_partially_observable(Maze)), Maze)
+})

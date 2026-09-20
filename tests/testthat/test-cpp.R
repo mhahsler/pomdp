@@ -1,5 +1,4 @@
-library("testthat")
-library("pomdp")
+test_that("C++ helpers agree with their R counterparts", {
 
 m <- matrix(1:12, nrow = 4)
 v1 <- 1:3
@@ -12,8 +11,6 @@ expect_error(pomdp:::vecprod(m, v2))
 #pomdp:::veccrossprod(m, v2)
 expect_identical(pomdp:::veccrossprod(m, v2), drop(crossprod(m, v2)))
 expect_error(pomdp:::veccrossprod(m, v1))
-
-## context("belief")
 
 data(Tiger)
 Tiger_norm <- normalize_POMDP(Tiger)
@@ -157,4 +154,4 @@ simulate_MDP(sol,
   n = 10,
   horizon = 10,
   verbose = verb)
-
+})

@@ -1,7 +1,4 @@
-library("testthat")
-library("pomdp")
-
-## context("matrix extractors")
+test_that("POMDP accessors support all model representations", {
 
 # make sure extractors reorder according to actions and observations...
 data(Tiger)
@@ -42,11 +39,11 @@ Tiger <- POMDP(
   
   # the reward helper expects: action, start.state, end.state, observation, value
   reward = rbind(
-    R_("listen",                    v =   -1),
-    R_("open-left",  "tiger-left",  v = -100),
-    R_("open-left",  "tiger-right", v =   10),
-    R_("open-right", "tiger-left",  v =   10),
-    R_("open-right", "tiger-right", v = -100)
+    R_("listen",                    value =   -1),
+    R_("open-left",  "tiger-left",  value = -100),
+    R_("open-left",  "tiger-right", value =   10),
+    R_("open-right", "tiger-left",  value =   10),
+    R_("open-right", "tiger-right", value = -100)
   )
 )
 
@@ -133,11 +130,11 @@ objPOMDP <- POMDP(
   start = c(0.8, 0.1, 0.1), 
   
   reward = rbind(
-    R_("Start","A-plus-1-state", v = -100),
-    R_("Start","A-plus-2-state", v = -125),
-    R_("Start","A-first-state", v = 75),
-    R_("Pause", v = -15),
-    R_("End", v = -45)
+    R_("Start","A-plus-1-state", value = -100),
+    R_("Start","A-plus-2-state", value = -125),
+    R_("Start","A-first-state", value = 75),
+    R_("Pause", value = -15),
+    R_("End", value = -45)
   ),
   
   transition_prob = rbind(
@@ -228,10 +225,10 @@ mixedPOMDP <- POMDP(
     "uniform"), 
   
   reward = rbind(
-    R_(v = -1),
-    R_(1, 2, 1, 1, v = 100),
-    R_(1, 3, v = 200),
-    R_(2, 1, v = 0)
+    R_(value = -1),
+    R_(1, 2, 1, 1, value = 100),
+    R_(1, 3, value = 200),
+    R_(2, 1, value = 0)
   ),
   
   observation_prob = list(
@@ -355,4 +352,4 @@ expect_true(is.matrix(rm[[1]][[1]]))
 # convert matrix back to data.frame
 rm <- reward_matrix(densePOMDP, sparse = TRUE)
 expect_s3_class(rm, "data.frame")
-
+})

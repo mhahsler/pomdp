@@ -22,7 +22,7 @@ LinkingTo: Rcpp
 Suggests: knitr,
   rmarkdown,
   gifski,
-  testthat,
+  testthat (>= 3.0.0),
   Ternary,
   visNetwork, 
   sarsop,
@@ -84,3 +84,4 @@ Collate:
     'value_function.R'
     'which_max_random.R'
 Config/roxygen2/version: 8.1.0
+Config/testthat/edition: 3

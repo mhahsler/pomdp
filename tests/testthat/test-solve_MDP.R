@@ -1,7 +1,4 @@
-library("testthat")
-library("pomdp")
-
-## context("solve_MDP")
+test_that("all MDP solvers return policies", {
 
 data("Maze")
 
@@ -15,4 +12,4 @@ for (m in methods) {
   
   #check_and_fix_MDP(sol)
 }
-
+})

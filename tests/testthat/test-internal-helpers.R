@@ -1,0 +1,26 @@
+test_that("queue and stack helpers implement FIFO and LIFO order", {
+  queue <- pomdp:::new.queue()
+  expect_true(pomdp:::queue.empty(queue))
+  expect_error(pomdp:::dequeue(queue), "empty queue")
+  pomdp:::enqueue(queue, 1)
+  pomdp:::enqueue(queue, 2)
+  expect_identical(pomdp:::dequeue(queue), 1)
+  expect_identical(pomdp:::dequeue(queue), 2)
+  expect_true(pomdp:::queue.empty(queue))
+
+  stack <- pomdp:::new.stack()
+  expect_true(pomdp:::empty.stack(stack))
+  expect_error(pomdp:::pop.stack(stack), "empty stack")
+  pomdp:::push.stack(stack, 1)
+  pomdp:::push.stack(stack, 2)
+  expect_identical(pomdp:::pop.stack(stack), 2)
+  expect_identical(pomdp:::pop.stack(stack), 1)
+  expect_true(pomdp:::empty.stack(stack))
+})
+
+test_that("small internal helpers handle boundary cases", {
+  expect_identical(pomdp:::shorten("short", 10), "short")
+  expect_identical(pomdp:::shorten("a long string", 4), "a lo...")
+  expect_identical(sum(pomdp:::foreach_split(7)), 7)
+  expect_true(all(pomdp:::foreach_split(7) >= 0))
+})

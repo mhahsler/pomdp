@@ -1,8 +1,5 @@
-library("testthat")
-library("pomdp")
-
+test_that("SARSOP agrees with pomdp-solve", {
 skip_if_not_installed("sarsop")
-## context("solve_SARSOP")
 
 ### In case sarsop is not installed correctly (taken from the example in ? pomdpsol)
 if(sarsop::assert_has_appl()) {
@@ -27,4 +24,4 @@ if(sarsop::assert_has_appl()) {
   # check alpha vectors
   expect_true(all((pol_SARSOP[,1:2] - pol_POMDP[,1:2]) < 1e-3))
 }
-
+})

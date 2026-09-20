@@ -1,30 +1,35 @@
-library("testthat")
-library("pomdp")
+test_that("POMDP files round-trip without changing the model", {
+  data(Tiger)
+  path <- tempfile(fileext = ".POMDP")
+  on.exit(unlink(path), add = TRUE)
 
-## context("read and write_POMDP")
+  write_POMDP(Tiger, path, labels = TRUE)
+  restored <- read_POMDP(path, parse = TRUE, normalize = FALSE)
 
-data(Tiger)
+  fields <- c(
+    "states", "observations", "actions", "start", "discount", "horizon",
+    "transition_prob", "observation_prob", "reward"
+  )
+  expect_equal(restored[fields], Tiger[fields])
 
-on.exit(file.remove("Tiger.POMDP"))
-write_POMDP(Tiger, "Tiger.POMDP", labels = TRUE)
-Tiger2 <- read_POMDP("Tiger.POMDP", parse = TRUE, normalize = FALSE)
+  matrix_fields <- c("transition_prob", "observation_prob", "reward")
+  expect_equal(
+    normalize_POMDP(restored, sparse = FALSE)[matrix_fields],
+    normalize_POMDP(Tiger, sparse = FALSE)[matrix_fields]
+  )
+})
 
-fields <- c("states", "observations", "actions", "start", "discount", "horizon", 
-  "transition_prob", "observation_prob", "reward")
-expect_equal(Tiger[fields], Tiger2[fields])
+test_that("round-tripped POMDP files produce the same solution", {
+  data(Tiger)
+  path <- tempfile(fileext = ".POMDP")
+  on.exit(unlink(path), add = TRUE)
+  write_POMDP(Tiger, path, labels = TRUE)
+  restored <- read_POMDP(path, parse = TRUE, normalize = FALSE)
 
-fields <- c("transition_prob", "observation_prob", "reward")
-Tiger_norm <- normalize_POMDP(Tiger, sparse = FALSE)
-Tiger2_norm <- normalize_POMDP(Tiger2, sparse = FALSE)
-expect_equal(Tiger_norm[fields], Tiger2_norm[fields])
+  original_solution <- solve_POMDP(Tiger)$solution
+  restored_solution <- solve_POMDP(restored)$solution
+  original_solution$solver_output <- NULL
+  restored_solution$solver_output <- NULL
 
-
-# check that the solutions agree
-# Note: the POMDP format does not include horizon.
-sol <- solve_POMDP(Tiger)
-sol2 <- solve_POMDP(Tiger2)
-
-sol$solution$solver_output <- NULL
-sol2$solution$solver_output <- NULL
-
-expect_equal(sol$solution, sol2$solution)
+  expect_equal(restored_solution, original_solution)
+})

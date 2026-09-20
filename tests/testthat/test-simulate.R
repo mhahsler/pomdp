@@ -1,5 +1,5 @@
-library("testthat")
-library("pomdp")
+test_that("R and C++ POMDP simulators give comparable results", {
+set.seed(42)
 
 data("Tiger")
 
@@ -31,3 +31,4 @@ system.time(simulate_POMDP(problem_norm, n = 100, horizon = 10, verbose = verb, 
 
 # deregister backend
 ### foreach::registerDoSEQ()
+})
