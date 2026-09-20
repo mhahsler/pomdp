@@ -5,3 +5,5 @@ inst/doc
 *.a
 Work
 .Rhistory
+TODO
+*.swp
