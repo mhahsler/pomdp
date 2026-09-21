@@ -293,13 +293,13 @@ simulate_POMDP <-
         lapply(
           1:length(dt_horizon),
           FUN = function(ep)
-            transition_matrix(model, ep)
+            transition_matrix(model, episode = ep)
         )
       dt_obs_m <-
         lapply(
           1:length(dt_horizon),
           FUN = function(ep)
-            observation_matrix(model, ep)
+            observation_matrix(model, episode = ep)
         )
       ## we keep the reward matrix as is to save memory.
       # dt_rew_m <-

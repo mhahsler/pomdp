@@ -401,6 +401,9 @@ reward_function2list <- function(f, model, sparse = FALSE) {
   actions <- model$actions
   states <- model$states
   observations <- model$observations
+  is_mdp <- inherits(model, "MDP")
+  if (is_mdp)
+    observations <- NA_character_
   
   f <- Vectorize(f)
   
@@ -413,15 +416,23 @@ reward_function2list <- function(f, model, sparse = FALSE) {
           p <- outer(
             states,
             observations,
-            FUN = function(end, o)
-              f(
-                action = a,
-                start.state = s,
-                end.state = end,
-                observation = o
-              )
+            FUN = function(end, o) {
+              if (is_mdp)
+                f(
+                  action = a,
+                  start.state = s,
+                  end.state = end
+                )
+              else
+                f(
+                  action = a,
+                  start.state = s,
+                  end.state = end,
+                  observation = o
+                )
+            }
           )
-          dimnames(p) <- list(states, observations)
+          dimnames(p) <- list(states, if (is_mdp) NULL else observations)
           p <- .sparsify(p, sparse)
         },
         simplify = FALSE

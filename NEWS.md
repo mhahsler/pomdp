@@ -1,5 +1,30 @@
 # pomdp 1.2.6.1 (unreleased)
 
+## Bugfixes
+
+* `remove_unreachable_states()` now handles transition, observation, and reward
+  specifications stored as data frames, normalized dense or sparse structures,
+  distribution keywords, or functions. It also preserves observation names and
+  consistently subsets terminal values and solved-model data.
+* Expanding an MDP reward function into a dense reward representation no longer
+  passes the POMDP-only `observation` argument.
+* Time-dependent dense reward specifications are now validated per episode,
+  including dense MDP rewards with their single reward column.
+* The R POMDP simulator now loads episode-specific transition and observation
+  matrices correctly when simulating time-dependent models.
+
+## Changes
+
+* Package examples now use bundled POMDP files instead of downloading models
+  from the internet.
+* Building the gridworld vignette no longer requires `gifski`. Animations are
+  created when it is available; otherwise, a static final frame is shown.
+
+## Testing
+
+* Updated the test suite to testthat edition 3, removed network dependencies,
+  made stochastic tests reproducible, and isolated temporary files.
+* Increased test coverage.
 
 # pomdp 1.2.6 (08/08/2025)
 

@@ -112,7 +112,7 @@ check_and_fix_MDP <- function(x) {
         names(x$transition_prob) <- x$actions
       if (all(names(x$transition_prob) != x$actions))
         x$transition_prob <- x$transition_prob[x$actions]
-      
+
       for (a in x$actions) {
         if (is.null(x$transition_prob[[a]]))
           stop("transition_prob for action ", a, " is missing!")
@@ -209,37 +209,38 @@ check_and_fix_MDP <- function(x) {
     
     if (is.data.frame(x$reward)) {
       x$reward <- check_df(x, x$reward, R_)
-    }
-  } else {
-    if (is.null(names(x$reward)))
-      names(x$reward) <- x$actions
-    if (all(names(x$reward) != x$actions))
-      x$reward <- x$reward[x$actions]
-    
-    for (a in x$actions) {
-      if (is.null(x$reward[[a]]))
-        stop("reward for action ", a, " is missing!")
-      for (s in x$states) {
-        if (is.null(x$reward[[a]][[s]]))
-          stop("reward for action ",
-               a,
-               " and state ",
-               s,
-               " is missing!")
-        if (is.matrix(x$reward[[a]][[s]])) {
-          if (!identical(dim(x$reward[[a]][[s]]), c(length(x$states), length(x$observations))))
-            stop(
-              "reward matrix for action ",
-              a,
-              " and start.state ",
-              s,
-              ": has not the right dimensions!"
-            )
-          if (is.null(dimnames(x$reward[[a]][[s]])))
-            dimnames(x$reward[[a]][[s]]) <-
-              list(x$states, x$observations)
-          else
-            x$reward[[a]][[s]][x$states, x$observations]
+    } else if (!is.function(x$reward)) {
+      if (is.null(names(x$reward)))
+        names(x$reward) <- x$actions
+      if (all(names(x$reward) != x$actions))
+        x$reward <- x$reward[x$actions]
+
+      for (a in x$actions) {
+        if (is.null(x$reward[[a]]))
+          stop("reward for action ", a, " is missing!")
+        for (s in x$states) {
+          if (is.null(x$reward[[a]][[s]]))
+            stop("reward for action ",
+                 a,
+                 " and state ",
+                 s,
+                 " is missing!")
+          if (is.matrix(x$reward[[a]][[s]])) {
+            reward_ncol <- if (inherits(x, "POMDP")) length(x$observations) else 1L
+            if (!identical(dim(x$reward[[a]][[s]]), c(length(x$states), reward_ncol)))
+              stop(
+                "reward matrix for action ",
+                a,
+                " and start.state ",
+                s,
+                ": has not the right dimensions!"
+              )
+            if (is.null(dimnames(x$reward[[a]][[s]])))
+              dimnames(x$reward[[a]][[s]]) <-
+                list(x$states, if (inherits(x, "POMDP")) x$observations else NULL)
+            else
+              x$reward[[a]][[s]][x$states, x$observations]
+          }
         }
       }
     }
@@ -274,7 +275,8 @@ check_and_fix_MDP <- function(x) {
                    e,
                    " is missing!")
             if (is.matrix(x$reward[[e]][[a]][[s]])) {
-              if (!identical(dim(x$reward[[e]][[a]][[s]]), c(length(x$states), length(x$observations))))
+              reward_ncol <- if (inherits(x, "POMDP")) length(x$observations) else 1L
+              if (!identical(dim(x$reward[[e]][[a]][[s]]), c(length(x$states), reward_ncol)))
                 stop(
                   "reward matrix for action ",
                   a,
@@ -286,7 +288,7 @@ check_and_fix_MDP <- function(x) {
                 )
               if (is.null(dimnames(x$reward[[e]][[a]][[s]])))
                 dimnames(x$reward[[e]][[a]][[s]]) <-
-                  list(x$states, x$observations)
+                  list(x$states, if (inherits(x, "POMDP")) x$observations else NULL)
               else
                 x$reward[[e]][[a]][[s]][x$states, x$observations]
             }

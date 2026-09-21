@@ -97,33 +97,70 @@ remove_unreachable_states <- function(x) {
   reachable <- reachable_states(x)
   if (all(reachable))
     return(x)
-  
-  keep_states <- function(field, states) {
-    if (is.data.frame(field)) {
-      keep_names <- names(which(states))
-      field <-
-        field[field$start.state %in% c(NA, keep_names) &
-                field$end.state %in% c(NA, keep_names), , drop = FALSE]
-      field$start.state <-
-        factor(as.character(field$start.state), levels = keep_names)
-      field$end.state <-
-        factor(as.character(field$end.state), levels = keep_names)
-    } else if (is.function(field)){
-      # do nothing
-    } else {
-      ### a list of actions
-      field <-
-        lapply(
-          field,
-          FUN = function(m) {
-            if (!is.character(m))
-              ### strings like "uniform"
-              m <- m[states, states, drop = FALSE]
-            m
-          }
-        )
+
+  keep_names <- x$states[reachable]
+
+  keep_data_frame_states <- function(field, columns) {
+    columns <- intersect(columns, names(field))
+    keep <- rep(TRUE, nrow(field))
+    for (column in columns) {
+      values <- as.character(field[[column]])
+      keep <- keep & (is.na(field[[column]]) | values %in% keep_names)
+    }
+    field <- field[keep, , drop = FALSE]
+    for (column in columns) {
+      if (is.factor(field[[column]]))
+        field[[column]] <- factor(as.character(field[[column]]), levels = keep_names)
     }
     field
+  }
+
+  keep_transition_states <- function(field) {
+    if (is.data.frame(field)) {
+      return(keep_data_frame_states(field, c("start.state", "end.state")))
+    }
+    if (is.function(field))
+      return(field)
+
+    lapply(field, function(matrix_or_keyword) {
+      if (is.character(matrix_or_keyword))
+        return(matrix_or_keyword)
+      matrix_or_keyword[reachable, reachable, drop = FALSE]
+    })
+  }
+
+  keep_observation_states <- function(field) {
+    if (is.data.frame(field))
+      return(keep_data_frame_states(field, "end.state"))
+    if (is.function(field))
+      return(field)
+
+    lapply(field, function(matrix_or_keyword) {
+      if (is.character(matrix_or_keyword))
+        return(matrix_or_keyword)
+      matrix_or_keyword[reachable, , drop = FALSE]
+    })
+  }
+
+  keep_reward_states <- function(field) {
+    if (is.data.frame(field))
+      return(keep_data_frame_states(field, c("start.state", "end.state")))
+    if (is.function(field))
+      return(field)
+
+    lapply(field, function(reward_by_start_state) {
+      reward_by_start_state <- reward_by_start_state[reachable]
+      lapply(reward_by_start_state, function(reward_matrix) {
+        reward_matrix[reachable, , drop = FALSE]
+      })
+    })
+  }
+
+  keep_field_states <- function(field, field_name, filter) {
+    if (.is_timedependent_field(x, field_name))
+      lapply(field, filter)
+    else
+      filter(field)
   }
   
   # fix start state
@@ -140,20 +177,62 @@ remove_unreachable_states <- function(x) {
       x$start <- x$states[x$start]
   }
   if (is.character(x$start)) {
-    if (x$start == "uniform") {
+    if (identical(x$start, "uniform")) {
       # do nothing
     } else {
-      x$start <- intersect(x$start, x$states[reachable])
+      x$start <- intersect(x$start, keep_names)
     }
     if (length(x$start) == 0L)
       stop("Start state is not reachable.")
   }
   
-  x$states <- x$states[reachable]
-  x$transition_prob <- keep_states(x$transition_prob, reachable)
-  x$reward <- keep_states(x$reward, reachable)
-  if (!is.null(x$observations))
-    x$observations <- keep_states(x$observations, reachable)
+  x$transition_prob <- keep_field_states(
+    x$transition_prob,
+    "transition_prob",
+    keep_transition_states
+  )
+  x$reward <- keep_field_states(x$reward, "reward", keep_reward_states)
+  if (!is.null(x$observation_prob))
+    x$observation_prob <- keep_field_states(
+      x$observation_prob,
+      "observation_prob",
+      keep_observation_states
+    )
+
+  if (!is.null(x$terminal_values) && length(x$terminal_values) > 1L) {
+    if (is.matrix(x$terminal_values))
+      x$terminal_values <- x$terminal_values[, reachable, drop = FALSE]
+    else
+      x$terminal_values <- x$terminal_values[reachable]
+  }
+
+  if (!is.null(x$solution)) {
+    if (inherits(x, "POMDP")) {
+      x$solution$alpha <- lapply(
+        x$solution$alpha,
+        function(alpha) alpha[, reachable, drop = FALSE]
+      )
+      if (!is.null(x$solution$belief_points_solver))
+        x$solution$belief_points_solver <-
+          x$solution$belief_points_solver[, reachable, drop = FALSE]
+      if (!is.null(x$solution$initial_belief))
+        x$solution$initial_belief <- x$solution$initial_belief[reachable]
+      if (!is.null(x$solution$central_belief))
+        x$solution$central_belief <- lapply(
+          x$solution$central_belief,
+          function(belief) belief[, reachable, drop = FALSE]
+        )
+    } else if (!is.null(x$solution$policy)) {
+      x$solution$policy <- lapply(x$solution$policy, function(policy) {
+        policy <- policy[as.character(policy$state) %in% keep_names, , drop = FALSE]
+        if (is.factor(policy$state))
+          policy$state <- factor(as.character(policy$state), levels = keep_names)
+        policy
+      })
+    }
+  }
+
+  x$states <- keep_names
   
   # just check
   check_and_fix_MDP(x)
