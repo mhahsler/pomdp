@@ -110,7 +110,7 @@ transition_val <-
            end.state,
            episode = NULL,
            epoch = NULL) {
-    #warning("transition_val is deprecated. Use reward_matrix instead!")
+    .Deprecated("transition_matrix", package = "pomdp")
     value_matrix(x,
                  "transition_prob",
                  action,
@@ -156,7 +156,7 @@ observation_val <-
            observation,
            episode = NULL,
            epoch = NULL) {
-    #warning("observation_val is deprecated. Use reward_matrix instead!")
+    .Deprecated("observation_matrix", package = "pomdp")
     value_matrix(x,
                  "observation_prob",
                  action,

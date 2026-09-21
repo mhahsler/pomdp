@@ -17,6 +17,8 @@
 
 ## Changes
 
+* `transition_val()`, `observation_val()`, and `reward_val()` are deprecated in
+  favor of the corresponding matrix accessors with `drop = TRUE`.
 * Model constructors and public accessors now consistently validate state,
   action, observation, belief, episode, epoch, discount, and horizon arguments.
 * Matrix accessors gained `drop`, matching `policy()` and `value_function()`;

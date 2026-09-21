@@ -165,6 +165,13 @@ resulting in no entries with 0.
 \code{start_vector()} translates the initial probability vector description into a numeric vector.
 }
 
+\subsection{Deprecated scalar accessors}{
+
+\code{transition_val()}, \code{observation_val()}, and \code{reward_val()} are deprecated.
+Use the corresponding \verb{*_matrix()} accessor with the same selection arguments
+and \code{drop = TRUE} instead.
+}
+
 \subsection{Convert the Complete POMDP Description into a consistent form}{
 
 \code{normalize_POMDP()} returns a new POMDP definition where \code{transition_prob},
@@ -181,12 +188,14 @@ data("Tiger")
 # List of |A| transition matrices. One per action in the from start.states x end.states
 Tiger$transition_prob
 transition_matrix(Tiger)
-transition_val(Tiger, action = "listen", start.state = "tiger-left", end.state = "tiger-left")
+transition_matrix(Tiger, action = "listen", start.state = "tiger-left",
+  end.state = "tiger-left")
 
 # List of |A| observation matrices. One per action in the from states x observations
 Tiger$observation_prob
 observation_matrix(Tiger)
-observation_val(Tiger, action = "listen", end.state = "tiger-left", observation = "tiger-left")
+observation_matrix(Tiger, action = "listen", end.state = "tiger-left",
+  observation = "tiger-left")
 
 # List of list of reward matrices. 1st level is action and second level is the
 #  start state in the form end state x observation

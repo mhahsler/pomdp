@@ -156,6 +156,45 @@ test_that("model class errors identify the argument and expected class", {
   )
 })
 
+test_that("scalar value accessors are deprecated compatibility wrappers", {
+  data("Tiger")
+
+  expect_warning(
+    transition <- transition_val(
+      Tiger, "listen", "tiger-left", "tiger-left"
+    ),
+    "transition_matrix"
+  )
+  expect_identical(
+    transition,
+    transition_matrix(Tiger, "listen", "tiger-left", "tiger-left")
+  )
+
+  expect_warning(
+    observation <- observation_val(
+      Tiger, "listen", "tiger-left", "tiger-left"
+    ),
+    "observation_matrix"
+  )
+  expect_identical(
+    observation,
+    observation_matrix(Tiger, "listen", "tiger-left", "tiger-left")
+  )
+
+  expect_warning(
+    reward <- reward_val(
+      Tiger, "listen", "tiger-left", "tiger-left", "tiger-left"
+    ),
+    "reward_matrix"
+  )
+  expect_identical(
+    reward,
+    reward_matrix(
+      Tiger, "listen", "tiger-left", "tiger-left", "tiger-left"
+    )
+  )
+})
+
 test_that("start beliefs support distributions, inclusion, and exclusion", {
   data("Tiger")
 

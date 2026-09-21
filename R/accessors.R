@@ -38,6 +38,11 @@
 #' ## Initial Belief
 #' `start_vector()` translates the initial probability vector description into a numeric vector.
 #'
+#' ## Deprecated scalar accessors
+#' `transition_val()`, `observation_val()`, and `reward_val()` are deprecated.
+#' Use the corresponding `*_matrix()` accessor with the same selection arguments
+#' and `drop = TRUE` instead.
+#'
 #' ## Convert the Complete POMDP Description into a consistent form
 #' `normalize_POMDP()` returns a new POMDP definition where `transition_prob`,
 #' `observations_prob`, `reward`, and `start` are normalized. 
@@ -73,12 +78,14 @@
 #' # List of |A| transition matrices. One per action in the from start.states x end.states
 #' Tiger$transition_prob
 #' transition_matrix(Tiger)
-#' transition_val(Tiger, action = "listen", start.state = "tiger-left", end.state = "tiger-left")
+#' transition_matrix(Tiger, action = "listen", start.state = "tiger-left",
+#'   end.state = "tiger-left")
 #'
 #' # List of |A| observation matrices. One per action in the from states x observations
 #' Tiger$observation_prob
 #' observation_matrix(Tiger)
-#' observation_val(Tiger, action = "listen", end.state = "tiger-left", observation = "tiger-left")
+#' observation_matrix(Tiger, action = "listen", end.state = "tiger-left",
+#'   observation = "tiger-left")
 #'
 #' # List of list of reward matrices. 1st level is action and second level is the
 #' #  start state in the form end state x observation

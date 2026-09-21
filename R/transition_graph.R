@@ -100,7 +100,13 @@ transition_graph <-
         # remove unavailable actions
         if (remove_unavailable_actions) {
           available <- sapply(seq_len(nrow(df)), FUN = function(i) 
-            all(reward_val(x, action = df$label[i], start.state = df$from[i], end.state = df$to[i]) != - Inf))
+            all(reward_matrix(
+              x,
+              action = df$label[i],
+              start.state = df$from[i],
+              end.state = df$to[i],
+              drop = TRUE
+            ) != -Inf))
           df <- df[available, , drop = FALSE] 
         }
         df

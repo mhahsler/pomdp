@@ -101,7 +101,7 @@ reward_val <-
            observation = NULL,
            episode = NULL,
            epoch = NULL) {
-    #warning("reward_val is deprecated. Use reward_matrix instead!")
+    .Deprecated("reward_matrix", package = "pomdp")
     reward_matrix(x,
                   action,
                   start.state,

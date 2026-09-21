@@ -68,10 +68,10 @@ test_that("unreachable states are removed from all MDP representations", {
 
   function_model <- keyword_model
   function_model$transition_prob <- function(action, start.state, end.state) {
-    transition_val(keyword_model, action, start.state, end.state)
+    transition_matrix(keyword_model, action, start.state, end.state, drop = TRUE)
   }
   function_model$reward <- function(action, start.state, end.state) {
-    reward_val(keyword_model, action, start.state, end.state)
+    reward_matrix(keyword_model, action, start.state, end.state, drop = TRUE)
   }
 
   models <- list(
@@ -134,13 +134,15 @@ test_that("unreachable POMDP states are removed without changing observations", 
 
   function_model <- pomdp
   function_model$transition_prob <- function(action, start.state, end.state) {
-    transition_val(pomdp, action, start.state, end.state)
+    transition_matrix(pomdp, action, start.state, end.state, drop = TRUE)
   }
   function_model$observation_prob <- function(action, end.state, observation) {
-    observation_val(pomdp, action, end.state, observation)
+    observation_matrix(pomdp, action, end.state, observation, drop = TRUE)
   }
   function_model$reward <- function(action, start.state, end.state, observation) {
-    reward_val(pomdp, action, start.state, end.state, observation)
+    reward_matrix(
+      pomdp, action, start.state, end.state, observation, drop = TRUE
+    )
   }
 
   data_frame_model <- POMDP(
