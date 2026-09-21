@@ -429,6 +429,10 @@ is_timedependent_POMDP <- function(x)
 epoch_to_episode <- function(x, epoch) {
   if (is.null(epoch))
     return(1L)
+
+  .validate_positive_integer(epoch, "epoch")
+  if (!is_timedependent_POMDP(x) && is.finite(sum(x$horizon)) && epoch > sum(x$horizon))
+    stop("Epoch does not exist", call. = FALSE)
   
   episode <- which(epoch <= cumsum(x$horizon))[1]
   if (is.na(episode))
@@ -455,9 +459,8 @@ is_converged_POMDP <- function(x, stop = FALSE, message = "") {
 .get_pg_index <- function(model, epoch) {
   #is_solved_POMDP(model, stop = TRUE)
   
+  .validate_positive_integer(epoch, "epoch")
   epoch <- as.integer(epoch)
-  if (epoch < 1L)
-    stop("Epoch has to be >= 1")
   
   ### (converged) infinite horizon POMDPs. We ignore epoch.
   if (length(model$solution$pg) == 1L)

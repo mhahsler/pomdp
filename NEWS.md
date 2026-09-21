@@ -12,9 +12,17 @@
   including dense MDP rewards with their single reward column.
 * The R POMDP simulator now loads episode-specific transition and observation
   matrices correctly when simulating time-dependent models.
+* The R POMDP simulator now reports action counts from the action counter rather
+  than incorrectly copying state counts.
 
 ## Changes
 
+* Model constructors and public accessors now consistently validate state,
+  action, observation, belief, episode, epoch, discount, and horizon arguments.
+* Matrix accessors gained `drop`, matching `policy()` and `value_function()`;
+  `drop = FALSE` preserves matrix or list dimensions across model
+  representations. Simulation result containers are now consistent between
+  the R and C++ engines when optional results are not requested.
 * Package examples now use bundled POMDP files instead of downloading models
   from the internet.
 * Building the gridworld vignette no longer requires `gifski`. Animations are

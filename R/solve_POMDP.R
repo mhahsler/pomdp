@@ -373,9 +373,13 @@ solve_POMDP <- function(model,
     horizon <- model$horizon
   if (is.null(horizon))
     horizon <- Inf
+  .validate_positive_integer(
+    horizon, "horizon", allow_inf = TRUE, allow_vector = TRUE
+  )
   model$horizon <- horizon
   
   if (!is.null(initial_belief)) {
+    .validate_belief(initial_belief, model, allow_matrix = FALSE)
     model$start <- initial_belief
   }
   
@@ -397,12 +401,6 @@ solve_POMDP <- function(model,
     )
   
   # horizon should now be length 1
-  if (horizon < 1)
-    horizon <- Inf
-  else
-    if (horizon != floor(horizon))
-      stop("'horizon' needs to be an integer.")
-  
   if (is.null(terminal_values))
     terminal_values <- model$terminal_values
   if (!is.null(terminal_values) &&
@@ -417,7 +415,7 @@ solve_POMDP <- function(model,
     message("No discount rate specified. Using .9!")
     discount <- .9
   }
-  model$discount <- discount
+  model$discount <- .validate_discount(discount)
   
   ### temp file names
   file_prefix <- tempfile(pattern = "pomdp_")

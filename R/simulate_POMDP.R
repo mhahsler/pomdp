@@ -138,11 +138,12 @@ simulate_POMDP <-
     
     if (is.null(belief))
       belief <- start_vector(model)
-    
-    if (!is.numeric(belief) || length(belief) != length(model$states) || 
-        !sum1(belief))
-      stop("Initial belief is misspecified!")
-    
+
+    belief <- .translate_belief(belief, model)
+    if (is.matrix(belief) || length(belief) != length(model$states))
+      stop("Initial belief must specify one probability distribution.", call. = FALSE)
+
+    .validate_positive_integer(n, "n")
     n <- as.integer(n)
     digits <- as.integer(digits)
     
@@ -160,6 +161,7 @@ simulate_POMDP <-
       max_abs_R <- .max_abs_reward(model)
       horizon <- ceiling(log(delta_horizon/max_abs_R)/log(model$discount)) + 1
     }
+    .validate_positive_integer(horizon, "horizon")
     horizon <- as.integer(horizon)
     
     # eps-greedy?
@@ -378,7 +380,7 @@ simulate_POMDP <-
           r = NA_real_
         )
       else
-        trajectory <- NULL
+        trajectory <- data.frame()
       
       for (j in 1:horizon) {
         # change matrices for time-dependent POMDPs
@@ -476,7 +478,7 @@ simulate_POMDP <-
     
     rew <- Reduce(c,  lapply(sim, "[[", "reward"))
     
-    trajectories <- NULL
+    trajectories <- data.frame()
     if (return_trajectories) {
       trajectories <- Reduce(rbind, lapply(sim, "[[", "trajectory"))
        trajectories$simulation_state <-
@@ -491,7 +493,7 @@ simulate_POMDP <-
     
     list(
       avg_reward = mean(rew, na.rm = TRUE),
-      action_cnt = Reduce('+', lapply(sim, "[[" , "state_cnt")),
+      action_cnt = Reduce('+', lapply(sim, "[[" , "action_cnt")),
       state_cnt =  Reduce('+', lapply(sim, "[[", "state_cnt")),
       obs_cnt =    Reduce('+', lapply(sim, "[[", "obs_cnt")),
       reward = rew,

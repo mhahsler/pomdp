@@ -69,6 +69,7 @@ value_function <- function(model, drop = TRUE) {
 
 #' @export
 value_function.MDP <- function(model, drop = TRUE) {
+  .validate_scalar_logical(drop, "drop")
   is_solved_MDP(model, stop = TRUE)
   val <- lapply(policy(model, drop = FALSE), "[[", "U")
   
@@ -80,6 +81,7 @@ value_function.MDP <- function(model, drop = TRUE) {
 
 #' @export
 value_function.POMDP <- function(model, drop = TRUE) {
+  .validate_scalar_logical(drop, "drop")
   is_solved_POMDP(model, stop = TRUE)
   .check_valid_value_function(model)
   

@@ -110,7 +110,7 @@ test_that("simulation validates horizon, policy, and belief arguments", {
   )
   expect_error(
     simulate_POMDP(Tiger, belief = c(.2, .2), horizon = 2),
-    "misspecified"
+    "add up to 1"
   )
   expect_error(
     simulate_MDP(Maze, horizon = 2, epsilon = .5),

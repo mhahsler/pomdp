@@ -66,7 +66,7 @@ test_that("malformed POMDP files fail with stable errors", {
     "O: wait", "uniform",
     "R: * : * : * : * 0"
   ), invalid_start)
-  expect_error(read_POMDP(invalid_start, parse = TRUE), "discount has to be")
+  expect_error(read_POMDP(invalid_start, parse = TRUE), "discount must be")
 })
 
 test_that("matrix parser supports scalar, row, column, and full-matrix forms", {

@@ -22,15 +22,22 @@ value_matrix <-
            episode = NULL,
            epoch = NULL,
            sparse = NULL,
-           trans_keyword = TRUE) {
+           trans_keyword = TRUE,
+           drop = TRUE) {
     ## action list of s x s matrices
-    
-    if (is.null(episode)) {
-      if (is.null(epoch))
-        episode <- 1L
-      else
-        episode <- epoch_to_episode(x, epoch)
-    }
+
+    .validate_scalar_logical(drop, "drop")
+    episode <- .validate_episode_epoch(x, episode, epoch)
+    action <- .match_model_value(action, x$actions, "action")
+    row <- .match_model_value(
+      row, x$states, if (field == "transition_prob") "start.state" else "end.state"
+    )
+    cols <- if (field == "transition_prob") x$states else x$observations
+    col <- .match_model_value(
+      col, cols, if (field == "transition_prob") "end.state" else "observation"
+    )
+    if (is.null(action) && (!is.null(row) || !is.null(col)))
+      stop("action needs to be specified.", call. = FALSE)
     
     if (.is_timedependent_field(x, field))
       value <- x[[field]][[episode]]
@@ -49,20 +56,23 @@ value_matrix <-
           ### obs
           cols <- x$observations
         if (is.numeric(col)) col <- cols[col]
-        return(value(action, row, col))
+        result <- value(action, row, col)
+        if (drop)
+          return(result)
+        return(matrix(result, 1L, 1L, dimnames = list(row, col)))
       }
 
-      return(function2value(x, field, value, action, row, col, sparse))
+      return(function2value(x, field, value, action, row, col, sparse, drop))
     }
     
     # data.frame
     if (is.data.frame(value)) {
-      return(df2value(value, action, row, col, sparse))
+      return(df2value(value, action, row, col, sparse, drop))
     }
     
     # we have a list of matrices
     # subset
-    list2value(x, field, value, action, row, col, sparse, trans_keyword)
+    list2value(x, field, value, action, row, col, sparse, trans_keyword, drop)
   }
 
 #' @include accessors.R
@@ -76,7 +86,8 @@ transition_matrix <-
            episode = NULL,
            epoch = NULL,
            sparse = FALSE,
-           trans_keyword = TRUE) {
+           trans_keyword = TRUE,
+           drop = TRUE) {
     value_matrix(x,
                  "transition_prob",
                  action,
@@ -85,7 +96,8 @@ transition_matrix <-
                  episode,
                  epoch,
                  sparse,
-                 trans_keyword)
+                 trans_keyword,
+                 drop)
     
   }
 
@@ -105,7 +117,8 @@ transition_val <-
                  start.state,
                  end.state,
                  episode,
-                 epoch)
+                 epoch,
+                 drop = TRUE)
   }
 
 #' @include accessors.R
@@ -119,7 +132,8 @@ observation_matrix <-
            episode = NULL,
            epoch = NULL,
            sparse = FALSE,
-           trans_keyword = TRUE) {
+           trans_keyword = TRUE,
+           drop = TRUE) {
     value_matrix(x,
                  "observation_prob",
                  action,
@@ -128,7 +142,8 @@ observation_matrix <-
                  episode,
                  epoch,
                  sparse,
-                 trans_keyword)
+                 trans_keyword,
+                 drop)
     
   }
 
@@ -148,7 +163,8 @@ observation_val <-
                  end.state,
                  observation,
                  episode,
-                 epoch)
+                 epoch,
+                 drop = TRUE)
   }
 
 
@@ -161,7 +177,8 @@ list2value <-
            row = NULL,
            col = NULL,
            sparse = NULL,
-           trans_keyword = TRUE) {
+           trans_keyword = TRUE,
+           drop = TRUE) {
     actions <- x$actions
     rows <- x$states
     if (field == "transition_prob")
@@ -211,7 +228,7 @@ list2value <-
     if (is.null(col))
       col <- cols
     
-    return(m[row, col])
+    return(m[row, col, drop = drop])
   }
 
 
@@ -220,7 +237,8 @@ df2value <-
            action = NULL,
            row = NULL,
            col = NULL,
-           sparse = FALSE) {
+           sparse = FALSE,
+           drop = TRUE) {
     actions <- levels(df$action)
     rows <- levels(df[[2L]])
     cols <- levels(df[[3L]])
@@ -285,7 +303,9 @@ df2value <-
         v[c] <- df$probability[i]
       }
       
-      return(v)
+      if (drop)
+        return(v)
+      return(matrix(v, nrow = 1L, dimnames = list(row, cols)))
     }
     
     if (is.null(row)) {
@@ -293,8 +313,8 @@ df2value <-
         col <- cols[col]
       # row vector
       df <- df[(is.na(df$action) | df$action == action) &
-                 (is.na(df[[2L]]) |
-                    df[[2L]] == col), , drop = FALSE]
+                 (is.na(df[[3L]]) |
+                    df[[3L]] == col), , drop = FALSE]
       
       v <-
         structure(numeric(length(rows)), names = rows)
@@ -307,7 +327,9 @@ df2value <-
         v[r] <- df$probability[i]
       }
       
-      return(v)
+      if (drop)
+        return(v)
+      return(matrix(v, ncol = 1L, dimnames = list(rows, col)))
     }
     
     # value
@@ -323,9 +345,13 @@ df2value <-
                                df$end.state == col)]
     
     if (length(val) == 0L)
-      return(0)
+      val <- 0
+    else
+      val <- tail(val, 1L)
     
-    return(tail(val, 1L))
+    if (drop)
+      return(val)
+    matrix(val, 1L, 1L, dimnames = list(row, col))
   }
 
 function2value <- function(x,
@@ -334,11 +360,13 @@ function2value <- function(x,
                            action,
                            row,
                            col,
-                           sparse = FALSE) {
+                           sparse = FALSE,
+                           drop = TRUE) {
   if (length(action) == 1L &&
       length(row) == 1L &&
       length(col) == 1L)
-    return(f(action, row, col))
+    return(if (drop) f(action, row, col) else
+      matrix(f(action, row, col), 1L, 1L, dimnames = list(row, col)))
   
   # TODO: we could make access faster
   
@@ -372,7 +400,8 @@ function2value <- function(x,
              action,
              row,
              col,
-             sparse = NULL)
+             sparse = NULL,
+             drop = drop)
 }
 
 #' @example

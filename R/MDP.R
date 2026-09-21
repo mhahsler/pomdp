@@ -176,9 +176,8 @@ is_solved_MDP <- function(x, stop = FALSE) {
 
 ## this is .get_pg_index for MDPs
 .get_pol_index <- function(model, epoch) {
+  .validate_positive_integer(epoch, "epoch")
   epoch <- as.integer(epoch)
-  if (epoch < 1L)
-    stop("Epoch has to be >= 1")
   
   ### (converged) infinite horizon POMDPs. We ignore epoch.
   if (length(model$solution$policy) == 1L)

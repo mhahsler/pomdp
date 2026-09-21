@@ -100,7 +100,7 @@ test_that("printing and epoch lookup distinguish finite and stationary policies"
   finite <- solve_MDP_DP(Maze, horizon = 2)
   expect_output(print(finite), "Solved:")
   expect_identical(pomdp:::.get_pol_index(finite, 2), 2L)
-  expect_error(pomdp:::.get_pol_index(finite, 0), "Epoch has to be")
+  expect_error(pomdp:::.get_pol_index(finite, 0), "positive integer")
   expect_error(pomdp:::.get_pol_index(finite, 3), "only a policy up to epoch 2")
 
   stationary <- solve_MDP_DP(Maze)

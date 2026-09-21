@@ -76,7 +76,7 @@ reward <- function(x,
 #' @rdname reward
 #' @export
 reward_node_action <- function(x, belief = NULL, epoch = 1, ...) {
-  is_solved_POMDP(x)
+  is_solved_POMDP(x, stop = TRUE)
   
   if (is.null(belief))
     belief <- x$start

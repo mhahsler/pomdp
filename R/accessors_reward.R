@@ -21,18 +21,20 @@ reward_matrix <-
            observation = NULL,
            episode = NULL,
            epoch = NULL,
-           sparse = FALSE) {
+           sparse = FALSE,
+           drop = TRUE) {
+    .validate_scalar_logical(drop, "drop")
     if (inherits(x, "MDP") && !is.null(observation))
       stop("Observations cannot be specified for MDPs!")
     ## action list of s' x o matrices
     ## action list of s list of s' x o matrices
     ## if not observations are available then it is a s' vector
-    if (is.null(episode)) {
-      if (is.null(epoch))
-        episode <- 1L
-      else
-        episode <- epoch_to_episode(x, epoch)
-    }
+    episode <- .validate_episode_epoch(x, episode, epoch)
+    action <- .match_model_value(action, x$actions, "action")
+    start.state <- .match_model_value(start.state, x$states, "start.state")
+    end.state <- .match_model_value(end.state, x$states, "end.state")
+    if (inherits(x, "POMDP"))
+      observation <- .match_model_value(observation, x$observations, "observation")
     
     if (.is_timedependent_field(x, "reward"))
       reward <- x[["reward"]][[episode]]
@@ -53,11 +55,13 @@ reward_matrix <-
         if (is.numeric(end.state)) end.state <- x$states[end.state]
         
         if(inherits(x, "MDP"))
-          return(reward(action, start.state, end.state))
+          result <- reward(action, start.state, end.state)
         else if (!is.null(observation)) {
           if (is.numeric(observation)) observation <- x$observations[observation]
-          return(reward(action, start.state, end.state, observation))
+          result <- reward(action, start.state, end.state, observation)
         }
+        if (exists("result", inherits = FALSE))
+          return(.reward_drop(result, x, end.state, observation, drop))
       }
         
       reward <- reward_function2list(reward, x)
@@ -72,7 +76,8 @@ reward_matrix <-
       if (sparse)
         return(reward)
       else
-        return(reward_df2value(reward, action, start.state, end.state, observation))
+        result <- reward_df2value(reward, action, start.state, end.state, observation)
+        return(.reward_drop(result, x, end.state, observation, drop))
     }
     
     # we have a list of list of  matrices
@@ -80,7 +85,10 @@ reward_matrix <-
       return(reward_list2df(reward))
     
     # subset
-    reward_list2value(reward, action, start.state, end.state, observation)
+    result <- reward_list2value(
+      reward, action, start.state, end.state, observation, drop = drop
+    )
+    result
   }
 
 #' @rdname accessors
@@ -101,7 +109,8 @@ reward_val <-
                   observation,
                   episode,
                   epoch,
-                  sparse = FALSE)
+                  sparse = FALSE,
+                  drop = TRUE)
     
   }
 
@@ -448,7 +457,8 @@ reward_list2value <-
            action = NULL,
            start.state = NULL,
            end.state = NULL,
-           observation = NULL) {
+           observation = NULL,
+           drop = TRUE) {
     
     states <- names(m[[1L]])
     observations <- colnames(m[[1L]][[1L]])
@@ -467,13 +477,29 @@ reward_list2value <-
     
     if (!is.null(end.state) && is.null(observation)) {
       # observation vector (drop is for MDP)
-      return(m[end.state, , drop = TRUE])
+      return(m[end.state, , drop = drop])
     }
     
     if (is.null(end.state) && !is.null(observation)) {
-      return(m[, observation])
+      return(m[, observation, drop = drop])
     }
     
     # value
-    return(m[end.state, observation])
+    return(m[end.state, observation, drop = drop])
   }
+
+.reward_drop <- function(value, x, end.state, observation, drop) {
+  if (drop || (is.null(end.state) && is.null(observation)))
+    return(value)
+
+  rows <- if (is.null(end.state)) x$states else end.state
+  if (inherits(x, "POMDP")) {
+    cols <- if (is.null(observation)) x$observations else observation
+    col_names <- cols
+  } else {
+    cols <- 1L
+    col_names <- NULL
+  }
+  matrix(value, nrow = length(rows), ncol = length(cols),
+    dimnames = list(rows, col_names))
+}

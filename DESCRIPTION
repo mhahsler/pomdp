@@ -36,6 +36,7 @@ Collate:
     'AAA_check_installed.R'
     'AAA_pomdp-package.R'
     'AAA_shorten.R'
+    'AAA_validation.R'
     'Cliff_walking.R'
     'DynaMaze.R'
     'POMDP.R'

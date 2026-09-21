@@ -40,7 +40,8 @@ reward_matrix(
   observation = NULL,
   episode = NULL,
   epoch = NULL,
-  sparse = FALSE
+  sparse = FALSE,
+  drop = TRUE
 )
 
 reward_val(
@@ -61,7 +62,8 @@ transition_matrix(
   episode = NULL,
   epoch = NULL,
   sparse = FALSE,
-  trans_keyword = TRUE
+  trans_keyword = TRUE,
+  drop = TRUE
 )
 
 transition_val(x, action, start.state, end.state, episode = NULL, epoch = NULL)
@@ -74,7 +76,8 @@ observation_matrix(
   episode = NULL,
   epoch = NULL,
   sparse = FALSE,
-  trans_keyword = TRUE
+  trans_keyword = TRUE,
+  drop = TRUE
 )
 
 observation_val(
@@ -108,6 +111,9 @@ in \code{transition_prob} or \code{observation_prob} to matrices?}
 
 \item{episode, epoch}{Episode or epoch used for time-dependent POMDPs. Epochs are internally converted
 to the episode using the model horizon.}
+
+\item{drop}{logical; simplify a selection to a vector or scalar. Use
+\code{drop = FALSE} to preserve matrix dimensions.}
 }
 \value{
 A list or a list of lists of matrices.

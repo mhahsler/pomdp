@@ -14,8 +14,8 @@ status](https://mhahsler.r-universe.dev/badges/pomdp)](https://mhahsler.r-univer
 
 A partially observable Markov decision process (POMDP) models an agent’s
 decision process in which the agent cannot directly observe the
-environment’s state but has to rely on observations. The goal is to
-find an optimal policy to guide the agent’s actions.
+environment’s state but has to rely on observations. The goal is to find
+an optimal policy to guide the agent’s actions.
 
 The `pomdp` package ([Hahsler and Cassandra 2025](#ref-Hahsler2025))
 provides the infrastructure to define and analyze the solutions of
@@ -42,15 +42,21 @@ to the following algorithms:
 - Approximate value iteration
   - **Finite grid algorithm** ([Cassandra 2015](#ref-Cassandra2015)), a
     variation of point-based value iteration for solving larger POMDPs
-    (**PBVI**; see [Pineau et al. 2003](#ref-Pineau2003)) without
+    (**PBVI**; see ([Pineau et al. 2003](#ref-Pineau2003))) without
     dynamic belief set expansion.
-  - **SARSOP** ([Kurniawati et al. 2008](#ref-Kurniawati2008)),
-    a point-based algorithm that approximates optimally reachable belief
+  - **SARSOP** ([Kurniawati et al. 2008](#ref-Kurniawati2008)), a
+    point-based algorithm that approximates optimally reachable belief
     spaces for infinite-horizon problems (via the package
     [sarsop](https://github.com/boettiger-lab/sarsop)).
 
-If you are new to POMDPs then start with the [POMDP
-Tutorial](https://pomdp.org/tutorial/).
+If you are new to POMDPs then start with:
+
+- [Getting started with
+  pomdp](https://mhahsler.r-universe.dev/articles/pomdp/pomdp.html)
+- [Gridworlds in
+  pomdp](https://mhahsler.r-universe.dev/articles/pomdp/gridworlds.html)
+- For more derails on POMDPs read the [POMDP
+  Tutorial](https://pomdp.org/tutorial/)
 
 To cite package ‘pomdp’ in publications use:
 
@@ -153,8 +159,8 @@ plot_policy_graph(sol)
 
 ## Acknowledgments
 
-Development of this package was supported in part by the National Institute
-of Standards and Technology (NIST) under grant number
+Development of this package was supported in part by the National
+Institute of Standards and Technology (NIST) under grant number
 [60NANB17D180](https://www.nist.gov/ctl/pscr/safe-net-integrated-connected-vehicle-computing-platform).
 
 ## References

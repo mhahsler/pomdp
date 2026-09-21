@@ -939,13 +939,10 @@ parse_POMDP_matrix <-
     belief <- model$start
   if (is.null(belief))
     belief <- "uniform"
-  
-  if (any(is.na(belief)))
-    return(belief)
+
+  belief <- .validate_belief(belief, model)
   
   if (is.matrix(belief)) {
-    if (ncol(belief) != length(states))
-      stop("Number of column is not the number of states.")
     colnames(belief) <- states
     return(belief)
   }

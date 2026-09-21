@@ -25,6 +25,7 @@
 #' @returns a vector with the available actions.
 #' @export
 actions <- function(x, state) {
+  state <- .match_model_value(state, x$states, "state")
   x$actions[!sapply(x$actions, FUN = function(a) { 
     all(reward_matrix(x, action = a, start.state = state) == -Inf) 
     })]

@@ -65,9 +65,11 @@ regret.MDP <- function(policy, benchmark, start = NULL) {
   
   if (is.null(start))
     start <- which(start_vector(benchmark) == 1) 
-  
-  if(is.character(start))
-    start <- which(benchmark$states == start)
+
+  if (!is.null(start)) {
+    start <- .match_model_value(start, benchmark$states, "start state")
+    start <- match(start, benchmark$states)
+  }
   
   if (length(start) != 1L)
     stop("A single start state needs to be specified!")

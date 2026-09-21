@@ -199,6 +199,7 @@ solve_MDP_DP <- function(model,
     model$horizon <- horizon
   if (is.null(model$horizon))
     model$horizon <- Inf
+  .validate_positive_integer(model$horizon, "horizon", allow_inf = TRUE)
   
   if (!is.null(discount))
     model$discount <- discount
@@ -206,6 +207,7 @@ solve_MDP_DP <- function(model,
     message("No discount rate specified. Using .9!")
     model$discount <- .9
   }
+  model$discount <- .validate_discount(model$discount)
   
   switch(method,
          value_iteration = {
@@ -457,11 +459,13 @@ solve_MDP_TD <-
       warn_horizon <- TRUE
       horizon <- 10000
     }
+    .validate_positive_integer(horizon, "horizon", allow_inf = TRUE)
       
     if (is.null(discount))
       discount <- model$discount
     if (is.null(discount))
       discount <- 1
+    discount <- .validate_discount(discount)
     gamma <- discount
     model$discount <- discount
     

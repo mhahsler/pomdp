@@ -30,7 +30,7 @@ test_that("incomplete and malformed model specifications fail clearly", {
   )
   expect_error(
     MDP("s", "wait", transition, R_("wait", value = 0), start = "missing"),
-    "keyword 'uniform'"
+    "unknown or duplicate states"
   )
 })
 
@@ -135,11 +135,11 @@ test_that("start beliefs support distributions, inclusion, and exclusion", {
     dimnames = list(NULL, Tiger$states)))
 
   model$start <- matrix(1, nrow = 1, ncol = 3)
-  expect_error(start_vector(model), "Number of column")
+  expect_error(start_vector(model), "one column per state")
   model$start <- "unknown"
-  expect_error(start_vector(model), "Unrecognized state")
+  expect_error(start_vector(model), "unknown or duplicate states")
   model$start <- 0L
-  expect_error(start_vector(model), "State IDs")
+  expect_error(start_vector(model), "indices are invalid")
 })
 
 test_that("POMDP printing, convergence, and epoch lookup are explicit", {
@@ -154,7 +154,7 @@ test_that("POMDP printing, convergence, and epoch lookup are explicit", {
     "stationary policy required"
   )
   expect_identical(pomdp:::.get_pg_index(solved, 2), 2L)
-  expect_error(pomdp:::.get_pg_index(solved, 0), "Epoch has to be")
+  expect_error(pomdp:::.get_pg_index(solved, 0), "positive integer")
   expect_error(pomdp:::.get_pg_index(solved, 3), "only solutions for 2 epochs")
   expect_s3_class(pomdp:::.get_pg(solved, 1), "data.frame")
   expect_true(is.matrix(pomdp:::.get_alpha(solved, 1)))

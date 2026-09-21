@@ -104,8 +104,11 @@ simulate_MDP <-
     
     
     start <- .translate_belief(start, model = model)
+    if (is.matrix(start))
+      stop("start must specify one probability distribution.", call. = FALSE)
     solved <- is_solved_MDP(model)
     
+    .validate_positive_integer(n, "n")
     n <- as.integer(n)
     
     if (is.null(horizon))
@@ -121,6 +124,7 @@ simulate_MDP <-
       horizon <-
         ceiling(log(delta_horizon / max_abs_R) / log(model$discount))
     }
+    .validate_positive_integer(horizon, "horizon")
     horizon <- as.integer(horizon)
     
     if (is.null(epsilon)) {
@@ -253,7 +257,7 @@ simulate_MDP <-
           s_prime = NA_integer_
         )
       else
-        trajectory <- NULL
+        trajectory <- data.frame()
       
       for (j in seq_len(horizon)) {
         if (runif(1) < epsilon) {
@@ -305,7 +309,7 @@ simulate_MDP <-
     rew <- Reduce(c, lapply(sim, "[[", "reward"))
     rew <- unname(rew)
     
-    trajectories <- NULL
+    trajectories <- data.frame()
     if (return_trajectories) {
       trajectories <- Reduce(rbind, lapply(sim, "[[", "trajectory"))
       trajectories$s <-

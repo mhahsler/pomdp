@@ -49,29 +49,38 @@ check_and_fix_MDP <- function(x) {
   ### do the checking
   # expand states, actions and observations if only the number is given
   if (is.numeric(x$states) &&
-      length(x$states) == 1L)
+      length(x$states) == 1L) {
+    .validate_positive_integer(x$states, "states")
     x$states <- paste0("s", seq_len(x$states))
+  }
   
   if (is.numeric(x$actions) &&
-      length(x$actions) == 1L)
+      length(x$actions) == 1L) {
+    .validate_positive_integer(x$actions, "actions")
     x$actions <- paste0("a", seq_len(x$actions))
+  }
   
   if (inherits(x, "POMDP")) {
     if (is.numeric(x$observations) &&
-        length(x$observations) == 1L)
+        length(x$observations) == 1L) {
+      .validate_positive_integer(x$observations, "observations")
       x$observations <- paste0("o", seq_len(x$observations))
+    }
   }
+
+  x$states <- .validate_labels(x$states, "states")
+  x$actions <- .validate_labels(x$actions, "actions")
+  if (inherits(x, "POMDP"))
+    x$observations <- .validate_labels(x$observations, "observations")
   
-  x$discount <- as.numeric(x$discount)
-  if (length(x$discount) != 1L ||
-      x$discount <= 0 || x$discount > 1)
-    stop("discount has to be a single value in the range (0,1].")
+  x$discount <- .validate_discount(x$discount)
   
   if (is.null(x$horizon))
     x$horizon <- Inf
   x$horizon <- as.numeric(x$horizon)
-  if (any(x$horizon != floor(x$horizon)))
-    stop("horizon needs to be an integer.")
+  .validate_positive_integer(
+    x$horizon, "horizon", allow_inf = TRUE, allow_vector = TRUE
+  )
   
   # start
   if (is.numeric(x$start) &&
@@ -83,14 +92,7 @@ check_and_fix_MDP <- function(x) {
     else
       x$start <- x$start[x$states]
   }
-  if (any(is.na(x$start)))
-    stop("start contains undefined start states.")
-  if (is.character(x$start)) {
-    if (!(identical(x$start, "uniform") || all(x$start %in% x$states)))
-      stop(
-        "when using characters for start, then it needs to be the keyword 'uniform' or a set of start states."
-      )
-  }
+  .validate_belief(x$start, x, allow_matrix = FALSE)
   
   if ((is.null(x$transition_prob) ||
        (inherits(x, "POMDP") &&

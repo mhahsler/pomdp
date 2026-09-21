@@ -62,6 +62,8 @@
 #' @param trans_function logical; convert functions into matrices?
 #' @param trans_keyword logical; convert distribution keywords (uniform and identity) 
 #'  in `transition_prob` or `observation_prob` to matrices?
+#' @param drop logical; simplify a selection to a vector or scalar. Use
+#'  `drop = FALSE` to preserve matrix dimensions.
 #'   
 #' @return A list or a list of lists of matrices.
 #' @author Michael Hahsler

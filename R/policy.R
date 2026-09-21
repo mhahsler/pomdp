@@ -61,6 +61,7 @@ policy <- function(x, drop = TRUE) {
 
 #' @export
 policy.MDP <- function(x, drop = TRUE) {
+  .validate_scalar_logical(drop, "drop")
   is_solved_MDP(x, stop = TRUE)
   
   policy <- x$solution$policy
@@ -72,6 +73,7 @@ policy.MDP <- function(x, drop = TRUE) {
 
 #' @export
 policy.POMDP <- function(x, drop = TRUE) {
+  .validate_scalar_logical(drop, "drop")
   is_solved_POMDP(x, stop = TRUE)
   n <- length(x$solution$pg)
   
