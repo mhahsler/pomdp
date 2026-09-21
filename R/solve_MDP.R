@@ -154,8 +154,7 @@ solve_MDP <- function(model, method = "value", ...) {
   methods_DP <- c("value_iteration", "policy_iteration")
   methods_TD <-  c("sarsa", "q_learning", "expected_sarsa")
   
-  if (!inherits(model, "MDP"))
-    stop("x needs to be an MDP!")
+  .validate_class(model, "model", "MDP")
   
   method <- match.arg(method, c(methods_DP, methods_TD))
   
@@ -188,8 +187,7 @@ solve_MDP_DP <- function(model,
                          k_backups = 10,
                          U = NULL,
                          verbose = FALSE) {
-  if (!inherits(model, "MDP"))
-    stop("'model' needs to be of class 'MDP'.")
+  .validate_class(model, "model", "MDP")
   
   methods <- c("value_iteration", "policy_iteration")
   method <- match.arg(method, methods)
@@ -249,8 +247,7 @@ MDP_value_iteration_finite_horizon <-
            horizon,
            U = NULL,
            verbose = FALSE) {
-    if (!inherits(model, "MDP"))
-      stop("'model' needs to be of class 'MDP'.")
+    .validate_class(model, "model", "MDP")
     
     S <- model$states
     A <- model$actions

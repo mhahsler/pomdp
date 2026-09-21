@@ -38,8 +38,7 @@ write_POMDP <- function(x,
                         file,
                         digits = 7,
                         labels = FALSE) {
-  if (!inherits(x, "POMDP"))
-    stop("model needs to be a POMDP model; use POMDP()!")
+  .validate_class(x, "x", "POMDP")
   
   # we write the problem field if we have it
   #if(!is.null(x$problem)) {

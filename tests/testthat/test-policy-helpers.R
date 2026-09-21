@@ -51,7 +51,7 @@ test_that("policy helpers work for POMDP and MDP policies", {
   expect_equal(policy(copied_tiger), policy(tiger_solution))
   expect_equal(regret(tiger_solution, tiger_solution), 0)
   expect_identical(as.character(optimal_action(tiger_solution, "tiger-left")), "open-right")
-  expect_error(regret(Tiger, tiger_solution), "policy needs to be a solved POMDP")
+  expect_error(regret(Tiger, tiger_solution), "policy.*solved.*class \"POMDP\"")
 
   data(Maze)
   maze_solution <- solve_MDP(Maze)
@@ -60,7 +60,7 @@ test_that("policy helpers work for POMDP and MDP policies", {
   expect_true(is_solved_MDP(copied_maze))
   expect_equal(policy(copied_maze), policy(maze_solution))
   expect_equal(regret(maze_solution, maze_solution, start = Maze$states[1]), 0)
-  expect_error(regret(Maze, maze_solution), "policy needs to be a solved MDP")
+  expect_error(regret(Maze, maze_solution), "policy.*solved.*class \"MDP\"")
 })
 
 test_that("action and transition helpers expose model structure", {

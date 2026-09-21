@@ -18,8 +18,8 @@ test_that("dynamic-programming solvers report convergence contracts", {
   data("Maze")
   data("Tiger")
 
-  expect_error(solve_MDP(Tiger), "needs to be an MDP")
-  expect_error(solve_MDP_DP(Tiger), "class 'MDP'")
+  expect_error(solve_MDP(Tiger), "class \"MDP\"")
+  expect_error(solve_MDP_DP(Tiger), "class \"MDP\"")
   expect_error(
     solve_MDP_DP(Maze, method = "policy_iteration", horizon = 2),
     "not implemented"

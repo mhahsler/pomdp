@@ -108,10 +108,52 @@ test_that("solved-model helpers enforce their public contracts", {
 
   expect_false(is_solved_POMDP(Tiger))
   expect_error(is_solved_POMDP(Tiger, stop = TRUE), "solve_POMDP")
-  expect_error(is_solved_POMDP(Maze), "POMDP object")
+  expect_error(
+    is_solved_POMDP(Maze),
+    "`x` must be an object of class \"POMDP\".",
+    fixed = TRUE
+  )
   expect_false(is_solved_MDP(Maze))
   expect_error(is_solved_MDP(Maze, stop = TRUE), "solve_MDP")
-  expect_error(is_solved_MDP(Tiger), "MDP object")
+  expect_error(
+    is_solved_MDP(Tiger),
+    "`x` must be an object of class \"MDP\".",
+    fixed = TRUE
+  )
+})
+
+test_that("model class errors identify the argument and expected class", {
+  data("Tiger")
+  data("Maze")
+
+  expect_error(
+    solve_POMDP(Maze),
+    "`model` must be an object of class \"POMDP\".",
+    fixed = TRUE
+  )
+  expect_error(
+    solve_MDP(Tiger),
+    "`model` must be an object of class \"MDP\".",
+    fixed = TRUE
+  )
+  expect_error(
+    normalize_POMDP(Maze),
+    "`x` must be an object of class \"POMDP\".",
+    fixed = TRUE
+  )
+  expect_error(
+    make_partially_observable(Tiger),
+    "`x` must be an object of class \"MDP\".",
+    fixed = TRUE
+  )
+
+  malformed <- Maze
+  malformed$reward <- matrix(0)
+  expect_error(
+    make_partially_observable(malformed),
+    "`x$reward` must be an object of class \"data.frame\".",
+    fixed = TRUE
+  )
 })
 
 test_that("start beliefs support distributions, inclusion, and exclusion", {

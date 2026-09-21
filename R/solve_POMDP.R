@@ -366,8 +366,7 @@ solve_POMDP <- function(model,
   if (is.character(model))
     model <- read_POMDP(model)
   
-  if (!inherits(model, "POMDP"))
-    stop("x needs to be a POMDP!") 
+  .validate_class(model, "model", "POMDP")
   
   if (is.null(horizon))
     horizon <- model$horizon

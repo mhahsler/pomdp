@@ -93,8 +93,7 @@ solve_SARSOP <- function(model,
   if (is.character(model))
     model <- read_POMDP(model)
   
-  if (!inherits(model, "POMDP"))
-    stop("x needs to be a POMDP!") 
+  .validate_class(model, "model", "POMDP")
   
   if (!is.null(model$horizon) &&
       !is.infinite(model$horizon))

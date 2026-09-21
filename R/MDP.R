@@ -165,11 +165,10 @@ print.MDP <- function(x, ...) {
 #' @param stop logical; stop with an error.
 #' @export
 is_solved_MDP <- function(x, stop = FALSE) {
-  if (!inherits(x, "MDP"))
-    stop("x needs to be an MDP object!")
+  .validate_class(x, "x", "MDP")
   solved <- !is.null(x$solution)
   if (stop && !solved)
-    stop("x needs to be a solved MDP. Use solve_MDP() first.")
+    stop("`x` must be a solved object of class \"MDP\". Use solve_MDP() first.")
   
   solved
 }

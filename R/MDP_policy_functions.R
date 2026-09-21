@@ -117,8 +117,7 @@ NULL
 #'   are calculated from the value function (U) and the transition model.
 #' @export
 q_values_MDP <- function(model, U = NULL) {
-  if (!inherits(model, "MDP"))
-    stop("'model' needs to be of class 'MDP'.")
+  .validate_class(model, "model", "MDP")
   
   S <- model$states
   A <- model$actions
@@ -158,8 +157,7 @@ MDP_policy_evaluation <-
            k_backups = 1000,
            theta = 1e-3,
            verbose = FALSE) {
-    if (!inherits(model, "MDP"))
-      stop("'model' needs to be of class 'MDP'.")
+    .validate_class(model, "model", "MDP")
     
     S <- model$states
     A <- model$actions
@@ -236,8 +234,7 @@ greedy_MDP_action <-
 #' @export
 random_MDP_policy <-
   function(model, prob = NULL) {
-    if (!inherits(model, "MDP"))
-      stop("'model' needs to be of class 'MDP'.")
+    .validate_class(model, "model", "MDP")
     
     A <- model$actions
     S <- model$states
@@ -262,8 +259,7 @@ random_MDP_policy <-
 #' @export
 manual_MDP_policy <-
   function(model, actions) {
-    if (!inherits(model, "MDP"))
-      stop("'model' needs to be of class 'MDP'.")
+    .validate_class(model, "model", "MDP")
     
     A <- model$actions
     S <- model$states
@@ -290,4 +286,3 @@ greedy_MDP_policy <-
       row.names = NULL
     )
   }
-

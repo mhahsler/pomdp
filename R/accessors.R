@@ -129,8 +129,7 @@ normalize_POMDP <- function(x,
                             trans_start = FALSE,
                             trans_function = TRUE,
                             trans_keyword = FALSE) {
-  if (!inherits(x, "POMDP"))
-    stop("x is not a POMDP object!")
+  .validate_class(x, "x", "POMDP")
   
   if (trans_start)
     x$start <- start_vector(x)
@@ -214,8 +213,7 @@ normalize_MDP <- function(x,
                           trans_start = FALSE,
                           trans_function = TRUE,
                           trans_keyword = FALSE) {
-  if (!inherits(x, "MDP"))
-    stop("x is not an MDP object!")
+  .validate_class(x, "x", "MDP")
   
   if (trans_start)
     x$start <- start_vector(x)

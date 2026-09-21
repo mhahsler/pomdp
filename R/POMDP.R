@@ -375,12 +375,11 @@ print.POMDP <- function(x, ...) {
 #' @param stop logical; stop with an error.
 #' @export
 is_solved_POMDP <- function(x, stop = FALSE, message = "") {
-  if (!inherits(x, "POMDP"))
-    stop("x needs to be a POMDP object!")
+  .validate_class(x, "x", "POMDP")
   
   solved <- !is.null(x$solution)
   if (stop && !solved)
-    stop("x needs to be a solved POMDP. Use solve_POMDP() first.",
+    stop("`x` must be a solved object of class \"POMDP\". Use solve_POMDP() first.",
          message,
          call. = FALSE)
   

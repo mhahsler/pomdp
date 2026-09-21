@@ -12,6 +12,15 @@
   x
 }
 
+.validate_class <- function(x, name, class) {
+  if (!inherits(x, class))
+    stop(
+      "`", name, "` must be an object of class \"", class, "\".",
+      call. = FALSE
+    )
+  invisible(x)
+}
+
 .validate_discount <- function(x) {
   if (!is.numeric(x) || length(x) != 1L || is.na(x) || !is.finite(x) ||
       x <= 0 || x > 1)
