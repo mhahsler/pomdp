@@ -233,7 +233,8 @@ policy_graph <-
     remove_unreachable_nodes = FALSE,
     ...) {
     pg <- x$solution$pg
-    
+   
+    # TODO: infer a policy tree similar to .infer_policy_graph()
     if (ncol(pg[[1]]) <= 2)
       stop("Solution does not contain policy graph information. Use a different solver.")
     
@@ -386,34 +387,6 @@ policy_graph <-
     stop("Unable to estimate all central beliefs.")
   
   pg <- model$solution$pg[[1L]]
-  pg_to <-
-    t(sapply(
-      seq_len(nrow(central_beliefs)),
-      FUN = function(i)
-        reward_node_action(
-          model,
-          update_belief(model, belief = central_beliefs[i,], action = pg$action[i])
-        )$pg_node
-    ))
-  colnames(pg_to) <- model$observations
-  
-  pg <- cbind(pg, pg_to)
-  
-  list(central_beliefs = list(central_beliefs),
-    pg = list(pg))
-}
-
-
-### TODO: find the policy graph edges between episodes...
-.infer_policy_tree <- function(model, ...) {
-  stop("TODO!!!")
-  
-  # find central beliefs and use them to create the policy graph
-  central_beliefs <- estimate_belief_for_nodes(model, ...)
-  if (nrow(central_beliefs) < nrow(model$solution$pg[[1]]))
-    stop("Unable to estimate all central beliefs.")
-  
-  pg <- model$solution$pg[[1]]
   pg_to <-
     t(sapply(
       seq_len(nrow(central_beliefs)),
