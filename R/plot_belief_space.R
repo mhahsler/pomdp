@@ -1,8 +1,8 @@
-#' Plot a 2D or 3D Projection of the Belief Space
+#' Plot a 2-State or 3-State Projection of the Belief Space
 #'
 #' Plots the optimal action, the node in the policy graph or the reward for a
-#' given set of belief points on a line (2D) or on a ternary plot (3D). If no
-#' points are given, points are sampled using a regular arrangement or randomly
+#' given set of belief points on a line (2 states) or as a ternary plot (3 states). 
+#' If no points are given, points are sampled using a regular arrangement or randomly
 #' from the (projected) belief space.
 #'
 #' @family policy
@@ -19,10 +19,10 @@
 #' need to increase the plotting region of the plotting device.
 #' @param pch plotting symbols.
 #' @param col plotting colors.
-#' @param jitter jitter amount for 2D belief spaces (good values are between 0 and 1, while using `ylim = c(0,1)`).
+#' @param jitter jitter amount for 2-state belief spaces (good values are between 0 and 1, while using `ylim = c(0,1)`).
 #' @param oneD plot projections on two states in one dimension.
-#' @param ...  additional arguments are passed on to `plot` for 2D or
-#' `TerneryPlot` for 3D.
+#' @param ...  additional arguments are passed on to `plot` for 2-state or
+#' `TerneryPlot` for 3-state plots.
 #' @return Returns invisibly the sampled points.
 #' @author Michael Hahsler
 #' @keywords hplot
@@ -31,17 +31,17 @@
 #' data("Tiger")
 #' sol <- solve_POMDP(Tiger)
 #'
-#' plot_belief_space(sol)
+#' plot_belief_space(sol, pch = 15)
 #' plot_belief_space(sol, oneD = FALSE)
 #' plot_belief_space(sol, n = 10)
 #' plot_belief_space(sol, n = 100, sample = "random")
 #'
 #' # plot the belief points used by the grid-based solver
-#' plot_belief_space(sol, sample = sol $solution$belief_points_solver)
+#' plot_belief_space(sol, sample = sol$solution$belief_points_solver)
 #'
 #' # plot different measures
-#' plot_belief_space(sol, what = "pg_node")
-#' plot_belief_space(sol, what = "reward")
+#' plot_belief_space(sol, what = "pg_node", pch = 15)
+#' plot_belief_space(sol, what = "reward", pch = 15)
 #'
 #' # three-state POMDP
 #' # Note: If the plotting region is too small then the legend might run into the plot
@@ -49,17 +49,19 @@
 #' sol <- solve_POMDP(Three_doors)
 #' sol
 #'
-#' # plotting needs the suggested package Ternary
+#' # plotting needs the suggested package Ternary for 3-state plots
 #' if ("Ternary" %in% installed.packages()) {
 #' plot_belief_space(sol)
-#' plot_belief_space(sol, n = 1000)
+#' plot_belief_space(sol, n = 1024)
 #' plot_belief_space(sol, what = "reward", sample = "random", n = 1000)
-#' plot_belief_space(sol, what = "pg_node", n = 1000, size = 2)
 #' 
 #' # holding tiger-left constant at .5 follows this line in the ternary plot 
+#' plot_belief_space(sol, n = 1024)
 #' Ternary::TernaryLines(list(c(.5, 0, .5), c(.5, .5, 0)), col = "black", lty = 2)
+#' 
 #' # we can plot the projection for this line 
-#' plot_belief_space(sol, what = "pg_node", n = 100, projection = c("tiger-left" = .5))
+#' plot_belief_space(sol, what = "action", n = 100, pch = 15, 
+#'   projection = c("tiger-left" = .5))
 #'
 #' # plot the belief points used by the grid-based solver
 #' plot_belief_space(sol, sample = sol$solution$belief_points_solver, what = "pg_node")
