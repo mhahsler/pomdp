@@ -141,7 +141,7 @@ Display the value function.
 plot_value_function(sol, ylim = c(0, 20))
 ```
 
-![](inst/README_files/value_function-1.png)<!-- -->
+![](man/figures/README-value_function-1.png)<!-- -->
 
 Display the policy graph.
 
@@ -155,7 +155,7 @@ plot_policy_graph(sol)
     ## Warning in rep(getparam("size"), length = nrow(coords)): partial argument match
     ## of 'length' to 'length.out'
 
-![](inst/README_files/policy_graph-1.png)<!-- -->
+![](man/figures/README-policy_graph-1.png)<!-- -->
 
 ## Acknowledgments
 
