@@ -187,10 +187,10 @@ it also adds curvature to parallel edges that point in opposite directions.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     ‘start’, ‘info’, ‘solution’</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="policy_graph.html">policy_graph</a></span><span class="op">(</span><span class="va">sol</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> IGRAPH c8bf20f D--- 5 10 -- </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> IGRAPH c72a896 D--- 5 10 -- </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> + attr: label (v/c), id (v/n), action (v/c), size (v/n), label (e/c),</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | observation (e/c), arrow.size (e/n)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> + edges from c8bf20f:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> + edges from c72a896:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 1-&gt;3 2-&gt;3 3-&gt;4 4-&gt;5 5-&gt;3 1-&gt;3 2-&gt;1 3-&gt;2 4-&gt;3 5-&gt;3</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## visualization</span></span></span>
@@ -280,10 +280,10 @@ it also adds curvature to parallel edges that point in opposite directions.</p>
 <span class="r-in"><span><span class="va">sol</span> <span class="op">&lt;-</span> <span class="fu"><a href="solve_POMDP.html">solve_POMDP</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">Tiger</span>, horizon <span class="op">=</span> <span class="fl">4</span>, method <span class="op">=</span> <span class="st">"incprune"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="policy_graph.html">policy_graph</a></span><span class="op">(</span><span class="va">sol</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> IGRAPH a3bb937 DN-- 26 46 -- </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> IGRAPH 2f38376 DN-- 26 46 -- </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> + attr: layout (g/n), name (v/c), id (v/c), epoch (v/n), action (v/c),</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | size (v/n), label (e/c), observation (e/c), arrow.size (e/n)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> + edges from a3bb937 (vertex names):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> + edges from 2f38376 (vertex names):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 1-1\nopen-left -&gt;2-5\nlisten     1-2\nlisten    -&gt;2-5\nlisten    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [3] 1-3\nlisten    -&gt;2-5\nlisten     1-4\nlisten    -&gt;2-6\nlisten    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [5] 1-5\nlisten    -&gt;2-7\nlisten     1-6\nlisten    -&gt;2-7\nlisten    </span>

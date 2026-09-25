@@ -173,10 +173,10 @@ sol
 #>     ‘start’, ‘info’, ‘solution’
 
 policy_graph(sol)
-#> IGRAPH c8bf20f D--- 5 10 -- 
+#> IGRAPH c72a896 D--- 5 10 -- 
 #> + attr: label (v/c), id (v/n), action (v/c), size (v/n), label (e/c),
 #> | observation (e/c), arrow.size (e/n)
-#> + edges from c8bf20f:
+#> + edges from c72a896:
 #>  [1] 1->3 2->3 3->4 4->5 5->3 1->3 2->1 3->2 4->3 5->3
 
 ## visualization
@@ -266,10 +266,10 @@ plot_policy_graph(sol, engine = "visNetwork", layout = "layout_in_circle", smoot
 sol <- solve_POMDP(model = Tiger, horizon = 4, method = "incprune")
 
 policy_graph(sol)
-#> IGRAPH a3bb937 DN-- 26 46 -- 
+#> IGRAPH 2f38376 DN-- 26 46 -- 
 #> + attr: layout (g/n), name (v/c), id (v/c), epoch (v/n), action (v/c),
 #> | size (v/n), label (e/c), observation (e/c), arrow.size (e/n)
-#> + edges from a3bb937 (vertex names):
+#> + edges from 2f38376 (vertex names):
 #>  [1] 1-1\nopen-left ->2-5\nlisten     1-2\nlisten    ->2-5\nlisten    
 #>  [3] 1-3\nlisten    ->2-5\nlisten     1-4\nlisten    ->2-6\nlisten    
 #>  [5] 1-5\nlisten    ->2-7\nlisten     1-6\nlisten    ->2-7\nlisten    

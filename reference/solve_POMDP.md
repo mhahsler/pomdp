@@ -557,7 +557,7 @@ sol$solution
 #> history_length = 0
 #> prune_epsilon = 0.000000
 #> save_all = true
-#> o = /tmp/RtmpYLHnKZ/pomdp_1a9e446cf787-0
+#> o = /tmp/Rtmp2dbI91/pomdp_1aab93a2585-0
 #> fg_save = true
 #> enum_purge = normal_prune
 #> fg_type = initial
@@ -569,7 +569,7 @@ sol$solution
 #> dom_check = false
 #> stop_delta = 0.000000
 #> q_purge = normal_prune
-#> pomdp = /tmp/RtmpYLHnKZ/pomdp_1a9e446cf787.POMDP
+#> pomdp = /tmp/Rtmp2dbI91/pomdp_1aab93a2585.POMDP
 #> mcgs_num_traj = 1000
 #> stop_criteria = weak
 #> method = grid
@@ -600,7 +600,7 @@ sol$solution
 #> [Finite Grid Method:]
 #>     [Creating grid ... done.]
 #>     [Grid has 25 points.]
-#>     Grid saved to /tmp/RtmpYLHnKZ/pomdp_1a9e446cf787-0.belief.
+#>     Grid saved to /tmp/Rtmp2dbI91/pomdp_1aab93a2585-0.belief.
 #> The initial policy being used:
 #> Alpha List: Length=1
 #> <id=0: a=0> 
@@ -697,8 +697,8 @@ sol$solution
 #> Epoch: 90...5 vectors (delta=0.00e+00)
 #> ++++++++++++++++++++++++++++++++++++++++
 #> Solution found.  See file:
-#>  /tmp/RtmpYLHnKZ/pomdp_1a9e446cf787-0.alpha
-#>  /tmp/RtmpYLHnKZ/pomdp_1a9e446cf787-0.pg
+#>  /tmp/Rtmp2dbI91/pomdp_1aab93a2585-0.alpha
+#>  /tmp/Rtmp2dbI91/pomdp_1aab93a2585-0.pg
 #> ++++++++++++++++++++++++++++++++++++++++
 #> 
 #> 

@@ -106,7 +106,7 @@ data(Tiger)
 ## show the POMDP file that would be written.
 write_POMDP(Tiger, file = stdout())
 #> # POMDP File: Tiger Problem
-#> # Produced with R package pomdp (created: Thu Sep 24 22:35:57 2026)
+#> # Produced with R package pomdp (created: Fri Sep 25 00:26:55 2026)
 #> 
 #> discount: 0.75
 #> values: reward

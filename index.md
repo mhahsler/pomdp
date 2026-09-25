@@ -151,7 +151,7 @@ Display the value function.
 plot_value_function(sol, ylim = c(0, 20))
 ```
 
-![](inst/README_files/value_function-1.png)
+![](reference/figures/README-value_function-1.png)
 
 Display the policy graph.
 
@@ -168,7 +168,7 @@ plot_policy_graph(sol)
 ## of 'length' to 'length.out'
 ```
 
-![](inst/README_files/policy_graph-1.png)
+![](reference/figures/README-policy_graph-1.png)
 
 ## Acknowledgments
 
