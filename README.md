@@ -58,25 +58,6 @@ If you are new to POMDPs then start with:
 - For more derails on POMDPs read the [POMDP
   Tutorial](https://pomdp.org/tutorial/)
 
-To cite package ‘pomdp’ in publications use:
-
-> Hahsler M, Cassandra AR (2025). “Pomdp: A computational infrastructure
-> for partially observable Markov decision processes.” *The R Journal*,
-> *16*(2), 116-133. ISSN 2073-4859. <doi:10.32614/RJ-2024-021>
-> <https://doi.org/10.32614/RJ-2024-021>.
-
-    @Article{,
-      title = {Pomdp: A computational infrastructure for partially observable Markov decision processes},
-      author = {Michael Hahsler and Anthony R. Cassandra},
-      year = {2025},
-      journal = {The R Journal},
-      volume = {16},
-      number = {2},
-      pages = {116--133},
-      doi = {10.32614/RJ-2024-021},
-      issn = {2073-4859},
-    }
-
 ## Installation
 
 **Stable CRAN version:** Install from within R with
@@ -162,6 +143,27 @@ plot_policy_graph(sol)
 Development of this package was supported in part by the National
 Institute of Standards and Technology (NIST) under grant number
 [60NANB17D180](https://www.nist.gov/ctl/pscr/safe-net-integrated-connected-vehicle-computing-platform).
+
+## Citation request
+
+To cite package ‘pomdp’ in publications use:
+
+> Hahsler M, Cassandra AR (2025). “Pomdp: A computational infrastructure
+> for partially observable Markov decision processes.” *The R Journal*,
+> *16*(2), 116-133. ISSN 2073-4859. <doi:10.32614/RJ-2024-021>
+> <https://doi.org/10.32614/RJ-2024-021>.
+
+    @Article{,
+      title = {Pomdp: A computational infrastructure for partially observable Markov decision processes},
+      author = {Michael Hahsler and Anthony R. Cassandra},
+      year = {2025},
+      journal = {The R Journal},
+      volume = {16},
+      number = {2},
+      pages = {116--133},
+      doi = {10.32614/RJ-2024-021},
+      issn = {2073-4859},
+    }
 
 ## References
 

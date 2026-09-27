@@ -2,3 +2,62 @@ url: http://michael.hahsler.net/pomdp/
 template:
   bootstrap: 5
 
+reference:
+- title: POMDPs
+  desc: Define, inspect, transform, simulate, and analyze partially observable Markov decision process models.
+  contents:
+  - POMDP
+  - update_belief
+  - simulate_POMDP
+  - sample_belief_space
+  - has_concept("POMDP")
+- title: MDPs
+  desc: Define, inspect, transform, simulate, and analyze finite state-space Markov decision process models.
+  contents:
+  - MDP
+  - solve_MDP
+  - simulate_MDP
+  - MDP_policy_functions
+  - has_concept("MDP")
+- title: Solvers
+  desc: Solve finite state-space MDP and POMDP models using exact, approximate, and reinforcement learning methods.
+  contents:
+  - solve_POMDP
+  - solve_MDP
+  - solve_SARSOP
+  - has_concept("solver")
+- title: Policies and Value Functions
+  desc: Extract, evaluate, inspect, and visualize policies and value functions for solved models.
+  contents:
+  - policy
+  - value_function
+  - optimal_action
+  - reward
+  - plot_policy_graph
+  - plot_value_function
+  - has_concept("policy")
+- title: Gridworlds
+  desc: Create gridworld MDPs, convert between states and grid positions, and visualize their policies and transitions.
+  contents:
+  - gridworld
+  - has_concept("gridworld")
+- title: POMDP Examples
+  desc: Example POMDP specifications and example files for learning, testing, and demonstrating package functionality.
+  contents:
+  - Tiger
+  - RussianTiger
+  - POMDP_example_files
+  - has_concept("POMDP_examples")
+- title: MDP Examples
+  desc: Example MDP specifications, including classic maze and gridworld problems from reinforcement learning.
+  contents:
+  - Maze
+  - Cliff_walking
+  - Windy_gridworld
+  - DynaMaze
+  - has_concept("MDP_examples")
+- title: Utilities
+  desc: Color palettes for visualizations and rounding helpers for stochastic vectors and matrices.
+  contents:
+  - colors
+  - round_stochastic

@@ -1,0 +1,267 @@
+---
+title: "Solving Markov Decision Processes with pomdp"
+author: "Michael Hahsler"
+bibliography: references.bib
+vignette: >
+  %\VignetteIndexEntry{Solving Markov Decision Processes with pomdp}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output:
+  rmarkdown::html_vignette
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(pomdp)
+```
+
+# Introduction
+
+A Markov decision process (MDP) describes sequential decision making when the
+state of the environment is completely observable. At every epoch, the agent
+observes the current state, chooses an action, receives a reward, and moves to a
+new state according to the transition probabilities. The objective is to find a
+policy that maximizes the expected sum of future rewards.
+
+A finite-state MDP is described by states $S$, actions $A$, transition
+probabilities $T(s' \mid s,a)$, rewards $R(s,a,s')$, and a discount factor
+$\gamma$. The package **pomdp** represents these components with an `MDP`
+object and solves the model with `solve_MDP()`. Both dynamic programming and
+temporal-difference control methods are available [@Sutton1998].
+
+The basic workflow is:
+
+1. Define a model with `MDP()` or load one of the included examples.
+2. Find a policy with `solve_MDP()`.
+3. Inspect, visualize, evaluate, or simulate the policy.
+
+# An Example MDP
+
+We use the included `Maze` model. It is a gridworld with one start state, two
+terminal states, and one wall. The agent can move up, right, down, or left.
+
+```{r}
+data(Maze)
+Maze
+```
+
+An MDP is stored as a list. Its most important components are the states,
+actions, transition model, reward model, discount factor, horizon, and start
+distribution.
+
+```{r}
+Maze$states
+Maze$actions
+Maze$discount
+Maze$horizon
+Maze$start
+```
+
+Use `transition_matrix()` and `reward_matrix()` to inspect normalized model
+components. For example, the following matrix contains the transition
+probabilities for moving up.
+
+```{r}
+transition_matrix(Maze, action = "up")
+```
+
+Models can be created directly with `MDP()`. Transition probabilities can be
+specified as matrices, data frames built with `T_()`, or functions. Rewards can
+similarly be specified as matrices, data frames built with `R_()`, or
+functions. See `?MDP` for complete examples and the supported shortcuts.
+
+# Solving an Infinite-Horizon MDP
+
+`solve_MDP()` provides two model-based dynamic programming methods and three
+model-free temporal-difference methods:
+
+- `"value_iteration"` applies Bellman optimality backups until the value
+  function converges.
+- `"policy_iteration"` alternates approximate policy evaluation and greedy
+  policy improvement.
+- `"q_learning"` learns an off-policy action-value function.
+- `"sarsa"` learns an action-value function on-policy.
+- `"expected_sarsa"` uses the expected value under the current policy in its
+  update.
+
+Value iteration is the default. It is a good starting point when the complete
+transition and reward models are available.
+
+```{r}
+maze_solved <- solve_MDP(Maze, method = "value_iteration")
+maze_solved
+```
+
+The returned object contains the original model and a `solution` component.
+For an infinite-horizon dynamic programming solution, the latter records the
+method, convergence status, final value-function change, number of iterations,
+and policy.
+
+```{r}
+maze_solved$solution[c("method", "converged", "delta", "iterations")]
+```
+
+`policy()` extracts the solution as one row per state. The column `U` is the
+expected discounted return from that state, and `action` is the action selected
+by the policy.
+
+```{r}
+policy(maze_solved)
+```
+
+The action-value function $Q(s,a)$ gives the expected return from taking action
+$a$ in state $s$ and then following the policy. It is useful for comparing the
+available actions in each state.
+
+```{r}
+round(q_values_MDP(maze_solved), 2)
+```
+
+The value function and the gridworld policy can also be visualized.
+
+```{r, fig.width=6, fig.height=4}
+plot_value_function(maze_solved)
+```
+
+```{r, fig.width=6, fig.height=4}
+gridworld_plot_policy(maze_solved)
+```
+
+# Choosing Dynamic Programming Parameters
+
+For value iteration, `error` controls the maximum policy loss used in the
+convergence criterion, while `N_max` limits the number of iterations. An
+initial value function can be supplied with `U`.
+
+```{r}
+maze_precise <- solve_MDP(
+  Maze,
+  method = "value_iteration",
+  error = 1e-5,
+  N_max = 1000
+)
+maze_precise$solution[c("converged", "delta", "iterations")]
+```
+
+Modified policy iteration starts with a random policy. In each iteration it
+uses `k_backups` Bellman backups to approximately evaluate the current policy,
+then replaces it with a greedy policy. It stops when the policy no longer
+changes.
+
+```{r}
+maze_policy_iteration <- solve_MDP(
+  Maze,
+  method = "policy_iteration",
+  k_backups = 10
+)
+maze_policy_iteration$solution[c("converged", "iterations")]
+policy(maze_policy_iteration)
+```
+
+The two dynamic programming methods may make different choices when actions
+have the same value, but their policies have the same optimal value function.
+
+# Finite-Horizon Problems
+
+For a finite horizon, the best action can depend on how many epochs remain.
+Specify the number of epochs with `horizon`. Finite-horizon solving currently
+uses value iteration and returns one policy per epoch.
+
+```{r}
+maze_finite <- solve_MDP(
+  Maze,
+  method = "value_iteration",
+  horizon = 3
+)
+policy(maze_finite)
+```
+
+Individual epochs can be extracted or plotted separately.
+
+```{r}
+finite_policy <- policy(maze_finite, drop = FALSE)
+finite_policy[[1]]
+finite_policy[[3]]
+```
+
+```{r, fig.width=6, fig.height=4}
+gridworld_plot_policy(maze_finite, epoch = 1)
+```
+
+# Learning from Simulated Experience
+
+The temporal-difference methods use the MDP model only to simulate interaction
+with the environment. They are useful for experimenting with reinforcement
+learning. Their main controls are the number of episodes `N`, learning rate
+`alpha`, exploration rate `epsilon`, and maximum episode length `horizon`.
+Models with no absorbing state require a finite `horizon`.
+
+The algorithms involve random exploration, so set a seed when reproducibility
+is important.
+
+```{r}
+set.seed(1234)
+maze_q_learning <- solve_MDP(
+  Maze,
+  method = "q_learning",
+  N = 1000,
+  alpha = 0.1,
+  epsilon = 0.1
+)
+policy(maze_q_learning)
+```
+
+Q-learning is off-policy: it explores with an epsilon-greedy behavior policy
+while learning a greedy target policy. Sarsa and expected Sarsa instead learn
+from the current behavior policy. Because these methods estimate a solution
+from sampled experience, their learned values and policies can vary between
+runs and generally require parameter tuning.
+
+# Evaluating and Simulating a Policy
+
+`MDP_policy_evaluation()` applies Bellman backups to estimate the value of a
+given policy. This is useful for comparing an optimal policy with a manually
+specified or random policy.
+
+```{r}
+set.seed(1234)
+random_policy <- random_MDP_policy(Maze)
+
+rbind(
+  random = MDP_policy_evaluation(random_policy, Maze),
+  optimal = MDP_policy_evaluation(policy(maze_solved), Maze)
+)
+```
+
+`simulate_MDP()` follows a solved policy through the environment. It reports
+the average discounted reward and visitation counts, and can optionally return
+complete trajectories.
+
+```{r}
+set.seed(1234)
+simulation <- simulate_MDP(
+  maze_solved,
+  n = 1000,
+  horizon = 20,
+  return_trajectories = TRUE
+)
+simulation$avg_reward
+head(simulation$trajectories)
+```
+
+Simulation is especially helpful for checking how a policy behaves from a
+particular start distribution, estimating its realized reward, and diagnosing
+states or actions that occur frequently.
+
+# Next Steps
+
+The `Maze`, `Cliff_walking`, `Windy_gridworld`, and `DynaMaze` data sets provide
+additional MDP examples. See `vignette("gridworlds", package = "pomdp")` for
+tools that build and visualize gridworld MDPs, and `?solve_MDP` for all solver
+parameters.
