@@ -118,10 +118,10 @@ sol
 #>     ‘start’, ‘info’, ‘solution’
 
 policy_graph(sol)
-#> IGRAPH 723dc85 D--- 5 10 -- 
+#> IGRAPH 95f07c9 D--- 5 10 -- 
 #> + attr: label (v/c), id (v/n), action (v/c), size (v/n), label (e/c),
 #> | observation (e/c), arrow.size (e/n)
-#> + edges from 723dc85:
+#> + edges from 95f07c9:
 #>  [1] 1->3 2->3 3->4 4->5 5->3 1->3 2->1 3->2 4->3 5->3
 
 ## visualization
@@ -132,10 +132,10 @@ plot_policy_graph(sol)
 sol <- solve_POMDP(model = Tiger, horizon = 4, method = "incprune")
 
 policy_graph(sol)
-#> IGRAPH 335737c DN-- 26 46 -- 
+#> IGRAPH 1b2f2ac DN-- 26 46 -- 
 #> + attr: layout (g/n), name (v/c), id (v/c), epoch (v/n), action (v/c),
 #> | size (v/n), label (e/c), observation (e/c), arrow.size (e/n)
-#> + edges from 335737c (vertex names):
+#> + edges from 1b2f2ac (vertex names):
 #>  [1] 1-1\nopen-left ->2-5\nlisten     1-2\nlisten    ->2-5\nlisten    
 #>  [3] 1-3\nlisten    ->2-5\nlisten     1-4\nlisten    ->2-6\nlisten    
 #>  [5] 1-5\nlisten    ->2-7\nlisten     1-6\nlisten    ->2-7\nlisten    

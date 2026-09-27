@@ -115,9 +115,9 @@ data("Tiger")
 
 g <- transition_graph(Tiger)
 g
-#> IGRAPH cac2cd9 DN-- 2 4 -- 
+#> IGRAPH 417c272 DN-- 2 4 -- 
 #> + attr: name (v/c), color (v/c), label (e/c)
-#> + edges from cac2cd9 (vertex names):
+#> + edges from 417c272 (vertex names):
 #> [1] tiger-left ->tiger-left  tiger-left ->tiger-right tiger-right->tiger-left 
 #> [4] tiger-right->tiger-right
 

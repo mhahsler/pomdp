@@ -235,7 +235,7 @@ sim <- simulate_POMDP(sol, n = 100, verbose = TRUE)
 #> - starting belief: 0.5 0.5
 #> 
 #>    user  system elapsed 
-#>   0.007   0.001   0.007 
+#>   0.005   0.002   0.007 
 sim
 #> $avg_reward
 #> [1] 2.81
@@ -318,7 +318,7 @@ sim <- simulate_POMDP(Tiger, return_beliefs = TRUE, verbose = TRUE)
 #> - starting belief: 0.5 0.5
 #> 
 #>    user  system elapsed 
-#>   0.356   0.017   0.373 
+#>   0.382   0.020   0.401 
 sim$avg_reward
 #> [1] -120.6051
 
