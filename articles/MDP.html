@@ -11,7 +11,13 @@
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -84,17 +90,9 @@ epoch, the agent observes the current state, chooses an action, receives
 a reward, and moves to a new state according to the transition
 probabilities. The objective is to find a policy that maximizes the
 expected sum of future rewards.</p>
-<p>A finite-state MDP is described by states
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>,
-actions
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math>,
-transition probabilities
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>s</mi><mo>′</mo></msup><mo>∣</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">T(s' \mid s,a)</annotation></semantics></math>,
-rewards
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo>,</mo><msup><mi>s</mi><mo>′</mo></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">R(s,a,s')</annotation></semantics></math>,
-and a discount factor
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>.
-The package <strong>pomdp</strong> represents these components with an
+<p>A finite-state MDP is described by states <span class="math inline">\(S\)</span>, actions <span class="math inline">\(A\)</span>, transition probabilities <span class="math inline">\(T(s' \mid s,a)\)</span>, rewards <span class="math inline">\(R(s,a,s')\)</span>, and a discount factor
+<span class="math inline">\(\gamma\)</span>. The package
+<strong>pomdp</strong> represents these components with an
 <code>MDP</code> object and solves the model with
 <code><a href="../reference/solve_MDP.html">solve_MDP()</a></code>. Both dynamic programming and
 temporal-difference control methods are available <span class="citation">(Sutton and Barto 2018)</span>.</p>
@@ -245,14 +243,9 @@ and <code>action</code> is the action selected by the policy.</p>
 <span><span class="co">#&gt; 9  s(1,4) 0.0000000   down</span></span>
 <span><span class="co">#&gt; 10 s(2,4) 0.0000000   left</span></span>
 <span><span class="co">#&gt; 11 s(3,4) 0.4045407   left</span></span></code></pre></div>
-<p>The action-value function
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Q(s,a)</annotation></semantics></math>
-gives the expected return from taking action
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
-in state
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math>
-and then following the policy. It is useful for comparing the available
-actions in each state.</p>
+<p>The action-value function <span class="math inline">\(Q(s,a)\)</span>
+gives the expected return from taking action <span class="math inline">\(a\)</span> in state <span class="math inline">\(s\)</span> and then following the policy. It is
+useful for comparing the available actions in each state.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="../reference/MDP_policy_functions.html">q_values_MDP</a></span><span class="op">(</span><span class="va">maze_solved</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           up right down left</span></span>

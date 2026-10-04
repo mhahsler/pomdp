@@ -80,41 +80,36 @@ planning by Leslie P. Kaelbling and Michael L. Littman (Kaelbling et al.
 1998).
 
 A discrete-time POMDP can formally be described as a 7-tuple
-``` math
-\mathcal{P} = (S, A, T, R, \Omega , O, \gamma),
-```
-where
+\\\mathcal{P} = (S, A, T, R, \Omega , O, \gamma),\\ where
 
-- $`S = \{s_1, s_2, \dots, s_n\}`$ is a set of partially observable
+- \\S = \\s_1, s_2, \dots, s_n\\\\ is a set of partially observable
   states,
 
-- $`A = \{a_1, a_2, \dots, a_m\}`$ is a set of actions,
+- \\A = \\a_1, a_2, \dots, a_m\\\\ is a set of actions,
 
-- $`T`$ a set of conditional transition probabilities $`T(s' \mid s,a)`$
-  for the state transition $`s \rightarrow s'`$ conditioned on the taken
+- \\T\\ a set of conditional transition probabilities \\T(s' \mid s,a)\\
+  for the state transition \\s \rightarrow s'\\ conditioned on the taken
   action.
 
-- $`R: S \times A \rightarrow \mathbb{R}`$ is the reward function,
+- \\R: S \times A \rightarrow \mathbb{R}\\ is the reward function,
 
-- $`\Omega = \{o_1, o_2, \dots, o_k\}`$ is a set of observations,
+- \\\Omega = \\o_1, o_2, \dots, o_k\\\\ is a set of observations,
 
-- $`O`$ is a set of observation probabilities $`O(o \mid s',a)`$
+- \\O\\ is a set of observation probabilities \\O(o \mid s',a)\\
   conditioned on the reached state and the taken action, and
 
-- $`\gamma \in [0, 1]`$ is the discount factor.
+- \\\gamma \in \[0, 1\]\\ is the discount factor.
 
-At each time period, the environment is in some unknown state
-$`s \in S`$. The agent chooses an action $`a \in A`$, which causes the
-environment to transition to state $`s' \in S`$ with probability
-$`T(s' \mid s,a)`$. At the same time, the agent receives an observation
-$`o \in \Omega`$ which depends on the new state of the environment with
-probability $`O(o \mid s',a)`$. Finally, the agent receives a reward
-$`R(s,a)`$. Then the process repeats. The goal is for the agent to
+At each time period, the environment is in some unknown state \\s \in
+S\\. The agent chooses an action \\a \in A\\, which causes the
+environment to transition to state \\s' \in S\\ with probability \\T(s'
+\mid s,a)\\. At the same time, the agent receives an observation \\o \in
+\Omega\\ which depends on the new state of the environment with
+probability \\O(o \mid s',a)\\. Finally, the agent receives a reward
+\\R(s,a)\\. Then the process repeats. The goal is for the agent to
 choose actions that maximizes the expected sum of discounted future
-rewards, i.e., she chooses the actions at each time $`t`$ that
-``` math
-\max E\left[\sum_{t=0}^{\infty} \gamma^t R(s_t, a_t)\right].
-```
+rewards, i.e., she chooses the actions at each time \\t\\ that \\\max
+E\left\[\sum\_{t=0}^{\infty} \gamma^t R(s_t, a_t)\right\].\\
 
 For a finite time horizon, only the expectation over the sum up to the
 time horizon is used.
@@ -146,21 +141,21 @@ str(args(POMDP))
 
 where
 
-- `states` defines the set of states $`S`$,
+- `states` defines the set of states \\S\\,
 
-- `actions` defines the set of actions $`A`$,
+- `actions` defines the set of actions \\A\\,
 
-- `observations` defines the set of observations $`\Omega`$,
+- `observations` defines the set of observations \\\Omega\\,
 
 - `transition_prob` defines the conditional transition probabilities
-  $`T(s' \mid s,a)`$,
+  \\T(s' \mid s,a)\\,
 
 - `observation_prob` specifies the conditional observation probabilities
-  $`O(o \mid s',a)`$,
+  \\O(o \mid s',a)\\,
 
-- `reward` specifies the reward function $`R`$,
+- `reward` specifies the reward function \\R\\,
 
-- `discount` is the discount factor $`\gamma`$ in range $`[0,1]`$,
+- `discount` is the discount factor \\\gamma\\ in range \\\[0,1\]\\,
 
 - `horizon` is the problem horizon as the number of periods to consider.
 
@@ -168,7 +163,7 @@ where
   horizon.
 
 - `start` is the initial probability distribution over the system states
-  $`S`$,
+  \\S\\,
 
 - `max` indicates whether the problem is a maximization or a
   minimization, and
@@ -179,8 +174,8 @@ While specifying the discount rate and the set of states, observations
 and actions is straightforward. Some arguments can be specified in
 different ways. The initial belief state `start` can be specified as
 
-- A vector of $`n`$ probabilities in $`[0,1]`$, that add up to 1, where
-  $`n`$ is the number of states.
+- A vector of \\n\\ probabilities in \\\[0,1\]\\, that add up to 1,
+  where \\n\\ is the number of states.
 
   ``` r
 
@@ -469,7 +464,7 @@ sol$solution
 #> history_length = 0
 #> prune_epsilon = 0.000000
 #> save_all = true
-#> o = /tmp/Rtmpaur90F/pomdp_1efd418558a5-0
+#> o = /tmp/Rtmpn4JJim/pomdp_1f755046282a-0
 #> fg_save = true
 #> enum_purge = normal_prune
 #> fg_type = initial
@@ -481,7 +476,7 @@ sol$solution
 #> dom_check = false
 #> stop_delta = 0.000000
 #> q_purge = normal_prune
-#> pomdp = /tmp/Rtmpaur90F/pomdp_1efd418558a5.POMDP
+#> pomdp = /tmp/Rtmpn4JJim/pomdp_1f755046282a.POMDP
 #> mcgs_num_traj = 1000
 #> stop_criteria = weak
 #> method = grid
@@ -512,7 +507,7 @@ sol$solution
 #> [Finite Grid Method:]
 #>     [Creating grid ... done.]
 #>     [Grid has 25 points.]
-#>     Grid saved to /tmp/Rtmpaur90F/pomdp_1efd418558a5-0.belief.
+#>     Grid saved to /tmp/Rtmpn4JJim/pomdp_1f755046282a-0.belief.
 #> The initial policy being used:
 #> Alpha List: Length=1
 #> <id=0: a=0> 
@@ -609,8 +604,8 @@ sol$solution
 #> Epoch: 90...5 vectors (delta=0.00e+00)
 #> ++++++++++++++++++++++++++++++++++++++++
 #> Solution found.  See file:
-#>  /tmp/Rtmpaur90F/pomdp_1efd418558a5-0.alpha
-#>  /tmp/Rtmpaur90F/pomdp_1efd418558a5-0.pg
+#>  /tmp/Rtmpn4JJim/pomdp_1f755046282a-0.alpha
+#>  /tmp/Rtmpn4JJim/pomdp_1f755046282a-0.pg
 #> ++++++++++++++++++++++++++++++++++++++++
 #> 
 #> 

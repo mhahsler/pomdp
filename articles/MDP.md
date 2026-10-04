@@ -14,9 +14,9 @@ a reward, and moves to a new state according to the transition
 probabilities. The objective is to find a policy that maximizes the
 expected sum of future rewards.
 
-A finite-state MDP is described by states $`S`$, actions $`A`$,
-transition probabilities $`T(s' \mid s,a)`$, rewards $`R(s,a,s')`$, and
-a discount factor $`\gamma`$. The package **pomdp** represents these
+A finite-state MDP is described by states \\S\\, actions \\A\\,
+transition probabilities \\T(s' \mid s,a)\\, rewards \\R(s,a,s')\\, and
+a discount factor \\\gamma\\. The package **pomdp** represents these
 components with an `MDP` object and solves the model with
 [`solve_MDP()`](http://michael.hahsler.net/pomdp/reference/solve_MDP.md).
 Both dynamic programming and temporal-difference control methods are
@@ -196,8 +196,8 @@ policy(maze_solved)
 #> 11 s(3,4) 0.4045407   left
 ```
 
-The action-value function $`Q(s,a)`$ gives the expected return from
-taking action $`a`$ in state $`s`$ and then following the policy. It is
+The action-value function \\Q(s,a)\\ gives the expected return from
+taking action \\a\\ in state \\s\\ and then following the policy. It is
 useful for comparing the available actions in each state.
 
 ``` r
